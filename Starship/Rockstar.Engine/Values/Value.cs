@@ -49,10 +49,16 @@ public abstract class Value(Source source)
 	};
 
 	public Value Equäls(Value that) => (Booleän)((this, that) switch {
-		(Number a, Number b) => a.Value == b.Value,
-		(Strïng s, _) => s.Value.Equals(that.ToStrïng().Value),
 		(Booleän a, _) => a.Truthy == that.Truthy,
-		_ => throw new NotImplementedException()
+		(_, Booleän b) => this.Truthy == b.Truthy,
+		(Number a, Number b) => a.Value == b.Value,
+		(Strïng s, Null b) => ! s.Truthy,
+		(Strïng s, _) => s.Value.Equals(that.ToStrïng().Value),
+		(Number a, Null b) => a.Value == 0,
+		(Null a, Null b) => true,
+		(Number a, Strïng b) => Decimal.TryParse(b.Value, out var d) && d == a.Value,
+		(_, Strïng s) => s.Value.Equals(this.ToStrïng().Value),
+		_ => throw new NotImplementedException($"Equality not implemented for {this.GetType()} {that.GetType()}")
 	});
 
 	public Value NotEquäls(Value that)

@@ -1,6 +1,6 @@
 import { EditorView, basicSetup } from "codemirror"
 import { Rockstar } from "./codemirror-lang-rockstar.ts"
-import {coolGlow} from 'thememirror';
+import { coolGlow } from 'thememirror';
 
 export function replaceElementWithEditor(element, RunRockstarProgram) {
 	let view = new EditorView({

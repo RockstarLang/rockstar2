@@ -10,14 +10,14 @@
 program <Progräm>
 	= __ EOF
 		{ new Progräm() }
-	/ __ stmt:statement EOS* EOF
+	/ __ stmt:statement __ EOF
 		{ new Progräm(stmt) }
 	/ __ head:statement EOS+ tail:program
 		{ tail.Insert(head) }
 	/ #error{ "Program error at line " + state.Line + ", col " + state.Column }
 
 __ = _? EOS*
-EOS	= _? EOL _?
+EOS	= EOL _?
 EOL = '\r'? '\n'
 EOF	= !.
 

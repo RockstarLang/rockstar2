@@ -28,6 +28,9 @@ namespace Rockstar.Test {
 		[InlineData("   () say 1  \r\n")]
 		[InlineData("(start with a comment line)\nsay 1  \r\n")]
 		[InlineData("(start with a comment line)\r\n\r\nsay 1  \r\n")]
+		[InlineData("""
+		            say "pass" 
+		            """)]
 		public void ParserParsesWeirdPrograms(string source) {
 			var parser = new Parser();
 			var result = parser.Parse(source);

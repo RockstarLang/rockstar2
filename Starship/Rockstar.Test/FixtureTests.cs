@@ -25,10 +25,9 @@ public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput
 			var line = source.Split('\n')[cursor.Line - 1].TrimEnd('\r');
 			testOutput.WriteLine(line);
 			testOutput.WriteLine(String.Empty.PadLeft(cursor.Column - 1) + "^ error is here!");
-			throw;
-		} finally {
 			var ncrunchOutputMessage = $"   at <Rockstar code> in {originalRockFilePath}:line {outputLine}";
 			testOutput.WriteLine(ncrunchOutputMessage);
+			throw;
 		}
 		try {
 			var env = new TestEnvironment();

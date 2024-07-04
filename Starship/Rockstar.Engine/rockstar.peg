@@ -17,7 +17,7 @@ program <Progräm>
 	/ #error{ "Program error at line " + state.Line + ", col " + state.Column }
 
 __ = _? EOS*
-EOS	= EOL _?
+EOS	= _? EOL _?
 EOL = '\r'? '\n'
 EOF	= !.
 

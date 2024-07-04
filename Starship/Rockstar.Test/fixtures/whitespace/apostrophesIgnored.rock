@@ -1,10 +1,10 @@
 ('s is valid in poetic assignments with the apostrophe ignored)
 
 my soul is the Devil's to take
-shout my soul
+shout my soul (prints: 3624)
 
 my soul is the Devil'sto take
-shout my soul
+shout my soul (prints: 384)
 
 my soul is the Devil 's to take
-shout my soul
+shout my soul (prints: 35124)

@@ -1,0 +1,7 @@
+(comment on it's own)
+
+say "the words" (comment at the end of a line) (expect: the words\n)
+
+say (comment between items) "you want to say" (expect: you want to say\n)
+
+(comment before items) say "whatever you want" (expect: whatever you want\n)

@@ -1,0 +1,202 @@
+@namespace Rockstar.Engine
+@classname Parser
+@using System.Globalization
+@using Rockstar.Engine.Statements
+@using Rockstar.Engine.Expressions
+@using Rockstar.Engine.Values;
+
+@ignorecase true
+
+program <Progräm>
+	= __ EOF
+		{ new Progräm() }
+	/ __ stmt:statement EOS* EOF
+		{ new Progräm(stmt) }
+	/ __ head:statement EOS+ tail:program
+		{ tail.Insert(head) }
+	/ #error{ "Program error at line " + state.Line + ", col " + state.Column }
+
+__ = _? EOS*
+EOS	= _? EOL _?
+EOL = '\r'? '\n'
+EOF	= !.
+
+statement <Statement>
+	= output_stmt
+	/ assign_stmt
+
+assign_stmt <Statement>
+	= 'let' _ v:variable _ 'be' _ e:expression
+		{ new Assign(v, e, state.Source()) }
+	/ v:variable _ 'says' _ s:("" .*) EOL
+		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
+//	/ v:variable _ "was a lovestruck ladykiller"
+//		{ new Assign(v, new Number(100), state.Source()) }
+	/ v:variable _is _ l:literal
+		{ new Assign(v, l, state.Source()) }
+
+	//TODO: reinstate for 2.0
+	// v:variable _is _ e:expression { new Assign(v, e, state.Source()) }
+
+
+output_stmt  <Statement>
+	= output _ e:expression { new Output(e, state.Source()) }
+
+variable <Variable>
+	= name:variable_name { new Variable(name, state.Source(name)) }
+
+variable_name
+	= common_variable
+	/ proper_variable
+	/ simple_variable
+
+proper_variable
+	// e.g. Big Bad Benny
+	= proper_noun (_ proper_noun)*
+
+proper_noun
+	= uppercase_letter letter*
+
+common_variable
+	= common_prefix _ simple_variable
+
+common_prefix
+	= 'a' / 'an' / 'the' / 'my' / 'your' / 'our'
+
+simple_variable
+	= ("" letter+)
+
+letter
+	= uppercase_letter / lowercase_letter
+
+uppercase_letter
+	= [A-ZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ]s
+
+lowercase_letter
+	= [a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįıĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß]s
+
+expression <Expression>
+	= unary
+	/ variable
+
+unary <Expression>
+	= op:unary_op ex:expression
+		{ new Unary(op, ex, state.Source()) }
+	/ or
+
+// nor	 <Expression>
+// 	= lhs:or _ 'nor' rhs:or
+// 		{ new Binary(Operator.Nor, lhs, rhs, state.Source()) }
+// 	/ or
+
+or <Expression>
+	= lhs:and _ 'or' _ rhs:or
+		{ new Binary(Operator.Or, lhs, rhs, state.Source()) }
+	/ and
+
+and <Expression>
+	= lhs:equals _ 'and' _ rhs:and
+		{ new Binary(Operator.And, lhs, rhs, state.Source()) }
+	/ equals
+
+equals <Expression>
+	= lhs:not op:_eq _ rhs:equals
+		{ new Binary(op,lhs,rhs, state.Source()) }
+	/ not
+
+not <Expression>
+	= ('non-' / 'non' _ / 'not' _ ) ex:not { new Unary(Operator.Not, ex, state.Source()) }
+	/ compare
+
+compare <Expression>
+	= lhs:math op:comparator _ rhs:compare
+		{ new Binary(op, lhs, rhs, state.Source()) }
+	/ math
+
+gtr = ("greater"/ "higher"	/ "bigger"	/ "stronger" )
+ltr = ("less" / "lower"	/ "smaller" / "weaker" )
+gte = ("great" / "high" / "big" / "strong" )
+lte = ("less" / "low" / "small" / "weak" )
+
+comparator <Operator>
+	= _is _ gtr _ 'than' { Operator.MoreThan }
+	/ _is _ ltr _ 'than' { Operator.LessThan }
+	/ _is _ 'as' _ gte _ 'as' { Operator.MoreThanEqual }
+	/ _is _ 'as' _ lte _ 'as' { Operator.LessThanEqual }
+
+_eq
+	= _is_not
+	/ _is
+
+_is <Operator>
+	= ("'s" / "'re" / _ ('=' / 'is' / 'was' / 'are' / 'were')) !letter
+		{ Operator.Equals }
+
+_is_not <Operator>
+	= _ ('!=' / "'s" _ "not" / 'is' _ 'not' / "isnt" / "isn't" / 'aint' / "ain't" / "wasn't" / "wasnt" / "aren't" / "arent" / "weren't" / "werent") !letter
+		{ Operator.NotEquals }
+
+math <Expression>
+	= sum
+
+sum <Expression> -memoize
+	= lhs:sum op:(plus/minus) rhs:product { new Binary(op, lhs, rhs, state.Source()) }
+	/ product
+
+product <Expression> -memoize
+	= lhs:product op:(times/divide) rhs:primary { new Binary(op, lhs, rhs, state.Source()) }
+	/ primary
+
+plus	<Operator>	= (_? '+' _? / _ 'plus' _ / _ 'with' _ ) { Operator.Plus }
+minus	<Operator>	= (_? '-' _? / _ 'minus' _ / _ 'without' _ ) { Operator.Minus }
+times	<Operator>	= (_? '*' _? / _ 'times' _ / _ 'of' _ ) { Operator.Times }
+divide	<Operator>	= (_? '/' _? / _ 'over' _ / _ 'between' _ ) { Operator.Divide }
+
+primary <Expression>
+	= literal
+	/ lookup
+
+lookup <Expression>
+	= v:variable { new Looküp(v, state.Source()) }
+
+literal <Expression>
+	= constant
+	/ number
+	/ string
+
+constant <Expression>
+	= true
+	/ false
+	/ null
+
+true <Expression>
+	= keyword:("true" / "yes" / "ok" / "right") !letter
+		{ new Booleän(true, state.Source(keyword)) }
+
+false <Expression>
+	= keyword:("false" / "lies" / "no" / "wrong") !letter
+		{ new Booleän(false, state.Source(keyword)) }
+
+string <Strïng>
+	= '"' contents:("" [^"]*) '"' { new Strïng(contents, state.Source(contents)) }
+
+number <Number>
+    = digits:([0-9]+ ("." [0-9]+)?) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
+
+null <Null>
+	= keyword:('null' / 'nothing' / 'nowhere' / 'nobody' / 'gone') !letter
+		{ new Null(state.Source(keyword)) }
+
+unary_op <Operator>
+	= not { Operator.Not }
+	/ minus { Operator.Minus }
+
+_           = (whitespace / comment)+
+
+output		= "shout" / "say" / "scream" / "whisper"
+
+whitespace  = [ \t]
+comment
+	= '(' [^)]* ')'
+	/ '{' [^\}]* '}'
+	/ '[' [^\]]* ']'

@@ -1,0 +1,13 @@
+Dr Feelgood is 1
+say Dr Feelgood
+
+JOHNNY B GOODE is 2
+say Johnny B Goode
+
+say "case sensitivity"
+(Proper variables are case-insensitive apart from
+ the first letter of each word, which must be a capital letter.)
+Tom Sawyer is 3
+say Tom Sawyer
+say TOM SAWYER
+say ToM SaWyEr

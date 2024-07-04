@@ -1,0 +1,20 @@
+(expect: pass 1\n)
+say "pass 1" (trailing comment)
+
+(expect: pass 2\n)
+(leading comment) say "pass 2"
+
+(expect: pass 3\n)
+say (inline comment) "pass 3"
+
+(expect: pass 4\n)
+(
+multiline
+comments
+are
+also
+supported
+) say "pass 4"
+
+(expect: pass 5\n)
+(((((((( multiple opening brackets are just part of the comment) say "pass 5"

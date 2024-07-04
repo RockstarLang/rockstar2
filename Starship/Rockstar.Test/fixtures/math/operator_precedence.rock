@@ -1,0 +1,6 @@
+say 1 + 1 * 2 (expect: 3\n)
+say 1 * 2 + 1 (expect: 3\n)
+say 1 / 2 * 3 + 4 (expect: 5.5\n)
+say 5-2*3 (expect: -1\n)
+say 2*3 - 5 (expect: 1\n)
+

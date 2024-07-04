@@ -1,0 +1,9 @@
+say 2 plus 2 (expect: 4\n)
+say 2 with 2 (expect: 4\n)
+say 5 minus 3 (expect: 2\n)
+say 5 without 3 (expect: 2\n)
+say 5 times 5 (expect: 25\n)
+say 5 of 5 (expect: 25\n)
+say 4 over 2 (expect: 2\n)
+
+

@@ -14,7 +14,8 @@ export default [
 	{
 		input: "src/rockstar-editor.mjs",
 		output: {
-			dir: "./dist", format: "iife"
+//			dir: "./dist", format: "iife"
+			dir: "./dist", format: "es"
 		},
 		plugins: [lezer(), nodeResolve()]
 	}

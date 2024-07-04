@@ -1,0 +1,3 @@
+Say "hello world" (expect: hello world\n)
+Say "Hello World" (expect: Hello World\n)
+SAY "HELLO WORLD" (expect: HELLO WORLD\n)

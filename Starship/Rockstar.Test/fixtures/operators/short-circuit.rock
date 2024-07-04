@@ -1,0 +1,4 @@
+say true or 1/0 (expect: true\n)
+say false and 1/0 (expect: false\n)
+
+

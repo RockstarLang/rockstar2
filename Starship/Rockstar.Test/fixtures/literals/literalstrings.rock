@@ -1,0 +1,5 @@
+(expect: What is not denied is permitted!\n)
+Shout "What is not denied is permitted!"
+
+(expect: This ain't not allowed!\n)
+Shout "This ain't not allowed!"

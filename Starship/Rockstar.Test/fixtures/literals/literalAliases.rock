@@ -1,0 +1,19 @@
+say mysterious (expect: mysterious\n)
+
+say null (expect: null\n)
+say nothing (expect: null\n)
+say nowhere (expect: null\n)
+say nobody (expect: null\n)
+say gone (expect: null\n)
+
+say empty (expect: \n)
+
+say true (expect: true\n)
+say right (expect: true\n)
+say yes (expect: true\n)
+say ok (expect: true\n)
+
+say false (expect: false\n)
+say wrong (expect: false\n)
+say no (expect: false\n)
+say lies (expect: false\n)

@@ -1,0 +1,5 @@
+say -123.45 (expect: -123.45\n)
+say -1 (expect: -1\n)
+say 0 (expect: 0\n)
+say 1 (expect: 1\n)
+say 123.45 (expect: 123.45\n)

@@ -1,0 +1,11 @@
+{Title: Chordpro Comments}
+{Artist: theGleep}
+
+{Verse}
+[C]Shout 1 (expect: 1\n)
+[G]Shout 2 (expect: 2\n)
+[D: quiet]Shout 3 (expect: 3\n)
+[G: loud]Shout 4 (expect: 4\n)
+[C]shout 5  (expect: 5\n)
+[C]shout 6 (expect: 6\n)
+[C]shout 7 (expect: 7\n)

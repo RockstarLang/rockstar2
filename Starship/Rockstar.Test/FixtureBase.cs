@@ -1,13 +1,4 @@
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using Pegasus.Common;
-using Rockstar.Engine.Values;
-using Xunit.Abstractions;
-
-namespace Rockstar.Engine.Test;
+namespace Rockstar.Test;
 
 public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	public class TestEnvironment : IAmARockstarEnvironment {
@@ -23,8 +14,8 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		public void WriteLine(string output)
 			=> this.outputStringBuilder.Append(output + '\n');
 
-		public void Write(string output)
-			=> this.outputStringBuilder.Append(output);
+		public void Write(string s)
+			=> this.outputStringBuilder.Append(s);
 	}
 
 	private static string[] ListRockFiles() =>

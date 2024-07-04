@@ -1,0 +1,2 @@
+shout "hello world"
+shout 1 + 2 + 3

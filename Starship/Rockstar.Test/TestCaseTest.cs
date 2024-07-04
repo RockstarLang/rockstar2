@@ -1,5 +1,3 @@
-using Shouldly;
-
 namespace Rockstar.Test;
 
 public class TestCaseTest {

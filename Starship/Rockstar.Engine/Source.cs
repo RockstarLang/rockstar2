@@ -1,4 +1,4 @@
-namespace Rockstar;
+namespace Rockstar.Engine;
 
 public class Source(int line, int column, string lexeme = "") {
 

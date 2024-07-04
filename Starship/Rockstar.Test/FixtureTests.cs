@@ -1,8 +1,3 @@
-using NCrunch.Framework;
-using Pegasus.Common;
-using Shouldly;
-using Xunit.Abstractions;
-
 namespace Rockstar.Test;
 
 public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput) {
@@ -19,7 +14,7 @@ public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput
 		var testProjectDirectory = Path.GetDirectoryName(testProjectFilePath);
 		var originalRockFilePath = Path.Combine(testProjectDirectory, filePath);
 
-		Statements.Progräm program = new();
+		Progräm program = new();
 		var outputLine = 1;
 		try {
 			program = parser.Parse(source);

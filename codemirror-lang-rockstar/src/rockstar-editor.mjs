@@ -1,28 +1,27 @@
-import { EditorState } from "@codemirror/state"
 import { EditorView, basicSetup } from "codemirror"
-// import { ViewUpdate } from "@codemirror/view"
 import { Rockstar } from "./codemirror-lang-rockstar.ts"
 
-export function editorFromTextArea(textarea) {
+export function replaceElementWithEditor(element, RunRockstarProgram) {
 	let view = new EditorView({
-		state: EditorState.create({
-			extensions: [
-				basicSetup,
-				Rockstar(),
-				EditorView.updateListener.of((update) => {
-					if (update.docChanged) textarea.value = update.state.doc.toString();
-				})
-			],
-		})
+		doc: element.innerText,
+		extensions: [basicSetup, Rockstar()],
 	});
-	textarea.parentNode.insertBefore(view.dom, textarea);
-	textarea.style.display = "none";
-	if (textarea.form) textarea.form.addEventListener("submit", () => {
-		textarea.value = view.state.doc.toString()
-	})
+	element.parentNode.insertBefore(view.dom, element);
+	let button = document.createElement("button");
+	button.innerText = "Run";
+	let output = document.createElement("pre");
+	element.parentNode.insertBefore(button, element);
+	element.parentNode.insertBefore(output, element);
+	button.onclick = () => {
+		let source = view.state.doc.toString();
+		try {
+			let result = RunRockstarProgram(source);
+			console.log(result);
+			output.innerText = result;
+		} catch (e) {
+			output.innerText = e;
+		}
+	};
+	element.style.display = "none";
 	return view;
 }
-let editor = new EditorView({
-	extensions: [basicSetup, Rockstar()],
-	parent: document.body
-})

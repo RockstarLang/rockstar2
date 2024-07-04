@@ -16,7 +16,7 @@ export const RockstarLanguage = LRLanguage.define({
         Identifier: t.variableName,
         Boolean: t.bool,
         String: t.string,
-        LineComment: t.lineComment,
+        Comment: t.comment,
         "( )": t.paren
       })
     ]

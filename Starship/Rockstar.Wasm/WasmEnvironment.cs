@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Rockstar;
 using Rockstar.Engine;
 using Rockstar.Engine.Values;
 
-public class WasmEnvironment : IAmARockstarEnvironment {
+namespace Rockstar.Wasm;
 
-	private StringBuilder output = new StringBuilder();
+public class WasmEnvironment : IAmARockstarEnvironment {
+	private readonly StringBuilder output = new();
 	public string Output => output.ToString();
 
-	private Dictionary<string, Value> variables = new Dictionary<string, Value>();
+	private readonly Dictionary<string, Value> variables = new();
 	public Value GetVariable(string name)
 		=> variables.ContainsKey(name) ? variables[name] : new Null(Source.None);
 
@@ -21,9 +21,7 @@ public class WasmEnvironment : IAmARockstarEnvironment {
 	public void SetVariable(string name, Value value)
 		=> variables[name] = value;
 
-	public void Write(string output)
-		=> this.output.Append(output);
+	public void Write(string s) => this.output.Append(s);
 
-	public void WriteLine(string output)
-		=> this.output.AppendLine(output);
+	public void WriteLine(string s) => this.output.AppendLine(s);
 }

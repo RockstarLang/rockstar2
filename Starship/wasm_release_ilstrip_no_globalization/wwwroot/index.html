@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rockstar.Wasm</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<textarea id="source">shout "hello world"
+shout 1 + 2 + 3
+shout "foo" plus "bar"</textarea>
+	<button id="run">Run</button>
+	<pre id="output"></pre>
+	<script type="module">
+		import { RunRockstarProgram } from './main.js';
+		const textarea = document.getElementById('source');
+		document.getElementById("run").addEventListener('click', () => {
+			let source = document.getElementById('source').value;
+			let result = RunRockstarProgram(source);
+			document.getElementById('output').textContent = result;
+		});
+	</script>
+</body>
+</html>

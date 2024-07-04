@@ -1,6 +1,6 @@
 @top Program { expression* }
 
-@skip { space | LineComment }
+@skip { space | Comment }
 
 expression {
   Identifier |
@@ -16,7 +16,7 @@ expression {
 
   Boolean { "#t" | "#f" }
 
-  LineComment { ";" ![\n]* }
+  Comment { "(" ![)]* ")" }
 
   space { $[ \t\n\r]+ }
 

@@ -1,10 +1,11 @@
 using System;
 using System.Runtime.InteropServices.JavaScript;
 using Rockstar.Engine;
+using Rockstar.Wasm;
 
 Console.WriteLine("Hello, Browser!");
 public partial class RockstarRunner {
-	public static Parser parser = new();
+	private static readonly Parser parser = new();
 	[JSExport]
 	internal static string Run(string source) {
 		var environment = new WasmEnvironment();

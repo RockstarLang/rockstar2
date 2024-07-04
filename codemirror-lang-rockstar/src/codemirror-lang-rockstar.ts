@@ -1,6 +1,6 @@
 import {parser} from "./rockstar.grammar"
 import {LRLanguage, LanguageSupport, indentNodeProp, foldNodeProp, foldInside, delimitedIndent} from "@codemirror/language"
-import {styleTags, tags as t} from "@lezer/highlight"
+// import {styleTags, tags as t} from "@lezer/highlight"
 import { completeFromList } from "@codemirror/autocomplete"
 
 export const RockstarLanguage = LRLanguage.define({
@@ -12,13 +12,13 @@ export const RockstarLanguage = LRLanguage.define({
       foldNodeProp.add({
         Application: foldInside
       }),
-      styleTags({
-        Identifier: t.variableName,
-        Boolean: t.bool,
-        String: t.string,
-        Comment: t.comment,
-        "( )": t.paren
-      })
+    //   styleTags({
+    //     Identifier: t.variableName,
+    //     Boolean: t.bool,
+    //     String: t.string,
+    //     Comment: t.comment,
+    //     "( )": t.paren
+    //   })
     ]
   }),
   languageData: {

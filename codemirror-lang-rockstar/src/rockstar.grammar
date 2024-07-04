@@ -1,3 +1,5 @@
+@external propSource highlighting from "./highlight.js"
+
 @top Program { expression* }
 
 @skip { space | Comment }

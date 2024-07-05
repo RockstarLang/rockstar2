@@ -28,7 +28,7 @@ statement <Statement>
 assign_stmt <Statement>
 	= 'let' _ v:variable _ 'be' _ e:expression
 		{ new Assign(v, e, state.Source()) }
-	/ v:variable _ 'says' _ s:("" .*) EOL
+	/ v:variable _ 'says' _ s:("" [^\r\n]*) &(EOF / EOL)
 		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
 //	/ v:variable _ "was a lovestruck ladykiller"
 //		{ new Assign(v, new Number(100), state.Source()) }
@@ -168,6 +168,7 @@ constant <Expression>
 	= true
 	/ false
 	/ null
+	/ mysterious
 
 true <Expression>
 	= keyword:("true" / "yes" / "ok" / "right") !letter
@@ -186,6 +187,10 @@ number <Number>
 null <Null>
 	= keyword:('null' / 'nothing' / 'nowhere' / 'nobody' / 'gone') !letter
 		{ new Null(state.Source(keyword)) }
+
+mysterious <Mysterious>
+	= 'mysterious' !letter
+		{ Mysterious.Instance }
 
 unary_op <Operator>
 	= not { Operator.Not }

@@ -4,7 +4,7 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine;
 
-public class Interpreter(IAmARockstarEnvironment env) {
+public class Interpreter(RockstarEnvironment env) {
 	private class Result {
 		public static readonly Result Ok = new();
 		public static readonly Result Unknown = new();

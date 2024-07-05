@@ -2,7 +2,7 @@ using Rockstar.Engine;
 namespace Rockstar;
 
 public static class Program {
-	private static readonly IAmARockstarEnvironment env = new ConsoleEnvironment();
+	private static readonly RockstarEnvironment env = new ConsoleEnvironment();
 	private static readonly Parser parser = new();
 	public static void Main(string[] args) {
 		switch (args.Length) {

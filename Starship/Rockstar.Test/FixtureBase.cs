@@ -1,22 +1,19 @@
 namespace Rockstar.Test;
 
+public class TestEnvironment : RockstarEnvironment {
+
+	private readonly StringBuilder outputStringBuilder = new();
+	public string Output => outputStringBuilder.ToString();
+	public override string? ReadInput() => null;
+
+	public override void WriteLine(string output)
+		=> this.outputStringBuilder.Append(output + '\n');
+
+	public override void Write(string s)
+		=> this.outputStringBuilder.Append(s);
+}
+
 public abstract class FixtureBase(ITestOutputHelper testOutput) {
-	public class TestEnvironment : IAmARockstarEnvironment {
-
-		private readonly Dictionary<string, Value> variables = new();
-		public void SetVariable(string name, Value value) => variables[name] = value;
-		public Value GetVariable(string name) => variables[name];
-
-		private readonly StringBuilder outputStringBuilder = new();
-		public string Output => outputStringBuilder.ToString();
-		public string? ReadInput() => null;
-
-		public void WriteLine(string output)
-			=> this.outputStringBuilder.Append(output + '\n');
-
-		public void Write(string s)
-			=> this.outputStringBuilder.Append(s);
-	}
 
 	private static string[] ListRockFiles() =>
 		Directory.GetFiles("fixtures", "*.rock", SearchOption.AllDirectories);

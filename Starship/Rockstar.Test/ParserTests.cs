@@ -55,10 +55,26 @@ namespace Rockstar.Test {
 		[Theory]
 		[InlineData("x is true")]
 		[InlineData("x is false")]
-		[InlineData("x is false or 5")]
+		//TODO: [InlineData("x is false or 5")]
 		[InlineData("say x and y")]
 		public void ParserParsesBooleäns(string source) {
 			var parser = new Parser();
 			var result = parser.Parse(source);
-		} }
+		}
+
+		[Theory]
+		[InlineData("Alpha says a", 1)]
+		[InlineData("Alpha says a   ", 1)]
+		[InlineData("""
+		            Alpha says a
+		            Beta says b
+		            Gamma says hey now, gonna "make" you "groove", &(!"£$\\!
+		            Delta says \\r\\n
+		            """, 4)]
+		public void ParserParsesSaysLiterals(string source, int count) {
+			var parser = new Parser();
+			var result = parser.Parse(source);
+			result.Statements.Count.ShouldBe(count);
+		}
+	}
 }

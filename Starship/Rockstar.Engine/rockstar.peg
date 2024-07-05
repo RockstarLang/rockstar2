@@ -4,6 +4,7 @@
 @using Rockstar.Engine.Statements
 @using Rockstar.Engine.Expressions
 @using Rockstar.Engine.Values;
+@trace true
 
 @ignorecase true
 
@@ -20,6 +21,8 @@ __ = _? EOS*
 EOS	= _? EOL _?
 EOL = '\r'? '\n'
 EOF	= !.
+//    / unexpected:. #error{ "Unexpected character '" + unexpected + "' at line " + state.Line + ", col " + state.Column }
+
 
 statement <Statement>
 	= output_stmt
@@ -43,15 +46,14 @@ output_stmt  <Statement>
 	= output _ e:expression { new Output(e, state.Source()) }
 
 variable <Variable>
-	= name:variable_name { new Variable(name, state.Source(name)) }
+	= name:variable_name
 
-variable_name
-	= common_variable
-	/ proper_variable
-	/ simple_variable
+variable_name <Variable>
+	= name:common_variable { new CommonVariable(name, state.Source(name)) }
+	/ name:proper_variable { new ProperVariable(name, state.Source(name)) }
+	/ name:simple_variable { new SimpleVariable(name, state.Source(name)) }
 
-proper_variable
-	// e.g. Big Bad Benny
+proper_variable	// e.g. Big Bad Benny
 	= proper_noun (_ proper_noun)*
 
 proper_noun
@@ -61,7 +63,7 @@ common_variable
 	= common_prefix _ simple_variable
 
 common_prefix
-	= 'a' / 'an' / 'the' / 'my' / 'your' / 'our'
+	= 'an' / 'a' / 'the' / 'my' / 'your' / 'our'
 
 simple_variable
 	= ("" letter+)

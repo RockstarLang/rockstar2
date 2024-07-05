@@ -37,8 +37,8 @@ public class Interpreter(RockstarEnvironment env) {
 		Binary binary => binary.Resolve(Eval),
 
 		// not sure what the difference is here.... ?
-		Looküp lookup => env.GetVariable(lookup.Variable.Name),
-		Variable v => env.GetVariable(v.Name),
+		Looküp lookup => env.GetVariable(lookup.Variable),
+		Variable v => env.GetVariable(v),
 		Unary u => u switch {
 			{ Op: Operator.Minus, Expr: Number n } => n.Negate(),
 			{ Op: Operator.Not } => Booleän.Not(Eval(u.Expr)),

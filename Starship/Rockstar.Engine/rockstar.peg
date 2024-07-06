@@ -1,6 +1,7 @@
 @namespace Rockstar.Engine
 @classname Parser
 @using System.Globalization
+@using System.Text.RegularExpressions
 @using Rockstar.Engine.Statements
 @using Rockstar.Engine.Expressions
 @using Rockstar.Engine.Values;
@@ -8,20 +9,33 @@
 
 @ignorecase true
 
-program <Progräm>
-	= __ EOF
-		{ new Progräm() }
-	/ __ stmt:statement __ EOF
-		{ new Progräm(stmt) }
-	/ __ head:statement EOS+ tail:program
-		{ tail.Insert(head) }
-	/ #error{ "Program error at line " + state.Line + ", col " + state.Column }
+// Ok, so a program is:
+// Whitespace followed by EOF. Empty program.
+// A single statement followed by an empty program
 
-__ = _? EOS*
-EOS	= _? EOL _?
+program <Progräm>
+	= ("" _ / EOL)+ p:program
+		{ p }
+	/ head:statement EOS+ tail:program
+		{ tail.Insert(head) }
+	/ head:statement tail:program
+		{ tail.Insert(head) }
+	/ ("" _ / EOL)* EOF
+		{ new Progräm() }
+
 EOL = '\r'? '\n'
+EOS	= _? EOL _?
 EOF	= !.
-//    / unexpected:. #error{ "Unexpected character '" + unexpected + "' at line " + state.Line + ", col " + state.Column }
+	/ unexpected:. #error{ "Unexpected character '" + Regex.Escape(unexpected) + "' at line " + state.Line + ", col " + (state.Column-1) }
+
+_	= (whitespace / comment)+
+
+whitespace = [ \t]
+
+comment
+	= '(' [^)]* ')'
+	/ '{' [^\}]* '}'
+	/ '[' [^\]]* ']'
 
 
 statement <Statement>
@@ -31,7 +45,7 @@ statement <Statement>
 assign_stmt <Statement>
 	= 'let' _ v:variable _ 'be' _ e:expression
 		{ new Assign(v, e, state.Source()) }
-	/ v:variable _ 'says' _ s:("" [^\r\n]*) &(EOF / EOL)
+	/ v:variable _ 'says' _ s:("" [^\r\n]*) 
 		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
 //	/ v:variable _ "was a lovestruck ladykiller"
 //		{ new Assign(v, new Number(100), state.Source()) }
@@ -198,12 +212,4 @@ unary_op <Operator>
 	= not { Operator.Not }
 	/ minus { Operator.Minus }
 
-_           = (whitespace / comment)+
-
 output		= "shout" / "say" / "scream" / "whisper"
-
-whitespace  = [ \t]
-comment
-	= '(' [^)]* ')'
-	/ '{' [^\}]* '}'
-	/ '[' [^\]]* ']'

@@ -53,9 +53,10 @@ assign_stmt <Statement>
 says = ('says' / 'say' / 'said')
 
 poetic_literal <Number>
-	= head:poetic_digit _ tail:poetic_digits
-		{ new Number(head + tail) }
-	/ d:poetic_digit { new Number(d) }
+	= whole_part:poetic_digits _? '.' _? fractional_part:poetic_digits
+		{ new Number (whole_part + "." + fractional_part) }
+	/ digits:poetic_digits
+		{ new Number(digits) }
 
 poetic_digits <string>
 	= head:poetic_digit _ tail:poetic_digits

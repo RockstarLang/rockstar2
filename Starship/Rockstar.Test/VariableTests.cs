@@ -4,7 +4,6 @@ using Rockstar.Engine.Expressions;
 namespace Rockstar.Test;
 
 public class LiteralTests {
-
 	[Theory]
 	[InlineData("the sky is crying", 6)]
 	[InlineData("Tommy was a lovestruck ladykiller", 100)]
@@ -12,10 +11,10 @@ public class LiteralTests {
 	[InlineData("Tommy was a aa", 12)]
 	[InlineData("Tommy was a aa aaa", 123)]
 	[InlineData("Tommy was a aa aaa aaaa aaaaa", 12345)]
+	[InlineData("Tommy was a. aa aaa aaaa", 1.234)]
+	[InlineData("Tommy was a aa. aaa aaaa", 12.34)]
 	public void PoeticLiteralAssignsCorrectValue(string source, decimal value) {
-		var parser = new Parser() {
-			Tracer = DiagnosticsTracer.Instance
-		};
+		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
 		var assign = parser.Parse(source).Statements[0] as Assign;
 		((Number) assign.Expr).Value.ShouldBe(value);
 	}

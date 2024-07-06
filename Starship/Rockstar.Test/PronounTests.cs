@@ -1,3 +1,4 @@
+using Pegasus.Common.Tracing;
 using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Test;
@@ -11,7 +12,6 @@ public class PronounTests {
 		var result = e.GetVariable(pronoun) as Number;
 		result.ShouldBe(value);
 	}
-
 
 	[Fact]
 	public void AssigningProperVariableSetsPronoun()
@@ -56,4 +56,20 @@ public class PronounTests {
 	public void AssignPronounAfterAssigningCommonVariableUpdatesVariable()
 		=> AssignPronounAfterAssigningVariableUpdatesVariable(new CommonVariable("my humps"), new Strïng("my lady humps"));
 
+	[Fact]
+	public void PronounAssignmentWorks() {
+		var source = """
+		             my heart is true
+		             say my heart
+		             it is false
+		             """; /*
+		             
+		             say my heart
+		             say it
+		             """; */
+		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
+		var result = parser.Parse(source);
+		result.Statements.Count.ShouldBe(3);
+		Console.WriteLine(result.ToString());
+	}
 }

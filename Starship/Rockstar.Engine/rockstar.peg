@@ -77,7 +77,9 @@ variable <Variable>
 	/ n:simple_variable { new SimpleVariable(n, state.Source(n)) }
 
 pronoun
-	= p:( 'they' / 'them' )
+	= 'they' / 'them'
+    / 'she' / 'him' / 'her' / 'hir' / 'zie' / 'zir' / 'xem' / 'ver'
+    / 'ze' / 've' / 'xe' / 'it' / 'he'
 
 proper_variable	// e.g. Big Bad Benny
 	= proper_noun (_ proper_noun)*
@@ -85,7 +87,7 @@ proper_variable	// e.g. Big Bad Benny
 proper_noun
 	= !keyword uppercase_letter letter*
 
-keyword = 'is'
+keyword = is / common_prefix / pronoun / 
 
 common_variable
 	= common_prefix _ simple_variable
@@ -198,32 +200,23 @@ literal <Expression>
 	/ string
 
 constant <Expression>
-	= true
-	/ false
-	/ null
-	/ mysterious
+	= t:true { new Booleän(true, state.Source(t)) }
+	/ f:false { new Booleän(true, state.Source(f)) }
+	/ n:null { new Null(state.Source(n)) }
+	/ m:'mysterious' { Mysterious.Instance }
 
-true <Expression>
-	= keyword:("true" / "yes" / "ok" / "right") !letter
-		{ new Booleän(true, state.Source(keyword)) }
-
-false <Expression>
-	= keyword:("false" / "lies" / "no" / "wrong") !letter
-		{ new Booleän(false, state.Source(keyword)) }
+true
+	= "true" / "yes" / "ok" / "right"
+false
+	= "false" / "lies" / "no" / "wrong" 
+null
+	= 'null' / 'nothing' / 'nowhere' / 'nobody' / 'gone'
 
 string <Strïng>
 	= '"' contents:("" [^"]*) '"' { new Strïng(contents, state.Source(contents)) }
 
 number <Number>
     = digits:([0-9]+ ("." [0-9]+)?) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
-
-null <Null>
-	= keyword:('null' / 'nothing' / 'nowhere' / 'nobody' / 'gone') !letter
-		{ new Null(state.Source(keyword)) }
-
-mysterious <Mysterious>
-	= 'mysterious' !letter
-		{ Mysterious.Instance }
 
 unary_op <Operator>
 	= not { Operator.Not }

@@ -1,4 +1,4 @@
 
 
 (this file tests that parsers can handle BLANK leading lines)
-say "pass" (expect: pass\n)
+say "pass" (prints: pass)

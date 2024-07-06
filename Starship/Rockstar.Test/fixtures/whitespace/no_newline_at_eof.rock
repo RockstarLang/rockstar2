@@ -1,2 +1,2 @@
 (test whether parser can cope with a file that does not end with a new line)
-say "pass" (expect: pass\n)
+say "pass" (prints: pass)

@@ -1,13 +1,13 @@
-(expect: pass 1\n)
+(prints: pass 1)
 say "pass 1" (trailing comment)
 
-(expect: pass 2\n)
+(prints: pass 2)
 (leading comment) say "pass 2"
 
-(expect: pass 3\n)
+(prints: pass 3)
 say (inline comment) "pass 3"
 
-(expect: pass 4\n)
+(prints: pass 4)
 (
 multiline
 comments
@@ -16,5 +16,5 @@ also
 supported
 ) say "pass 4"
 
-(expect: pass 5\n)
+(prints: pass 5)
 (((((((( multiple opening brackets are just part of the comment) say "pass 5"

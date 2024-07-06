@@ -82,7 +82,7 @@ pronoun
     / 'ze' / 've' / 'xe' / 'it' / 'he'
 
 proper_variable	// e.g. Big Bad Benny
-	= proper_noun (_ proper_noun)*
+	= proper_noun (_ proper_noun)+
 
 proper_noun
 	= !keyword uppercase_letter letter*
@@ -206,11 +206,11 @@ constant <Expression>
 	/ m:'mysterious' { Mysterious.Instance }
 
 true
-	= "true" / "yes" / "ok" / "right"
+	= ("true" / "yes" / "ok" / "right") !letter
 false
-	= "false" / "lies" / "no" / "wrong" 
+	= ("false" / "lies" / "no" / "wrong") !letter 
 null
-	= 'null' / 'nothing' / 'nowhere' / 'nobody' / 'gone'
+	= ('null' / 'nothing' / 'nowhere' / 'nobody' / 'gone') !letter
 
 string <Strïng>
 	= '"' contents:("" [^"]*) '"' { new Strïng(contents, state.Source(contents)) }

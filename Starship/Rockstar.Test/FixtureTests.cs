@@ -13,7 +13,7 @@ public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput
 		var testProjectFilePath = NCrunchEnvironment.GetOriginalProjectPath();
 		var testProjectDirectory = Path.GetDirectoryName(testProjectFilePath);
 		var originalRockFilePath = Path.Combine(testProjectDirectory, filePath);
-
+		
 		Progräm program = new();
 		var outputLine = 1;
 		try {

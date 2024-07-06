@@ -15,7 +15,7 @@ public class TestEnvironment : RockstarEnvironment {
 
 public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
-	private static string[] excludes = ["arrays", "conditionals", "control-flow", "examples"];
+	private static string[] excludes = []; // ["arrays", "conditionals", "control-flow", "examples"];
 	private static IEnumerable<string> ListRockFiles() =>
 		Directory.GetFiles("fixtures", "*.rock", SearchOption.AllDirectories)
 			.Where(f => !excludes.Any(f.Contains));

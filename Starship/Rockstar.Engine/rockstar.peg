@@ -58,14 +58,17 @@ poetic_literal <Number>
 	/ digits:poetic_digits
 		{ new Number(digits) }
 
+PDS = ("" _ / [0-9\',;:?!+_/] )
+
 poetic_digits <string>
-	= head:poetic_digit _ tail:poetic_digits
+	= PDS* head:poetic_digit PDS+ tail:poetic_digits PDS* 
 		{ head + tail }
-	/ d:poetic_digit { d }
+	/ d:poetic_digit
+		{ d }
 
 poetic_digit <string>
 	= word:("" [A-Za-z\-']+)
-		{ (word.Length % 10).ToString() }
+		{ (Regex.Replace(word, "'+", "").Length % 10).ToString() }
 
 output_stmt  <Statement>
 	= output _ e:expression { new Output(e, state.Source()) }
@@ -77,9 +80,9 @@ variable <Variable>
 	/ n:simple_variable { new SimpleVariable(n, state.Source(n)) }
 
 pronoun
-	= 'they' / 'them'
+	= ('they' / 'them'
     / 'she' / 'him' / 'her' / 'hir' / 'zie' / 'zir' / 'xem' / 'ver'
-    / 'ze' / 've' / 'xe' / 'it' / 'he'
+    / 'ze' / 've' / 'xe' / 'it' / 'he') !letter
 
 proper_variable	// e.g. Big Bad Benny
 	= proper_noun (_ proper_noun)+
@@ -87,13 +90,13 @@ proper_variable	// e.g. Big Bad Benny
 proper_noun
 	= !keyword uppercase_letter letter*
 
-keyword = is / common_prefix / pronoun 
+keyword = (is / common_prefix / pronoun / 'let') !letter
 
 common_variable
 	= common_prefix _ simple_variable
 
 common_prefix
-	= 'an' / 'a' / 'the' / 'my' / 'your' / 'our'
+	= ('an' / 'a' / 'the' / 'my' / 'your' / 'our') !letter
 
 simple_variable
 	= ("" letter+)
@@ -217,6 +220,7 @@ string <Strïng>
 
 number <Number>
     = digits:([0-9]+ ("." [0-9]+)?) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
+	/ digits:("." [0-9]+) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
 
 unary_op <Operator>
 	= not { Operator.Not }

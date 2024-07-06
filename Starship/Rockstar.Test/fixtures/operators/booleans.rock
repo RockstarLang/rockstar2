@@ -1,4 +1,3 @@
-say "foo" and "bar"
 X is true
 Y is false
 say X           (true)
@@ -7,3 +6,4 @@ say X or Y      (true)
 say not X       (false)
 say not X and not Y (false)
 say not X or not Y (true)
+say not X and not Y and not X or not Y (true)

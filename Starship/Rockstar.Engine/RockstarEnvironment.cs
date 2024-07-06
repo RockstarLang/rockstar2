@@ -15,17 +15,16 @@ public abstract class RockstarEnvironment {
 		=> pronounTarget ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')");
 
 	public void SetVariable(Variable variable, Value value) {
-		pronounTarget = variable;
-		variables[variable.Key] = value;
+		if (variable is Pronoun pronoun) {
+			variables[AssertTarget(pronoun).Key] = value;
+		} else {
+			pronounTarget = variable;
+			variables[variable.Key] = value;
+		}
 	}
 
-	public void SetVariable(Pronoun pronoun, Value value)
-		=> SetVariable(AssertTarget(pronoun), value);
-
-	public Value GetVariable(Pronoun pronoun)
-		=> GetVariable(AssertTarget(pronoun));
-
-	public Value GetVariable(Variable variable) =>
-		variables.TryGetValue(variable.Key, out var value) ? value : throw new($"Unknown variable '{variable.Name}'");
-		
+	public Value GetVariable(Variable variable) {
+		var key = (variable is Pronoun pronoun ? AssertTarget(pronoun).Key : variable.Key);
+		return variables.TryGetValue(key, out var value) ? value : throw new($"Unknown variable '{variable.Name}'");
+	}
 }

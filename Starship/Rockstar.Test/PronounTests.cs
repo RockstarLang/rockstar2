@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Pegasus.Common.Tracing;
 using Rockstar.Engine.Expressions;
 
@@ -28,19 +29,19 @@ public class PronounTests {
 	[Fact]
 	public void LookupPronounWithoutAssigningVariableThrowsException() {
 		var e = new TestEnvironment();
-		Should.Throw<Exception>(() => e.GetVariable(new("him")));
+		Should.Throw<Exception>(() => e.GetVariable(new Pronoun("him")));
 	}
 
 	[Fact]
 	public void AssignPronounWithoutAssigningVariableThrowsException() {
 		var e = new TestEnvironment();
-		Should.Throw<Exception>(() => e.SetVariable(new("him"), new Number(123)));
+		Should.Throw<Exception>(() => e.SetVariable(new Pronoun("him"), new Number(123)));
 	}
 
 	private void AssignPronounAfterAssigningVariableUpdatesVariable(Variable variable, Value value) {
 		var e = new TestEnvironment();
 		e.SetVariable(variable, new Null());
-		e.SetVariable(new(), value);
+		e.SetVariable(new Pronoun(), value);
 		e.GetVariable(variable).ShouldBe(value);
 	}
 
@@ -57,19 +58,43 @@ public class PronounTests {
 		=> AssignPronounAfterAssigningVariableUpdatesVariable(new CommonVariable("my humps"), new Strïng("my lady humps"));
 
 	[Fact]
+	public void PronounAssignmentParsesCorrectly() {
+		var source = "it is false";
+		var result = new Parser().Parse(source);
+		var value = ((Assign) result.Statements[0]).Expr as Booleän;
+		value.Truthy.ShouldBe(false);
+	}
+
+	[Fact]
 	public void PronounAssignmentWorks() {
 		var source = """
 		             my heart is true
 		             say my heart
 		             it is false
-		             """; /*
 		             
 		             say my heart
 		             say it
-		             """; */
+		             """;
 		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
 		var result = parser.Parse(source);
-		result.Statements.Count.ShouldBe(3);
+		result.Statements.Count.ShouldBe(5);
+		var e = new TestEnvironment();
+		var i = new Interpreter(e);
+		i.Run(result);
+		e.Output.ShouldBe("""
+		                  true
+		                  false
+		                  false
+		                  
+		                  """);
+	}
+
+	[Fact]
+	public void Whatever() {
+		var source = "put 1 into Epic Music";
+		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
+		var result = parser.Parse(source);
+		result.Statements.Count.ShouldBe(1);
 		Console.WriteLine(result.ToString());
 	}
 }

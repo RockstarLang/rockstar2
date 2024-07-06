@@ -38,9 +38,9 @@ statement <Statement>
 	/ assign_stmt
 
 assign_stmt <Statement>
-	= 'let' _ v:variable _ 'be' _ e:expression
+	= 'put' _ e:expression _ 'into' _ v:variable
 		{ new Assign(v, e, state.Source()) }
-	/ 'put' _ e:expression _ 'into' _ v:variable 
+	/ 'let' _ v:variable _ 'be' _ e:expression
 		{ new Assign(v, e, state.Source()) }
 	/ v:variable _ says _ s:("" [^\r\n]*) 
 		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
@@ -87,7 +87,7 @@ proper_variable	// e.g. Big Bad Benny
 proper_noun
 	= !keyword uppercase_letter letter*
 
-keyword = is / common_prefix / pronoun / 
+keyword = is / common_prefix / pronoun 
 
 common_variable
 	= common_prefix _ simple_variable
@@ -201,7 +201,7 @@ literal <Expression>
 
 constant <Expression>
 	= t:true { new Booleän(true, state.Source(t)) }
-	/ f:false { new Booleän(true, state.Source(f)) }
+	/ f:false { new Booleän(false, state.Source(f)) }
 	/ n:null { new Null(state.Source(n)) }
 	/ m:'mysterious' { Mysterious.Instance }
 

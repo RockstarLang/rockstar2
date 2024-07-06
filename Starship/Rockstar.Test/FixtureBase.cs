@@ -7,7 +7,7 @@ public class TestEnvironment : RockstarEnvironment {
 	public override string? ReadInput() => null;
 
 	public override void WriteLine(string output)
-		=> this.outputStringBuilder.Append(output + '\n');
+		=> this.outputStringBuilder.Append(output + Environment.NewLine);
 
 	public override void Write(string s)
 		=> this.outputStringBuilder.Append(s);
@@ -30,7 +30,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	public static string ExtractExpects(string filePathOrSourceCode) {
 		if (File.Exists(filePathOrSourceCode + ".out")) {
-			return File.ReadAllText(filePathOrSourceCode + ".out");
+			return File.ReadAllText(filePathOrSourceCode + ".out").ReplaceLineEndings();
 		}
 		var source = (File.Exists(filePathOrSourceCode)
 			? File.ReadAllText(filePathOrSourceCode)
@@ -45,12 +45,12 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 					var j = i;
 					while (j < limit && source[j] != ')') j++;
 					var expected = Regex.Unescape(source.Substring(i, j - i));
-					if (!expected.EndsWith('\n')) expected += '\n';
+					if (!expected.EndsWith(Environment.NewLine)) expected += Environment.NewLine;
 					output.Add(expected);
 					i = j;
 					break;
 			}
 		}
-		return String.Join("", output);
+		return String.Join("", output).ReplaceLineEndings();
 	}
 }

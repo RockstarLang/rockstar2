@@ -22,7 +22,7 @@ public class Interpreter(RockstarEnvironment env) {
 	};
 
 	private Result Assign(Assign assign) {
-		env.SetVariable(assign.Name, Eval(assign.Expr));
+		env.SetVariable(assign.Variable, Eval(assign.Expr));
 		return Result.Ok;
 	}
 

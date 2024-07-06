@@ -9,10 +9,6 @@
 
 @ignorecase true
 
-// Ok, so a program is:
-// Whitespace followed by EOF. Empty program.
-// A single statement followed by an empty program
-
 program <Progräm>
 	= ("" _ / EOL)+ p:program
 		{ p }
@@ -37,7 +33,6 @@ comment
 	/ '{' [^\}]* '}'
 	/ '[' [^\]]* ']'
 
-
 statement <Statement>
 	= output_stmt
 	/ assign_stmt
@@ -45,33 +40,51 @@ statement <Statement>
 assign_stmt <Statement>
 	= 'let' _ v:variable _ 'be' _ e:expression
 		{ new Assign(v, e, state.Source()) }
-	/ v:variable _ 'says' _ s:("" [^\r\n]*) 
+	/ 'put' _ e:expression _ 'into' _ v:variable 
+		{ new Assign(v, e, state.Source()) }
+	/ v:variable _ says _ s:("" [^\r\n]*) 
 		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
-//	/ v:variable _ "was a lovestruck ladykiller"
-//		{ new Assign(v, new Number(100), state.Source()) }
-	/ v:variable _is _ l:literal
+	/ v:variable _is _ l:(literal / poetic_literal)
 		{ new Assign(v, l, state.Source()) }
 
 	//TODO: reinstate for 2.0
 	// v:variable _is _ e:expression { new Assign(v, e, state.Source()) }
 
+says = ('says' / 'say' / 'said')
+
+poetic_literal <Number>
+	= head:poetic_digit _ tail:poetic_digits
+		{ new Number(head + tail) }
+	/ d:poetic_digit { new Number(d) }
+
+poetic_digits <string>
+	= head:poetic_digit _ tail:poetic_digits
+		{ head + tail }
+	/ d:poetic_digit { d }
+
+poetic_digit <string>
+	= word:("" [A-Za-z\-']+)
+		{ (word.Length % 10).ToString() }
 
 output_stmt  <Statement>
 	= output _ e:expression { new Output(e, state.Source()) }
 
 variable <Variable>
-	= name:variable_name
+	= p:pronoun { new Pronoun(p, state.Source(p)) }
+	/ n:common_variable { new CommonVariable(n, state.Source(n)) }
+	/ n:proper_variable { new ProperVariable(n, state.Source(n)) }
+	/ n:simple_variable { new SimpleVariable(n, state.Source(n)) }
 
-variable_name <Variable>
-	= name:common_variable { new CommonVariable(name, state.Source(name)) }
-	/ name:proper_variable { new ProperVariable(name, state.Source(name)) }
-	/ name:simple_variable { new SimpleVariable(name, state.Source(name)) }
+pronoun
+	= p:( 'they' / 'them' )
 
 proper_variable	// e.g. Big Bad Benny
 	= proper_noun (_ proper_noun)*
 
 proper_noun
-	= uppercase_letter letter*
+	= !keyword uppercase_letter letter*
+
+keyword = 'is'
 
 common_variable
 	= common_prefix _ simple_variable
@@ -145,11 +158,13 @@ _eq
 	/ _is
 
 _is <Operator>
-	= ("'s" / "'re" / _ ('=' / 'is' / 'was' / 'are' / 'were')) !letter
+	= ("'s" / "'re" / _ ('=' / is)) !letter
 		{ Operator.Equals }
 
+is = 'is' / 'was' / 'are' / 'were'
+
 _is_not <Operator>
-	= _ ('!=' / "'s" _ "not" / 'is' _ 'not' / "isnt" / "isn't" / 'aint' / "ain't" / "wasn't" / "wasnt" / "aren't" / "arent" / "weren't" / "werent") !letter
+	= _ ('!=' / _is _ "not" / "isnt" / "isn't" / 'aint' / "ain't" / "wasn't" / "wasnt" / "aren't" / "arent" / "weren't" / "werent") !letter
 		{ Operator.NotEquals }
 
 math <Expression>
@@ -173,7 +188,8 @@ primary <Expression>
 	/ lookup
 
 lookup <Expression>
-	= v:variable { new Looküp(v, state.Source()) }
+	= v:variable
+		{ new Looküp(v, state.Source()) }
 
 literal <Expression>
 	= constant

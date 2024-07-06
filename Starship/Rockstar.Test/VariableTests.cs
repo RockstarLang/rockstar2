@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Pegasus.Common.Tracing;
 using Rockstar.Engine.Expressions;
 
@@ -9,6 +8,10 @@ public class LiteralTests {
 	[Theory]
 	[InlineData("the sky is crying", 6)]
 	[InlineData("Tommy was a lovestruck ladykiller", 100)]
+	[InlineData("Tommy was a", 1)]
+	[InlineData("Tommy was a aa", 12)]
+	[InlineData("Tommy was a aa aaa", 123)]
+	[InlineData("Tommy was a aa aaa aaaa aaaaa", 12345)]
 	public void PoeticLiteralAssignsCorrectValue(string source, decimal value) {
 		var parser = new Parser() {
 			Tracer = DiagnosticsTracer.Instance
@@ -51,5 +54,44 @@ public class VariableTests {
 		var a = new ProperVariable(name1);
 		var b = new ProperVariable(name2);
 		a.Key.ShouldBe(b.Key);
+	}
+
+	[Theory]
+	[InlineData("Variable Is 5")]
+	[InlineData("""
+	            variable is 1
+	            say variable
+	            """)]
+	[InlineData("""
+	            variable is 1
+	            say variable
+	            variable iS 3
+	            say variable
+	            VARIABLE is 4
+	            say variable
+	            """)]
+	[InlineData("""
+	            variable is 1
+	            say variable
+	            variable iS 3
+	            say variable
+	            VARIABLE IS 4
+	            say variable
+	            """)]
+	[InlineData("""
+	            variable is 1
+	            say variable
+	            Variable Is 2
+	            say variable
+	            variable iS 3
+	            say variable
+	            VARIABLE IS 4
+	            say variable
+	            """)]
+	public void LiteralAssignmentsAreCaseInsensitive(string source) {
+		var parser = new Parser() {
+			Tracer = DiagnosticsTracer.Instance
+		};
+		var result = parser.Parse(source);
 	}
 }

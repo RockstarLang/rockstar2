@@ -18,6 +18,12 @@ public abstract class Variable(string name, Source source) : Expression(source) 
 	public abstract string Key { get; }
 }
 
+public class Pronoun(string name, Source source) : Variable(name, source) {
+	public Pronoun() : this(String.Empty) { }
+	public Pronoun(string name) : this(name, Source.None) { }
+	public override string Key => Name.ToLowerInvariant();
+}
+
 public class SimpleVariable(string name, Source source) : Variable(name, source) {
 	public SimpleVariable(string name) : this(name, Source.None) { }
 	public override string Key => Name.ToLowerInvariant();

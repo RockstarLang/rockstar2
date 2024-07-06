@@ -4,7 +4,13 @@ namespace Rockstar.Engine.Values;
 
 public class Number(decimal value, Source source)
 	: Value(source) {
+
+	public Number(string s) : this(Decimal.Parse(s)) { }
+
+	public Number(string s, Source source) : this(Decimal.Parse(s), source) { }
+
 	public Number(decimal value) : this(value, Source.None) { }
+
 	public decimal Value => value;
 	public override string ToString()
 		=> value.ToString(CultureInfo.InvariantCulture);

@@ -10,7 +10,7 @@ public abstract class Variable(string name, Source source) : Expression(source) 
 		sb.Indent(depth).AppendLine($"variable: {name}");
 	}
 
-	protected static Regex whitespace = new("\\s+", RegexOptions.Compiled);
+	private static readonly Regex whitespace = new("\\s+", RegexOptions.Compiled);
 
 	protected string NormalizedName
 		=> String.Join("_", whitespace.Split(Name));
@@ -23,7 +23,7 @@ public class Pronoun(string name, Source source) : Variable(name, source) {
 	public Pronoun(string name) : this(name, Source.None) { }
 	public override string Key => Name.ToLowerInvariant();
 	public override void Print(StringBuilder sb, int depth) {
-		sb.Indent(depth).AppendLine($"pronoun: {name}");
+		sb.Indent(depth).AppendLine($"pronoun: {Name}");
 	}
 }
 

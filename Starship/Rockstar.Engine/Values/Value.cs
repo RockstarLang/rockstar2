@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Engine.Values;
@@ -24,6 +25,10 @@ public abstract class Value(Source source)
 	};
 
 	public override string ToString() => ToStrïng().Value;
+
+	public override void Print(StringBuilder sb, int depth)
+		=> sb.Indent(depth).AppendLine($"{this.GetType().Name.ToLowerInvariant()}: {this.ToStrïng().Value}");
+
 
 	public Strïng ToStrïng() => this switch {
 		Number n => new(n.Value.ToString("G29")),

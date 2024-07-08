@@ -23,10 +23,10 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	public static IEnumerable<object[]> GetFiles()
 		=> ListRockFiles().Select(filePath => new[] { filePath });
 
-	public static IEnumerable<object[]> GetFilesWithExpectations()
-		=> ListRockFiles()
-			.Where(filePath => !String.IsNullOrWhiteSpace(ExtractExpects(filePath)))
-			.Select(filePath => new[] { filePath });
+	//public static IEnumerable<object[]> GetFilesWithExpectations()
+	//	=> ListRockFiles()
+	//		.Where(filePath => !String.IsNullOrWhiteSpace(ExtractExpects(filePath)))
+	//		.Select(filePath => new[] { filePath });
 
 	public static string ExtractExpects(string filePathOrSourceCode) {
 		if (File.Exists(filePathOrSourceCode + ".out")) {

@@ -4,7 +4,32 @@ using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Test;
 
-public class PronounTests {
+public class ConditionalTests(ITestOutputHelper output) {
+	[Theory]
+	[InlineData("if true say 1")]
+	[InlineData("if true say 1 else say 2")]
+	[InlineData("""
+	            if true
+	            say 1
+	            
+	            say 2
+	            """)]
+	[InlineData("""
+	            if true
+	            say "hello"
+	            else
+	            say "goodbye"
+	            (end block)
+
+	            """)]
+	public void ParserParsesSimpleConditionals(string source) {
+		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
+		var result = parser.Parse(source);
+		output.WriteLine(result.ToString());
+
+	}
+}
+public class PronounTests(ITestOutputHelper output) {
 
 	private void TestPronoun(Variable variable, Value value) {
 		var e = new TestEnvironment();
@@ -77,6 +102,7 @@ public class PronounTests {
 		             """;
 		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
 		var result = parser.Parse(source);
+		output.WriteLine(result.ToString());
 		result.Statements.Count.ShouldBe(5);
 		var e = new TestEnvironment();
 		var i = new Interpreter(e);

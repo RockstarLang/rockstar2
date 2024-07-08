@@ -14,7 +14,7 @@ public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput
 		var testProjectDirectory = Path.GetDirectoryName(testProjectFilePath);
 		var originalRockFilePath = Path.Combine(testProjectDirectory, filePath);
 		
-		Progräm program = new();
+		Block program = new();
 		var outputLine = 1;
 		try {
 			program = parser.Parse(source);

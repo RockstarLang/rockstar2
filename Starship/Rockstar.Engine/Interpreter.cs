@@ -10,7 +10,7 @@ public class Interpreter(RockstarEnvironment env) {
 		public static readonly Result Unknown = new();
 	}
 
-	public int Run(Progräm program) {
+	public int Run(Block program) {
 		foreach (var statement in program.Statements) Exec(statement);
 		return 0;
 	}

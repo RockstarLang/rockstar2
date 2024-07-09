@@ -42,7 +42,7 @@ public static class Program {
 			Console.WriteLine(program);
 			Console.WriteLine(String.Empty.PadLeft(40, '-'));
 			var interpreter = new Interpreter(env);
-			interpreter.Run(program);
+			interpreter.Exec(program);
 		} catch (FormatException ex) {
 			Console.Error.WriteLine(ex);
 		}

@@ -29,10 +29,11 @@ public class ConditionalTests(ITestOutputHelper output) {
 
 	            say 4
 	            """)]
+	[InlineData("if true if true if true say 2")]
+	[InlineData("if foo say 1 else if bar say 2 else if baz say 3")]
 	public void ParserParsesSimpleConditionals(string source) {
 		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
 		var result = parser.Parse(source);
 		output.WriteLine(result.ToString());
-
 	}
 }

@@ -15,12 +15,15 @@ program <Block>
 	/ EOB
 		{ new Block() }
 
+// A program can contain many blocks, with at
+// least one end-of-statement (EOS) betweeen subsequent blocks 
 blocks <Block>
 	= head:block EOS+ tail:blocks
 		{ head.Concat(tail) }
 	/ b:block
 		{ b }
 
+// Statements within a block must be separated by exactly one end-of-statement (EOS).
 block <Block>
 	= head:statement EOS tail:block
 		{ tail.Insert(head) }
@@ -32,7 +35,7 @@ EOS	= _? EOL _?
 EOB = EOS EOS !EOF
 	/ ("" _ / EOL)* EOF
 EOF	= !.
-	/ unexpected:("" [^ \t\r\n]+) #error{ "Unexpected '" + Regex.Escape(unexpected) + "' at line " + state.Line + ", col " + (state.Column-1) }
+	/ unexpected:("" [^ \t\r\n]+) #error{ state.Error(unexpected) }
 
 statement <Statement>
 	= alternate
@@ -53,6 +56,7 @@ bonglit <Block>
 		{ b }
 	/ _ s:statement
 		{ new Block(s) }
+	/ EOB { new Block() }
 
 assign_stmt <Statement>
 	= 'put' _ e:expression _ 'into' _ v:variable

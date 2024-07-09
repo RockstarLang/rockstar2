@@ -5,21 +5,27 @@ using Rockstar.Engine.Values;
 namespace Rockstar.Engine;
 
 public class Interpreter(RockstarEnvironment env) {
-	private class Result {
+	public class Result {
 		public static readonly Result Ok = new();
 		public static readonly Result Unknown = new();
 	}
 
-	public int Run(Block program) {
-		foreach (var statement in program.Statements) Exec(statement);
-		return 0;
+	public Result Exec(Block block) {
+		var result = Result.Unknown;
+		foreach (var statement in block.Statements) result = Exec(statement);
+		return result;
 	}
 
 	private Result Exec(Statement statement) => statement switch {
 		Assign assign => Assign(assign),
 		Output output => Output(output),
-		_ => Result.Unknown
+		Conditional cond => Conditional(cond),
+		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Conditional(Conditional cond) {
+		return Eval(cond.Condition).Truthy ? Exec(cond.Consequent) : Exec(cond.Alternate);
+	}
 
 	private Result Assign(Assign assign) {
 		env.SetVariable(assign.Variable, Eval(assign.Expr));

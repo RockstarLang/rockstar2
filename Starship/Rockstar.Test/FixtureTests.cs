@@ -32,7 +32,7 @@ public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput
 		try {
 			var env = new TestEnvironment();
 			var interpreter = new Interpreter(env);
-			interpreter.Run(program);
+			interpreter.Exec(program);
 			var result = env.Output;
 			result.ShouldBe(expect);
 		} catch (Exception) {

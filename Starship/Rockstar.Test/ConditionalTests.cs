@@ -13,6 +13,24 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 	            """)]
 	public void ParserParsesLoop(string source) => Parse(source);
 
+	[Theory]
+	[InlineData("""
+	            Say "begin"
+	            X is 10
+	            While X is greater than nothing
+	            Y is 0
+	            While Y is less than 3
+	            Build Y up
+	            Say Y
+	            
+	            Knock X down
+	            Say X
+	            
+	            Say "end"
+	            
+	            """)]
+	public void ParserParsesNestedLoop(string source) => Parse(source);
+
 	[Fact]
 	public void WhileLoopWorks() {
 		var source = """

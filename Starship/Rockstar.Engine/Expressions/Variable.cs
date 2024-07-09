@@ -6,8 +6,8 @@ namespace Rockstar.Engine.Expressions;
 
 public abstract class Variable(string name, Source source) : Expression(source) {
 	public string Name => name;
-	public override void Print(StringBuilder sb, int depth) {
-		sb.Indent(depth).AppendLine($"variable: {name}");
+	public override void Print(StringBuilder sb, string prefix) {
+		sb.Append(prefix).AppendLine($"variable: {name}");
 	}
 
 	private static readonly Regex whitespace = new("\\s+", RegexOptions.Compiled);

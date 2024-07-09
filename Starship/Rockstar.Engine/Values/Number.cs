@@ -15,8 +15,8 @@ public class Number(decimal value, Source source)
 	public override string ToString()
 		=> value.ToString(CultureInfo.InvariantCulture);
 
-	//public override void Print(StringBuilder sb, int depth)
-	//	=> sb.Indent(depth).AppendLine($"number: {value:G29} {Location}");
+	//public override void Print(StringBuilder sb, string prefix)
+	//	=> sb.Append(prefix).AppendLine($"number: {value:G29} {Location}");
 
 	public override bool Truthy => value != 0m;
 

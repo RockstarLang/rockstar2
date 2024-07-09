@@ -47,7 +47,6 @@ statement <Statement>
 	/ increment
 	/ decrement
 
-
 noise 	= (_ / [;,])
 
 increment <Increment>

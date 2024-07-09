@@ -27,8 +27,8 @@ public abstract class Value(Source source)
 
 	public override string ToString() => ToStrïng().Value;
 
-	public override void Print(StringBuilder sb, int depth)
-		=> sb.Indent(depth).AppendLine($"{this.GetType().Name.ToLowerInvariant()}: {this.ToStrïng().Value}");
+	public override void Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).AppendLine($"{this.GetType().Name.ToLowerInvariant()}: {this.ToStrïng().Value}");
 
 
 	public Strïng ToStrïng() => this switch {

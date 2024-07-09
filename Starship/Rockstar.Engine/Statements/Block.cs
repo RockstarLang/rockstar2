@@ -29,7 +29,7 @@ public class Block(IEnumerable<Statement> statements) {
 		return sb.ToString();
 	}
 
-	public void Print(StringBuilder sb, int depth = 0) {
-		foreach (var stmt in Statements) stmt.Print(sb, depth);
+	public void Print(StringBuilder sb, string prefix = "") {
+		foreach (var stmt in Statements) stmt.Print(sb, prefix);
 	}
 }

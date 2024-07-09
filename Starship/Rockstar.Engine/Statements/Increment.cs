@@ -6,8 +6,8 @@ namespace Rockstar.Engine.Statements;
 public class Increment(Variable v, int multiple, Source source) : Statement(source) {
 	public Variable Variable => v;
 	public int Multiple => multiple;
-	public override void Print(StringBuilder sb, int depth = 0) {
-		sb.Indent(depth).AppendLine($"increment x {multiple}");
-		v.Print(sb, depth + 1);
+	public override void Print(StringBuilder sb, string prefix = "") {
+		sb.Append(prefix).AppendLine($"increment x {multiple}");
+		v.Print(sb, prefix + INDENT);
 	}
 }

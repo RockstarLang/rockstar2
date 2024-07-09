@@ -6,8 +6,8 @@ public class Strïng(string value, Source source)
 	: Value(source) {
 	public Strïng(string value) : this(value, Source.None) { }
 	public string Value => value;
-	public override void Print(StringBuilder sb, int depth)
-		=> sb.Indent(depth).AppendLine($"string: \"{value}\"");
+	public override void Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).AppendLine($"string: \"{value}\"");
 
 	public override bool Truthy => !String.IsNullOrEmpty(value);
 

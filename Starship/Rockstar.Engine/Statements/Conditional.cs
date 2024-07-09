@@ -13,14 +13,14 @@ public class Conditional(Expression condition, Block consequent, Source source)
 		this.Alternate = alternate;
 		return this;
 	}
-	public override void Print(StringBuilder sb, int depth = 0) {
-		sb.Indent(depth).AppendLine("if:");
-		sb.Indent(depth + 1).AppendLine("test:");
-		condition.Print(sb, depth + 2);
-		sb.Indent(depth + 1).AppendLine("then:");
-		consequent.Print(sb, depth + 2);
+	public override void Print(StringBuilder sb, string prefix = "") {
+		sb.Append(prefix).AppendLine("if:");
+		sb.Append(prefix + INDENT).AppendLine("test:");
+		condition.Print(sb, prefix + INDENT + INDENT);
+		sb.Append(prefix + INDENT).AppendLine("then:");
+		consequent.Print(sb, prefix + INDENT + INDENT);
 		if (Alternate.IsEmpty) return;
-		sb.Indent(depth + 1).AppendLine("else:");
-		Alternate.Print(sb, depth + 2);
+		sb.Append(prefix + INDENT).AppendLine("else:");
+		Alternate.Print(sb, prefix + INDENT + INDENT);
 	}
 }

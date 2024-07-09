@@ -1,4 +1,5 @@
 using System.Text;
+using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine.Expressions;
@@ -31,9 +32,9 @@ public class Binary(Operator op, Expression lhs, Expression rhs, Source source)
 		};
 	}
 
-	public override void Print(StringBuilder sb, int depth) {
-		sb.Indent(depth).AppendLine($"{op}:".ToLowerInvariant());
-		lhs.Print(sb, depth + 1);
-		rhs.Print(sb, depth + 1);
+	public override void Print(StringBuilder sb, string prefix) {
+		lhs.Print(sb, prefix);
+		sb.Append(prefix).AppendLine($"{op}:".ToLowerInvariant());
+		rhs.Print(sb, prefix + Statement.INDENT);
 	}
 }

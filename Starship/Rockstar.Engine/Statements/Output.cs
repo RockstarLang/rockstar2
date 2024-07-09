@@ -8,8 +8,8 @@ public class Output(Expression expr, Source source)
 	public Expression Expr => expr;
 	public override string ToString() => $"output: {expr}";
 
-	public override void Print(StringBuilder sb, int depth = 0) {
-		sb.Indent(depth).AppendLine("output:");
-		expr.Print(sb, depth + 1);
+	public override void Print(StringBuilder sb, string prefix = "") {
+		sb.Append(prefix).AppendLine("output:");
+		expr.Print(sb, prefix + INDENT);
 	}
 }

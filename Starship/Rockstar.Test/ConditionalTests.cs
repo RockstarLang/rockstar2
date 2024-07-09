@@ -1,3 +1,5 @@
+using Pegasus.Common.Tracing;
+
 namespace Rockstar.Test;
 
 public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {

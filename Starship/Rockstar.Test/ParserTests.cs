@@ -34,8 +34,9 @@ public class ParserTests(ITestOutputHelper helper) {
 	[InlineData("""
 	            say "pass"
 	            """)]
+	[InlineData("say \"pass\" (prints: pass)")]
 	public void ParserParsesWeirdPrograms(string source) {
-		var parser = new Parser();
+		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
 		var result = parser.Parse(source);
 		result.Statements.Count.ShouldBe(1);
 	}

@@ -10,21 +10,22 @@
 @ignorecase true
 
 program <Block>
-	= __ head:block tail:program
+	= __ head:statements tail:program
 		{ head.Concat(tail) }
 	/ __ EOF
 		{ new Block() }
 
 __ = ("" _ / EOL)*
 
-block <Block>
-	= head:statement EOS tail:block
+statements <Block>
+	= head:statement EOS tail:statements
 		{ tail.Insert(head) }
 	/ s:statement EOS
 		{ new Block(s) }
 
 EOS	= _? EOL _?
-	/ EOF
+	/ _? EOF
+	
 EOL = '\r'? '\n'
 EOF	= !.
 	/ unexpected:("" [^ \t\r\n]+) 
@@ -48,31 +49,31 @@ decrement <Decrement>
 	= 'knock'i _ v:variable _ t:('down' noise*)+
 		{ new Decrement(v, t.Count, state.Source()) }
 
-chonk <Block>
-	= EOS b:block
-		{ b }
-	/ _ s:statement
+block <Block>
+	= _ s:statement
 		{ new Block(s) }
-
+	/ EOS b:statements
+		{ b }
+			
 alternate <Conditional>
-	= c:conditional _? 'else' a:chonk
+	= c:conditional _? 'else' a:block
 		{ c.Else(a) }
-	/ c:conditional EOS 'else' a:chonk
+	/ c:conditional EOS 'else' a:block
 		{ c.Else(a) }
 	/ c:conditional { c }
 
 conditional <Conditional>
-	= 'if' _ e:expression c:chonk
+	= 'if' _ e:expression c:block
 		{ new Conditional(e, c, state.Source()) }
 
 loop <Loop>
 	= 'while' _ e:expression _ s:statement
 		{ new WhileLoop(e, new Block(s), state.Source()) }
-	/ 'while' _ e:expression EOS b:block
+	/ 'while' _ e:expression EOS b:statements
 		{ new WhileLoop(e, b, state.Source()) }
 	/ 'until' _ e:expression _ s:statement
 		{ new UntilLoop(e, new Block(s), state.Source()) }
-	/ 'until' _ e:expression EOS b:block
+	/ 'until' _ e:expression EOS b:statements
 		{ new UntilLoop(e, b, state.Source()) }
 
 assign_stmt <Statement>

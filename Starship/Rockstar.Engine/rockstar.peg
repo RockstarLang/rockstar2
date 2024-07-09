@@ -186,10 +186,10 @@ compare <Expression>
 		{ new Binary(op, lhs, rhs, state.Source()) }
 	/ math
 
-gtr = ("greater"/ "higher"	/ "bigger"	/ "stronger" )
-ltr = ("less" / "lower"	/ "smaller" / "weaker" )
-gte = ("great" / "high" / "big" / "strong" )
-lte = ("less" / "low" / "small" / "weak" )
+gtr = ('greater'/ 'higher'	/ 'bigger'	/ 'stronger' / 'more' )
+ltr = ('less' / 'lower'	/ 'smaller' / 'weaker' )
+gte = ('great' / 'high' / 'big' / 'strong' )
+lte = ('less' / 'low' / 'small' / 'weak' )
 
 comparator <Operator>
 	= _is _ gtr _ 'than' { Operator.MoreThan }

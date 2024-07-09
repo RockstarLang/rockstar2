@@ -8,11 +8,6 @@ public abstract class Value(Source source)
 	: Expression(source) {
 	public abstract bool Truthy { get; }
 
-	public Value MoreThan(Value that) => (Booleän) ((this, that) switch {
-		(Number a, Number b) => a.Value > b.Value,
-		(Booleän a, Booleän b) => a.Truthy && !b.Truthy,
-		_ => throw new NotImplementedException("honk")
-	});
 
 	public Value And(Value that) => this.Truthy ? that : this;
 
@@ -21,7 +16,7 @@ public abstract class Value(Source source)
 	public Value Plus(Value that) => (this, that) switch {
 		(Number a, Number b) => new Number(a.Value + b.Value),
 		(Strïng a, _) => a.Concat(that),
-		_ => throw new NotImplementedException()
+		_ => throw Boom(nameof(Plus), this, that)
 	};
 
 	public override string ToString() => ToStrïng().Value;
@@ -40,17 +35,20 @@ public abstract class Value(Source source)
 	};
 
 	public Value Minus(Value that) => (this, that) switch {
-		(Number a, Number b) => new Number(a.Value - b.Value),
-		_ => throw new NotImplementedException()
+		(IHaveANumber a, IHaveANumber b)
+			=> new Number(a.NumericValue - b.NumericValue),
+		_ => throw Boom(nameof(Minus), this, that)
 	};
 
 	public Value Times(Value that) => (this, that) switch {
-		(Number a, Number b) => new Number(a.Value * b.Value),
+		(IHaveANumber a, IHaveANumber b)
+			=> new Number(a.NumericValue * b.NumericValue),
 		_ => throw new NotImplementedException()
 	};
 
 	public Value Divide(Value that) => (this, that) switch {
-		(Number a, Number b) => new Number(a.Value / b.Value),
+		(IHaveANumber a, IHaveANumber b)
+			=> new Number(a.NumericValue / b.NumericValue),
 		_ => throw new NotImplementedException()
 	};
 
@@ -61,7 +59,7 @@ public abstract class Value(Source source)
 			(Booleän rhs) => lhs.Truthy == rhs.Truthy,
 			(Null) => lhs.Value == 0,
 			(Strïng rhs) => Decimal.TryParse(rhs.Value, out var value) && value == lhs.Value,
-			_ => throw new NotImplementedException($"Equality not implemented for {this.GetType()} {that.GetType()}")
+			_ => throw Boom(nameof(Equäls), this, that)
 		},
 		Strïng lhs => that switch {
 			Booleän => this.Truthy == that.Truthy,
@@ -83,21 +81,29 @@ public abstract class Value(Source source)
 	public Value NotEquäls(Value that)
 		=> (Booleän) (!this.Equäls(that).Truthy);
 
-	public Value LessThanEqual(Value that) => (Booleän) ((this, that) switch {
-		(Number a, Number b) => a.Value <= b.Value,
-		_ => throw Boom(nameof(LessThanEqual), this, that)
-	});
+	public Booleän Compare(Value lhs, Value rhs, Func<decimal, decimal, bool> comp)
+		=> (Booleän) (lhs switch {
+			IHaveANumber x => rhs switch {
+				IHaveANumber y => comp(x.NumericValue, y.NumericValue),
+				_ => Decimal.TryParse(rhs.ToStrïng().Value, out var d) && comp(x.NumericValue, d)
+			},
+			Strïng s => comp(String.Compare(s.Value, rhs.ToStrïng().Value, StringComparison.InvariantCulture), 0),
+			_ => throw Boom(nameof(Compare), lhs, rhs)
+		});
 
-	public Value MoreThanEqual(Value that) => (Booleän) ((this, that) switch {
-		(Number a, Number b) => a.Value >= b.Value,
-		_ => throw Boom(nameof(MoreThanEqual), this, that)
-	});
+	public Value LessThanEqual(Value that) => Compare(this, that, (a, b) => a <= b);
 
-	public Value LessThan(Value that) => (Booleän) ((this, that) switch {
-		(Number a, Number b) => a.Value < b.Value,
-		_ => throw Boom(nameof(LessThan), this, that)
-	});
+	public Value MoreThanEqual(Value that) => Compare(this, that, (a, b) => a >= b);
 
-	private Exception Boom(string op, Value lhs, Value rhs)
-		=> new NotImplementedException($"{op} not implemented for {lhs.GetType()} {rhs.GetType()}");
+	public Value LessThan(Value that) => Compare(this, that, (a, b) => a < b);
+
+	public Value MoreThan(Value that) => Compare(this, that, (a, b) => a > b);
+
+	private NotImplementedException Boom(string op, Value lhs, Value rhs)
+#if DEBUG
+		=> new($"{new StackTrace().GetFrame(2).GetMethod().Name} not implemented for {lhs.GetType().Name} {lhs.ToStrïng().Value} {rhs.GetType().Name} {rhs.ToStrïng().Value}");
+#else
+		=> new($"{op} not implemented for {lhs.GetType().Name} {lhs.ToStrïng().Value} {rhs.GetType().Name} {rhs.ToStrïng().Value}");
+#endif
+
 }

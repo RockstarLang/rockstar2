@@ -2,8 +2,12 @@ using System.Globalization;
 using System.Text;
 namespace Rockstar.Engine.Values;
 
+public interface IHaveANumber {
+	decimal NumericValue { get; }
+}
+
 public class Number(decimal value, Source source)
-	: Value(source) {
+	: Value(source), IHaveANumber {
 
 	public Number(string s) : this(Decimal.Parse(s)) { }
 
@@ -21,4 +25,5 @@ public class Number(decimal value, Source source)
 	public override bool Truthy => value != 0m;
 
 	public Value Negate() => new Number(-value);
+	public decimal NumericValue => value;
 }

@@ -7,5 +7,5 @@ public class Looküp(Variable variable, Source source)
 	public Variable Variable => variable;
 
 	public override void Print(StringBuilder sb, int depth)
-		=> sb.Indent(depth).AppendLine("lookup: " + variable.Name);
+		=> sb.Indent(depth).AppendLine($"lookup: {variable.Name} ({variable.GetType().Name})");
 }

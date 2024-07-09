@@ -1,7 +1,8 @@
 namespace Rockstar.Engine.Values;
 
 public class Booleän(bool value, Source source)
-	: Value(source) {
+	: Value(source), IHaveANumber {
+	public Booleän(bool value) : this(value, Source.None) { }
 	public override bool Truthy => value;
 	public Value Negate => Not(this);
 
@@ -13,4 +14,5 @@ public class Booleän(bool value, Source source)
 	public static explicit operator bool(Booleän b) => b.Truthy;
 	public static bool operator true(Booleän b) => b.Truthy;
 	public static bool operator false(Booleän b) => !b.Truthy;
+	public decimal NumericValue => value ? 1 : 0;
 }

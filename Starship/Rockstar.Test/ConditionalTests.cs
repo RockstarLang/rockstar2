@@ -1,5 +1,54 @@
 namespace Rockstar.Test;
 
+public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
+	[Theory]
+	[InlineData("while true say loop")]
+	[InlineData("""
+	            while true
+	            say loop1
+	            say loop2
+	            say loop3
+
+	            say done
+	            """)]
+	public void ParserParsesLoop(string source) => Parse(source);
+
+	[Fact]
+	public void WhileLoopWorks() {
+		var source = """
+		             let i be 0
+		             while i is less than 5
+		             say i
+		             build i up
+
+		             say "finished"
+		             """;
+		var parsed = Parse(source);
+		var e = new TestEnvironment();
+		var i = new Interpreter(e);
+		var result = i.Exec(parsed);
+		e.Output.ReplaceLineEndings().ShouldBe("0\n1\n2\n3\n4\nfinished\n".ReplaceLineEndings());
+	}
+
+	[Fact]
+	public void UntilLoopWorks() {
+		var source = """
+		             let i be 0
+		             until i is as great as 5
+		             say i
+		             build i up
+
+		             say "finished"
+		             """;
+		var parsed = Parse(source);
+		var e = new TestEnvironment();
+		var i = new Interpreter(e);
+		var result = i.Exec(parsed);
+		e.Output.ReplaceLineEndings().ShouldBe("0\n1\n2\n3\n4\nfinished\n".ReplaceLineEndings());
+	}
+
+}
+
 public class ConditionalTests(ITestOutputHelper output) {
 	[Theory]
 	[InlineData("if true say 1")]

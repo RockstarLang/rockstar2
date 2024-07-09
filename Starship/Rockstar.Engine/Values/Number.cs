@@ -2,10 +2,6 @@ using System.Globalization;
 using System.Text;
 namespace Rockstar.Engine.Values;
 
-public interface IHaveANumber {
-	decimal NumericValue { get; }
-}
-
 public class Number(decimal value, Source source)
 	: Value(source), IHaveANumber {
 

@@ -40,7 +40,8 @@ EOF	= !.
 		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - 1}" }
 
 statement <Statement>
-	= alternate
+	= loop
+	/ alternate
 	/ output_stmt
 	/ assign_stmt
 	/ increment
@@ -58,15 +59,21 @@ decrement <Decrement>
 		{ new Decrement(v, t.Count, state.Source()) }
 
 alternate <Conditional>
-	= c:conditional (_ / EOS) 'else' a:bonglit
+	= c:conditional (_ / EOS) 'else' a:body
 		{ c.Else(a) }
 	/ c:conditional { c }
 
 conditional <Conditional>
-	= 'if' _ e:expression a:bonglit
+	= 'if' _ e:expression a:body
 		{ new Conditional(e, a, state.Source()) }
 
-bonglit <Block>
+loop <Loop>
+	= 'while' _ e:expression b:body
+		{ new WhileLoop(e, b, state.Source()) }
+	/ 'until' _ e:expression b:body
+		{ new UntilLoop(e, b, state.Source()) }
+
+body <Block>
 	= EOS b:block
 		{ b }
 	/ _ s:statement
@@ -137,7 +144,7 @@ common_prefix
 	= ('an' / 'a' / 'the' / 'my' / 'your' / 'our') !letter
 
 simple_variable
-	= !keyword ("" letter+)
+	= !keyword ("" letter (letter / [0-9])*)
 
 letter
 	= uppercase_letter / lowercase_letter
@@ -248,6 +255,10 @@ constant <Expression>
 	/ f:false { new Booleän(false, state.Source(f)) }
 	/ n:null { new Null(state.Source(n)) }
 	/ m:'mysterious' { Mysterious.Instance }
+	/ e:empty { Strïng.Empty }
+
+empty
+	= ('empty'i / 'silent'i / 'silence'i)
 
 true
 	= ("true" / "yes" / "ok" / "right") !letter

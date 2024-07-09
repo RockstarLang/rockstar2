@@ -17,10 +17,10 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	public static string ExtractExpects(string filePathOrSourceCode) {
 		if (File.Exists(filePathOrSourceCode + ".out")) {
-			return File.ReadAllText(filePathOrSourceCode + ".out").ReplaceLineEndings();
+			return File.ReadAllText(filePathOrSourceCode + ".out", Encoding.UTF8).ReplaceLineEndings();
 		}
 		var source = (File.Exists(filePathOrSourceCode)
-			? File.ReadAllText(filePathOrSourceCode)
+			? File.ReadAllText(filePathOrSourceCode, Encoding.UTF8)
 			: filePathOrSourceCode);
 		var limit = source.Length;
 		var output = new List<string>();

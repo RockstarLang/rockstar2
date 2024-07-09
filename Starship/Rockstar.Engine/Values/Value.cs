@@ -14,8 +14,14 @@ public abstract class Value(Source source)
 	public Value Or(Value that) => this.Truthy ? this : that;
 
 	public Value Plus(Value that) => (this, that) switch {
-		(Number a, Number b) => new Number(a.Value + b.Value),
 		(Strïng a, _) => a.Concat(that),
+		(_, Strïng b) => this.ToStrïng().Concat(b),
+		(IHaveANumber a, IHaveANumber b)
+			=> new Number(a.NumericValue + b.NumericValue),
+		(IHaveANumber a, _)
+			=> Decimal.TryParse(that.ToStrïng().Value, out var d)
+				? new Number(a.NumericValue + d)
+					: throw Boom(nameof(Plus), this, that),
 		_ => throw Boom(nameof(Plus), this, that)
 	};
 
@@ -43,7 +49,8 @@ public abstract class Value(Source source)
 	public Value Times(Value that) => (this, that) switch {
 		(IHaveANumber a, IHaveANumber b)
 			=> new Number(a.NumericValue * b.NumericValue),
-		_ => throw new NotImplementedException()
+		(Strïng s, IHaveANumber n) => s.Repeat(n),
+		_ => Mysterious.Instance
 	};
 
 	public Value Divide(Value that) => (this, that) switch {

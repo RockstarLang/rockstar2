@@ -6,7 +6,7 @@ public class TestEnvironment : RockstarEnvironment {
 	public string Output => outputStringBuilder.ToString();
 	public override string? ReadInput() => null;
 
-	public override void WriteLine(string output)
+	public override void WriteLine(string? output)
 		=> this.outputStringBuilder.Append(output + Environment.NewLine);
 
 	public override void Write(string s)

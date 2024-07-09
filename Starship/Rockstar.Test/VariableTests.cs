@@ -63,13 +63,14 @@ public class VariableTests {
 	[InlineData("""
 	            variable is 1
 	            say variable
-	            Variable Is 2
+	            Variable is 2
 	            say variable
 	            variable iS 3
 	            say variable
 	            VARIABLE IS 4
 	            say variable
 	            """)]
+	[InlineData("Variable is 2")]
 	public void LiteralAssignmentsAreCaseInsensitive(string source) {
 		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
 		var result = parser.Parse(source);

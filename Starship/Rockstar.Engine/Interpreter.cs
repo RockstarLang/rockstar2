@@ -4,11 +4,6 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine;
 
-public class Result {
-	public static readonly Result Ok = new();
-	public static readonly Result Unknown = new();
-}
-
 public class Interpreter(RockstarEnvironment env) {
 
 	public Result Exec(Block block) {
@@ -23,8 +18,19 @@ public class Interpreter(RockstarEnvironment env) {
 		Conditional cond => Conditional(cond),
 		Increment inc => Increment(inc),
 		Decrement dec => Decrement(dec),
+		Loop loop => Loop(loop),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Loop(Loop loop) {
+		var result = Result.Unknown;
+		var condition = Eval(loop.Condition);
+		while (condition.Truthy == loop.CompareTo) {
+			result = Exec(loop.Body);
+			condition = Eval(loop.Condition);
+		}
+		return result;
+	}
 
 	private Result Increment(Increment inc) {
 		return Eval(inc.Variable) switch {

@@ -6,7 +6,7 @@ public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput
 	[Theory]
 	[MemberData(nameof(GetFiles))]
 	public void RunFile(string filePath) {
-		var source = File.ReadAllText(filePath);
+		var source = File.ReadAllText(filePath, Encoding.UTF8);
 		var expect = ExtractExpects(filePath);
 		expect.ShouldNotBeEmpty();
 

@@ -20,7 +20,7 @@ __ = ("" _ / EOL)*
 block <Block>
 	= head:statement EOS tail:block
 		{ tail.Insert(head) }
-	/ s:statement
+	/ s:statement EOS
 		{ new Block(s) }
 
 EOS	= _? EOL _?

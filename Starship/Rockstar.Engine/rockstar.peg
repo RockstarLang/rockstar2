@@ -35,9 +35,37 @@ statement <Statement>
 	= loop
 	/ alternate
 	/ output_stmt
+	/ function_call
+	/ function
 	/ assign_stmt
 	/ increment
 	/ decrement
+	
+
+takes = ('takes' / 'wants')
+
+function <Function>
+	= name:variable _ takes _ args:variable_list EOS body:statements
+		{ new Function(name, args, body, state.Source()) }
+
+function_call <FunctionCall>
+	= name:variable _ 'taking' _ args:expression_list
+		{ new FunctionCall(name, args, state.Source()) }
+
+expression_list <List<Expression>>
+	= head:expression _XLS_ tail:expression_list
+		{ head.Concat(tail) }
+	/ expr:expression { new List<Expression> { expr } }
+
+_XLS_
+	= (_? ', and' _ / _? ('&' / ',' / "'n'") _?)
+
+_VLS_ = _XLS_ / _ 'and' _
+
+variable_list <List<Variable>>
+	= head:variable _VLS_ tail:variable_list
+		{ head.Concat(tail) }
+  / arg:variable { new List<Variable> { arg } }
 
 noise 	= (_ / [;,])
 

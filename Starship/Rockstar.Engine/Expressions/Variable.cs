@@ -16,4 +16,7 @@ public abstract class Variable(string name, Source source) : Expression(source) 
 		=> String.Join("_", whitespace.Split(Name));
 
 	public abstract string Key { get; }
+
+	public List<Variable> Concat(List<Variable> list)
+		=> new List<Variable> { this }.Concat(list).ToList();
 }

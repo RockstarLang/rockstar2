@@ -8,4 +8,8 @@ public abstract class Expression(Source source) {
 		=> sb.Append(prefix).AppendLine(this.GetType().Name.ToLowerInvariant());
 
 	protected string Location => source.Location;
+
+	public List<Expression> Concat(List<Expression> list)
+		=> new List<Expression> { this }.Concat(list).ToList();
+
 }

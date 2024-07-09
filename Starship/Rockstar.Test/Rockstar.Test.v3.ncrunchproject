@@ -5,9 +5,6 @@
       <FixtureTestSelector>
         <FixtureName>Rockstar.Test.FixturePreTests</FixtureName>
       </FixtureTestSelector>
-      <FixtureTestSelector>
-        <FixtureName>Rockstar.Test.FixtureTests</FixtureName>
-      </FixtureTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

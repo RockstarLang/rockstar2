@@ -15,21 +15,19 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 
 	[Theory]
 	[InlineData("""
-	            Say "begin"
-	            X is 10
-	            While X is greater than nothing
-	            Y is 0
-	            While Y is less than 3
-	            Build Y up
-	            Say Y
-	            
-	            Knock X down
-	            Say X
-	            
-	            Say "end"
-	            
-	            """)]
-	public void ParserParsesNestedLoop(string source) => Parse(source);
+				X is 10
+				While X is greater than nothing
+				While Y is less than 3
+				Build Y up
+				Say Y
+
+				Knock X down
+
+				""")]
+	public void ParserParsesNestedLoop(string source) {
+		var parsed = Parse(source);
+		parsed.Statements.Count.ShouldBe(2);
+	}
 
 	[Fact]
 	public void WhileLoopWorks() {
@@ -70,6 +68,22 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 public class ConditionalTests(ITestOutputHelper output) {
 	[Theory]
 	[InlineData("if true say 1")]
+	[InlineData("""
+	            if true 
+	            say 1
+	            """)]
+
+	[InlineData("""
+	            if true
+	            say 1
+	            else
+	            say 2
+	            """)]
+	[InlineData("""
+	            if true say 1 else
+	            say 2
+	            
+	            """)]
 	[InlineData("if true say 1 else say 2")]
 	[InlineData("""
 	            if true
@@ -86,6 +100,16 @@ public class ConditionalTests(ITestOutputHelper output) {
 	            say "hello"
 	            else
 	            say "goodbye"
+	            (end block)
+
+	            """)]
+	[InlineData("""
+	            if true
+	            say "hello"
+	            say my darling
+	            else
+	            say "goodbye"
+	            say my love
 	            (end block)
 
 	            """)]

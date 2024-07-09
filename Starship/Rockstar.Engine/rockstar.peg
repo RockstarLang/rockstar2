@@ -10,31 +10,22 @@
 @ignorecase true
 
 program <Block>
-	= ("" _ / EOL)* s:blocks EOB
-		{ s }
-	/ EOB
+	= __ head:block tail:program
+		{ head.Concat(tail) }
+	/ __ EOF
 		{ new Block() }
 
-// A program can contain many blocks, with at
-// least one end-of-statement (EOS) betweeen subsequent blocks 
-blocks <Block>
-	= head:block EOS+ tail:blocks
-		{ head.Concat(tail) }
-	/ b:block
-		{ b }
+__ = ("" _ / EOL)*
 
-// Statements within a block must be separated by exactly one end-of-statement (EOS).
 block <Block>
 	= head:statement EOS tail:block
 		{ tail.Insert(head) }
-	/ s:statement
+	/ s:statement EOS
 		{ new Block(s) }
 
+EOS	= _? EOL _?
+	/ EOF
 EOL = '\r'? '\n'
-EOS	= _? EOL _?	
-EOB = EOS EOS !EOF
-	/ ("" _ / EOL)* EOF
-
 EOF	= !.
 	/ unexpected:("" [^ \t\r\n]+) 
 		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - 1}" }
@@ -57,27 +48,42 @@ decrement <Decrement>
 	= 'knock'i _ v:variable _ t:('down' noise*)+
 		{ new Decrement(v, t.Count, state.Source()) }
 
-alternate <Conditional>
-	= c:conditional (_ / EOS) 'else' a:body
-		{ c.Else(a) }
-	/ c:conditional { c }
-
-conditional <Conditional>
-	= 'if' _ e:expression a:body
-		{ new Conditional(e, a, state.Source()) }
-
-loop <Loop>
-	= 'while' _ e:expression b:body
-		{ new WhileLoop(e, b, state.Source()) }
-	/ 'until' _ e:expression b:body
-		{ new UntilLoop(e, b, state.Source()) }
-
-body <Block>
+chonk <Block>
 	= EOS b:block
 		{ b }
 	/ _ s:statement
 		{ new Block(s) }
-	/ EOB { new Block() }
+
+alternate <Conditional>
+//	= 'if' _ e:expression EOS c:statement EOS 'else' EOS a:statement 
+//		{ new Conditional(e, new Block(c), state.Source()).Else(new Block(a)) }
+	= 'if' _ e:expression EOS c:block 'else' EOS a:block
+		{ new Conditional(e, c, state.Source()).Else(a) }
+	/ c:conditional _ 'else' _ a:statement
+		{ c.Else(new Block(a)) }
+	/ c:conditional EOS 'else' _ a:statement
+		{ c.Else(new Block(a)) }
+	/ c:conditional _ 'else' EOS a:block
+		{ c.Else(a) }
+	/ c:conditional EOS 'else' EOS a:block
+		{ c.Else(a) }
+	/ c:conditional { c }
+
+conditional <Conditional>
+	= 'if' _ e:expression EOS b:block
+		{ new Conditional(e, b, state.Source()) }
+	/ 'if' _ e:expression _ s:statement
+		{ new Conditional(e, new Block(s), state.Source()) }
+
+loop <Loop>
+	= 'while' _ e:expression _ s:statement
+		{ new WhileLoop(e, new Block(s), state.Source()) }
+	/ 'while' _ e:expression EOS b:block
+		{ new WhileLoop(e, b, state.Source()) }
+	/ 'until' _ e:expression _ s:statement
+		{ new UntilLoop(e, new Block(s), state.Source()) }
+	/ 'until' _ e:expression EOS b:block
+		{ new UntilLoop(e, b, state.Source()) }
 
 assign_stmt <Statement>
 	= 'put' _ e:expression _ 'into' _ v:variable

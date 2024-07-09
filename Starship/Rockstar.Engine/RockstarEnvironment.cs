@@ -14,13 +14,15 @@ public abstract class RockstarEnvironment {
 	private Variable AssertTarget(Pronoun pronoun)
 		=> pronounTarget ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')");
 
-	public void SetVariable(Variable variable, Value value) {
+	public Result SetVariable(Variable variable, Value value) {
 		if (variable is Pronoun pronoun) {
 			variables[AssertTarget(pronoun).Key] = value;
 		} else {
 			pronounTarget = variable;
 			variables[variable.Key] = value;
 		}
+
+		return Result.Ok;
 	}
 
 	public Value GetVariable(Variable variable) {

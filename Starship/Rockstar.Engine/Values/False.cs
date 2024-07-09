@@ -3,6 +3,8 @@ namespace Rockstar.Engine.Values;
 public class Booleän(bool value, Source source)
 	: Value(source) {
 	public override bool Truthy => value;
+	public Value Negate => Not(this);
+
 	public static Booleän False = new(false, Source.None);
 	public static Booleän True = new(true, Source.None);
 	public static Booleän Not(Value value)

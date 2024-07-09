@@ -34,13 +34,28 @@ EOL = '\r'? '\n'
 EOS	= _? EOL _?	
 EOB = EOS EOS !EOF
 	/ ("" _ / EOL)* EOF
+
 EOF	= !.
-	/ unexpected:("" [^ \t\r\n]+) #error{ state.Error(unexpected) }
+	/ unexpected:("" [^ \t\r\n]+) 
+		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - 1}" }
 
 statement <Statement>
 	= alternate
 	/ output_stmt
-	/ assign_stmt 
+	/ assign_stmt
+	/ increment
+	/ decrement
+
+
+noise 	= (_ / [;,])
+
+increment <Increment>
+	= 'build'i _ v:variable _ t:('up' noise*)+
+		{ new Increment(v, t.Count, state.Source()) }
+
+decrement <Decrement>
+	= 'knock'i _ v:variable _ t:('down' noise*)+
+		{ new Decrement(v, t.Count, state.Source()) }
 
 alternate <Conditional>
 	= c:conditional (_ / EOS) 'else' a:bonglit

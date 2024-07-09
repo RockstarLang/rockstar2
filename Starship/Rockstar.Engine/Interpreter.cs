@@ -4,11 +4,12 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine;
 
+public class Result {
+	public static readonly Result Ok = new();
+	public static readonly Result Unknown = new();
+}
+
 public class Interpreter(RockstarEnvironment env) {
-	public class Result {
-		public static readonly Result Ok = new();
-		public static readonly Result Unknown = new();
-	}
 
 	public Result Exec(Block block) {
 		var result = Result.Unknown;
@@ -20,17 +21,36 @@ public class Interpreter(RockstarEnvironment env) {
 		Assign assign => Assign(assign),
 		Output output => Output(output),
 		Conditional cond => Conditional(cond),
+		Increment inc => Increment(inc),
+		Decrement dec => Decrement(dec),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Increment(Increment inc) {
+		return Eval(inc.Variable) switch {
+			Number n => Assign(inc.Variable, new Number(n.Value + inc.Multiple)),
+			Booleän b => inc.Multiple % 2 == 0 ? Result.Ok : Assign(inc.Variable, b.Negate),
+			{ } v => throw new($"Cannot increment '{inc.Variable.Name}' because it has type {v.GetType().Name}")
+		};
+	}
+
+	private Result Decrement(Decrement dec) {
+		return Eval(dec.Variable) switch {
+			Number n => Assign(dec.Variable, new Number(n.Value - dec.Multiple)),
+			Booleän b => dec.Multiple % 2 == 0 ? Result.Ok : Assign(dec.Variable, b.Negate),
+			{ } v => throw new($"Cannot increment '{dec.Variable.Name}' because it has type {v.GetType().Name}")
+		};
+	}
 
 	private Result Conditional(Conditional cond) {
 		return Eval(cond.Condition).Truthy ? Exec(cond.Consequent) : Exec(cond.Alternate);
 	}
 
-	private Result Assign(Assign assign) {
-		env.SetVariable(assign.Variable, Eval(assign.Expr));
-		return Result.Ok;
-	}
+	private Result Assign(Variable variable, Value value)
+		=> env.SetVariable(variable, value);
+
+	private Result Assign(Assign assign)
+		=> Assign(assign.Variable, Eval(assign.Expr));
 
 	private Result Output(Output output) {
 		var value = Eval(output.Expr);

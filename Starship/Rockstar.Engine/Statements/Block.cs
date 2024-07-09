@@ -3,7 +3,11 @@ using System.Text;
 namespace Rockstar.Engine.Statements;
 
 public class Block(IEnumerable<Statement> statements) {
+
+	public Block(IEnumerable<Block> blocks) : this(blocks.SelectMany(b => b.Statements)) { }
 	public List<Statement> Statements { get; } = statements.ToList();
+	public static Block Empty => new();
+	public bool IsEmpty => !statements.Any();
 
 	public Block Concat(Block tail) {
 		Statements.AddRange(tail.Statements);
@@ -15,7 +19,7 @@ public class Block(IEnumerable<Statement> statements) {
 		return this;
 	}
 
-	public Block() : this([]) { }
+	public Block() : this(new List<Block>()) { }
 
 	public Block(Statement statement) : this([statement]) { }
 

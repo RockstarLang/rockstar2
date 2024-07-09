@@ -10,45 +10,49 @@
 @ignorecase true
 
 program <Block>
-	= ("" _ / EOL)+ p:program
-		{ p }
-	/ b:block
-		{ b }
-//	/ head:statement tail:program
-//		{ tail.Insert(head) }
-	/ ("" _ / EOL)* EOF
+	= ("" _ / EOL)* s:blocks EOB
+		{ s }
+	/ EOB
 		{ new Block() }
 
+blocks <Block>
+	= head:block EOS+ tail:blocks
+		{ head.Concat(tail) }
+	/ b:block
+		{ b }
+
 block <Block>
-	= head:statement EOS+ tail:block
-		{ new Block(head).Concat(tail) }
+	= head:statement EOS tail:block
+		{ tail.Insert(head) }
 	/ s:statement
 		{ new Block(s) }
 
 EOL = '\r'? '\n'
-EOS	= _? EOL _?
+EOS	= _? EOL _?	
+EOB = EOS EOS !EOF
+	/ ("" _ / EOL)* EOF
 EOF	= !.
-	/ unexpected:. #error{ "Unexpected character '" + Regex.Escape(unexpected) + "' at line " + state.Line + ", col " + (state.Column-1) }
-
-_	= (whitespace / comment)+
-
-whitespace = [ \t]
-
-comment
-	= '(' [^)]* ')'
-	/ '{' [^\}]* '}'
-	/ '[' [^\]]* ']'
+	/ unexpected:("" [^ \t\r\n]+) #error{ "Unexpected '" + Regex.Escape(unexpected) + "' at line " + state.Line + ", col " + (state.Column-1) }
 
 statement <Statement>
-	= output_stmt
-	/ assign_stmt
-	/ conditional
+	= alternate
+	/ output_stmt
+	/ assign_stmt 
+
+alternate <Conditional>
+	= c:conditional (_ / EOS) 'else' a:bonglit
+		{ c.Else(a) }
+	/ c:conditional { c }
 
 conditional <Conditional>
-	= 'if' _ e:expression _ c:block _ 'else' _ a:block
-		{ new Conditional(e, c, a, state.Source()) }
-//	/ 'if' _ e:expression s:program
-//		{ new Conditional(e, s, state.Source()) }
+	= 'if' _ e:expression a:bonglit
+		{ new Conditional(e, a, state.Source()) }
+
+bonglit <Block>
+	= EOS b:block
+		{ b }
+	/ _ s:statement
+		{ new Block(s) }
 
 assign_stmt <Statement>
 	= 'put' _ e:expression _ 'into' _ v:variable
@@ -240,3 +244,7 @@ unary_op <Operator>
 	/ minus { Operator.Minus }
 
 output		= "shout" / "say" / "scream" / "whisper"
+
+_	= "" (whitespace / comment)+
+whitespace = [ \t]
+comment	= '(' [^)]* ')'	/ '{' [^\}]* '}' / '[' [^\]]* ']'

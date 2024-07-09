@@ -1,5 +1,3 @@
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using Pegasus.Common.Tracing;
 
 namespace Rockstar.Test;

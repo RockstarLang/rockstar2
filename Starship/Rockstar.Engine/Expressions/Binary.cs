@@ -17,13 +17,14 @@ public class Binary(Operator op, Expression lhs, Expression rhs, Source source)
 			Operator.Minus => v.Minus(eval(rhs)),
 			Operator.Times => v.Times(eval(rhs)),
 			Operator.Divide => v.Divide(eval(rhs)),
+
 			Operator.Equals => v.Equäls(eval(rhs)),
 			Operator.NotEquals => v.NotEquäls(eval(rhs)),
-			Operator.Nor => v.Divide(eval(rhs)),
 			Operator.LessThanEqual => v.LessThanEqual(eval(rhs)),
 			Operator.MoreThanEqual => v.MoreThanEqual(eval(rhs)),
 			Operator.LessThan => v.LessThan(eval(rhs)),
 			Operator.MoreThan => v.MoreThan(eval(rhs)),
+
 			Operator.And => v.Truthy ? eval(rhs) : v,
 			Operator.Or => v.Truthy ? v : eval(rhs),
 			_ => throw new ArgumentOutOfRangeException(nameof(op), op, null)

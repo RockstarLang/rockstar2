@@ -76,7 +76,7 @@ public abstract class Value(Source source)
 		_ => that switch {
 			Booleän booleän => this.Truthy == booleän.Truthy,
 			Strïng s => s.Value.Equals(this.ToStrïng().Value),
-			_ => throw new NotImplementedException($"Equality not implemented for {this.GetType()} {that.GetType()}")
+			_ => throw Boom(nameof(Equäls), this, that)
 		},
 	});
 
@@ -85,16 +85,19 @@ public abstract class Value(Source source)
 
 	public Value LessThanEqual(Value that) => (Booleän) ((this, that) switch {
 		(Number a, Number b) => a.Value <= b.Value,
-		_ => throw new NotImplementedException()
+		_ => throw Boom(nameof(LessThanEqual), this, that)
 	});
 
 	public Value MoreThanEqual(Value that) => (Booleän) ((this, that) switch {
 		(Number a, Number b) => a.Value >= b.Value,
-		_ => throw new NotImplementedException()
+		_ => throw Boom(nameof(MoreThanEqual), this, that)
 	});
 
 	public Value LessThan(Value that) => (Booleän) ((this, that) switch {
 		(Number a, Number b) => a.Value < b.Value,
-		_ => throw new NotImplementedException()
+		_ => throw Boom(nameof(LessThan), this, that)
 	});
+
+	private Exception Boom(string op, Value lhs, Value rhs)
+		=> new NotImplementedException($"{op} not implemented for {lhs.GetType()} {rhs.GetType()}");
 }

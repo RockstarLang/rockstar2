@@ -76,6 +76,8 @@ bonglit <Block>
 assign_stmt <Statement>
 	= 'put' _ e:expression _ 'into' _ v:variable
 		{ new Assign(v, e, state.Source()) }
+	/ 'let' _ v:variable _ 'be' o:_op_ e:expression
+		{ new Assign(v, new Binary(o, new Looküp(v, state.Source()), e, state.Source()), state.Source()) }
 	/ 'let' _ v:variable _ 'be' _ e:expression
 		{ new Assign(v, e, state.Source()) }
 	/ v:variable _ says _ s:("" [^\r\n]*) 
@@ -126,7 +128,7 @@ proper_variable	// e.g. Big Bad Benny
 proper_noun
 	= !keyword uppercase_letter letter*
 
-keyword = (is / common_prefix / pronoun / 'let') !letter
+keyword = (is / common_prefix / pronoun / 'let' / 'with') !letter
 
 common_variable
 	= common_prefix _ simple_variable
@@ -135,7 +137,7 @@ common_prefix
 	= ('an' / 'a' / 'the' / 'my' / 'your' / 'our') !letter
 
 simple_variable
-	= ("" letter+)
+	= !keyword ("" letter+)
 
 letter
 	= uppercase_letter / lowercase_letter
@@ -213,17 +215,20 @@ math <Expression>
 	= sum
 
 sum <Expression> -memoize
-	= lhs:sum op:(plus/minus) rhs:product { new Binary(op, lhs, rhs, state.Source()) }
+	= lhs:sum op:(_plus_/_minus_) rhs:product { new Binary(op, lhs, rhs, state.Source()) }
 	/ product
 
 product <Expression> -memoize
-	= lhs:product op:(times/divide) rhs:primary { new Binary(op, lhs, rhs, state.Source()) }
+	= lhs:product op:(_times_/_divide_) rhs:primary { new Binary(op, lhs, rhs, state.Source()) }
 	/ primary
 
-plus	<Operator>	= (_? '+' _? / _ 'plus' _ / _ 'with' _ ) { Operator.Plus }
-minus	<Operator>	= (_? '-' _? / _ 'minus' _ / _ 'without' _ ) { Operator.Minus }
-times	<Operator>	= (_? '*' _? / _ 'times' _ / _ 'of' _ ) { Operator.Times }
-divide	<Operator>	= (_? '/' _? / _ 'over' _ / _ 'between' _ ) { Operator.Divide }
+_plus_	<Operator>	= (_? '+' _? / _ 'plus' _ / _ 'with' _ ) { Operator.Plus }
+_minus_	<Operator>	= (_? '-' _? / _ 'minus' _ / _ 'without' _ ) { Operator.Minus }
+_times_	<Operator>	= (_? '*' _? / _ 'times' _ / _ 'of' _ ) { Operator.Times }
+_divide_	<Operator>	= (_? '/' _? / _ 'over' _ / _ 'between' _ ) { Operator.Divide }
+
+_op_ <Operator>
+	= _plus_ / _minus_ / _times_ / _divide_
 
 primary <Expression>
 	= literal
@@ -255,14 +260,15 @@ string <Strïng>
 	= '"' contents:("" [^"]*) '"' { new Strïng(contents, state.Source(contents)) }
 
 number <Number>
-    = digits:([0-9]+ ("." [0-9]+)?) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
-	/ digits:("." [0-9]+) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
+    = digits:('-'? [0-9]+ ("." [0-9]+)?) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
+	/ digits:('-'? "." [0-9]+) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
 
 unary_op <Operator>
 	= not { Operator.Not }
-	/ minus { Operator.Minus }
+	/ _minus_ { Operator.Minus }
 
-output		= "shout" / "say" / "scream" / "whisper"
+output
+	= "shout" / "say" / "scream" / "whisper"
 
 _	= "" (whitespace / comment)+
 whitespace = [ \t]

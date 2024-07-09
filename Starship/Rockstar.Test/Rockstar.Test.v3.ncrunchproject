@@ -3,7 +3,7 @@
     <DefaultTestTimeout>5000</DefaultTestTimeout>
     <IgnoredTests>
       <FixtureTestSelector>
-        <FixtureName>Rockstar.Test.FixtureTests</FixtureName>
+        <FixtureName>Rockstar.Test.FixturePreTests</FixtureName>
       </FixtureTestSelector>
     </IgnoredTests>
   </Settings>

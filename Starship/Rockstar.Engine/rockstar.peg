@@ -20,7 +20,7 @@ __ = ("" _ / EOL)*
 block <Block>
 	= head:statement EOS tail:block
 		{ tail.Insert(head) }
-	/ s:statement EOS
+	/ s:statement
 		{ new Block(s) }
 
 EOS	= _? EOL _?
@@ -55,25 +55,15 @@ chonk <Block>
 		{ new Block(s) }
 
 alternate <Conditional>
-//	= 'if' _ e:expression EOS c:statement EOS 'else' EOS a:statement 
-//		{ new Conditional(e, new Block(c), state.Source()).Else(new Block(a)) }
-	= 'if' _ e:expression EOS c:block 'else' EOS a:block
-		{ new Conditional(e, c, state.Source()).Else(a) }
-	/ c:conditional _ 'else' _ a:statement
-		{ c.Else(new Block(a)) }
-	/ c:conditional EOS 'else' _ a:statement
-		{ c.Else(new Block(a)) }
-	/ c:conditional _ 'else' EOS a:block
+	= c:conditional _? 'else' a:chonk
 		{ c.Else(a) }
-	/ c:conditional EOS 'else' EOS a:block
+	/ c:conditional EOS 'else' a:chonk
 		{ c.Else(a) }
 	/ c:conditional { c }
 
 conditional <Conditional>
-	= 'if' _ e:expression EOS b:block
-		{ new Conditional(e, b, state.Source()) }
-	/ 'if' _ e:expression _ s:statement
-		{ new Conditional(e, new Block(s), state.Source()) }
+	= 'if' _ e:expression c:chonk
+		{ new Conditional(e, c, state.Source()) }
 
 loop <Loop>
 	= 'while' _ e:expression _ s:statement

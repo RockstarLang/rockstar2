@@ -36,17 +36,12 @@ statement <Statement>
 	/ alternate
 	/ output_stmt
 	/ function_call
-	/ function
 	/ assign_stmt
 	/ increment
 	/ decrement
 	
 
 takes = ('takes' / 'wants')
-
-function <Function>
-	= name:variable _ takes _ args:variable_list EOS body:statements
-		{ new Function(name, args, body, state.Source()) }
 
 function_call <FunctionCall>
 	= name:variable _ 'taking' _ args:expression_list
@@ -113,6 +108,8 @@ assign_stmt <Statement>
 		{ new Assign(v, new Binary(o, new Looküp(v, state.Source()), e, state.Source()), state.Source()) }
 	/ 'let' _ v:variable _ 'be' _ e:expression
 		{ new Assign(v, e, state.Source()) }
+	/ name:variable _ takes _ args:variable_list EOS body:statements
+		{ new Assign(name, new Function(args, body, state.Source()), state.Source()) }
 	/ v:variable _ says _ s:("" [^\r\n]*) 
 		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
 	/ v:variable _is _ l:(literal / poetic_literal)

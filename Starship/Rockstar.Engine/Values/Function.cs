@@ -18,8 +18,7 @@ public class Function(IEnumerable<Variable> args, Block body, Source source)
 	}
 
 	public Result Apply(RockstarEnvironment env, List<Expression> callArgs) {
-		var scope = env.Extend();
-
+		throw new NotImplementedException();
 
 	}
 }

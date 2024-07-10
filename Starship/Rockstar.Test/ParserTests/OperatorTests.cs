@@ -1,6 +1,6 @@
 using Pegasus.Common.Tracing;
 
-namespace Rockstar.Test;
+namespace Rockstar.Test.ParserTests;
 
 public class OperatorTests {
 	[Theory]

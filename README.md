@@ -1,7 +1,9 @@
 # rockstar2
 It's time. Rockstar 2: "The Difficult Second Version"
 
-OK, here's how the build works
+OK, project constraints:
+
+examples/
 
 ```
 codewithrockstar.com

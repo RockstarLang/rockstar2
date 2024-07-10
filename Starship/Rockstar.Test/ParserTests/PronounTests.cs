@@ -1,7 +1,7 @@
 using Pegasus.Common.Tracing;
 using Rockstar.Engine.Expressions;
 
-namespace Rockstar.Test;
+namespace Rockstar.Test.ParserTests;
 
 public class PronounTests(ITestOutputHelper output) {
 

@@ -1,24 +1,41 @@
+using Rockstar.Engine;
+
 namespace Rockstar.Test;
 
 public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
-	private static string[] excludes = []; // ["arrays", "conditionals", "control-flow", "examples"];
-	private static IEnumerable<string> ListRockFiles() =>
-		Directory.GetFiles("fixtures", "*.rock", SearchOption.AllDirectories)
-			.Where(f => !excludes.Any(f.Contains));
+	protected const string EXAMPLES_DIRECTORY = "examples";
+	protected const string FIXTURES_DIRECTORY = "fixtures";
 
-	public static IEnumerable<object[]> GetFiles()
-		=> ListRockFiles().Select(filePath => new[] { filePath });
+	private static string QualifyRelativePath(string path) {
+#if NCRUNCH
+		var testProjectFilePath = NCrunchEnvironment.GetOriginalProjectPath();
+		var testProjectDirectory = Path.GetDirectoryName(testProjectFilePath);
+		var fileInfo = new FileInfo(Path.Combine(testProjectDirectory, path));
+		return fileInfo.FullName;
+#else
+		return Path.GetFullPath(path);
+#endif
+	}
 
-	//public static IEnumerable<object[]> GetFilesWithExpectations()
-	//	=> ListRockFiles()
-	//		.Where(filePath => !String.IsNullOrWhiteSpace(ExtractExpects(filePath)))
-	//		.Select(filePath => new[] { filePath });
+	private static IEnumerable<string> ListRockFiles(string relativePath) {
+		var absolutePath = QualifyRelativePath(relativePath);
+		var allFiles = Directory.GetFiles(absolutePath, "*.rock", SearchOption.AllDirectories);
+		var trimmedFiles = allFiles.Select(f => f.Replace(absolutePath, "").Trim(Path.DirectorySeparatorChar));
+		return trimmedFiles;
+	}
+
+	public static IEnumerable<object[]> AllExampleFiles()
+		=> ListRockFiles(EXAMPLES_DIRECTORY).Select(filePath => new[] { filePath });
+
+	public static IEnumerable<object[]> AllFixtureFiles()
+		=> ListRockFiles(FIXTURES_DIRECTORY).Select(filePath => new[] { filePath });
 
 	public static string ExtractExpects(string filePathOrSourceCode) {
 		if (File.Exists(filePathOrSourceCode + ".out")) {
 			return File.ReadAllText(filePathOrSourceCode + ".out", Encoding.UTF8).ReplaceLineEndings();
 		}
+
 		var source = (File.Exists(filePathOrSourceCode)
 			? File.ReadAllText(filePathOrSourceCode, Encoding.UTF8)
 			: filePathOrSourceCode);
@@ -38,6 +55,49 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 					break;
 			}
 		}
+
 		return String.Join("", output).ReplaceLineEndings();
+	}
+
+	protected static readonly Engine.Parser Parser = new();
+
+	private void PrettyPrint(string source, string filePath, FormatException ex) {
+		var cursor = ex.Data["cursor"] as Cursor;
+		if (cursor == default) return;
+		var outputLine = cursor.Line;
+		var line = source.Split('\n')[cursor.Line - 1].TrimEnd('\r');
+		testOutput.WriteLine(line);
+		testOutput.WriteLine(String.Empty.PadLeft(cursor.Column - 1) + "^ error is here!");
+		var ncrunchOutputMessage = $"   at <Rockstar code> in {filePath}:line {outputLine}";
+		testOutput.WriteLine(ncrunchOutputMessage);
+	}
+
+	private string RunProgram(Block program) {
+		var env = new TestEnvironment();
+		var interpreter = new Interpreter(env);
+		interpreter.Exec(program);
+		return env.Output;
+	}
+
+	public void RunFile(string filePath, string directory) {
+		var relativePath = Path.Combine(directory, filePath);
+		filePath = QualifyRelativePath(relativePath);
+		var source = File.ReadAllText(filePath, Encoding.UTF8);
+		Block program;
+		try {
+			program = Parser.Parse(source);
+		} catch (FormatException ex) {
+			PrettyPrint(source, filePath, ex);
+			throw;
+		}
+		try {
+			var result = RunProgram(program);
+			var expect = ExtractExpects(filePath);
+			if (String.IsNullOrEmpty(expect)) return;
+			result.ShouldBe(expect);
+		} catch (Exception) {
+			testOutput.WriteNCrunchFilePath(filePath);
+			throw;
+		}
 	}
 }

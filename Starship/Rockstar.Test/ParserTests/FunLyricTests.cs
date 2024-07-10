@@ -1,4 +1,4 @@
-namespace Rockstar.Test;
+namespace Rockstar.Test.ParserTests;
 
 public class FunLyricTests(ITestOutputHelper output) : ParserTestBase(output) {
 

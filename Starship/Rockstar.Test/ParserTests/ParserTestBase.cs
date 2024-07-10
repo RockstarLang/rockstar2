@@ -1,6 +1,4 @@
-using Microsoft.VisualStudio.TestPlatform.Common.DataCollection;
-
-namespace Rockstar.Test;
+namespace Rockstar.Test.ParserTests;
 
 public class ParserTestBase(ITestOutputHelper output) {
 	protected Block Parse(string source) {

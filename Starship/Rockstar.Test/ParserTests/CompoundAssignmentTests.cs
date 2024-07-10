@@ -1,4 +1,4 @@
-namespace Rockstar.Test;
+namespace Rockstar.Test.ParserTests;
 
 public class CompoundAssignmentTests(ITestOutputHelper output) : ParserTestBase(output) {
 	[Theory]

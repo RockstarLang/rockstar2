@@ -20,7 +20,7 @@ __ = ("" _ / EOL)*
 statements <Block>
 	= head:statement EOS tail:statements
 		{ tail.Insert(head) }
-	/ s:statement EOS
+	/ s:statement // THIS IS THE EOS THAT MAKES IT ALL GO WONKULAR EOS
 		{ new Block(s) }
 
 EOS	= _? EOL _?
@@ -80,11 +80,13 @@ decrement <Decrement>
 block <Block>
 	= _ s:statement
 		{ new Block(s) }
-	/ EOS b:statements
+	/ EOS b:statements 
 		{ b }
 			
 alternate <Conditional>
-	= c:conditional _? 'else' a:block
+	= c:conditional 'else' a:block
+		{ c.Else(a) }
+	/ c:conditional _? 'else' a:block
 		{ c.Else(a) }
 	/ c:conditional EOS 'else' a:block
 		{ c.Else(a) }
@@ -97,11 +99,11 @@ conditional <Conditional>
 loop <Loop>
 	= 'while' _ e:expression _ s:statement
 		{ new WhileLoop(e, new Block(s), state.Source()) }
-	/ 'while' _ e:expression EOS b:statements
+	/ 'while' _ e:expression EOS b:statements EOS
 		{ new WhileLoop(e, b, state.Source()) }
 	/ 'until' _ e:expression _ s:statement
 		{ new UntilLoop(e, new Block(s), state.Source()) }
-	/ 'until' _ e:expression EOS b:statements
+	/ 'until' _ e:expression EOS b:statements EOS
 		{ new UntilLoop(e, b, state.Source()) }
 
 assign_stmt <Statement>

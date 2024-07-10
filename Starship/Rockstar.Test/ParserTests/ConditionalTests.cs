@@ -1,6 +1,4 @@
-using Pegasus.Common.Tracing;
-
-namespace Rockstar.Test;
+namespace Rockstar.Test.ParserTests;
 
 public class ConditionalTests(ITestOutputHelper output) {
 	[Theory]
@@ -59,6 +57,15 @@ public class ConditionalTests(ITestOutputHelper output) {
 	            """)]
 	[InlineData("if true if true if true say 2")]
 	[InlineData("if foo say 1 else if bar say 2 else if baz say 3")]
+	[InlineData("""
+	            if true
+	            if false
+	            say "1"
+	            else
+	            say "2"
+	            else
+	            say "3"
+	            """)]
 	public void ParserParsesSimpleConditionals(string source) {
 		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
 		var result = parser.Parse(source);

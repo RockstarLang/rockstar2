@@ -44,6 +44,17 @@ public class FunctionTests(ITestOutputHelper output) : ParserTestBase(output) {
 		Parse(source);
 	}
 
+	[Fact]
+	public void FunctionWithReturnStatementWorks() {
+		var source = """
+		             Function takes x
+		             give back x with x
+		             (end function)
+		             say Function taking 1, 2
+		             """;
+		Run(source).ShouldBe("3");
+	}
+
 	[Theory]
 	[InlineData("""
 	            Foo takes bar

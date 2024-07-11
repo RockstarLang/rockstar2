@@ -36,9 +36,14 @@ statement <Statement>
 	/ alternate
 	/ output_stmt
 	/ function_call
+	/ return
 	/ assign_stmt
 	/ increment
 	/ decrement
+
+return <Return>
+	= 'give back' _ e:expression
+		{ new Return(e, state.Source()) }
 
 takes = ('takes' / 'wants')
 
@@ -77,19 +82,29 @@ block <Block>
 		{ new Block(s) }
 	/ EOS b:statements 
 		{ b }
-			
-alternate <Conditional>
-	= c:conditional 'else' a:block
-		{ c.Else(a) }
-	/ c:conditional _? 'else' a:block
-		{ c.Else(a) }
-	/ c:conditional EOS 'else' a:block
-		{ c.Else(a) }
-	/ c:conditional { c }
 
-conditional <Conditional>
-	= 'if' _ e:expression c:block
+alternate <Conditional>
+	= 'if' _ e:expression c:block 'else' a:block
+		{ new Conditional(e, c, state.Source()).Else(a) }
+	/ 'if' _ e:expression c:block _? 'else' a:block
+		{ new Conditional(e, c, state.Source()).Else(a) }
+	/ 'if' _ e:expression c:block EOS 'else' a:block
+		{ new Conditional(e, c, state.Source()).Else(a) }
+	/ 'if' _ e:expression c:block
 		{ new Conditional(e, c, state.Source()) }
+
+//alternate <Conditional>
+//	= c:conditional 'else' a:block
+//		{ c.Else(a) }
+//	/ c:conditional _? 'else' a:block
+//		{ c.Else(a) }
+//	/ c:conditional EOS 'else' a:block
+//		{ c.Else(a) }
+//	/ c:conditional { c }
+//
+//conditional <Conditional>
+//	= 'if' _ e:expression c:block
+//		{ new Conditional(e, c, state.Source()) }
 
 loop <Loop>
 	= 'while' _ e:expression _ s:statement
@@ -180,11 +195,16 @@ lowercase_letter
 
 expression <Expression>
 	= unary
+	/ function_call
 	/ variable
 
 unary <Expression>
-	= op:unary_op ex:expression
+	= op:unary_op ex:unary
 		{ new Unary(op, ex, state.Source()) }
+	/ primary
+
+primary
+	= function_call
 	/ or
 
 // nor	 <Expression>

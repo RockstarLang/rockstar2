@@ -65,28 +65,3 @@ public class ConditionalTests(ITestOutputHelper output) {
 		output.WriteLine(result.ToString());
 	}
 }
-
-public class DylanTracer(ITestOutputHelper output) : ITracer {
-	private int indentDepth = 0;
-	public void TraceCacheHit<T>(string ruleName, Cursor cursor, CacheKey cacheKey, IParseResult<T> parseResult) {
-	
-	}
-
-	public void TraceCacheMiss(string ruleName, Cursor cursor, CacheKey cacheKey) {
-		
-	}
-
-	public void TraceInfo(string ruleName, Cursor cursor, string info) {
-		
-	}
-
-	private Stack<string> rules = new();
-	public void TraceRuleEnter(string ruleName, Cursor cursor) {
-		rules.Push(ruleName);
-	}
-
-	public void TraceRuleExit<T>(string ruleName, Cursor cursor, IParseResult<T> parseResult) {
-		output.WriteLine(String.Join(" > ", rules) + parseResult);
-		rules.Pop();
-	}
-}

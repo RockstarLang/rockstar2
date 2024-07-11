@@ -3,12 +3,12 @@ using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Engine.Statements;
 
-public class FunctionCall(Variable name, List<Expression> args, Source source)
+public class FunctionCall(Variable function, List<Expression> args, Source source)
 	: Statement(source) {
-	public Variable Name => name;
+	public Variable Function => function;
 	public List<Expression> Args => args;
 	public override void Print(StringBuilder sb, string prefix = "") {
-		sb.Append(prefix).AppendLine($"function call: {name.Name}");
+		sb.Append(prefix).AppendLine($"function call: {function.Name}");
 		foreach (var arg in args) {
 			arg.Print(sb, prefix + INDENT);
 		}

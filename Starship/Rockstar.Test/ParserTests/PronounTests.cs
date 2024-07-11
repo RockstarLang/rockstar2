@@ -79,8 +79,7 @@ public class PronounTests(ITestOutputHelper output) {
 		output.WriteLine(result.ToString());
 		result.Statements.Count.ShouldBe(5);
 		var e = new TestEnvironment();
-		var i = new Interpreter(e);
-		i.Exec(result);
+		e.Exec(result);
 		e.Output.ShouldBe("""
 		                  true
 		                  false

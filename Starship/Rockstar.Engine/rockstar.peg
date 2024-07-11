@@ -39,7 +39,6 @@ statement <Statement>
 	/ assign_stmt
 	/ increment
 	/ decrement
-	
 
 takes = ('takes' / 'wants')
 
@@ -55,7 +54,8 @@ expression_list <List<Expression>>
 _XLS_
 	= (_? ', and' _ / _? ('&' / ',' / "'n'") _?)
 
-_VLS_ = _XLS_ / _ 'and' _
+_VLS_
+	= _ 'and' _ / _XLS_
 
 variable_list <List<Variable>>
 	= head:variable _VLS_ tail:variable_list

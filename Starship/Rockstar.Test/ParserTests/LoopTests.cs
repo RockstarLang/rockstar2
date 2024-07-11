@@ -41,8 +41,7 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 		             """;
 		var parsed = Parse(source);
 		var e = new TestEnvironment();
-		var i = new Interpreter(e);
-		var result = i.Exec(parsed);
+		var result = e.Exec(parsed);
 		e.Output.ReplaceLineEndings().ShouldBe("0\n1\n2\n3\n4\nfinished\n".ReplaceLineEndings());
 	}
 
@@ -58,8 +57,7 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 		             """;
 		var parsed = Parse(source);
 		var e = new TestEnvironment();
-		var i = new Interpreter(e);
-		var result = i.Exec(parsed);
+		var result = e.Exec(parsed);
 		e.Output.ReplaceLineEndings().ShouldBe("0\n1\n2\n3\n4\nfinished\n".ReplaceLineEndings());
 	}
 

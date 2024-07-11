@@ -1,14 +1,12 @@
 namespace Rockstar.Test;
 
-public class TestEnvironment : RockstarEnvironment {
+public class StringBuilderIO : RockstarIO {
+	private readonly StringBuilder sb = new();
+	public string? Read() => null;
+	public void Write(string? s) => sb.Append(s);
+	public string Output => sb.ToString();
+}
 
-	private readonly StringBuilder outputStringBuilder = new();
-	public string Output => outputStringBuilder.ToString();
-	public override string? ReadInput() => null;
-
-	public override void WriteLine(string? output)
-		=> this.outputStringBuilder.Append(output + Environment.NewLine);
-
-	public override void Write(string s)
-		=> this.outputStringBuilder.Append(s);
+public class TestEnvironment() : RockstarEnvironment(new StringBuilderIO()) {
+	public string Output => ((StringBuilderIO) IO).Output;
 }

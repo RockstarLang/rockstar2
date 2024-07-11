@@ -2,7 +2,7 @@ using Rockstar.Engine;
 namespace Rockstar;
 
 public static class Program {
-	private static readonly RockstarEnvironment env = new ConsoleEnvironment();
+	private static readonly RockstarEnvironment env = new(new ConsoleIO());
 	private static readonly Parser parser = new();
 	public static void Main(string[] args) {
 		switch (args.Length) {
@@ -41,8 +41,7 @@ public static class Program {
 			var program = parser.Parse(source);
 			Console.WriteLine(program);
 			Console.WriteLine(String.Empty.PadLeft(40, '-'));
-			var interpreter = new Interpreter(env);
-			interpreter.Exec(program);
+			env.Exec(program);
 		} catch (FormatException ex) {
 			Console.Error.WriteLine(ex);
 		}

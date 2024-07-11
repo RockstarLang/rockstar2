@@ -74,8 +74,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	private string RunProgram(Block program) {
 		var env = new TestEnvironment();
-		var interpreter = new Interpreter(env);
-		interpreter.Exec(program);
+		env.Exec(program);
 		return env.Output;
 	}
 

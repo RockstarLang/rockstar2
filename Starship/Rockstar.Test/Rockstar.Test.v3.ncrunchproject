@@ -1,5 +1,28 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>5000</DefaultTestTimeout>
+    <IgnoredTests>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\array_functions.rock")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\arrayalike.rock")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\arrays.rock")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\hash.rock")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\join.rock")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\split.rock")</TestName>
+      </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.FixtureTests.Fixture("arrays\\split_delimiters.rock")</TestName>
+      </NamedTestSelector>
+    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

@@ -23,9 +23,9 @@ public class RockstarEnvironment(RockstarIO io) {
 	}
 
 	protected RockstarIO IO = io;
-	
+
 	public string? ReadInput() => IO.Read();
-	public void WriteLine(string? output) => IO.Write((output ?? String.Empty)+ Environment.NewLine);
+	public void WriteLine(string? output) => IO.Write((output ?? String.Empty) + Environment.NewLine);
 	public void Write(string output) => IO.Write(output);
 	private Variable? pronounTarget;
 
@@ -42,7 +42,7 @@ public class RockstarEnvironment(RockstarIO io) {
 			variables[variable.Key] = value;
 		}
 
-		return Result.Ok;
+		return new(value);
 	}
 
 	public Value GetVariable(Variable variable) {
@@ -52,7 +52,10 @@ public class RockstarEnvironment(RockstarIO io) {
 
 	public Result Exec(Block block) {
 		var result = Result.Unknown;
-		foreach (var statement in block.Statements) result = Exec(statement);
+		foreach (var statement in block.Statements) {
+			result = Exec(statement);
+			if (result.WhatToDo == WhatToDo.Return) return result;
+		}
 		return result;
 	}
 
@@ -64,8 +67,22 @@ public class RockstarEnvironment(RockstarIO io) {
 		Decrement dec => Decrement(dec),
 		Loop loop => Loop(loop),
 		FunctionCall call => Call(call),
+		Return r => Return(r),
+		Listen l => Listen(l),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Listen(Listen l) {
+		var input = ReadInput();
+		Value value = input == default ? new Null() : new Strïng(input);
+		if (l.Variable != default) SetVariable(l.Variable, value);
+		return new(value);
+	}
+
+	private Result Return(Return r) {
+		var value = Eval(r.Expression);
+		return Result.Return(value);
+	}
 
 	private Result Call(FunctionCall call) {
 		var value = GetVariable(call.Function);
@@ -91,7 +108,7 @@ public class RockstarEnvironment(RockstarIO io) {
 	private Result Increment(Increment inc) {
 		return Eval(inc.Variable) switch {
 			Number n => Assign(inc.Variable, new Number(n.Value + inc.Multiple)),
-			Booleän b => inc.Multiple % 2 == 0 ? Result.Ok : Assign(inc.Variable, b.Negate),
+			Booleän b => inc.Multiple % 2 == 0 ? new(b) : Assign(inc.Variable, b.Negate),
 			{ } v => throw new($"Cannot increment '{inc.Variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
@@ -99,7 +116,7 @@ public class RockstarEnvironment(RockstarIO io) {
 	private Result Decrement(Decrement dec) {
 		return Eval(dec.Variable) switch {
 			Number n => Assign(dec.Variable, new Number(n.Value - dec.Multiple)),
-			Booleän b => dec.Multiple % 2 == 0 ? Result.Ok : Assign(dec.Variable, b.Negate),
+			Booleän b => dec.Multiple % 2 == 0 ? new(b) : Assign(dec.Variable, b.Negate),
 			{ } v => throw new($"Cannot increment '{dec.Variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
@@ -117,13 +134,12 @@ public class RockstarEnvironment(RockstarIO io) {
 	private Result Output(Output output) {
 		var value = Eval(output.Expr);
 		WriteLine(value.ToStrïng().Value);
-		return Result.Ok;
+		return new(value);
 	}
 
 	private Value Eval(Expression expr) => expr switch {
 		Value value => value,
 		Binary binary => binary.Resolve(Eval),
-
 		// not sure what the difference is here.... ?
 		Looküp lookup => GetVariable(lookup.Variable),
 		Variable v => GetVariable(v),
@@ -132,6 +148,7 @@ public class RockstarEnvironment(RockstarIO io) {
 			{ Op: Operator.Not } => Booleän.Not(Eval(u.Expr)),
 			_ => throw new NotImplementedException($"Cannot apply {u.Op} to {u.Expr}")
 		},
+		FunctionCall call => Call(call).Value,
 		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
 	};
 }

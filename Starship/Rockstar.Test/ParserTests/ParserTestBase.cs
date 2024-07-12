@@ -1,3 +1,5 @@
+using Pegasus.Common.Tracing;
+
 namespace Rockstar.Test.ParserTests;
 
 public class ParserTestBase(ITestOutputHelper output) {
@@ -8,10 +10,11 @@ public class ParserTestBase(ITestOutputHelper output) {
 		return result;
 	}
 
-	protected string Run(string source) {
-		var parsed = Parse(source);
+	protected string Run(string source) => Run(Parse(source));
+
+	protected string Run(Block block) {
 		var e = new TestEnvironment();
-		e.Exec(parsed);
+		e.Exec(block);
 		return e.Output;
 	}
 

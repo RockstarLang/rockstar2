@@ -50,9 +50,86 @@ public class FunctionTests(ITestOutputHelper output) : ParserTestBase(output) {
 		             Function takes x
 		             give back x with x
 		             (end function)
-		             say Function taking 1, 2
+		             say Function taking 2
 		             """;
-		Run(source).ShouldBe("3");
+		Run(source).ShouldBe("4\n".ReplaceLineEndings());
+	}
+
+	[Fact]
+	public void ParseFunctionWorks() {
+		var source = """
+		             AddAndPrint takes X, and Y
+		             put X plus Y into Value
+		             say Value
+		             Give back Value
+		             (end function)
+		             say AddAndPrint taking 3, 4
+		             """;
+		Run(source).ShouldBe("7\n7\n".ReplaceLineEndings());
+	}
+
+	[Fact]
+	public void ParsePolly() {
+		var source = """
+		             Polly wants a cracker
+		             Cheese is delicious
+		             Put a cracker with cheese in your mouth
+		             Give it back
+		             
+		             Shout Polly taking 100
+		             """;
+		Run(source).ShouldBe("109\n".ReplaceLineEndings());
+	}
+
+	[Fact]
+	public void RecursionWorks() {
+		var source = """
+		             Decrement takes X
+		             If X is nothing
+		             Give back X
+		             Else
+		             Put X minus 1 into NewX
+		             Give back Decrement taking NewX
+		             
+		             Say Decrement taking 5
+		             
+		             """;
+		var program = Parse(source);
+		output.WriteLine(program.ToString());
+		var result = Run(program);
+		Run(source).ShouldBe("0\n".ReplaceLineEndings());
+
+	}
+
+	[Fact]
+	public void ParseFunctionWithExpressionListWorks() {
+		var source = """
+		             AddOrSub takes X, and B
+		             if B
+		             Give Back X plus 1
+		             (end if)
+		             say "else"
+		             Give Back X minus 1
+		             (end function)
+		             say AddOrSub taking 4, true
+		             say AddOrSub taking 4, false
+
+		             """;
+		var program = Parse(source);
+		output.WriteLine(program.ToString());
+		var result = Run(program);
+		Run(source).ShouldBe("5\nelse\n3\n".ReplaceLineEndings());
+	}
+
+	[Fact]
+	public void FunctionWithMultipleParametersAndReturnStatementWorks() {
+		var source = """
+		             Function takes x and y and z
+		             give back x with " " with y with " " with z
+		             (end function)
+		             say Function taking "eddie", "van", and "halen"
+		             """;
+		Run(source).ShouldBe("eddie van halen\n".ReplaceLineEndings());
 	}
 
 	[Theory]

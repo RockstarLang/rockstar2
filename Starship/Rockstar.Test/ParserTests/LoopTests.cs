@@ -15,18 +15,25 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 
 	[Theory]
 	[InlineData("""
+	            Say "begin"
 	            X is 10
 	            While X is greater than nothing
+	            Y is 0
 	            While Y is less than 3
 	            Build Y up
 	            Say Y
-
+	            
 	            Knock X down
+	            Say X
+	            
+	            Say "end"
+	            
 
 	            """)]
 	public void ParserParsesNestedLoop(string source) {
 		var parsed = Parse(source);
-		parsed.Statements.Count.ShouldBe(2);
+		output.WriteLine(parsed.ToString());
+		parsed.Statements.Count.ShouldBe(4);
 	}
 
 	[Fact]

@@ -3,6 +3,7 @@ using Pegasus.Common.Tracing;
 namespace Rockstar.Test.ParserTests;
 
 public class LiteralTests {
+
 	[Theory]
 	[InlineData("say 1")]
 	[InlineData("say 1.1")]
@@ -26,5 +27,17 @@ public class LiteralTests {
 		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
 		var assign = parser.Parse(source).Statements[0] as Assign;
 		((Number) assign.Expr).Value.ShouldBe(value);
+	}
+
+	[Theory]
+	[InlineData("""
+	            variables are 1
+	            say variables
+	            Variables Are 2
+	            say variables
+	            """)]
+	public void PoeticLiteralWorks(string source) {
+		var parser = new Parser(); //  { Tracer = DiagnosticsTracer.Instance };
+		var result = parser.Parse(source);
 	}
 }

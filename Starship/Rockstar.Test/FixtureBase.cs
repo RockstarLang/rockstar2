@@ -72,8 +72,9 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		testOutput.WriteLine(ncrunchOutputMessage);
 	}
 
-	private string RunProgram(Block program) {
-		var env = new TestEnvironment();
+	private string RunProgram(Block program, Queue<string>? inputs = null) {
+		string? ReadInput() => inputs != null && inputs.TryDequeue(out var result) ? result : null;
+		var env = new TestEnvironment(ReadInput);
 		env.Exec(program);
 		return env.Output;
 	}
@@ -90,7 +91,8 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			throw;
 		}
 		try {
-			var result = RunProgram(program);
+			var inputs = ReadInputs(filePath);
+			var result = RunProgram(program, inputs);
 			var expect = ExtractExpects(filePath);
 			if (String.IsNullOrEmpty(expect)) return;
 			result.ShouldBe(expect);
@@ -99,4 +101,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			throw;
 		}
 	}
+
+	private Queue<string>? ReadInputs(string filePath)
+		=> File.Exists(filePath + ".in") ? new(File.ReadAllLines(filePath + ".in")) : null;
 }

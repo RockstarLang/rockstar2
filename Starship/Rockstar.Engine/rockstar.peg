@@ -108,9 +108,9 @@ loopable <Block>
 	/ EOL b:block EOL { b }
 
 loop <Loop>
-	= while _ e:expression _ s:loopable
+	= while _ e:expression s:loopable
 		{ new WhileLoop(e, s, state.Source()) }
-	/ until _ e:expression _ s:loopable
+	/ until _ e:expression s:loopable
 		{ new UntilLoop(e, s, state.Source()) }
 
 output_stmt  <Statement>
@@ -191,15 +191,15 @@ comparator <Operator>
 	/ _is _ as _ gte _ as { Operator.MoreThanEqual }
 	/ _is _ as _ lte _ as { Operator.LessThanEqual }
 
-addition <Expression>
-	= lhs:product op:(_plus_/_minus_) rhs:addition
+addition <Expression> -memoize
+	= lhs:addition op:(_plus_/_minus_) rhs:product
 		{ new Binary(op, lhs, rhs, state.Source()) }
 //	= head:product_simple op:(_plus_/_minus_) tail:product_expression_list
 //		#error{ "wonk!" }
 	/ product
 
-product <Expression>
-	= lhs:simple_expression op:(_times_/_divide_) rhs:product
+product <Expression> -memoize
+	= lhs:product op:(_times_/_divide_) rhs:simple_expression 
 		{ new Binary(op, lhs, rhs, state.Source()) }
 	/ simple_expression
 	

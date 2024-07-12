@@ -9,6 +9,10 @@ public class Block(IEnumerable<Statement> statements) {
 	public static Block Empty => new();
 	public bool IsEmpty => !statements.Any();
 
+	public Block Concat(IEnumerable<Statement> tail) {
+		Statements.AddRange(tail);
+		return this;
+	}
 	public Block Concat(IEnumerable<Block> tail) {
 		Statements.AddRange(tail.SelectMany(t => t.Statements));
 		return this;

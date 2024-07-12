@@ -3,7 +3,7 @@ using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Test.ParserTests;
 
-public class VariableTests {
+public class VariableTests(ITestOutputHelper output) : ParserTestBase(output) {
 	[Theory]
 	[InlineData("a variable", "a  variable")]
 	[InlineData("My variable", "MY VARIABLE")]
@@ -72,8 +72,7 @@ public class VariableTests {
 	            """)]
 	[InlineData("Variable is 2")]
 	public void LiteralAssignmentsAreCaseInsensitive(string source) {
-		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
-		var result = parser.Parse(source);
+		Parse(source);
 	}
 
 	[Theory]
@@ -82,8 +81,7 @@ public class VariableTests {
 	[InlineData("my dog says he's got a new theory to share")]
 	[InlineData("the cat says he's got a new theory to share")]
 	public void ParserParsesPoeticStrings(string source) {
-		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
-		var result = parser.Parse(source);
+		Parse(source);
 	}
 
 	[Theory]
@@ -94,7 +92,28 @@ public class VariableTests {
 	//            Shout italics (prints: true)
 	//            """)]
 	public void ParserParsesVariableStartingWithKeyword(string source) {
-		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
-		var result = parser.Parse(source);
+		Parse(source);
+	}
+}
+
+public class TestOutputTracer(ITestOutputHelper Output) : ITracer {
+	public void TraceCacheHit<T>(string ruleName, Cursor cursor, CacheKey cacheKey, IParseResult<T> parseResult) {
+		
+	}
+
+	public void TraceCacheMiss(string ruleName, Cursor cursor, CacheKey cacheKey) {
+		
+	}
+
+	public void TraceInfo(string ruleName, Cursor cursor, string info) {
+		
+	}
+
+	public void TraceRuleEnter(string ruleName, Cursor cursor) {
+		
+	}
+
+	public void TraceRuleExit<T>(string ruleName, Cursor cursor, IParseResult<T> parseResult) {
+		Output.WriteLine(ruleName);
 	}
 }

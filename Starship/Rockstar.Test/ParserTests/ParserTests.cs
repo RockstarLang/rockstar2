@@ -2,7 +2,7 @@ using Pegasus.Common.Tracing;
 
 namespace Rockstar.Test.ParserTests;
 
-public class ParserTests(ITestOutputHelper helper) {
+public class ParserTests(ITestOutputHelper output) : ParserTestBase(output) {
 	[Theory]
 	[InlineData("")]
 	[InlineData(" ")]
@@ -36,8 +36,8 @@ public class ParserTests(ITestOutputHelper helper) {
 	            """)]
 	[InlineData("say \"pass\" (prints: pass)")]
 	public void ParserParsesWeirdPrograms(string source) {
-		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
-		var result = parser.Parse(source);
+		var result = Parse(source);
+		Console.WriteLine(result);
 		result.Statements.Count.ShouldBe(1);
 	}
 

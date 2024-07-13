@@ -91,7 +91,7 @@ public class PronounTests(ITestOutputHelper output) {
 	[Fact]
 	public void Whatever() {
 		var source = "put 1 into Epic Music";
-		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
+		var parser = new Parser();
 		var result = parser.Parse(source);
 		result.Statements.Count.ShouldBe(1);
 		Console.WriteLine(result.ToString());

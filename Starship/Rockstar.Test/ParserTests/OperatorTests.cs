@@ -8,13 +8,18 @@ public class OperatorTests(ITestOutputHelper output) : ParserTestBase(output) {
 	[InlineData("say 1 plus 2 plus 3")]
 	[InlineData("say \"hello\" plus \" \" plus .11")]
 	public void AdditionOperatorWorks(string source) {
-		var parser = new Parser() { Tracer = new TestOutputTracer(output) };
-		var result = parser.Parse(source);
+		Parse(source);
+	}
+
+	[Theory]
+	[InlineData("say 1 + 2, 3, and 4 + 3, 4, and 5 + 6")]
+	public void AdditionOperatorWorksWithReallyComplicatedArguments(string source) {
+		Parse(source);
 	}
 
 	[Fact]
 	public void NotWorks() {
-		var result = new Parser().Parse("say not true");
+		Parse("say not true");
 	}
 
 	[Fact]

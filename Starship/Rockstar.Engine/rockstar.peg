@@ -55,16 +55,16 @@ variable_list <List<Variable>>
 	= head:variable _VLS_ tail:variable_list
 		{ head.Concat(tail) }
   / arg:variable { new List<Variable> { arg } }
-
   	
 function_call <FunctionCall>
 	= name:variable _ taking _ args:expression_list
 		{ new FunctionCall(name, args, state.Source()) }
 
 expression_list <List<Expression>>
-	= head:expression _XLS_ tail:expression_list
+	= head:simple_expression _XLS_ tail:expression_list
 		{ head.Concat(tail) }
-	/ expr:expression { new List<Expression> { expr } }
+	/ expr:simple_expression
+		{ new List<Expression> { expr } }
 
 return <Return>
 	= give _ e:expression _ back
@@ -189,7 +189,7 @@ unary_not <Expression>
 comparison <Expression>
 	= lhs:addition op:comparator _ rhs:comparison
 		{ new Binary(op, lhs, rhs, state.Source()) }
-	/ addition
+	/ addition 
 
 comparator <Operator>
 	= _is _ gtr _ than { Operator.MoreThan }
@@ -197,27 +197,27 @@ comparator <Operator>
 	/ _is _ as _ gte _ as { Operator.MoreThanEqual }
 	/ _is _ as _ lte _ as { Operator.LessThanEqual }
 
-addition <Expression> -memoize
-	= lhs:addition op:(_plus_/_minus_) rhs:product
-		{ new Binary(op, lhs, rhs, state.Source()) }
-//	= head:product_simple op:(_plus_/_minus_) tail:product_expression_list
-//		#error{ "wonk!" }
-	/ product
+add_list <OpList>
+	= op:(_plus_ / _minus_) list:expression_list
+		{ new OpList(op, list) }
 
-product <Expression> -memoize
-	= lhs:product op:(_times_/_divide_) rhs:simple_expression 
-		{ new Binary(op, lhs, rhs, state.Source()) }
+addition <Expression>
+	= head:product_simple lists:add_list+
+		{ Binary.Reduce(head, lists, state.Source()) }
+	/ product_simple
+
+multiply_list <OpList>
+	= op:(_times_/_divide_) list:expression_list
+		{ new OpList(op, list) }
+
+product <Expression>
+	= lhs:simple_expression lists:multiply_list+
+		{ Binary.Reduce(lhs, lists, state.Source()) }
+		
+product_simple <Expression>
+	= product
 	/ simple_expression
-	
-//product_simple <Expression>
-//	= product
-//	/ simple_expression
 
-//product_expression_list
-//	= product
-//	/ expression_list
-
-	
 //sum <Expression> -memoize
 //	= lhs:sum op:(_plus_/_minus_) rhs:product { new Binary(op, lhs, rhs, state.Source()) }
 //	/ product

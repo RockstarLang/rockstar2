@@ -37,6 +37,7 @@ public abstract class Value(Source source)
 		Strïng s => s,
 		Null n => Strïng.Null,
 		Mysterious m => Strïng.Mysterious,
+		Array a => new(a.Length.ToString()),
 		_ => throw new NotImplementedException()
 	};
 

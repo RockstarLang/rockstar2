@@ -346,17 +346,15 @@ mutator <Operator>
 	/ join
 		{ Operator.Join }
 
-modifier <Expression>
-	= _ using _ m:expression
-		{ m }
-
 mutation <Statement>
-	= op:mutator _ s:expression _ into _ t:assignable m:modifier
-		{ new Mutation(op, s, state.Source(), t, m) }
+	= op:mutator _ s:expression _ into _ t:assignable _ using _ m:expression
+		{ new Mutation(op, s, state.Source(), target: t, m) }
 	/ op:mutator _ s:expression _ into _ t:assignable
-		{ new Mutation(op, s, state.Source(), t) }
+		{ new Mutation(op, s, state.Source(), target: t) }
+	/op:mutator _ s:assignable _ using _ m:expression 
+		{ new Mutation(op, s, state.Source(), target: s, modifier: m) }
 	/ op:mutator _ s:assignable 
-		{ new Mutation(op, s, state.Source()) }
+		{ new Mutation(op, s, state.Source(), target: s) }
 
 rounding <Statement>
 	= floor / ceil / math_round

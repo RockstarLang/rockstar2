@@ -4,6 +4,14 @@ namespace Rockstar.Engine.Values;
 
 public class Strïng(string value, Source source)
 	: Value(source) {
+	public Array Split(string delimiter) {
+		Strïng[] tokens;
+		tokens = delimiter == ""
+			? this.Value.ToCharArray().Select(c => new Strïng(c)).ToArray()
+			: this.Value.Split(delimiter).Select(s => new Strïng(s)).ToArray();
+		return new(tokens);
+	}
+
 	public Strïng(string value) : this(value, Source.None) { }
 	public string Value => value;
 
@@ -34,4 +42,9 @@ public class Strïng(string value, Source source)
 		=> new Strïng(Enumerable
 			.Range(0, (int) n.NumericValue)
 			.Select(_ => this.Value));
+
+	public Value CharAt(Number number) {
+		var index = (int) number.NumericValue;
+		return index < Value.Length ? new Strïng(Value[index]) : Values.Mysterious.Instance;
+	}
 }

@@ -1,6 +1,9 @@
+using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
+using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Engine;
 
@@ -42,11 +45,12 @@ public class RockstarEnvironment(RockstarIO io) {
 		return variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
 	}
 
-	private void SetArray(Variable variable, Value index, Value value) {
-		if (variables.ContainsKey(variable.Key))
-			throw new($"Can't assign {variable.Name} at index {index} - {variable.Name} is not an indexed variable");
-		if (!arrays.ContainsKey(variable.Key)) arrays[variable.Key] = new();
-		arrays[variable.Key][index] = value;
+	private Value SetArray(Variable variable, Value index, Value value) {
+		variables.TryAdd(variable.Key, new Array(Source.None));
+		return variables[variable.Key] switch {
+			Array array => array.Set(index, value),
+			_ => throw new($"Can't assign {variable.Name} at index {index} - {variable.Name} is not an indexed variable")
+		};
 	}
 		
 	private void SetLocal(Variable variable, Value value)
@@ -66,29 +70,19 @@ public class RockstarEnvironment(RockstarIO io) {
 		return new(value);
 	}
 
-	private Value Scalar(Dictionary<Value, Value> array)
-		=> new Number(1 + array.Keys.Where(k => k is Number).Select(k => Math.Ceiling(((Number) k).Value)).Max());
+	//private Value Scalar(Dictionary<Value, Value> array)
+	//	=> new Number(1 + array.Keys.Where(k => k is Number).Select(k => Math.Ceiling(((Number) k).Value)).Max());
 
 	public Value Lookup(Variable variable) {
 		var key = (variable is Pronoun pronoun ? AssertTarget(pronoun).Key : variable.Key);
-		var array = LookupArray(key);
-		var simple = LookupValue(key);
-		if (variable.Index == default) {
-			if (simple != default) return simple;
-			if (array != default) return Scalar(array);
-			throw new($"Unknown variable '{variable.Name}'");
-		}
+		var value = LookupValue(key);
+		if (variable.Index == default) return value ?? throw new($"Unknown variable '{variable.Name}'");
 		var index = Eval(variable.Index);
-		if (array == default) {
-			if (simple is not Strïng s || index is not Number i) throw new($"Unknown array '{variable.Name}'");
-			var sValue = s.Value;
-			var iValue = (int) i.NumericValue;
-			return (iValue < sValue.Length ? new Strïng(sValue[iValue]) : Mysterious.Instance);
-		}
-		var found = array.TryGetValue(index, out var value);
-		if (found) return value!;
-		if (index is Number && index.LessThan(Scalar(array)).Truthy) return Mysterious.Instance;
-		throw new($"Array '{variable.Name}' has no element at {index}");
+		return (value, index) switch {
+			(Strïng s, Number i) => s.CharAt(i),
+			(Array a, _) => a.Get(index),
+			_ => throw new($"Unknown array '{variable.Name}'")
+		};
 	}
 
 	private Dictionary<Value, Value>? LookupArray(string key)
@@ -117,8 +111,44 @@ public class RockstarEnvironment(RockstarIO io) {
 		Return r => Return(r),
 		Listen l => Listen(l),
 		Rounding r => Rounding(r),
+		Mutation m => Mutation(m),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Mutation(Mutation m)
+		=> m.Operator switch {
+			Operator.Join => Join(m),
+			Operator.Split => Split(m),
+			Operator.Cast => Cast(m),
+			_ => throw new($"Unsupported mutation operator {m.Operator}")
+		};
+
+	private Result Cast(Mutation m) {
+		var input = Eval(m.Expression);
+		Value value = input switch {
+			Strïng s => Decimal.TryParse(s.Value, out var d) ? new Number(d) : throw new($"Can't cast '{s.Value}' to a number"),
+			Number n => new Strïng((char) n.NumericValue),
+			_ => throw new($"Can't cast expression of type {input.GetType().Name}")
+		};
+		if (m.Target != default) SetLocal(m.Target, value);
+		return new(value);
+	}
+	private Result Split(Mutation m) {
+		var value = Eval(m.Expression);
+		if (value is not Strïng s) throw new("Only strings can be split.");
+		var delimiter = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
+		var array = s.Split(delimiter);
+		if (m.Target != default) SetLocal(m.Target, array);
+		return new(array);
+	}
+	private Result Join(Mutation m) {
+		var value = Eval(m.Expression);
+		if (value is not Array array) throw new("Can't join something which is not an array.");
+		var joiner = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
+		var joined = array.Join(joiner);
+		if (m.Target != default) SetLocal(m.Target, joined);
+		return new(joined);
+	}
 
 	private Result Rounding(Rounding r) {
 		var value = Lookup(r.Variable);

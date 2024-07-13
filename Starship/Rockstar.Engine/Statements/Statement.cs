@@ -22,7 +22,6 @@ public enum Round {
 public class Rounding(Variable variable, Round round, Source source) : Statement(source) {
 	public Variable Variable => variable;
 	public Round Round => round;
-
 }
 public class Mutation(Operator op, Expression expr, Source source, Variable? target = default, Expression? modifier = default)
 	: Statement(source) {

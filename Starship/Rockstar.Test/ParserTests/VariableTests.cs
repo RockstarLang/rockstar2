@@ -1,9 +1,26 @@
-using Pegasus.Common.Tracing;
 using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Test.ParserTests;
 
 public class VariableTests(ITestOutputHelper output) : ParserTestBase(output) {
+	[Theory]
+	[InlineData("""
+	            SetGlobal takes X
+	            put X into Global
+	            (end func)
+
+	            put 1 into Global
+	            say Global
+	            SetGlobal taking 2
+	            say Global
+	            """)]
+	public void FunctionsCanReassignGlobalVariables(string source) {
+		var parsed = Parse(source);
+		output.WriteLine(parsed.ToString());
+		var result = Run(parsed);
+		result.ShouldBe("1\n2\n".ReplaceLineEndings());
+	}
+
 	[Theory]
 	[InlineData("a variable", "a  variable")]
 	[InlineData("My variable", "MY VARIABLE")]
@@ -94,26 +111,15 @@ public class VariableTests(ITestOutputHelper output) : ParserTestBase(output) {
 	public void ParserParsesVariableStartingWithKeyword(string source) {
 		Parse(source);
 	}
-}
 
-public class TestOutputTracer(ITestOutputHelper Output) : ITracer {
-	public void TraceCacheHit<T>(string ruleName, Cursor cursor, CacheKey cacheKey, IParseResult<T> parseResult) {
-		
-	}
-
-	public void TraceCacheMiss(string ruleName, Cursor cursor, CacheKey cacheKey) {
-		
-	}
-
-	public void TraceInfo(string ruleName, Cursor cursor, string info) {
-		
-	}
-
-	public void TraceRuleEnter(string ruleName, Cursor cursor) {
-		
-	}
-
-	public void TraceRuleExit<T>(string ruleName, Cursor cursor, IParseResult<T> parseResult) {
-		Output.WriteLine(ruleName);
+	[Fact]
+	public void FunctionsCanAssignGlobalVariables() {
+		var io = new StringBuilderIO();
+		var e1 = new RockstarEnvironment(io);
+		var variable = new SimpleVariable("foo");
+		e1.SetVariable(variable, new Number(1));
+		var e2 = e1.Extend();
+		e2.SetVariable(variable, new Number(2));
+		((Number) e1.Lookup(variable)).NumericValue.ShouldBe(2);
 	}
 }

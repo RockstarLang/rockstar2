@@ -2,6 +2,12 @@ namespace Rockstar.Engine.Values;
 
 public class Booleän(bool value, Source source)
 	: Value(source), IHaveANumber {
+
+	public bool Value => value;
+	public override bool Equals(object? obj) => Equals(obj as Booleän);
+	public override int GetHashCode() => this.Value.GetHashCode();
+	public bool Equals(Booleän? that) => that != null && this.Value == that.Value;
+
 	public Booleän(bool value) : this(value, Source.None) { }
 	public override bool Truthy => value;
 	public Value Negate => Not(this);

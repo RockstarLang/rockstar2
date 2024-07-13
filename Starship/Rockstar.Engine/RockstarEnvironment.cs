@@ -9,18 +9,21 @@ public interface RockstarIO {
 	public void Write(string? s);
 }
 public class RockstarEnvironment(RockstarIO io) {
-
-	public RockstarEnvironment Extend() {
-		var extended = new RockstarEnvironment(IO);
-		extended.CopyVariablesFrom(this);
-		return extended;
+	public RockstarEnvironment(RockstarIO io, RockstarEnvironment parent)
+	: this(io) {
+		Parent = parent;
+		//this.CopyVariablesFrom(parent);
 	}
 
-	private void CopyVariablesFrom(RockstarEnvironment that) {
-		foreach (var variable in that.variables) {
-			this.variables[variable.Key] = variable.Value;
-		}
-	}
+	public RockstarEnvironment? Parent { get; init; }
+
+	public RockstarEnvironment Extend() => new(IO, this);
+
+	//private void CopyVariablesFrom(RockstarEnvironment that) {
+	//	foreach (var variable in that.variables) {
+	//		this.variables[variable.Key] = variable.Value;
+	//	}
+	//}
 
 	protected RockstarIO IO = io;
 
@@ -30,25 +33,69 @@ public class RockstarEnvironment(RockstarIO io) {
 	private Variable? pronounTarget;
 
 	private readonly Dictionary<string, Value> variables = new();
+	private readonly Dictionary<string, Dictionary<Value, Value>> arrays = new();
 
 	private Variable AssertTarget(Pronoun pronoun)
 		=> pronounTarget ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')");
 
+	public RockstarEnvironment? GetScope(Variable variable) {
+		return variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
+	}
+
+	private void SetArray(Variable variable, Value index, Value value) {
+		if (variables.ContainsKey(variable.Key))
+			throw new($"Can't assign {variable.Name} at index {index} - {variable.Name} is not an indexed variable");
+		if (!arrays.ContainsKey(variable.Key)) arrays[variable.Key] = new();
+		arrays[variable.Key][index] = value;
+	}
+		
+	private void SetLocal(Variable variable, Value value)
+		=> variables[variable.Key] = value;
+
 	public Result SetVariable(Variable variable, Value value) {
+		var scope = GetScope(variable) ?? this;
 		if (variable is Pronoun pronoun) {
-			variables[AssertTarget(pronoun).Key] = value;
+			scope.SetLocal(AssertTarget(pronoun), value);
+		} else if (variable.Index != default) {
+			var index = Eval(variable.Index);
+			scope.SetArray(variable, index, value);
 		} else {
 			pronounTarget = variable;
-			variables[variable.Key] = value;
+			scope.SetLocal(variable, value);
 		}
-
 		return new(value);
 	}
 
-	public Value GetVariable(Variable variable) {
+	private Value Scalar(Dictionary<Value, Value> array)
+		=> new Number(1 + array.Keys.Where(k => k is Number).Select(k => Math.Ceiling(((Number) k).Value)).Max());
+
+	public Value Lookup(Variable variable) {
 		var key = (variable is Pronoun pronoun ? AssertTarget(pronoun).Key : variable.Key);
-		return variables.TryGetValue(key, out var value) ? value : throw new($"Unknown variable '{variable.Name}'");
+		var array = LookupArray(key);
+		var simple = LookupValue(key);
+		if (variable.Index == default) {
+			if (simple != default) return simple;
+			if (array != default) return Scalar(array);
+			throw new($"Unknown variable '{variable.Name}'");
+		}
+		var index = Eval(variable.Index);
+		if (array == default) {
+			if (simple is not Strïng s || index is not Number i) throw new($"Unknown array '{variable.Name}'");
+			var sValue = s.Value;
+			var iValue = (int) i.NumericValue;
+			return (iValue < sValue.Length ? new Strïng(sValue[iValue]) : Mysterious.Instance);
+		}
+		var found = array.TryGetValue(index, out var value);
+		if (found) return value!;
+		if (index is Number && index.LessThan(Scalar(array)).Truthy) return Mysterious.Instance;
+		throw new($"Array '{variable.Name}' has no element at {index}");
 	}
+
+	private Dictionary<Value, Value>? LookupArray(string key)
+		=> arrays.TryGetValue(key, out var array) ? array : Parent?.LookupArray(key);
+
+	private Value? LookupValue(string key)
+		=> variables.TryGetValue(key, out var value) ? value : Parent?.LookupValue(key);
 
 	public Result Exec(Block block) {
 		var result = Result.Unknown;
@@ -69,8 +116,22 @@ public class RockstarEnvironment(RockstarIO io) {
 		FunctionCall call => Call(call),
 		Return r => Return(r),
 		Listen l => Listen(l),
+		Rounding r => Rounding(r),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Rounding(Rounding r) {
+		var value = Lookup(r.Variable);
+		if (value is not Number n) throw new($"Can't apply rounding to variable {r.Variable.Name} of type {value.GetType().Name}");
+		var rounded = new Number(r.Round switch {
+			Round.Down => Math.Floor(n.Value),
+			Round.Up => Math.Ceiling(n.Value),
+			Round.Nearest => Math.Round(n.Value),
+			_ => throw new ArgumentOutOfRangeException()
+		});
+		SetVariable(r.Variable, rounded);
+		return new(rounded);
+	}
 
 	private Result Listen(Listen l) {
 		var input = ReadInput();
@@ -85,13 +146,13 @@ public class RockstarEnvironment(RockstarIO io) {
 	}
 
 	private Result Call(FunctionCall call) {
-		var value = GetVariable(call.Function);
+		var value = Lookup(call.Function);
 		if (value is not Function function) throw new($"'{call.Function.Name}' is not a function");
 		var names = function.Args.ToList();
 		var values = call.Args.Select(Eval).ToList();
 		if (names.Count != values.Count) throw new($"Wrong number of arguments supplied to function {call.Function.Name} - expected {names.Count} ({String.Join(", ", names.Select(v => v.Name))}), got {values.Count}");
 		var scope = this.Extend();
-		for (var i = 0; i < names.Count; i++) scope.SetVariable(names[i], values[i]);
+		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i]);
 		return scope.Exec(function.Body);
 	}
 
@@ -141,8 +202,8 @@ public class RockstarEnvironment(RockstarIO io) {
 		Value value => value,
 		Binary binary => binary.Resolve(Eval),
 		// not sure what the difference is here.... ?
-		Looküp lookup => GetVariable(lookup.Variable),
-		Variable v => GetVariable(v),
+		Looküp lookup => Lookup(lookup.Variable),
+		Variable v => Lookup(v),
 		Unary u => u switch {
 			{ Op: Operator.Minus, Expr: Number n } => n.Negate(),
 			{ Op: Operator.Not } => Booleän.Not(Eval(u.Expr)),

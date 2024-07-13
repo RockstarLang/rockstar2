@@ -9,7 +9,7 @@ public class PronounTests(ITestOutputHelper output) {
 		var e = new TestEnvironment();
 		var pronoun = new Pronoun();
 		e.SetVariable(variable, value);
-		var result = e.GetVariable(pronoun) as Number;
+		var result = e.Lookup(pronoun) as Number;
 		result.ShouldBe(value);
 	}
 
@@ -28,7 +28,7 @@ public class PronounTests(ITestOutputHelper output) {
 	[Fact]
 	public void LookupPronounWithoutAssigningVariableThrowsException() {
 		var e = new TestEnvironment();
-		Should.Throw<Exception>(() => e.GetVariable(new Pronoun("him")));
+		Should.Throw<Exception>(() => e.Lookup(new Pronoun("him")));
 	}
 
 	[Fact]
@@ -41,7 +41,7 @@ public class PronounTests(ITestOutputHelper output) {
 		var e = new TestEnvironment();
 		e.SetVariable(variable, new Null());
 		e.SetVariable(new Pronoun(), value);
-		e.GetVariable(variable).ShouldBe(value);
+		e.Lookup(variable).ShouldBe(value);
 	}
 
 	[Fact]

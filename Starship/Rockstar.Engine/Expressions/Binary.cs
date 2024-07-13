@@ -26,6 +26,7 @@ public class Binary(Operator op, Expression lhs, Expression rhs, Source source)
 			Operator.LessThan => v.LessThan(eval(rhs)),
 			Operator.MoreThan => v.MoreThan(eval(rhs)),
 
+			Operator.Nor => new Booleän(v.Falsy && eval(rhs).Falsy),
 			Operator.And => v.Truthy ? eval(rhs) : v,
 			Operator.Or => v.Truthy ? v : eval(rhs),
 			_ => throw new ArgumentOutOfRangeException(nameof(op), op, null)

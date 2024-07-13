@@ -1,3 +1,5 @@
+using Rockstar.Test.ParserTests;
+
 namespace Rockstar.Test;
 
 public class FixtureTests(ITestOutputHelper testOutput) : FixtureBase(testOutput) {

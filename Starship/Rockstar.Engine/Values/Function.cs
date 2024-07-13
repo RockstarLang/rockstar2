@@ -4,9 +4,9 @@ using Rockstar.Engine.Statements;
 
 namespace Rockstar.Engine.Values;
 
-public class Function(IEnumerable<Variable> args, Block body, Source source)
+public class Function(IList<Variable> args, Block body, Source source)
 	: Value(source) {
-	public IEnumerable<Variable> Args => args;
+	public IList<Variable> Args => args;
 	public Block Body => body;
 	public override bool Truthy => true;
 

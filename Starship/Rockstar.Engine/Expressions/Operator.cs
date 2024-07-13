@@ -14,5 +14,8 @@ public enum Operator {
 	LessThanEqual,
 	MoreThanEqual,
 	LessThan,
-	MoreThan
+	MoreThan,
+	Split,
+	Join,
+	Cast
 }

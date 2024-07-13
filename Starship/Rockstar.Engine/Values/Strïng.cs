@@ -6,6 +6,11 @@ public class Strïng(string value, Source source)
 	: Value(source) {
 	public Strïng(string value) : this(value, Source.None) { }
 	public string Value => value;
+
+	public override bool Equals(object? obj) => Equals(obj as Strïng);
+	public override int GetHashCode() => this.Value.GetHashCode();
+	public bool Equals(Strïng? that) => that != null && this.Value == that.Value;
+
 	public override void Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).AppendLine($"string: \"{value}\"");
 
@@ -19,6 +24,8 @@ public class Strïng(string value, Source source)
 
 	private Strïng(IEnumerable<string> strings)
 		: this(String.Join("", strings)) { }
+
+	public Strïng(params char[] chars) : this(new string(chars)) { }
 
 	public Value Concat(Value that)
 		=> new Strïng(this.Value + that.ToStrïng().Value);

@@ -7,11 +7,11 @@ namespace Rockstar.Engine.Values;
 public abstract class Value(Source source)
 	: Expression(source) {
 	public abstract bool Truthy { get; }
+	public bool Falsy => !Truthy;
 
+	//public Value And(Value that) => this.Truthy ? that : this;
 
-	public Value And(Value that) => this.Truthy ? that : this;
-
-	public Value Or(Value that) => this.Truthy ? this : that;
+	//public Value Or(Value that) => this.Truthy ? this : that;
 
 	public Value Plus(Value that) => (this, that) switch {
 		(Strïng a, _) => a.Concat(that),

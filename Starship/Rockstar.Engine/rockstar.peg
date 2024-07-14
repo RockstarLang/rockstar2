@@ -9,454 +9,48 @@
 
 @ignorecase true
 
-program <Block>
-	= lines:line* { new Block(lines.Where(l => l != null)) }
-
-line <Statement?>
-	= _? s:statement EOL+
-		{ s }
-	/ _? s:statement EOF
-		{ s }
-	/ EOL { null }
-	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - unexpected.Length}" }
-
-EOL = noise* '\r'? '\n'
-EOF	= noise* !.
-	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - 1}" }
-
-ignore_rest_of_line = (_[^\n]*)?
-
-statement <Statement>
-	= break_stmt
-	/ continue_stmt
-	/ function_call
-	/ return
-	/ loop
-	/ conditional
-	/ operation 
-	/ e:expression { new ExpressionStatement(e, state.Source()) }
-
-break_stmt <Statement>
-	= break ignore_rest_of_line
-		{ new Break(state.Source()) }
-
-continue_stmt <Statement>
-	= continue ignore_rest_of_line
-		{ new Continue(state.Source()) }
-_XLS_
-	= (_? ', ' and _ / _? ('&' / ',' / "'n'") _?)
-
-_VLS_
-	= _ and _ / _XLS_
-
-variable_list <List<Variable>>
-	= head:variable _VLS_ tail:variable_list
-		{ head.Concat(tail) }
-  / arg:variable { new List<Variable> { arg } }
-  	
-function_call <FunctionCall>
-	= name:variable _ taking _ args:expression_list
-		{ new FunctionCall(name, args, state.Source()) }
-
-expression_list <List<Expression>>
-	= head:simple_expression _XLS_ tail:expression_list
-		{ head.Concat(tail) }
-	/ expr:simple_expression
-		{ new List<Expression> { expr } }
-
-return <Return>
-	= give _ e:expression _ back
-		{ new Return(e, state.Source()) }
-	/ give _ back _ e:expression
-		{ new Return(e, state.Source()) }
-	/ give _ e:expression
-		{ new Return(e, state.Source()) }
-
-operation <Statement>
-	= listen_stmt / output_stmt / crement / mutation / assign_stmt / rounding		
-
-listen_stmt <Statement>
-	= listen _ to _ v:variable
-		{ new Listen(v, state.Source()) }
-	/ listen
-		{ new Listen(state.Source()) }
-
-continuation <Statement>
-	= EOL _? s:statement { s }
+program <Program>
+	= EOS* head:block tail:program
+		{ new Program(head).Concat(tail) }
+	/ EOS* EOF
+		{ new Program() }
 
 block <Block>
-	= head:statement tail:continuation+
-		{ head.Concat(tail) }
-	/ s:statement { new Block(s) }
+	= _? head:statement EOS tail:block
+		{ new Block(head).Concat(tail) }
+	/ _? stmt:statement
+		{ new Block(stmt) }
 
-consequent <Block>
-	= _ s:statement { new Block(s) }
-	/ EOL _? b:block { b }
+statement = output
 
-alternate <Block>
-	= _ else _ s:statement { new Block(s) }
-	/ _ else EOL b:block { b } 
-	/ EOL+ _? else s:statement { new Block(s) }
-	/ EOL+ _? else EOL b:block { b }
-	/ EOL { new Block() }
-
-conditional <Statement>
-	= if _ e:expression c:consequent a:alternate
-		{ new Conditional(e, c, state.Source()).Else(a) }
-	/ if _ e:expression c:consequent
-		{ new Conditional(e, c, state.Source()) }
-
-loopable <Block>
-	= _ s:statement { new Block(s) }
-	/ EOL _? b:block noise* EOF { b }
-	/ EOL _? b:block noise* EOL { b }
-
-loop <Loop>
-	= while _ e:expression s:loopable
-		{ new WhileLoop(e, s, state.Source()) }
-	/ until _ e:expression s:loopable
-		{ new UntilLoop(e, s, state.Source()) }
-
-output_stmt  <Statement>
-	= output _ e:expression { new Output(e, state.Source()) }
-
-simple_expression <Expression>
-	= function_call / constant / lookup / literal 
-
-literal <Expression>
-	= constant
-	/ number
-	/ string
-
-constant <Expression>
-	= t:true { new Booleän(true, state.Source(t)) }
-	/ f:false { new Booleän(false, state.Source(f)) }
-	/ n:null { new Null(state.Source(n)) }
-	/ m:mysterious { Mysterious.Instance }
-	/ e:empty { Strïng.Empty }
-
-number <Number>
-    = digits:('-'? [0-9]+ ("." [0-9]+)?) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
-	/ digits:('-'? "." [0-9]+) { new Number(Decimal.Parse(digits), state.Source(digits) ) }
-
-
-string <Strïng>
-	= '"' contents:("" [^"]*) '"' { new Strïng(contents, state.Source(contents)) }
+output <Statement>
+	= say _ expr:expression
+		{ new Output(expr) }
 
 expression <Expression>
-	= boolean
+	= string
+	/ number
 
-boolean <Expression>
-	= binary_nor
+number <Number>
+    = digits:('-'? [0-9]+ ("." [0-9]+)?) { new Number(double.Parse(digits)) }
+	/ digits:('-'? "." [0-9]+) { new Number(double.Parse(digits)) }
 
-binary_nor <Expression>
-	= lhs:binary_or _ nor _ rhs:binary_nor
-		{ new Binary(Operator.Nor, lhs, rhs, state.Source()) }
-	/ binary_or
+string <Strïng> = "" '"' s:("" [^"]*) '"' { new Strïng(s) }
 
-binary_or <Expression>
-	= lhs:binary_and _ or _ rhs:binary_or
-		{ new Binary(Operator.Or, lhs, rhs, state.Source()) }
-	/ binary_and
+say = 'shout' / 'whisper' / 'say' / 'scream'
 
-binary_and <Expression>
-	= lhs:equals _ and _ rhs:binary_and
-		{ new Binary(Operator.And, lhs, rhs, state.Source()) }
-	/ equals
-
-_eq
-	= _is_not
-	/ _is
-
-_is <Operator>
-	= ("'s" / "'re" / _? '=' / _ is)
-		{ Operator.Equals }
-
-_is_not <Operator>
-	= (_is _ not / _? '!=' / _ isnt)
-		{ Operator.NotEquals }
-
-equals <Expression>
-	= lhs:unary_not op:_eq _ rhs:equals
-		{ new Binary(op,lhs,rhs, state.Source()) }
-	/ unary_not
-
-unary_not <Expression>
-	= not_ ex:unary_not
-		{ new Unary(Operator.Not, ex, state.Source()) }
-	/ comparison 
-
-comparison <Expression>
-	= lhs:addition op:comparator _ rhs:comparison
-		{ new Binary(op, lhs, rhs, state.Source()) }
-	/ addition 
-
-comparator <Operator>
-	= _is _ gtr _ than { Operator.MoreThan }
-	/ _is _ ltr _ than { Operator.LessThan }
-	/ _is _ as _ gte _ as { Operator.MoreThanEqual }
-	/ _is _ as _ lte _ as { Operator.LessThanEqual }
-
-add_list <OpList>
-	= op:(_plus_ / _minus_) list:expression_list
-		{ new OpList(op, list) }
-
-addition <Expression>
-	= lhs:product_simple op:(_plus_ / _minus_) rhs:product
-		{ new Binary(op, lhs, rhs, state.Source()) }
-	/ head:product_simple lists:add_list+
-		{ Binary.Reduce(head, lists, state.Source()) }
-	/ product_simple
-
-multiply_list <OpList>
-	= op:(_times_/_divide_) list:expression_list
-		{ new OpList(op, list) }
-
-product <Expression>
-	= lhs:simple_expression lists:multiply_list+
-		{ Binary.Reduce(lhs, lists, state.Source()) }
-		
-product_simple <Expression>
-	= product
-	/ simple_expression
-
-//sum <Expression> -memoize
-//	= lhs:sum op:(_plus_/_minus_) rhs:product { new Binary(op, lhs, rhs, state.Source()) }
-//	/ product
-
-//product <Expression> -memoize
-//	= lhs:product op:(_times_/_divide_) rhs:primary { new Binary(op, lhs, rhs, state.Source()) }
-//	/ primary
-
-_plus_	<Operator>	= (_? '+' _? / _ plus _ ) { Operator.Plus }
-_minus_	<Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
-_times_	<Operator>	= (_? '*' _? / _ times _ ) { Operator.Times }
-_divide_ <Operator>	= (_? '/' _? / _ over _ ) { Operator.Divide }
-
-_op_ <Operator>
-	= _plus_ / _minus_ / _times_ / _divide_
-
-indexer <Expression>
-	= _ at _ e:expression
-		{ e }
-
-assignable <Variable>
-	= v:variable i:indexer
-		{ v.AtIndex(i) }
-	/ v:variable { v }
-
-assign_stmt <Statement>
-	= v:assignable _is _ l:(literal / poetic_literal)
-		{ new Assign(v, l, state.Source()) }
-	/ v:assignable _ says _ s:("" [^\r\n]*) 
-		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
-	/ put _ e:expression _ into _ v:assignable
-		{ new Assign(v, e, state.Source()) }
-	/ let _ v:assignable _ be o:_op_ e:expression_list
-		{ new Assign(v, new Binary(o, new Looküp(v, state.Source()), e, state.Source()), state.Source()) }
-	/ let _ v:assignable _ be o:_op_ e:expression
-		{ new Assign(v, new Binary(o, new Looküp(v, state.Source()), e, state.Source()), state.Source()) }
-	/ let _ v:assignable _ be _ e:expression
-		{ new Assign(v, e, state.Source()) }
-	/ name:assignable _ takes _ args:variable_list EOL body:block EOL
-		{ new Assign(name, new Function(args, body, state.Source()), state.Source()) }
-	/ enlist
-
-enlist <Statement>
-	= push _ e:expression _ into _ v:variable
-		{ new Enlist(v, e, state.Source()) }
-	/ push _ v:variable _ like _ e:(literal/poetic_literal)
-		{ new Enlist(v, e, state.Source()) }
-	/ push _ v:variable (_ with)? _ e:expression_list
-		{ new Enlist(v, e, state.Source()) }
-	/ push _ v:variable 
-		{ new Enlist(v, state.Source()) }
-	/ d:delist _ into _ t:assignable
-		{ new Assign(t, d, state.Source()) }
-
-poetic_literal <Number>
-	= whole_part:poetic_digits _? '.' _? fractional_part:poetic_digits
-		{ new Number (whole_part + "." + fractional_part) }
-	/ digits:poetic_digits
-		{ new Number(digits) }
-
-PDS = ("" _ / [0-9\',;:?!+_/] )
-
-poetic_digits <string>
-	= PDS* head:poetic_digit PDS+ tail:poetic_digits PDS* 
-		{ head + tail }
-	/ d:poetic_digit
-		{ d }
-
-poetic_digit <string>
-	= word:("" [A-Za-z\-']+)
-		{ (Regex.Replace(word, "'+", "").Length % 10).ToString() }
-
-variable <Variable>
-	= p:pronoun { new Pronoun(p, state.Source(p)) }
-	/ n:common_variable { new CommonVariable(n, state.Source(n)) }
-	/ n:proper_variable { new ProperVariable(n, state.Source(n)) }
-	/ n:identifier { new SimpleVariable(n, state.Source(n)) }
-
-proper_variable	// e.g. Big Bad Benny
-	= proper_noun (_ proper_noun)+
-
-proper_noun
-	= !keyword &uppercase_letter identifier
-
-common_variable
-	= the _ identifier
-
-identifier
-	= ("" letter (letter / [0-9])*)
-letter
-	= uppercase_letter / lowercase_letter
-uppercase_letter
-	= [A-ZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ]s
-lowercase_letter
-	= [a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįıĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß]s
-
-primary <Expression>
-	= literal
-	/ lookup
-
-delist <Delist>
-	= pop _ v:variable
-		{ new Delist(v, state.Source()) }
-
-lookup <Expression>
-	= d:delist { d }
-	/ v:variable i:indexer
-		{ new Looküp(v.AtIndex(i), state.Source()) }
-	/ v:variable
-		{ new Looküp(v, state.Source()) }
-
-unary_op_ <Operator>
-	= not_ { Operator.Not }
-	/ _minus_ { Operator.Minus }
-
-not_
-	= not _
-	/ non _
-	/ non '-' // non-non-non-heinous		
-
-_	= "" (whitespace / comment)+
+_ = "" (whitespace / comment)+
 whitespace = [ \t]
-comment	= '(' [^)]* ')'	/ '{' [^\}]* '}' / '[' [^\]]* ']'
+comment	=
+	'#' [^\n]* '\n'
+	/ '(' [^)]* ')'
+	/ '{' [^\}]* '}'
+	/ '[' [^\]]* ']'
 
-noise 	= (_ / [;,?!&.])
-
-crement <Statement>
-	= increment / decrement
-
-increment <Increment>
-	= build _ v:variable _ t:(up noise*)+
-		{ new Increment(v, t.Count, state.Source()) }
-
-decrement <Decrement>
-	= knock _ v:variable _ t:(down noise*)+
-		{ new Decrement(v, t.Count, state.Source()) }
-
-mutator <Operator>
-	= split
-		{ Operator.Split }
-	/ cast
-		{ Operator.Cast }
-	/ join
-		{ Operator.Join }
-
-mutation <Statement>
-	= op:mutator _ s:expression _ into _ t:assignable _ using _ m:expression
-		{ new Mutation(op, s, state.Source(), target: t, m) }
-	/ op:mutator _ s:expression _ into _ t:assignable
-		{ new Mutation(op, s, state.Source(), target: t) }
-	/op:mutator _ s:assignable _ using _ m:expression 
-		{ new Mutation(op, s, state.Source(), target: s, modifier: m) }
-	/ op:mutator _ s:assignable 
-		{ new Mutation(op, s, state.Source(), target: s) }
-
-rounding <Statement>
-	= floor / ceil / math_round
-
-floor <Statement>
-	= turn _ v:variable _ down
-		{ new Rounding(v, Round.Down, state.Source()) }
-	/ turn _ down _ v:variable
-		{ new Rounding(v, Round.Down, state.Source()) }
-
-ceil <Statement>
-	= turn _ v:variable _ up
-		{ new Rounding(v, Round.Up, state.Source()) }
-	/ turn _ up _ v:variable
-		{ new Rounding(v, Round.Up, state.Source()) }
-
-math_round <Statement>
-	= turn _ v:variable _ around
-		{ new Rounding(v, Round.Nearest, state.Source()) }
-	/ turn _ around _ v:variable
-		{ new Rounding(v, Round.Nearest, state.Source()) }
-
-at = 'at' !letter
-turn = 'turn' !letter
-around = 'around' !letter / 'round' !letter
-using = 'using' !letter / 'with' !letter
-split = 'cut' !letter / 'split' !letter / 'shatter' !letter
-cast = 'cast' !letter / 'burn' !letter
-join = 'join' !letter / 'unite' !letter
-mysterious = 'mysterious' !letter
-plus = 'plus' !letter / 'with' !letter
-minus = 'minus' !letter / 'without' !letter
-times = 'times' !letter / 'of' !letter
-over = 'over' !letter / 'between' !letter
-as = 'as' !letter
-isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter
-	/ "wasn't" !letter / "wasnt" !letter / "aren't" !letter / "arent" !letter
-	/ "weren't" !letter / "werent" !letter 
-not = 'not' !letter
-non = 'non' !letter
-nor = 'nor' !letter
-is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter
-put = 'put' !letter
-into = 'into' !letter / 'in' !letter
-let = 'let' !letter
-be = 'be' !letter
-listen = 'listen' !letter
-to = 'to' !letter
-while = 'while' !letter
-until = 'until' !letter
-else = 'else' !letter
-if = 'if' !letter
-build = 'build' !letter
-up = 'up' !letter
-down = 'down' !letter
-knock = 'knock' !letter 
-and = 'and' !letter
-or = 'or' !letter
-back = 'back' !letter
-taking = 'taking' !letter
-give = 'return' !letter / 'give' !letter / 'send' !letter
-takes = 'takes' !letter / 'wants' !letter
-says = 'says' !letter / 'said' !letter
-pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
-    / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
-the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
-gtr = 'greater'/ 'higher' / 'bigger'	/ 'stronger' !letter/ 'more' !letter
-ltr = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
-gte = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
-lte = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter
-than = 'than' !letter
-empty = 'empty' !letter / 'silent' !letter / 'silence' !letter
-true = "true" !letter/ "yes" !letter/ "ok" !letter/ "right"!letter 
-false = "false" !letter/ "lies" !letter/ "no" !letter/ "wrong"!letter
-null = 'null' !letter/ 'nothing' !letter/ 'nowhere' !letter/ 'nobody' !letter/ 'gone'!letter
-output	= "shout" !letter / "say" !letter / "scream" !letter / "whisper" !letter
-break = 'break' !letter
-continue = 'continue' !letter / 'take' _ 'it' _ 'to' _ 'the' _ 'top' !letter
-push = 'rock' !letter / 'push' !letter
-pop = 'roll' !letter / 'pop' !letter
-with = 'with' !letter
-like = 'like' !letter
-
-keyword = mysterious / plus / minus / times / over / as / isnt / not / is / put / into / let / be / listen / to / while / until / else / if / build / up / down / knock / and / or / back / taking / give / takes / says / pronoun / the / gtr / ltr / gte / lte / than / empty / true / false / null / output / non
+EOB = EOS+
+EOS = _? [?!;]
+	/ EOL
+EOL = _? '\r'? '\n'
+EOF = _? !.
+	/ unexpected:("" [^ \t\r\n]+) 
+		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - unexpected.Length}" }

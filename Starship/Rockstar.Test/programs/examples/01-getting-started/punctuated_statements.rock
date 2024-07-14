@@ -1,0 +1,5 @@
+Say 1; say 2? say 3! say 4!
+(prints: 1
+2
+3
+4)

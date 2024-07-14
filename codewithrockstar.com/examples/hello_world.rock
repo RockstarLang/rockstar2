@@ -1,3 +1,0 @@
-shout "hello world" (prints: hello world)
-shout 1 + 2 + 3 (prints: 6)
-shout nothing (prints: null)

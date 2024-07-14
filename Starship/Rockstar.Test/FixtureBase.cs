@@ -1,11 +1,12 @@
 using Rockstar.Engine;
+using Rockstar.Engine.Statements;
 
 namespace Rockstar.Test;
 
 public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
-	protected const string EXAMPLES_DIRECTORY = "examples";
-	protected const string FIXTURES_DIRECTORY = "fixtures";
+	protected static readonly string ExamplesDirectory = Path.Combine("programs", "examples");
+	protected static readonly string FixturesDirectory = Path.Combine("programs", "fixtures");
 
 	private static string QualifyRelativePath(string path) {
 #if NCRUNCH
@@ -26,10 +27,10 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	}
 
 	public static IEnumerable<object[]> AllExampleFiles()
-		=> ListRockFiles(EXAMPLES_DIRECTORY).Select(filePath => new[] { filePath });
+		=> ListRockFiles(ExamplesDirectory).Select(filePath => new[] { filePath });
 
 	public static IEnumerable<object[]> AllFixtureFiles()
-		=> ListRockFiles(FIXTURES_DIRECTORY).Select(filePath => new[] { filePath });
+		=> ListRockFiles(FixturesDirectory).Select(filePath => new[] { filePath });
 
 	public static string ExtractExpects(string filePathOrSourceCode) {
 		if (File.Exists(filePathOrSourceCode + ".out")) {
@@ -55,13 +56,12 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 					break;
 			}
 		}
-
 		return String.Join("", output).ReplaceLineEndings();
 	}
 
-	protected static readonly Engine.Parser Parser = new();
+	protected static readonly Parser Parser = new();
 
-	private void PrettyPrint(string source, string filePath, FormatException ex) {
+	private void PrettyPrint(string source, string filePath, Exception ex) {
 		var cursor = ex.Data["cursor"] as Cursor;
 		if (cursor == default) return;
 		var outputLine = cursor.Line;
@@ -72,30 +72,31 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		testOutput.WriteLine(ncrunchOutputMessage);
 	}
 
-	private string RunProgram(Block program, Queue<string>? inputs = null) {
+	private string RunProgram(Program program, Queue<string>? inputs = null) {
 		string? ReadInput() => inputs != null && inputs.TryDequeue(out var result) ? result : null;
 		var env = new TestEnvironment(ReadInput);
-		env.Exec(program);
+		env.Execute(program);
 		return env.Output;
 	}
 
-	public void ParseFile(string filePath, string directory) {
+	public Program ParseFile(string filePath, string directory) {
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);
 		var source = File.ReadAllText(filePath, Encoding.UTF8);
 		try {
-			Parser.Parse(source);
+			return Parser.Parse(source);
 		} catch (FormatException ex) {
 			PrettyPrint(source, filePath, ex);
 			throw;
 		}
 	}
 
-	public void RunFile(string filePath, string directory) {
+	public string RunFile(string filePath, string directory) {
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);
 		var source = File.ReadAllText(filePath, Encoding.UTF8);
-		Block program;
+		Program program;
+		string result;
 		try {
 			program = Parser.Parse(source);
 		} catch (FormatException ex) {
@@ -104,14 +105,16 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		}
 		try {
 			var inputs = ReadInputs(filePath);
-			var result = RunProgram(program, inputs);
+			result = RunProgram(program, inputs);
 			var expect = ExtractExpects(filePath);
-			if (String.IsNullOrEmpty(expect)) return;
+			if (String.IsNullOrEmpty(expect)) return result;
 			result.ShouldBe(expect);
 		} catch (Exception) {
 			testOutput.WriteNCrunchFilePath(filePath);
 			throw;
 		}
+
+		return result;
 	}
 
 	private Queue<string>? ReadInputs(string filePath)

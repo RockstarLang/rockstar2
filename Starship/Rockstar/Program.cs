@@ -14,13 +14,7 @@ public static class Program {
 				RunFile(args[0]);
 				break;
 			default:
-				// RunFile("D:\\Projects\\github\\dylanbeattie\\rockstar-20-spikes\\spike-05-the-final-countdown\\Rockstar.Test\\fixtures\\math\\operators.rock");
-				Run("value's 2");
-				//Run("""
-				//    shout 1+2
-				//    shout 2
-				//    shout 4
-				//    """);
+				RunPrompt();
 				break;
 		}
 	}
@@ -41,7 +35,7 @@ public static class Program {
 			var program = parser.Parse(source);
 			Console.WriteLine(program);
 			Console.WriteLine(String.Empty.PadLeft(40, '-'));
-			env.Exec(program);
+			env.Execute(program);
 		} catch (FormatException ex) {
 			Console.Error.WriteLine(ex);
 		}

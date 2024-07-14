@@ -1,33 +1,10 @@
-using System.Globalization;
-using System.Runtime.InteropServices.Marshalling;
 using System.Text;
+
 namespace Rockstar.Engine.Values;
 
-public class Number(decimal value, Source source)
-	: Value(source), IHaveANumber {
-
-	public override bool Equals(object? obj) => Equals(obj as Number);
-	public override int GetHashCode() => this.Value.GetHashCode();
-	public bool Equals(Number? that) => that != null && this.Value == that.Value;
-	public bool IsPositiveInteger => this.Value >= 0 && this.Value == (int) this.Value;
-
-	public Number(string s) : this(Decimal.Parse(s)) { }
-
-	public Number(string s, Source source) : this(Decimal.Parse(s), source) { }
-
-	public Number(decimal value) : this(value, Source.None) { }
-
-	public decimal Value => value;
-	public override string ToString()
-		=> value.ToString(CultureInfo.InvariantCulture);
-
-	//public override void Print(StringBuilder sb, string prefix)
-	//	=> sb.Append(prefix).AppendLine($"number: {value:G29} {Location}");
-
-	public override bool Truthy => value != 0m;
-
-	public Value Negate() => new Number(-value);
-	public decimal NumericValue => value;
-
-	public void Decrement() => value -= 1;
+public class Number(double value) : ValueOf<double>(value) {
+	public override Strïng ToStrïng() => new(Value.ToString("G29"));
+	public override void Print(StringBuilder sb, string prefix) {
+		sb.Append(prefix).AppendLine("number: " + this.ToStrïng().Value);
+	}
 }

@@ -35,7 +35,7 @@ statement <Statement>
 	/ return
 	/ loop
 	/ conditional
-	/ operation
+	/ operation 
 	/ e:expression { new ExpressionStatement(e, state.Source()) }
 
 break_stmt <Statement>
@@ -77,7 +77,6 @@ return <Return>
 operation <Statement>
 	= listen_stmt / output_stmt / crement / mutation / assign_stmt / rounding		
 
-
 listen_stmt <Statement>
 	= listen _ to _ v:variable
 		{ new Listen(v, state.Source()) }
@@ -94,11 +93,11 @@ block <Block>
 
 consequent <Block>
 	= _ s:statement { new Block(s) }
-	/ EOL b:block { b }
+	/ EOL _? b:block { b }
 
 alternate <Block>
-	= _ else EOL b:block { b } 
-	/ _ else _ s:statement { new Block(s) }
+	= _ else _ s:statement { new Block(s) }
+	/ _ else EOL b:block { b } 
 	/ EOL+ _? else s:statement { new Block(s) }
 	/ EOL+ _? else EOL b:block { b }
 	/ EOL { new Block() }
@@ -111,7 +110,8 @@ conditional <Statement>
 
 loopable <Block>
 	= _ s:statement { new Block(s) }
-	/ EOL _? b:block EOL { b }
+	/ EOL _? b:block noise* EOF { b }
+	/ EOL _? b:block noise* EOL { b }
 
 loop <Loop>
 	= while _ e:expression s:loopable

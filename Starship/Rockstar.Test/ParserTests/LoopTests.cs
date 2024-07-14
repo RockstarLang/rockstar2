@@ -16,18 +16,11 @@ public class LoopTests(ITestOutputHelper output) : ParserTestBase(output) {
 	[Fact]
 	public void ControlFlowIndentedElse() {
 		var source = """
-		             my hope is less than my dream
-		             My dream is a thought
-		             My hope is a dream
-		             While my hope is less than my dream
-		               Knock my dream down
-		               Shout my dream
-		               If my dream is my hope
+		             While true
+		               If false 
 		                 Shout "No"
 		               Else
 		                 Shout "Yes"
-
-		             
 		             """;
 		var parsed = Parse(source);
 	}

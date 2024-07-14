@@ -74,6 +74,23 @@ public class FunctionTests(ITestOutputHelper output) : ParserTestBase(output) {
 	}
 
 	[Fact]
+	public void ParseHelloWorldWorks() {
+		var source = """
+		             Eternity takes the pain.
+		             The prize is silence
+		             Until the pain is nothing,
+		             Roll the pain into violence,
+		             Cast violence into your lies,
+		             Let the prize be with your lies. 
+
+		             Give back the prize
+
+
+		             """;
+		Parse(source).Statements.Count.ShouldBe(1);
+	}
+
+	[Fact]
 	public void ParseFunctionWorks() {
 		var source = """
 		             AddAndPrint takes X, and Y

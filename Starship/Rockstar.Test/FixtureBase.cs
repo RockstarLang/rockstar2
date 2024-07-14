@@ -79,6 +79,18 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		return env.Output;
 	}
 
+	public void ParseFile(string filePath, string directory) {
+		var relativePath = Path.Combine(directory, filePath);
+		filePath = QualifyRelativePath(relativePath);
+		var source = File.ReadAllText(filePath, Encoding.UTF8);
+		try {
+			Parser.Parse(source);
+		} catch (FormatException ex) {
+			PrettyPrint(source, filePath, ex);
+			throw;
+		}
+	}
+
 	public void RunFile(string filePath, string directory) {
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);

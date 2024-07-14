@@ -17,3 +17,13 @@ Rockstar uses a similar type system to that defined by the [ECMAScript type sys
 - **Null** - the null type. Evaluates as equal to zero and equal to false. The keywords `nothing`, `nowhere`, `nobody`, and `gone` are defined as aliases for `null`
 - **Mysterious** - the value of any variable that hasn’t been assigned a value, denoted by the keyword `mysterious`.
 
+## Variables
+
+Rockstar supports three different kinds of variables.
+
+A **simple variables** is any valid identifier that isn't a reserved keyword. A simple variable name must contain only letters, and cannot contain spaces. Note that Rockstar does not allow numbers or underscores in variable names - remember the golden rule of Rockstar syntax: if you can’t sing it, you can’t have it. Simple variables are case-insensitive.
+
+
+
+
+

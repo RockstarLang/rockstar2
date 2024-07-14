@@ -35,7 +35,9 @@ number <Number>
     = digits:('-'? [0-9]+ ("." [0-9]+)?) { new Number(double.Parse(digits)) }
 	/ digits:('-'? "." [0-9]+) { new Number(double.Parse(digits)) }
 
-string <Strïng> = "" '"' s:("" [^"]*) '"' { new Strïng(s) }
+string <Strïng> = s:quoted_string+ { new Strïng(String.Join("\"", s)) }
+quoted_string
+	= '"' s:("" [^"]*) '"' { s }
 
 say = 'shout' / 'whisper' / 'say' / 'scream'
 

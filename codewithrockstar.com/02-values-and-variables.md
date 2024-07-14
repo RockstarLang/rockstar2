@@ -17,6 +17,16 @@ Rockstar uses a similar type system to that defined by the [ECMAScript type sys
 - **Null** - the null type. Evaluates as equal to zero and equal to false. The keywords `nothing`, `nowhere`, `nobody`, and `gone` are defined as aliases for `null`
 - **Mysterious** - the value of any variable that hasn’t been assigned a value, denoted by the keyword `mysterious`.
 
+## Literals
+String literals in Rockstar use double quotes:
+```rockstar
+{% include_relative {{ page.example }}string_literals.rock %}
+```
+Number literals are written as deci% mal numbers:
+
+
+
+
 ## Variables
 
 Rockstar supports three different kinds of variables.

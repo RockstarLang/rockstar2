@@ -9,6 +9,7 @@ public class Number(decimal value, Source source)
 	public override bool Equals(object? obj) => Equals(obj as Number);
 	public override int GetHashCode() => this.Value.GetHashCode();
 	public bool Equals(Number? that) => that != null && this.Value == that.Value;
+	public bool IsPositiveInteger => this.Value >= 0 && this.Value == (int) this.Value;
 
 	public Number(string s) : this(Decimal.Parse(s)) { }
 
@@ -27,4 +28,6 @@ public class Number(decimal value, Source source)
 
 	public Value Negate() => new Number(-value);
 	public decimal NumericValue => value;
+
+	public void Decrement() => value -= 1;
 }

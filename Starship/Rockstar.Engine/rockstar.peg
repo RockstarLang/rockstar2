@@ -36,7 +36,7 @@ statement <Statement>
 	/ loop
 	/ conditional
 	/ operation
-//	/ expression
+	/ e:expression { new ExpressionStatement(e, state.Source()) }
 
 break_stmt <Statement>
 	= break ignore_rest_of_line
@@ -70,6 +70,8 @@ return <Return>
 	= give _ e:expression _ back
 		{ new Return(e, state.Source()) }
 	/ give _ back _ e:expression
+		{ new Return(e, state.Source()) }
+	/ give _ e:expression
 		{ new Return(e, state.Source()) }
 
 operation <Statement>
@@ -202,7 +204,9 @@ add_list <OpList>
 		{ new OpList(op, list) }
 
 addition <Expression>
-	= head:product_simple lists:add_list+
+	= lhs:product_simple op:(_plus_ / _minus_) rhs:product
+		{ new Binary(op, lhs, rhs, state.Source()) }
+	/ head:product_simple lists:add_list+
 		{ Binary.Reduce(head, lists, state.Source()) }
 	/ product_simple
 
@@ -250,15 +254,27 @@ assign_stmt <Statement>
 		{ new Assign(v, new Strïng(s, state.Source(s)), state.Source()) }
 	/ put _ e:expression _ into _ v:assignable
 		{ new Assign(v, e, state.Source()) }
+	/ let _ v:assignable _ be o:_op_ e:expression_list
+		{ new Assign(v, new Binary(o, new Looküp(v, state.Source()), e, state.Source()), state.Source()) }
 	/ let _ v:assignable _ be o:_op_ e:expression
 		{ new Assign(v, new Binary(o, new Looküp(v, state.Source()), e, state.Source()), state.Source()) }
 	/ let _ v:assignable _ be _ e:expression
 		{ new Assign(v, e, state.Source()) }
 	/ name:assignable _ takes _ args:variable_list EOL body:block EOL
 		{ new Assign(name, new Function(args, body, state.Source()), state.Source()) }
+	/ enlist
 
-	//TODO: reinstate for 2.0
-	// v:variable _is _ e:expression { new Assign(v, e, state.Source()) }
+enlist <Statement>
+	= push _ e:expression _ into _ v:variable
+		{ new Enlist(v, e, state.Source()) }
+	/ push _ v:variable _ like _ e:(literal/poetic_literal)
+		{ new Enlist(v, e, state.Source()) }
+	/ push _ v:variable (_ with)? _ e:expression_list
+		{ new Enlist(v, e, state.Source()) }
+	/ push _ v:variable 
+		{ new Enlist(v, state.Source()) }
+	/ d:delist _ into _ t:assignable
+		{ new Assign(t, d, state.Source()) }
 
 poetic_literal <Number>
 	= whole_part:poetic_digits _? '.' _? fractional_part:poetic_digits
@@ -306,8 +322,13 @@ primary <Expression>
 	= literal
 	/ lookup
 
+delist <Delist>
+	= pop _ v:variable
+		{ new Delist(v, state.Source()) }
+
 lookup <Expression>
-	= v:variable i:indexer
+	= d:delist { d }
+	/ v:variable i:indexer
 		{ new Looküp(v.AtIndex(i), state.Source()) }
 	/ v:variable
 		{ new Looküp(v, state.Source()) }
@@ -415,7 +436,7 @@ and = 'and' !letter
 or = 'or' !letter
 back = 'back' !letter
 taking = 'taking' !letter
-give = 'give' !letter / 'send' !letter
+give = 'return' !letter / 'give' !letter / 'send' !letter
 takes = 'takes' !letter / 'wants' !letter
 says = 'says' !letter / 'said' !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
@@ -433,6 +454,9 @@ null = 'null' !letter/ 'nothing' !letter/ 'nowhere' !letter/ 'nobody' !letter/ '
 output	= "shout" !letter / "say" !letter / "scream" !letter / "whisper" !letter
 break = 'break' !letter
 continue = 'continue' !letter / 'take' _ 'it' _ 'to' _ 'the' _ 'top' !letter
-	
+push = 'rock' !letter / 'push' !letter
+pop = 'roll' !letter / 'pop' !letter
+with = 'with' !letter
+like = 'like' !letter
 
 keyword = mysterious / plus / minus / times / over / as / isnt / not / is / put / into / let / be / listen / to / while / until / else / if / build / up / down / knock / and / or / back / taking / give / takes / says / pronoun / the / gtr / ltr / gte / lte / than / empty / true / false / null / output / non

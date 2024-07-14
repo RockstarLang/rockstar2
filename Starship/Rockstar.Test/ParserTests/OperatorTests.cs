@@ -23,6 +23,20 @@ public class OperatorTests(ITestOutputHelper output) : ParserTestBase(output) {
 	}
 
 	[Fact]
+	public void PrecedenceParses() {
+		var source = """
+		             say 1 + 1 * 2 (prints: 3)
+		             say 1 * 2 + 1 (prints: 3)
+		             say 1 / 2 * 3 + 4 (prints: 5.5)
+		             say 5-2*3 (prints: -1)
+		             say 2*3 - 5 (prints: 1)
+
+		             """;
+		var parsed = Parse(source);
+		parsed.Statements.Count.ShouldBe(5);
+	}
+
+	[Fact]
 	public void AintWorks() {
 		var parsed = Parse("say 5 aint 4");
 		parsed.Statements.Count.ShouldBe(1);

@@ -84,8 +84,7 @@ public class ParserTests(ITestOutputHelper output) : ParserTestBase(output) {
 	            Delta says rn
 	            """, 4)]
 	public void ParserParsesSaysLiterals(string source, int count) {
-		var parser = new Parser() { Tracer = DiagnosticsTracer.Instance };
-		var result = parser.Parse(source);
+		var result = Parse(source);
 		result.Statements.Count.ShouldBe(count);
 	}
 
@@ -99,10 +98,7 @@ public class ParserTests(ITestOutputHelper output) : ParserTestBase(output) {
 	            a    variable is 2
 	            """, 2)]
 	public void ParserParsesCommonVariables(string source, int count) {
-		var parser = new Parser {
-			Tracer = DiagnosticsTracer.Instance
-		};
-		var result = parser.Parse(source);
+		var result = Parse(source);
 		result.Statements.Count.ShouldBe(count);
 	}
 }

@@ -9,9 +9,8 @@ public abstract class Value(Source source)
 	public abstract bool Truthy { get; }
 	public bool Falsy => !Truthy;
 
-	//public Value And(Value that) => this.Truthy ? that : this;
-
-	//public Value Or(Value that) => this.Truthy ? this : that;
+	public Value Plus(IEnumerable<Value> that)
+		=> that.Aggregate(this, (memo, next) => memo.Plus(next));
 
 	public Value Plus(Value that) => (this, that) switch {
 		(Strïng a, _) => a.Concat(that),
@@ -41,11 +40,17 @@ public abstract class Value(Source source)
 		_ => throw new NotImplementedException()
 	};
 
+	public Value Minus(IEnumerable<Value> that)
+		=> that.Aggregate(this, (memo,next) => memo.Minus(next));
+
 	public Value Minus(Value that) => (this, that) switch {
 		(IHaveANumber a, IHaveANumber b)
 			=> new Number(a.NumericValue - b.NumericValue),
 		_ => throw Boom(nameof(Minus), this, that)
 	};
+
+	public Value Times(IEnumerable<Value> that)
+		=> that.Aggregate(this, (memo, next) => memo.Times(next));
 
 	public Value Times(Value that) => (this, that) switch {
 		(IHaveANumber a, IHaveANumber b)
@@ -54,6 +59,9 @@ public abstract class Value(Source source)
 		_ => Mysterious.Instance
 	};
 
+	public Value Divide(IEnumerable<Value> that)
+		=> that.Aggregate(this, (memo, next) => memo.Divide(next));
+
 	public Value Divide(Value that) => (this, that) switch {
 		(IHaveANumber a, IHaveANumber b)
 			=> new Number(a.NumericValue / b.NumericValue),
@@ -61,6 +69,12 @@ public abstract class Value(Source source)
 	};
 
 	public Value Equäls(Value that) => (Booleän) (this switch {
+		Array lhs => that switch {
+			(Array rhs) => lhs.ArrayEquals(rhs),
+			(Number rhs) => lhs.Length.Equals(rhs),
+			(Null) => lhs.Length.Value == 0,
+			_ => throw Boom(nameof(Equäls), this, that)
+		},
 		Booleän lhs => lhs.Truthy == that.Truthy,
 		Number lhs => that switch {
 			(Number rhs) => lhs.Value == rhs.Value,

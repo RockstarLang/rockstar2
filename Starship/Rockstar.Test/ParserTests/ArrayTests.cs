@@ -1,30 +1,12 @@
 namespace Rockstar.Test.ParserTests;
 
-public class MutationTests(ITestOutputHelper output) : ParserTestBase(output) {
+public class ArrayTests(ITestOutputHelper output) : ParserTestBase(output) {
 	[Fact]
-	public void JoinWorks() {
-		var source = """
-		             Let the array at 0 be "a"
-		             Let the array at 1 be "b"
-		             Let the array at 2 be "c"
-		             Join the array into ResultA
-		             Shout ResultA
-
-		             Join the array into ResultB with "-"
-		             Shout ResultB
-
-		             Join the array
-		             Shout the array
-
-		             Split "abcde" into tokens
-		             Join tokens with ";"
-		             Shout tokens
-
-		             """;
+	public void ParseRock() {
+		var source = "rock first with 0, 1, 2";
 		var parsed = Parse(source);
+		parsed.Statements.Count.ShouldBe(1);
 	}
-}
-public class ArrayTests(ITestOutputHelper testOutput) : ParserTestBase(testOutput) {
 
 	[Fact]
 	public void ParseThing() {
@@ -50,6 +32,7 @@ public class ArrayTests(ITestOutputHelper testOutput) : ParserTestBase(testOutpu
 		var result = Run(parsed);
 		result.ShouldBe("a\nb\n2\n".ReplaceLineEndings());
 	}
+
 	[Fact]
 	public void ParserParsesArrays() {
 		var source = """

@@ -1,6 +1,7 @@
 namespace Rockstar.Test.ParserTests;
 
 public class FunctionTests(ITestOutputHelper output) : ParserTestBase(output) {
+
 	[Theory]
 	[InlineData("""
 	            OuterFunction takes X
@@ -34,6 +35,23 @@ public class FunctionTests(ITestOutputHelper output) : ParserTestBase(output) {
 		var result = Parse(source);
 	}
 
+	[Fact]
+	public void ParserParsesArrayCopy() {
+		var source = """
+		             ArrayCopy takes source
+		             rock dest
+		             let i be 0
+		             let len be source + 0
+		             while i is less than len
+		             let dest at i be source at i
+		             build i up
+
+		             return dest
+
+		             """;
+		Parse(source).Statements.Count.ShouldBe(1);
+
+	}
 	[Fact]
 	public void ParserParsesFunctionWithReturnStatement() {
 		var source = """

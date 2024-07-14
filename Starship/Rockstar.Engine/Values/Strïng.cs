@@ -35,11 +35,11 @@ public class Strïng(string value, Source source)
 
 	public Strïng(params char[] chars) : this(new string(chars)) { }
 
-	public Value Concat(Value that)
+	public Strïng Concat(Value that)
 		=> new Strïng(this.Value + that.ToStrïng().Value);
 
-	public Value Repeat(IHaveANumber n)
-		=> new Strïng(Enumerable
+	public Strïng Repeat(IHaveANumber n)
+		=> new(Enumerable
 			.Range(0, (int) n.NumericValue)
 			.Select(_ => this.Value));
 

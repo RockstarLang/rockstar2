@@ -15,18 +15,11 @@ public class RockstarEnvironment(RockstarIO io) {
 	public RockstarEnvironment(RockstarIO io, RockstarEnvironment parent)
 	: this(io) {
 		Parent = parent;
-		//this.CopyVariablesFrom(parent);
 	}
 
 	public RockstarEnvironment? Parent { get; init; }
 
 	public RockstarEnvironment Extend() => new(IO, this);
-
-	//private void CopyVariablesFrom(RockstarEnvironment that) {
-	//	foreach (var variable in that.variables) {
-	//		this.variables[variable.Key] = variable.Value;
-	//	}
-	//}
 
 	protected RockstarIO IO = io;
 
@@ -38,8 +31,10 @@ public class RockstarEnvironment(RockstarIO io) {
 	private readonly Dictionary<string, Value> variables = new();
 	private readonly Dictionary<string, Dictionary<Value, Value>> arrays = new();
 
-	private Variable AssertTarget(Pronoun pronoun)
-		=> pronounTarget ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')");
+	private Variable QualifyPronoun(Variable variable) =>
+		variable is Pronoun pronoun
+			? pronounTarget ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')")
+			: variable;
 
 	public RockstarEnvironment? GetScope(Variable variable) {
 		return variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
@@ -59,7 +54,7 @@ public class RockstarEnvironment(RockstarIO io) {
 	public Result SetVariable(Variable variable, Value value) {
 		var scope = GetScope(variable) ?? this;
 		if (variable is Pronoun pronoun) {
-			scope.SetLocal(AssertTarget(pronoun), value);
+			scope.SetLocal(QualifyPronoun(pronoun), value);
 		} else if (variable.Index != default) {
 			var index = Eval(variable.Index);
 			scope.SetArray(variable, index, value);
@@ -70,11 +65,8 @@ public class RockstarEnvironment(RockstarIO io) {
 		return new(value);
 	}
 
-	//private Value Scalar(Dictionary<Value, Value> array)
-	//	=> new Number(1 + array.Keys.Where(k => k is Number).Select(k => Math.Ceiling(((Number) k).Value)).Max());
-
 	public Value Lookup(Variable variable) {
-		var key = (variable is Pronoun pronoun ? AssertTarget(pronoun).Key : variable.Key);
+		var key = (variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key);
 		var value = LookupValue(key);
 		if (variable.Index == default) return value ?? throw new($"Unknown variable '{variable.Name}'");
 		var index = Eval(variable.Index);
@@ -85,9 +77,6 @@ public class RockstarEnvironment(RockstarIO io) {
 		};
 	}
 
-	private Dictionary<Value, Value>? LookupArray(string key)
-		=> arrays.TryGetValue(key, out var array) ? array : Parent?.LookupArray(key);
-
 	private Value? LookupValue(string key)
 		=> variables.TryGetValue(key, out var value) ? value : Parent?.LookupValue(key);
 
@@ -95,7 +84,11 @@ public class RockstarEnvironment(RockstarIO io) {
 		var result = Result.Unknown;
 		foreach (var statement in block.Statements) {
 			result = Exec(statement);
-			if (result.WhatToDo == WhatToDo.Return) return result;
+			switch (result.WhatToDo) {
+				case WhatToDo.Skip: return result;
+				case WhatToDo.Break: return result;
+				case WhatToDo.Return: return result;
+			}
 		}
 		return result;
 	}
@@ -112,8 +105,30 @@ public class RockstarEnvironment(RockstarIO io) {
 		Listen l => Listen(l),
 		Rounding r => Rounding(r),
 		Mutation m => Mutation(m),
+		Enlist e => Enlist(e),
+		Continue => Result.Continue,
+		Break => Result.Break,
+		ExpressionStatement e => new(Eval(e.Expression)),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Delist(Delist delist) {
+		var key = delist.Variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : delist.Variable.Key;
+		var value = LookupValue(key);
+		if (value is Array array) return new(array.Pop());
+		return new(new Null());
+	}
+
+	private Result Enlist(Enlist e) {
+		var key = (e.Variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key :e.Variable.Key);
+		var value = LookupValue(key);
+		if (value is not Array array) {
+			array = value == null ? new Array() : new(value);
+			SetLocal(e.Variable, array);
+		}
+		foreach (var expr in e.Expressions) array.Push(Eval(expr));
+		return new(array);
+	}
 
 	private Result Mutation(Mutation m)
 		=> m.Operator switch {
@@ -188,27 +203,35 @@ public class RockstarEnvironment(RockstarIO io) {
 
 	private Result Loop(Loop loop) {
 		var result = Result.Unknown;
-		var condition = Eval(loop.Condition);
-		while (condition.Truthy == loop.CompareTo) {
+		while (Eval(loop.Condition).Truthy == loop.CompareTo) {
 			result = Exec(loop.Body);
-			condition = Eval(loop.Condition);
+			switch (result.WhatToDo) {
+				case WhatToDo.Skip: continue;
+				case WhatToDo.Break: break;
+				case WhatToDo.Return:
+					return result;
+			}
 		}
 		return result;
 	}
 
 	private Result Increment(Increment inc) {
-		return Eval(inc.Variable) switch {
-			Number n => Assign(inc.Variable, new Number(n.Value + inc.Multiple)),
-			Booleän b => inc.Multiple % 2 == 0 ? new(b) : Assign(inc.Variable, b.Negate),
-			{ } v => throw new($"Cannot increment '{inc.Variable.Name}' because it has type {v.GetType().Name}")
+		var variable = QualifyPronoun(inc.Variable);
+		return Eval(variable) switch {
+			Null n => Assign(variable, new Number(inc.Multiple)),
+			Number n => Assign(variable, new Number(n.Value + inc.Multiple)),
+			Booleän b => inc.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
 
 	private Result Decrement(Decrement dec) {
+		var variable = QualifyPronoun(dec.Variable);
 		return Eval(dec.Variable) switch {
-			Number n => Assign(dec.Variable, new Number(n.Value - dec.Multiple)),
-			Booleän b => dec.Multiple % 2 == 0 ? new(b) : Assign(dec.Variable, b.Negate),
-			{ } v => throw new($"Cannot increment '{dec.Variable.Name}' because it has type {v.GetType().Name}")
+			Null n => Assign(variable, new Number(-dec.Multiple)),
+			Number n => Assign(variable, new Number(n.Value - dec.Multiple)),
+			Booleän b => dec.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
 
@@ -239,6 +262,7 @@ public class RockstarEnvironment(RockstarIO io) {
 			{ Op: Operator.Not } => Booleän.Not(Eval(u.Expr)),
 			_ => throw new NotImplementedException($"Cannot apply {u.Op} to {u.Expr}")
 		},
+		Delist delist => Delist(delist).Value,
 		FunctionCall call => Call(call).Value,
 		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
 	};

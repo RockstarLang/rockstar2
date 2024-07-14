@@ -6,6 +6,13 @@ namespace Rockstar.Engine.Values;
 
 public abstract class Value(Source source)
 	: Expression(source) {
+
+	public static bool operator ==(Value? lhs, Value? rhs)
+		=> lhs?.Equals(rhs) ?? rhs is null;
+
+	public static bool operator !=(Value? lhs, Value? rhs)
+		=> !(lhs == rhs);
+
 	public abstract bool Truthy { get; }
 	public bool Falsy => !Truthy;
 
@@ -15,6 +22,7 @@ public abstract class Value(Source source)
 	public Value Plus(Value that) => (this, that) switch {
 		(Strïng a, _) => a.Concat(that),
 		(_, Strïng b) => this.ToStrïng().Concat(b),
+		(Array a, IHaveANumber b) => new Number(a.Length.NumericValue + b.NumericValue),
 		(IHaveANumber a, IHaveANumber b)
 			=> new Number(a.NumericValue + b.NumericValue),
 		(IHaveANumber a, _)

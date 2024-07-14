@@ -111,7 +111,7 @@ conditional <Statement>
 
 loopable <Block>
 	= _ s:statement { new Block(s) }
-	/ EOL b:block EOL { b }
+	/ EOL _? b:block EOL { b }
 
 loop <Loop>
 	= while _ e:expression s:loopable

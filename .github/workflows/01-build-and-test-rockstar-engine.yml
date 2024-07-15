@@ -1,8 +1,11 @@
-name: 01 Build and test Rockstar engine
+name: build-and-test-engine
 
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'Starship/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:

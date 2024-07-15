@@ -17,6 +17,8 @@ jobs:
         with:
           dotnet-version: '8.x'
           include-prerelease: true
+      - name: Install .NET WASM workloads
+        run: dotnet workload restore
       - name: Build Rockstar
         run: dotnet build Starship --configuration Release
       - name: Test Rockstar

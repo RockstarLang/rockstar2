@@ -22,7 +22,7 @@ jobs:
         run: dotnet workload restore
 
       - name: Build Rockstar
-        run: dotnet build --configuration Release
+        run: dotnet build Starship --configuration Release
 
       - name: Test Rockstar
         run: dotnet test Starship

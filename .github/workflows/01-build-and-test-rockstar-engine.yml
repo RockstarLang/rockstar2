@@ -18,15 +18,21 @@ jobs:
           dotnet-version: '8.x'
           include-prerelease: true
       - name: Install .NET WASM workloads
+        working-directory: ./Starship
         run: dotnet workload restore
+
       - name: Build Rockstar
-        run: dotnet build Starship --configuration Release
+        run: dotnet build --configuration Release
+
       - name: Test Rockstar
         run: dotnet test Starship
+
       - name: Publish WASM engine
         run: dotnet publish Starship/Rockstar.Wasm -o rockstar_wasm -c Release
+
       - name: Publish Rockstar Linux binary
         run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
+
       - name: Upload WASM engine
         uses: actions/upload-artifact@v4
         with:

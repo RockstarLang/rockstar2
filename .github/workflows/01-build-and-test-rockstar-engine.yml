@@ -1,4 +1,4 @@
-name: CI
+name: 01 Build and test Rockstar engine
 
 on:
   push:

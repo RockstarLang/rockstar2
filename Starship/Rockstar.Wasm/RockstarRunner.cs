@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using Rockstar.Engine;
@@ -6,18 +7,14 @@ namespace Rockstar.Wasm;
 
 public partial class RockstarRunner {
 	private static readonly Parser parser = new();
+	private static readonly StringBuilderIO io = new StringBuilderIO();
+	private static readonly RockstarEnvironment env = new(io);
+
 	[JSExport]
-	internal static string Run(string source) {
+	public static string Run(string source) {
 		var program = parser.Parse(source);
-		var io = new WasmIO();
-		new RockstarEnvironment(io).Execute(program);
+		io.Reset();
+		env.Execute(program);
 		return io.Output;
 	}
-}
-
-public class WasmIO : IRockstarIO {
-	private readonly StringBuilder sb = new();
-	public string Read() => null;
-	public void Write(string s) => sb.Append(s);
-	public string Output => sb.ToString();
 }

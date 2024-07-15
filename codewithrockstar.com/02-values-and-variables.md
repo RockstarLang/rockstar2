@@ -19,14 +19,6 @@ Rockstar uses a similar type system to that defined by the [ECMAScript type sys
 
 ## Literals
 String literals in Rockstar use double quotes:
-```rockstar
-{% include_relative {{ page.example }}string_literals.rock %}
-```
-Number literals are written as deci% mal numbers:
-
-
-
-
 ## Variables
 
 Rockstar supports three different kinds of variables.

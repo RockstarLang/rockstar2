@@ -1,7 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.WebAssembly">
-	<ItemGroup>
-		<ProjectReference Include="..\Rockstar.Engine\Rockstar.Engine.csproj" />
-	</ItemGroup>
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -10,6 +7,9 @@
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
 		<InvariantGlobalization>true</InvariantGlobalization>
-		<Nullable>enable</Nullable>
+		<OutputType>Library</OutputType>
 	</PropertyGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Rockstar.Engine\Rockstar.Engine.csproj" />
+	</ItemGroup>
 </Project>

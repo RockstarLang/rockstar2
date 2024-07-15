@@ -30,7 +30,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Output(Output output) {
 		var value = Eval(output.Expression);
-		WriteLine(value.ToStrïng().Value);
+		WriteLine("YEAH" + value.ToStrïng().Value);
 		return new(value);
 	}
 

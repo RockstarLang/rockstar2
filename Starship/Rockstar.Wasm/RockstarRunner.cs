@@ -17,7 +17,7 @@ public partial class RockstarRunner {
 
 public class WasmIO : IRockstarIO {
 	private readonly StringBuilder sb = new();
-	public string? Read() => null;
-	public void Write(string? s) => sb.Append(s);
+	public string Read() => null;
+	public void Write(string s) => sb.Append(s);
 	public string Output => sb.ToString();
 }

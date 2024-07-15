@@ -1,5 +1,3 @@
-using Rockstar.Engine;
-
 namespace Rockstar.Test;
 
 public class StringBuilderIO(Func<string?> readInput) : IRockstarIO {

@@ -10,5 +10,6 @@
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
 		<InvariantGlobalization>true</InvariantGlobalization>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 </Project>

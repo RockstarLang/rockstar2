@@ -1,6 +1,35 @@
 # rockstar2
 It's time. Rockstar 2: "The Difficult Second Version"
 
+The Build Process
+
+Building codewithrockstar.com works like this:
+
+build-and-test-rockstar-engine
+
+- runs on Linux
+- Builds the parser and interpreter
+- Runs the test suite
+- Uploads artifacts for:
+	- linux native binary
+	- WASM interpreter for the website
+
+IF THAT WORKS:
+
+build-windows-binary
+* builds the Rockstar windows binary
+
+build-macos-binary
+* builds the macOS binary
+
+ build-and-deploy-website
+	* Downloads the linux binary Rockstar WASM artifact from step 1
+	* Downloads the windows and macOS binaries from steps 2 and 3
+	* Builds the Jekyll site
+	* 
+
+
+
 OK, project constraints:
 
 examples/

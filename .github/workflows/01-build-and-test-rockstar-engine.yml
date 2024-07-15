@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+          include-prerelease: true
+      - name: Build Rockstar
+        run: dotnet build Starship --configuration Release
+      - name: Test Rockstar
+        run: dotnet test Starship
+      - name: Publish WASM engine
+        run: dotnet publish Starship\Rockstar.Wasm\ -o rockstar.wasm -c Release
+      - name: Upload WASM engine
+        uses: actions/upload-artifact@v4
+        with:
+          name: rockstar-wasm-engine
+          path: |
+            rockstar.wasm/wwwroot/_framework
+
+

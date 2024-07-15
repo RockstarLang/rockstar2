@@ -1,4 +1,6 @@
-namespace Rockstar.Test;
+using System.Text;
+
+namespace Rockstar.Engine;
 
 public class StringBuilderIO(Func<string?> readInput) : IRockstarIO {
 	public StringBuilderIO() : this(() => null) { }

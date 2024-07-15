@@ -29,9 +29,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  engine:
+    uses: ./.github/workflows/01-build-and-test-rockstar-engine.yml
   # Build job
   build:
     runs-on: ubuntu-latest
+    needs: engine
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,7 +43,7 @@ jobs:
         with:
           name: rockstar_wasm
           path: |
-            rockstar_wasm/wwwroot/_framework
+            codewithrockstar.com/wasm/wwwroot/_framework
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

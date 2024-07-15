@@ -8,4 +8,5 @@ public class StringBuilderIO(Func<string?> readInput) : IRockstarIO {
 	public string? Read() => readInput();
 	public void Write(string? s) => sb.Append(s);
 	public string Output => sb.ToString();
+	public void Reset() => sb.Clear();
 }

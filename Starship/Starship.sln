@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rockstar.Engine", "Rockstar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RockstarBlazorWasm", "Rockstar.BlazorWasm\RockstarBlazorWasm.csproj", "{CADD8A9B-F4E6-4716-B87F-09F96F995169}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorClassLib", "RazorClassLib\RazorClassLib.csproj", "{7B2CDB5D-014B-412F-A8F7-0B120E8C3F85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CADD8A9B-F4E6-4716-B87F-09F96F995169}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CADD8A9B-F4E6-4716-B87F-09F96F995169}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CADD8A9B-F4E6-4716-B87F-09F96F995169}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B2CDB5D-014B-412F-A8F7-0B120E8C3F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B2CDB5D-014B-412F-A8F7-0B120E8C3F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B2CDB5D-014B-412F-A8F7-0B120E8C3F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B2CDB5D-014B-412F-A8F7-0B120E8C3F85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

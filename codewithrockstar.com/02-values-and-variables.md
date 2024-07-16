@@ -18,7 +18,10 @@ Rockstar uses a similar type system to that defined by the [ECMAScript type sys
 - **Mysterious** - the value of any variable that hasn’t been assigned a value, denoted by the keyword `mysterious`.
 
 ## Literals
-String literals in Rockstar use double quotes:
+
+String literals in Rockstar use double quotes. To include a
+
+
 ## Variables
 
 Rockstar supports three different kinds of variables.

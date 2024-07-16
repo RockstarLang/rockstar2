@@ -59,5 +59,5 @@ I've done this using `mklink`, provided with the Windows `cmd` interpreter:
 D:\Rockstar2\codewithrockstar.com\> mklink /D examples ..\Starship\Rockstar.Test\programs\examples
 ```
 
-This is incredibly fragile - moving or renaming folders breaks the link and you just end up with two disconnected copies of everything.
+This is incredibly fragile - moving or renaming folders breaks the link and you just end up with two disconnected copies of everything. Bizarrely, it works just fine on the GitHub Actions checkout.
 

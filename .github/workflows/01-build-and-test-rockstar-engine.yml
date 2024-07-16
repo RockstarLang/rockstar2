@@ -26,16 +26,16 @@ jobs:
         run: dotnet workload restore
 
       - name: Build Rockstar
-        run: dotnet build Starship --configuration Release
+        run: dotnet build Starship -c Release
 
       - name: Test Rockstar
-        run: dotnet test Starship
+        run: dotnet test Starship -c Release
 
       - name: Publish WASM engine
         run: dotnet publish Starship/Rockstar.Wasm -o rockstar_wasm -c Release
 
-      - name: Publish Rockstar Linux binary
-        run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
+      # - name: Publish Rockstar Linux binary
+      #   run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
 
       - name: Upload WASM engine
         uses: actions/upload-artifact@v4
@@ -44,11 +44,11 @@ jobs:
           path: |
             rockstar_wasm/wwwroot/_framework
 
-      - name: Upload WASM engine
-        uses: actions/upload-artifact@v4
-        with:
-          name: rockstar_linux_binary
-          path: |
-            rockstar_linux_binary
+      # - name: Upload Linux binary
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: rockstar_linux_binary
+      #     path: |
+      #       rockstar_linux_binary
 
 

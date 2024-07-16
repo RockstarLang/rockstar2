@@ -54,7 +54,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll
-        working-directory: codewithrockstar.com
+        working-directory: ./codewithrockstar.com
         # Outputs to the './_site' directory by default
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:

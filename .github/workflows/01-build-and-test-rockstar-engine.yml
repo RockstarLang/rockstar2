@@ -1,54 +1,54 @@
-name: build-and-test-engine
+# name: build-and-test-engine
 
-on:
-  push:
-    branches: ["main"]
-    paths:
-      - 'Starship/**'
-      - '.github/workflows/**'
-  workflow_dispatch:
-  workflow_call:
+# on:
+#   push:
+#     branches: ["main"]
+#     paths:
+#       - 'Starship/**'
+#       - '.github/workflows/**'
+#   workflow_dispatch:
+#   workflow_call:
 
-jobs:
-  # Build job
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up .NET 8 SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.x'
+# jobs:
+#   # Build job
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#       - name: Set up .NET 8 SDK
+#         uses: actions/setup-dotnet@v3
+#         with:
+#           dotnet-version: '8.x'
 
-      - name: Install .NET WASM workloads
-        working-directory: ./Starship
-        run: dotnet workload restore
+#       - name: Install .NET WASM workloads
+#         working-directory: ./Starship
+#         run: dotnet workload restore
 
-      - name: Build Rockstar
-        run: dotnet build Starship -configuration Release
+#       - name: Build Rockstar
+#         run: dotnet build Starship -configuration Release
 
-      - name: Test Rockstar
-        run: dotnet test Starship -c Release
+#       - name: Test Rockstar
+#         run: dotnet test Starship -c Release
 
-      - name: Publish WASM engine
-        run: dotnet publish Starship/Rockstar.Wasm -o rockstar_wasm -c Release
+#       - name: Publish WASM engine
+#         run: dotnet publish Starship/Rockstar.Wasm -o rockstar_wasm -c Release
 
-      # - name: Publish Rockstar Linux binary
-      #   run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
+#       # - name: Publish Rockstar Linux binary
+#       #   run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
 
-      - name: Upload WASM engine
-        uses: actions/upload-artifact@v4
-        with:
-          name: rockstar_wasm
-          path: |
-            rockstar_wasm/wwwroot/_framework
+#       - name: Upload WASM engine
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: rockstar_wasm
+#           path: |
+#             rockstar_wasm/wwwroot/_framework
 
-      # - name: Upload Linux binary
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: rockstar_linux_binary
-      #     path: |
-      #       rockstar_linux_binary
+#       # - name: Upload Linux binary
+#       #   uses: actions/upload-artifact@v4
+#       #   with:
+#       #     name: rockstar_linux_binary
+#       #     path: |
+#       #       rockstar_linux_binary
 
 

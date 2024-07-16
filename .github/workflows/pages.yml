@@ -1,33 +1,27 @@
 name: Deploy Jekyll site to Pages
-
 on:
   # Run after the engine is rebuilt
   workflow_run:
-      workflows: ['build-and-test-engine']
-      types: [completed]
-      branches: ['main']
-
+    workflows: ['build-and-test-engine']
+    types: [completed]
+    branches: ['main']
   # Run after any website source files are changed
   push:
     branches: ["main"]
     paths:
       - 'codewithrockstar.com/**'
       - '.github/workflows/**'
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
-
 jobs:
   engine:
     uses: ./.github/workflows/01-build-and-test-rockstar-engine.yml
@@ -38,14 +32,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Download WASM engine
         uses: actions/download-artifact@v4
         with:
           name: rockstar_wasm
-          path: |
-            ./codewithrockstar.com/wasm/wwwroot/_framework
-
+          path: ./codewithrockstar.com/wasm/wwwroot/_framework
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -58,21 +49,17 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           working-directory: ./codewithrockstar.com
-
       - name: Build with Jekyll
         # Outputs to the './_site' directory by default
         working-directory: ./codewithrockstar.com
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-
         env:
           JEKYLL_ENV: production
-
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./codewithrockstar.com/_site
-
   # Deployment job
   deploy:
     environment:

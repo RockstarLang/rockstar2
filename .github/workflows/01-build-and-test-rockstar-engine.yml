@@ -1,11 +1,11 @@
 name: build-and-test-engine
 
 on:
-  # push:
-  #   branches: ["main"]
-  #   paths:
-  #     - 'Starship/**'
-  #     - '.github/workflows/**'
+  push:
+    branches: ["main"]
+    paths:
+      - 'Starship/**'
+      - '.github/workflows/**'
   workflow_dispatch:
   workflow_call:
 

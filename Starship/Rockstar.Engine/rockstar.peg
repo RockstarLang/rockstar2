@@ -73,13 +73,13 @@ equality = unary
 unary = comparison
 comparison = addition
 
-addition <Expression>
-	= lhs:product op:(_plus_/_minus_) rhs:addition
+addition <Expression> -memoize
+	= lhs:addition op:(_plus_/_minus_) rhs:product
 		{ new Binary(op, lhs, rhs) }
 	/ product
 
-product <Expression>
-	= lhs:primary op:(_times_/_divide_) rhs:product
+product <Expression> -memoize
+	= lhs:product op:(_divide_/_times_) rhs:primary
 		{ new Binary(op, lhs, rhs) }
 	/ primary
 

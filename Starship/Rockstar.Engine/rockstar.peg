@@ -24,7 +24,7 @@ block <Block>
 statement = output_stmt / assign_stmt
 
 output_stmt <Statement>
-	= say _ e:expression
+	= print _ e:expression
 		{ new Output(e) }
 
 assign_stmt <Statement>
@@ -32,8 +32,13 @@ assign_stmt <Statement>
 		{ new Assign(v, e) }
 
 variable <Variable>
-	= i:(the _ identifier) { new CommonVariable(i) }
+	= i:proper_variable { new ProperVariable(i) }
+	/ i:(the _ identifier) { new CommonVariable(i) }
 	/ i:identifier { new SimpleVariable(i) }
+
+proper_variable	= proper_noun (_ proper_noun)+
+
+proper_noun	= !keyword &uppercase_letter identifier
 
 identifier
 	= letter (letter / [0-9_])*
@@ -73,13 +78,72 @@ string <Strïng> = s:quoted_string+ { new Strïng(String.Join("\"", s)) }
 quoted_string
 	= '"' s:("" [^"]*) '"' { s }
 
-is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter 
-say = 'print' !letter / 'shout' !letter / 'whisper' !letter / 'say' !letter / 'scream' !letter 
-the	= 'a' !letter / 'an' !letter / 'the' !letter / 'my' !letter / 'your' !letter / 'our' !letter
+
+at = 'at' !letter
+turn = 'turn' !letter
+around = 'around' !letter / 'round' !letter
+using = 'using' !letter / 'with' !letter
+split = 'cut' !letter / 'split' !letter / 'shatter' !letter
+cast = 'cast' !letter / 'burn' !letter
+join = 'join' !letter / 'unite' !letter
+mysterious = 'mysterious' !letter
+plus = 'plus' !letter / 'with' !letter
+minus = 'minus' !letter / 'without' !letter
+times = 'times' !letter / 'of' !letter
+over = 'over' !letter / 'between' !letter
+as = 'as' !letter
+isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter
+	/ "wasn't" !letter / "wasnt" !letter / "aren't" !letter / "arent" !letter
+	/ "weren't" !letter / "werent" !letter 
+not = 'not' !letter
+non = 'non' !letter
+nor = 'nor' !letter
+is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter
+put = 'put' !letter
+into = 'into' !letter / 'in' !letter
+let = 'let' !letter
+be = 'be' !letter
+listen = 'listen' !letter
+to = 'to' !letter
+while = 'while' !letter
+until = 'until' !letter
+else = 'else' !letter
+if = 'if' !letter
+build = 'build' !letter
+up = 'up' !letter
+down = 'down' !letter
+knock = 'knock' !letter 
+and = 'and' !letter
+or = 'or' !letter
+back = 'back' !letter
+taking = 'taking' !letter
+give = 'return' !letter / 'give' !letter / 'send' !letter
+takes = 'takes' !letter / 'wants' !letter
+says = 'says' !letter / 'said' !letter
+pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
+    / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
+the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
+gtr = 'greater'/ 'higher' / 'bigger'	/ 'stronger' !letter/ 'more' !letter
+ltr = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
+gte = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
+lte = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter
+than = 'than' !letter
 empty = 'empty' !letter / 'silent' !letter / 'silence' !letter
 true = "true" !letter/ "yes" !letter/ "ok" !letter/ "right"!letter 
 false = "false" !letter/ "lies" !letter/ "no" !letter/ "wrong"!letter
 null = 'null' !letter/ 'nothing' !letter/ 'nowhere' !letter/ 'nobody' !letter/ 'gone'!letter
+print = "print" !letter / "shout" !letter / "say" !letter / "scream" !letter / "whisper" !letter
+break = 'break' !letter
+continue = 'continue' !letter / 'take' _ 'it' _ 'to' _ 'the' _ 'top' !letter
+push = 'rock' !letter / 'push' !letter
+pop = 'roll' !letter / 'pop' !letter
+with = 'with' !letter
+like = 'like' !letter
+
+keyword
+	= mysterious / plus / minus / times / over / as / isnt / not / is / put / into / let / be / listen / to / while
+	/ until / else / if / build / up / down / knock / and / or / back / taking / give / takes / says / pronoun / the
+	/ gtr / ltr / gte / lte / than / empty / true / false / null / print / non
 
 _ = "" (whitespace / comment)+
 whitespace = [ \t]

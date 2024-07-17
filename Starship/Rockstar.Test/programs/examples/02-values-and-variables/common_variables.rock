@@ -12,3 +12,8 @@ Your variable is 3
 Say the variable (prints: 1)
 Say my variable (prints: 2)
 Say your variable (prints: 3)
+
+The silence is nothing
+Scream the silence (prints: null)
+Your scream is "aargh!"
+Scream your scream (prints: aargh!)

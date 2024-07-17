@@ -50,7 +50,6 @@ Rockstar supports the Boolean literals `true` (aliases: `yes`, `ok`, `right`) an
 ```rockstar
 {% include_relative {{ page.examples }}boolean_literals.rock %}
 ```
-
 ## Null
 
 Rockstar `null` represents an expression which has no meaningful value. Aliases for `null` are `nothing`, `nowhere`, `nobody` and `gone`:
@@ -59,19 +58,33 @@ Rockstar `null` represents an expression which has no meaningful value. Aliases 
 {% include_relative {{ page.examples }}boolean_literals.rock %}
 ```
 
-
-
-
-
-
-
 ## Variables
 
 Rockstar supports three different kinds of variables.
 
-A **simple variables** is any valid identifier that isn't a reserved keyword. A simple variable name must contain only letters, and cannot contain spaces. Note that Rockstar does not allow numbers or underscores in variable names - remember the golden rule of Rockstar syntax: if you can’t sing it, you can’t have it. Simple variables are case-insensitive.
+**Simple variables** can be any valid identifier that isn't a reserved keyword. A simple variable name must contain only letters, and cannot contain spaces. Note that Rockstar does not allow numbers or underscores in variable names - remember the golden rule of Rockstar syntax: if you can’t sing it, you can’t have it. Simple variables are case-insensitive.
 
+```rockstar
+{% include_relative {{ page.examples }}simple_variables.rock %}
+```
 
+**Common variables** consist of one of the keywords `a`, `an`, `the`, `my`, `your` or `our` followed by whitespace and an identifier. The keyword is part of the variable name, so `a boy` is a different variable from `the boy`. Common variables are case-insensitive.
+
+> Common variables can include language keywords, so you can have variables called `your scream`, `my null`, `the silence`. 
+
+```rockstar
+{% include_relative {{ page.examples }}common_variables.rock %}
+```
+
+**Proper variables** are multi-word proper nouns: words which aren’t language keywords, each starting with an uppercase letter, separated by spaces. (Single-word variables are always simple variables.) Whilst some developers may use this feature to create variables with names like `Customer ID`, `Tax Rate` or `Distance In Kilometres`, we recommend you favour idiomatic variable names such as `Doctor Feelgood`, `Mister Crowley`, `Tom Sawyer`, and `Billie Jean`.
+#### A note on case sensitivity in Rockstar
+
+Rockstar keywords and variable names are all case-insensitive, with the exception of proper variables. Proper variables are case-insensitive **apart from the first letter of each word, which must be a capital letter.**
+
+- `TIME`, `time`, `tIMe`, `TIMe` are all equivalent. Simple variables are case-insensitive.
+- `MY HEART`, `my heart`, `My Heart` - are all equivalent; the keyword `my` triggers **common variable** behaviour
+- `Tom Sawyer`, `TOM SAWYER`, `TOm SAWyer` - are all equivalent; the capital `S` on `Sawyer` triggers **proper variable** behaviour
+- `DOCTOR feelgood` is not a valid Rockstar variable; the lowercase `f` on `feelgood` does not match any valid variable naming style and so the variable name is not valid.
 
 
 

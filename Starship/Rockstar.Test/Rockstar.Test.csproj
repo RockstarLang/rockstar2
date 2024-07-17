@@ -60,6 +60,9 @@
     <None Update="programs\examples\01-getting-started\punctuated_statements.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\02-values-and-variables\proper_variables.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\02-values-and-variables\null_literals.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

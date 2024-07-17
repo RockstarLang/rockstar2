@@ -28,7 +28,11 @@ output_stmt <Statement>
 		{ new Output(e) }
 
 assign_stmt <Statement>
-	= v:variable _ says ' ' s:poetic_string
+	= put _ e:expression _ into _ v:variable
+		{ new Assign(v, e) }
+	/ let _ v:variable _ be _ e:expression
+		{ new Assign(v, e) }
+	/ v:variable _ says ' ' s:poetic_string
 		{ new Assign(v, s) }
 	/ v:variable _is _ e:expression
 		{ new Assign(v, e) }
@@ -58,7 +62,34 @@ uppercase_letter = c:. &{ Char.IsUpper(c,0) }
 lowercase_letter = c:. &{ Char.IsLower(c,0) }
 
 expression <Expression>
-	= literal
+	= boolean
+	/ primary
+
+boolean = binary_nor
+binary_nor = binary_or
+binary_or = binary_and
+binary_and = equality
+equality = unary
+unary = comparison
+comparison = addition
+
+addition <Expression>
+	= lhs:product op:(_plus_/_minus_) rhs:addition
+		{ new Binary(op, lhs, rhs) }
+	/ product
+
+product <Expression>
+	= lhs:primary op:(_times_/_divide_) rhs:product
+		{ new Binary(op, lhs, rhs) }
+	/ primary
+
+_plus_	<Operator>	= (_? '+' _? / _ plus _ ) { Operator.Plus }
+_minus_ <Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
+_times_	<Operator>	= (_? '*' _? / _ times _ ) { Operator.Times }
+_divide_ <Operator>	= (_? '/' _? / _ over _ ) { Operator.Divide }
+
+primary <Expression>
+	= constant
 	/ string
 	/ number
 	/ lookup
@@ -69,7 +100,7 @@ lookup <Expression>
 	= v:variable
 		{ new Lookup(v) }
 
-literal <Value>	
+constant <Value>	
 	= null { Null.Instance }
 	/ true { Booleän.True }
 	/ false { Booleän.False }

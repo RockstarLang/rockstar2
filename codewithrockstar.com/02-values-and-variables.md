@@ -15,7 +15,8 @@ Rockstar uses a similar type system to that defined by the [ECMAScript type sys
 - **Function** - used for functions.
 - **Null** - the null type. Evaluates as equal to zero and equal to false. The keywords `nothing`, `nowhere`, `nobody`, and `gone` are defined as aliases for `null`
 - **Mysterious** - the value of any variable that hasn’t been assigned a value, denoted by the keyword `mysterious`.
-## Strings
+
+## Strings 
 
 Rockstar strings are surrounded by double quotes. A string literal includes everything up to the closing quote, including newlines. To include a double quote in a string, use a pair of double quotes. Rockstar strings are stored internally as UTF-16, and support the full Unicode character set.
 
@@ -62,7 +63,11 @@ Rockstar `null` represents an expression which has no meaningful value. Aliases 
 
 Rockstar variables are dynamically typed; a variable is declared when you assign it a value.
 
-Assignment uses the keywords `is`, `are`, `am`, `was`, `were`, and contractions `'s` and `'re`
+There are three different ways to assign a variable in Rockstar:
+
+1. `<variable> is <expression>`.  Valid aliases for `is` are `are`, `am`, `was`, `were`, and the contractions `'s` and `'re`
+2. `put <expression> into <variable>`
+3. `let <variable> be <expression>`
 
 ```rockstar
 {% include_relative {{ page.examples }}assignment.rock %}

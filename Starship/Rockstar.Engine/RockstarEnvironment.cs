@@ -67,6 +67,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Value Eval(Expression expr) => expr switch {
 		Value value => value,
+		Binary binary => binary.Resolve(Eval),
 		Lookup lookup => Lookup(lookup.Variable),
 		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
 	};
@@ -87,9 +88,4 @@ public class RockstarEnvironment(IRockstarIO io) {
 		if (value != null) return value;
 		throw new($"Unknown variable '{variable.Name}'");
 	}
-}
-
-public class Result(Value value) {
-	public Value Value => value;
-	public static Result Unknown = new(Mysterious.Instance);
 }

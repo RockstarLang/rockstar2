@@ -24,7 +24,8 @@ Almost everything in Rockstar is case-insensitive, and most whitespace is ignore
 {% include_relative {{ page.examples }}hello_world_casing_and_whitespace.rock %}
 ```
 
-Rockstar statements end with a newline, or with any of the punctuation characters `?!;` 
+Rockstar statements end with a newline, or with any of the punctuation characters `.?!;` 
+
 ```rockstar
 {% include_relative {{ page.examples }}punctuated_statements.rock %}
 ```

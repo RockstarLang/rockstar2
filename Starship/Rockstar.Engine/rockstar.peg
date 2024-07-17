@@ -28,8 +28,10 @@ output_stmt <Statement>
 		{ new Output(e) }
 
 assign_stmt <Statement>
-	= v:variable _ is _ e:expression
+	= v:variable _is _ e:expression
 		{ new Assign(v, e) }
+
+_is = ("'s" / "'re" / _ is)
 
 variable <Variable>
 	= i:pronoun { new Pronoun(i) }
@@ -68,12 +70,31 @@ literal <Value>
 	/ empty { Strïng.Empty }
 
 number <Number>
-    = d:digits&{ decimal.TryParse(d, out var value) }
+    = 'like' _ n:poetic_number { n }
+	/ d:digits&{ decimal.TryParse(d, out var value) }
 		{ new Number(d) }
 	/ d:digits
 		#error{ $"Number {d} is out of range" }
 digits 
 	= ("" (('-' /'+')? [0-9]+ ("." [0-9]+)?) / (('-' /'+')? "." [0-9]+))	
+
+poetic_number <Number>
+	= whole_part:poetic_digits _? ('...' / '…') _ fractional_part:poetic_digits
+		{ new Number (whole_part + "." + fractional_part) }
+	/ digits:poetic_digits
+		{ new Number(digits) }
+
+PDS = ("" _ / [0-9\',;:?!+_/] )
+
+poetic_digits <string>
+	= PDS* head:poetic_digit PDS+ tail:poetic_digits PDS* 
+		{ head + tail }
+	/ d:poetic_digit
+		{ d }
+
+poetic_digit <string>
+	= word:("" (letter / [\-'])+)
+		{ (Regex.Replace(word, "'+", "").Length % 10).ToString() }
 
 string <Strïng> = s:quoted_string+ { new Strïng(String.Join("\"", s)) }
 quoted_string
@@ -154,7 +175,7 @@ comment	=
 	/ '[' [^\]]* ']'
 
 EOB = EOS+
-EOS = _? [?!;]
+EOS = _? [.?!;]
 	/ EOL
 EOL = _? '\r'? '\n'
 EOF = _? !.

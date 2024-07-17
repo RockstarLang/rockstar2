@@ -58,7 +58,15 @@ Rockstar `null` represents an expression which has no meaningful value. Aliases 
 {% include_relative {{ page.examples }}boolean_literals.rock %}
 ```
 
-## Variables
+## Variables and Assignment
+
+Rockstar variables are dynamically typed; a variable is declared when you assign it a value.
+
+Assignment uses the keywords `is`, `are`, `am`, `was`, `were`, and contractions `'s` and `'re`
+
+```rockstar
+{% include_relative {{ page.examples }}assignment.rock %}
+```
 
 Rockstar supports three different kinds of variables.
 
@@ -85,6 +93,7 @@ Rockstar keywords and variable names are all case-insensitive, with the exceptio
 - `MY HEART`, `my heart`, `My Heart` - are all equivalent; the keyword `my` triggers **common variable** behaviour
 - `Tom Sawyer`, `TOM SAWYER`, `TOm SAWyer` - are all equivalent; the capital `S` on `Sawyer` triggers **proper variable** behaviour
 - `DOCTOR feelgood` is not a valid Rockstar variable; the lowercase `f` on `feelgood` does not match any valid variable naming style and so the variable name is not valid.
+
 ## Pronouns
 
 As well as referring to variables by name, you can refer to them using pronouns. The keywords `it`, `he`, `she`, `him`, `her`, `they`, `them`, `ze`, `hir`, `zie`, `zir`, `xe`, `xem`, `ve`, and `ver` refer to the **variable which was most recently assigned.**
@@ -95,4 +104,29 @@ As well as referring to variables by name, you can refer to them using pronouns.
 
 
 > (Please don’t file issues pointing out that 80s rockers were a bunch of misogynists and gender-inclusive pronouns aren’t really idiomatic. You’re right, we know, and we’ve all learned a lot since then. Besides, [_Look What The Cat Dragged In_](https://en.wikipedia.org/wiki/Look_What_the_Cat_Dragged_In) was recorded by four cishet guys who spent more money on lipgloss and hairspray than they did on studio time, and it’s an absolute classic.)
+
+
+## Poetic Literals
+
+One of Rockstar's unique features is the ability to initialise variables using song lyrics.
+### Poetic Numbers
+
+A poetic number begins with the `like` keyword followed by a series of words. The Rockstar parser takes the length of each word and interprets it as a decimal digit:
+
+```rockstar
+{% include_relative {{ page.examples }}poetic_numbers.rock %}
+```
+
+Words of 10 or more letters are counted modulo 10, so you can use 10-letter words for `0`, 11 letters for `1` and 12 letters for `2`. Hyphens `-` are counted as letters, so `demon-haunted` is treated as a 12-letter word. Apostrophes are **not** counted, so `nothing` counts as 7 but `nothin'` counts as 6.
+
+The parser counts every word until the end of the current statement, indicated by a newline or punctuation `.|?;`. If you need a poetic number with a decimal point, use an ellipsis `...`  or the Unicode equivalent U+2026 `…` as the decimal.
+
+
+
+
+
+
+
+
+
 

@@ -32,7 +32,8 @@ assign_stmt <Statement>
 		{ new Assign(v, e) }
 
 variable <Variable>
-	= i:proper_variable { new ProperVariable(i) }
+	= i:pronoun { new Pronoun(i) }
+	/ i:proper_variable { new ProperVariable(i) }
 	/ i:(the _ identifier) { new CommonVariable(i) }
 	/ i:identifier { new SimpleVariable(i) }
 
@@ -77,7 +78,6 @@ digits
 string <Strïng> = s:quoted_string+ { new Strïng(String.Join("\"", s)) }
 quoted_string
 	= '"' s:("" [^"]*) '"' { s }
-
 
 at = 'at' !letter
 turn = 'turn' !letter

@@ -1,0 +1,20 @@
+The number is 1
+Shout it (prints: 1)
+It is 2
+Shout it (prints: 2)
+The string is "hello"
+Print it (prints: hello)
+It is "world"
+Print it (prints: world)
+Print the number (prints: 2)
+Print the string (prints: world)
+
+Doctor Feelgood is right
+Scream Doctor Feelgood (prints: true)
+He is wrong
+Scream Doctor Feelgood (prints: false)
+
+The Darkness is 1
+Shout the darkness (prints: 1)
+They are 2
+Shout them (prints: 2)

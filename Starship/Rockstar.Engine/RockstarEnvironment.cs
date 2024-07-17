@@ -33,15 +33,16 @@ public class RockstarEnvironment(IRockstarIO io) {
 		=> variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
 
 	public Result SetVariable(Variable variable, Value value) {
-		var scope = GetScope(variable) ?? this;
+		var target = QualifyPronoun(variable);
+		var scope = GetScope(target) ?? this;
 		if (variable is Pronoun pronoun) {
-			scope.SetLocal(QualifyPronoun(pronoun), value);
+			scope.SetLocal(target, value);
 		//} else if (variable.Index != default) {
 		//	var index = Eval(variable.Index);
 		//	scope.SetArray(variable, index, value);
 		} else {
-			pronounTarget = variable;
-			scope.SetLocal(variable, value);
+			pronounTarget = target;
+			scope.SetLocal(target, value);
 		}
 		return new(value);
 	}

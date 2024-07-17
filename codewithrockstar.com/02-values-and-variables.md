@@ -85,6 +85,14 @@ Rockstar keywords and variable names are all case-insensitive, with the exceptio
 - `MY HEART`, `my heart`, `My Heart` - are all equivalent; the keyword `my` triggers **common variable** behaviour
 - `Tom Sawyer`, `TOM SAWYER`, `TOm SAWyer` - are all equivalent; the capital `S` on `Sawyer` triggers **proper variable** behaviour
 - `DOCTOR feelgood` is not a valid Rockstar variable; the lowercase `f` on `feelgood` does not match any valid variable naming style and so the variable name is not valid.
+## Pronouns
+
+As well as referring to variables by name, you can refer to them using pronouns. The keywords `it`, `he`, `she`, `him`, `her`, `they`, `them`, `ze`, `hir`, `zie`, `zir`, `xe`, `xem`, `ve`, and `ver` refer to the **variable which was most recently assigned.**
+
+```rockstar
+{% include_relative {{ page.examples }}pronouns.rock %}
+```
 
 
+> (Please don’t file issues pointing out that 80s rockers were a bunch of misogynists and gender-inclusive pronouns aren’t really idiomatic. You’re right, we know, and we’ve all learned a lot since then. Besides, [_Look What The Cat Dragged In_](https://en.wikipedia.org/wiki/Look_What_the_Cat_Dragged_In) was recorded by four cishet guys who spent more money on lipgloss and hairspray than they did on studio time, and it’s an absolute classic.)
 

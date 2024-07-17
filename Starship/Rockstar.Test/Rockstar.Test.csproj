@@ -63,6 +63,9 @@
     <None Update="programs\examples\02-values-and-variables\assignment.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\02-values-and-variables\poetic_strings.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\02-values-and-variables\poetic_numbers_2.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

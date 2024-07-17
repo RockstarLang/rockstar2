@@ -117,9 +117,18 @@ A poetic number begins with the `like` keyword followed by a series of words. Th
 {% include_relative {{ page.examples }}poetic_numbers.rock %}
 ```
 
-Words of 10 or more letters are counted modulo 10, so you can use 10-letter words for `0`, 11 letters for `1` and 12 letters for `2`. Hyphens `-` are counted as letters, so `demon-haunted` is treated as a 12-letter word. Apostrophes are **not** counted, so `nothing` counts as 7 but `nothin'` counts as 6.
+Words of 10 or more letters are counted modulo 10, so you can use 10-letter words for `0`, 11 letters for `1` and 12 letters for `2`. Hyphens `-` are counted as letters, so `demon-haunted` is treated as a 12-letter word. Apostrophes are **not** counted, so `nothing` counts as 7 but `nothin'` counts as 6. A poetic number counts every word until the end of the current statement (indicated by a newline or punctuation `.!?;`) If you need a poetic number with a decimal point, use an ellipsis `...`  or the Unicode equivalent U+2026 `…` as the decimal.
 
-The parser counts every word until the end of the current statement, indicated by a newline or punctuation `.|?;`. If you need a poetic number with a decimal point, use an ellipsis `...`  or the Unicode equivalent U+2026 `…` as the decimal.
+```rockstar
+{% include_relative {{ page.examples }}poetic_numbers_2.rock %}
+```
+### Poetic strings
+You can initialise string variables without quotes by using the `says` or `said` keyword. This will skip exactly one space character and then capture the rest of the line as a literal string:
+
+```rockstar
+{% include_relative {{ page.examples }}poetic_strings.rock %}
+```
+
 
 
 

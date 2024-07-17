@@ -2,7 +2,7 @@ name: Deploy Jekyll site to Pages
 on:
   # Run after the engine is rebuilt
   workflow_run:
-    workflows: ['build-and-test-engine']
+    workflows: ['build-rockstar-engine']
     types: [completed]
     branches: ['main']
   # Run after any website source files are changed
@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   engine:
-    uses: ./.github/workflows/01-build-and-test-rockstar-engine.yml
+    uses: ./.github/workflows/build-rockstar-engine.yml
   # Build job
   build:
     runs-on: ubuntu-latest

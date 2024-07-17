@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
-defaults:
- run:
-  working-directory: ./Starship
+# defaults:
+#  run:
+#   working-directory: ./Starship
 
 jobs:
   # Build job

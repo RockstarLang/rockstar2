@@ -9,6 +9,10 @@ on:
   workflow_dispatch:
   workflow_call:
 
+defaults:
+ run:
+  working-directory: ./app
+
 jobs:
   # Build job
   build:
@@ -22,20 +26,16 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Install .NET WASM workloads
-        working-directory: ./Starship
         run: dotnet workload restore
 
       - name: Build Rockstar
-        working-directory: ./Starship
-        run: |
-          dotnet workload restore
-          dotnet build Starship -c Release
+        run: dotnet build -c Release
 
       - name: Test Rockstar
-        run: dotnet test Starship -c Release
+        run: dotnet test -c Release
 
       - name: Publish WASM engine
-        run: dotnet publish Starship/Rockstar.Wasm -o rockstar_wasm -c Release
+        run: dotnet publish Rockstar.Wasm -o rockstar_wasm -c Release
 
       # - name: Publish Rockstar Linux binary
       #   run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release

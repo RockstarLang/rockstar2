@@ -1,17 +1,13 @@
-name: build Rockstar
+name: build-and-test-engine
 
 on:
-  push:
-    branches: ["main"]
-    # paths:
-    #   - 'Starship/**'
-    #   - '.github/workflows/**'
+  # push:
+  #   branches: ["main"]
+  #   paths:
+  #     - 'Starship/**'
+  #     - '.github/workflows/**'
   workflow_dispatch:
   workflow_call:
-
-# defaults:
-#  run:
-#   working-directory: ./Starship
 
 jobs:
   # Build job
@@ -21,16 +17,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up .NET 8 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.107'
+          dotnet-version: '8.x'
+
+      - name: Install .NET WASM workloads
+        working-directory: ./Starship
+        run: dotnet workload restore
 
       - name: Build Rockstar
-        working-directory: ./Starship
-        run: |
-          dotnet --version
-          dotnet workload restore
-          dotnet build -c Release
+        run: dotnet build Starship -c Release
 
       - name: Test Rockstar
         run: dotnet test Starship -c Release
@@ -47,3 +43,11 @@ jobs:
           name: rockstar_wasm
           path: |
             rockstar_wasm/wwwroot/_framework
+
+      # - name: Upload Linux binary
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: rockstar_linux_binary
+      #     path: |
+      #       rockstar_linux_binary
+

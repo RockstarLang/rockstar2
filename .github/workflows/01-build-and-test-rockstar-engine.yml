@@ -23,7 +23,7 @@ jobs:
 
       - name: Install .NET WASM workloads
         working-directory: ./Starship
-        run: dotnet workload restore
+        run: dotnet workload install wasm-tools
 
       - name: Build Rockstar
         run: dotnet build Starship -c Release

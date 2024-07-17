@@ -26,7 +26,10 @@ jobs:
         run: dotnet workload restore
 
       - name: Build Rockstar
-        run: dotnet build Starship -c Release
+        working-directory: ./Starship
+        run: |
+          dotnet workload restore
+          dotnet build Starship -c Release
 
       - name: Test Rockstar
         run: dotnet test Starship -c Release

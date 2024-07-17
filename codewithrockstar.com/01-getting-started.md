@@ -12,13 +12,14 @@ nav_order: "1001"
 {% include_relative {{ page.examples }}hello_world.rock %}
 ```
 
-If you want to get a little more emotion into your greetings, the `say` keyword also supports aliases `shout` and `scream`:
+Printing things isn't very rock‘n’roll, though. Rockers don't print, they `scream`, `shout`, or maybe just `say` things, so these are all valid aliases for `print`:
 
 ```rockstar
 {% include_relative {{ page.examples }}hello_world_aliases.rock %}
 ```
 
 Almost everything in Rockstar is case-insensitive, and most whitespace is ignored:
+
 ```rockstar
 {% include_relative {{ page.examples }}hello_world_casing_and_whitespace.rock %}
 ```

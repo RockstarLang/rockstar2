@@ -3,16 +3,18 @@
 		<TargetFramework>net8.0-browser</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
-	<PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<!--
 		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
 		-->
+	</PropertyGroup>
+	<PropertyGroup>
 		<OutputType>exe</OutputType>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Rockstar.Engine\Rockstar.Engine.csproj" />
+		<ProjectReference Include="..\Rockstar.Engine\Rockstar.Engine.csproj" />
 	</ItemGroup>
 </Project>

@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace Rockstar.Test;
 
 public abstract class FixtureBase(ITestOutputHelper testOutput) {
@@ -28,6 +30,27 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	public static IEnumerable<object[]> AllFixtureFiles()
 		=> ListRockFiles(FixturesDirectory).Select(filePath => new[] { filePath });
+
+	public static bool ExtractedExpectedError(string filePathOrSourceCode, out string? error) {
+		error = null;
+		var source = (File.Exists(filePathOrSourceCode)
+			? File.ReadAllText(filePathOrSourceCode, Encoding.UTF8)
+			: filePathOrSourceCode);
+		var limit = source.Length;
+		var output = new List<string>();
+		for (var i = 0; i < limit; i++) {
+			var token = source.SafeSubstring(i, 14);
+			switch (token) {
+				case "(parse error: ":
+					i += 14;
+					var j = i;
+					while (j < limit && source[j] != ')') j++;
+					error = Regex.Unescape(source.Substring(i, j - i));
+					return true;
+			}
+		}
+		return false;
+	}
 
 	public static string ExtractExpects(string filePathOrSourceCode) {
 		if (File.Exists(filePathOrSourceCode + ".out")) {
@@ -76,6 +99,12 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		return env.Output;
 	}
 
+	public bool CheckForExpectedError(string filePath, string directory, out string? error) {
+		var relativePath = Path.Combine(directory, filePath);
+		filePath = QualifyRelativePath(relativePath);
+		return ExtractedExpectedError(filePath, out error);
+	}
+
 	public Program ParseFile(string filePath, string directory) {
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);
@@ -89,6 +118,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	}
 
 	public string RunFile(string filePath, string directory) {
+		if (CheckForExpectedError(filePath, directory, out var _)) return ($"Skipping {filePath} since it has expected errors.");
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);
 		var source = File.ReadAllText(filePath, Encoding.UTF8);

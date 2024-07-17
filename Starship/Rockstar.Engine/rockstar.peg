@@ -21,25 +21,65 @@ block <Block>
 	/ _? stmt:statement
 		{ new Block(stmt) }
 
-statement = output
+statement = output_stmt / assign_stmt
 
-output <Statement>
-	= say _ expr:expression
-		{ new Output(expr) }
+output_stmt <Statement>
+	= say _ e:expression
+		{ new Output(e) }
+
+assign_stmt <Statement>
+	= v:variable _ is _ e:expression
+		{ new Assign(v, e) }
+
+variable <Variable>
+	= i:(the _ identifier) { new CommonVariable(i) }
+	/ i:identifier { new SimpleVariable(i) }
+
+identifier
+	= letter (letter / [0-9_])*
+
+letter = uppercase_letter / lowercase_letter
+
+uppercase_letter = c:. &{ Char.IsUpper(c,0) }
+lowercase_letter = c:. &{ Char.IsLower(c,0) }
 
 expression <Expression>
-	= string
+	= literal
+	/ string
 	/ number
+	/ lookup
+	/ unexpected:("" [^ \t\r\n]+) 
+		#error{ $"Expected expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+
+lookup <Expression>
+	= v:variable
+		{ new Lookup(v) }
+
+literal <Value>	
+	= null { Null.Instance }
+	/ true { Booleän.True }
+	/ false { Booleän.False }
+	/ empty { Strïng.Empty }
 
 number <Number>
-    = digits:('-'? [0-9]+ ("." [0-9]+)?) { new Number(double.Parse(digits)) }
-	/ digits:('-'? "." [0-9]+) { new Number(double.Parse(digits)) }
+    = d:digits&{ decimal.TryParse(d, out var value) }
+		{ new Number(d) }
+	/ d:digits
+		#error{ $"Number {d} is out of range" }
+digits 
+	= ("" (('-' /'+')? [0-9]+ ("." [0-9]+)?) / (('-' /'+')? "." [0-9]+))	
 
 string <Strïng> = s:quoted_string+ { new Strïng(String.Join("\"", s)) }
 quoted_string
 	= '"' s:("" [^"]*) '"' { s }
 
-say = 'shout' / 'whisper' / 'say' / 'scream'
+is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter 
+say = 'print' !letter / 'shout' !letter / 'whisper' !letter / 'say' !letter / 'scream' !letter 
+the	= 'a' !letter / 'an' !letter / 'the' !letter / 'my' !letter / 'your' !letter / 'our' !letter
+empty = 'empty' !letter / 'silent' !letter / 'silence' !letter
+true = "true" !letter/ "yes" !letter/ "ok" !letter/ "right"!letter 
+false = "false" !letter/ "lies" !letter/ "no" !letter/ "wrong"!letter
+null = 'null' !letter/ 'nothing' !letter/ 'nowhere' !letter/ 'nobody' !letter/ 'gone'!letter
 
 _ = "" (whitespace / comment)+
 whitespace = [ \t]
@@ -55,4 +95,4 @@ EOS = _? [?!;]
 EOL = _? '\r'? '\n'
 EOF = _? !.
 	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Unexpected '{Regex.Escape(unexpected)}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+		#error{ $"Unexpected '{unexpected.Replace("\r", "\\r").Replace("\n", "\\n")}' at line {state.Line}, col {state.Column - unexpected.Length}" }

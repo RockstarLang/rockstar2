@@ -1,3 +1,14 @@
+namespace Rockstar.Engine; 
+
+public partial class Parser {
+	private Dictionary<string, string[]> keywords = new() {
+		{ "is", ["is", "was", "were", "are"] }
+	};
+
+	public bool Alias(string key, string alias)
+		=> keywords.TryGetValue(key, out var aliases) && aliases.Contains(alias);
+
+}
 //using Rockstar.Engine.Values;
 
 //namespace Rockstar.Engine;

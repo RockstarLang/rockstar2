@@ -1,8 +1,8 @@
 Tommy says we've got to hold on to what we've got.
-Gina says it doesn't matter if we make it or not.
+Gina says it doesn't make a difference if we make it or not.
 
-Print Tommy (prints: says we've got to hold on to what we've got.)
-Print Gina (it doesn't matter if we make it or not.)
+Print Tommy (prints: we've got to hold on to what we've got.)
+Print Gina (prints: it doesn't make a difference if we make it or not.)
 
 My string said it had "quotes", 'quotes', українська, עִבְרִית, 🎸✨🎆	and	tabs
 Print my string (prints: it had "quotes", 'quotes', українська, עִבְרִית, 🎸✨🎆	and	tabs)

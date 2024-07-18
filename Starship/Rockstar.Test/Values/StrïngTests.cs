@@ -62,21 +62,21 @@ public class StrïngTests(ITestOutputHelper output) {
 		=> new Strïng(minuend).Minus(new Strïng(subtrahend)).ShouldBe(new Strïng(difference));
 
 	[Theory]
-	[InlineData("a", "a", 1)]
-	[InlineData("aaa", "a", 3)]
-	[InlineData("abcde", "f", 0)]
-	[InlineData("", "", 0)]
-	[InlineData("banana", "na", 2)]
-	[InlineData("one potato two potato three potato four", "potato", 3)]
+	[InlineData("a", "a", 1.0)]
+	[InlineData("aaa", "a", 3.0)]
+	[InlineData("abcde", "f", 0.0)]
+	[InlineData("", "", 0.0)]
+	[InlineData("banana", "na", 2.0)]
+	[InlineData("one potato two potato three potato four", "potato", 3.0)]
 	public void StringDivisionByStringWorks(string numerator, string denominator, decimal quotient)
 		=> new Strïng(numerator).DividedBy(new Strïng(denominator)).ShouldBe(new Number(quotient));
 
 	[Theory]
-	[InlineData("a", 1, "a")]
-	[InlineData("aaa", 2, "aa")]
+	[InlineData("a", 1.0, "a")]
+	[InlineData("aaa", 2.0, "aa")]
 	[InlineData("abcde", 0.5, "abcdeabcde")]
-	[InlineData("abcdef", 2, "abc")]
-	[InlineData("abcde", -1, "edcba")]
+	[InlineData("abcdef", 2.0, "abc")]
+	[InlineData("abcde", -1.0, "edcba")]
 	public void StringDivisionByNumberWorks(string numerator, decimal denominator, string quotient)
 		=> new Strïng(numerator).DividedBy(denominator).ShouldBe(new Strïng(quotient));
 

@@ -68,7 +68,7 @@ public class StrïngTests(ITestOutputHelper output) {
 	[InlineData("", "", 0)]
 	[InlineData("banana", "na", 2)]
 	[InlineData("one potato two potato three potato four", "potato", 3)]
-	public void StringDivisionByStringWorks(string numerator, string denominator, string quotient)
+	public void StringDivisionByStringWorks(string numerator, string denominator, decimal quotient)
 		=> new Strïng(numerator).DividedBy(new Strïng(denominator)).ShouldBe(new Number(quotient));
 
 	[Theory]

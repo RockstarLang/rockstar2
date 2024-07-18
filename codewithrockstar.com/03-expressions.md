@@ -8,6 +8,10 @@ nav_order: "1003"
 
 Rockstar expressions are heavily inspired by JavaScript, in that they will almost always return *something* rather than failing.
 
+```rockstar
+{% include_relative {{ page.examples }}lyrical_expressions.rock %}
+``` 
+
 ### Basic Arithmetic
 
 Rockstar supports the standard infix arithmetic operators `+`, `-`, `*`, `/`, with several aliases for each operator so you can write lyrically pleasing expressions:
@@ -29,57 +33,39 @@ Operator precedence obeys the convention of multiplication, division, addition, 
 
 Here's how Rockstar operators are defined for various combinations of types.
 
+As a rough rule, operations involving numbers will return numbers. For arithmetic purposes, `true` is `1`, `null` and `false` are `0`. Operations involving strings will generally return strings.
+
 > Any operation involving `mysterious` will always return `mysterious`.
 
 #### Addition
+```rockstar
+{% include_relative {{ page.examples }}addition_types.rock %}
+```
 
-| LHS     | RHS     | Result | Example                                                                              |
-| ------- | ------- | ------ | ------------------------------------------------------------------------------------ |
-| Number  | Number  | Number | `1 + 2 = 3`                                                                          |
-| Number  | String  | String | `1 + "2" = "12"`                                                                     |
-| Number  | Boolean | Number | `1 + true = 2`<br>`1 + false = 1`                                                    |
-| Number  | Null    | Number | `1 + null = 1`                                                                       |
-| String  | Number  | String | `"2" + 1 = "21"`                                                                     |
-| String  | String  | String | `"hello" + "world" = "helloworld"`                                                   |
-| String  | Boolean | String | `"hello" + true = "hellotrue"`                                                       |
-| String  | Null    | String | `"hello" + null = "hellonull"`                                                       |
-| Boolean | Boolean | Number | `true + true = 2`<br>`true + false = 1`<br>`false + true = 2`<br>`false + false = 0` |
-| Boolean | Number  | Number | `true + 1 = 2`<br>`false + 1 = 1`                                                    |
-| Boolean | String  | String | `true + "hello" = "truehello"`<br>`false + "world" = "falseworld"`                   |
-| Boolean | Null    | Number | `true + null = 1`<br>`false + null = 0`                                              |
-| Null    | Null    | Number | `null + null = 0`                                                                    |
-| Null    | Boolean | Number | `null + true = 1`<br>`null + false = 0`                                              |
-| Null    | String  | String | `null + "hello" = "nullhello"`                                                       |
-| Null    | Number  | Number | `null + 1 = 1`                                                                       |
-#### Multiplication
+### Subtraction
 
-Multiplying numbers does normal math stuff: `true` is treated as 1; `false` and `null` are treated as zero. Rockstar can multiply strings. 
+If both operands  have a numeric value, subtraction is numeric. If either or both operands is a string, Rockstar will "subtract" strings by removing the the bit you're taking away (the *subtrahend*, if you want to get technical) from the bit you're taking it away from (the *minuend*). Most of the time, this has no effect and subtraction just returns the string representation of the left-hand argument, but hey - you're the one trying to subtract strings here; let's not make out like I'm the one who has a problem.
 
-| LHS     | RHS     | Result | Example                                                                                                                      |
-| ------- | ------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| Number  | Number  | Number | `2 * 3 = 6`                                                                                                                  |
-| Number  | String  | String | `3 * "foo" = "foofoofoo"`                                                                                                    |
-| Number  | Boolean | Number | `5 * true = 1`<br>`5 * false = 0`                                                                                            |
-| Number  | Null    | Number | `5 * null = 0`                                                                                                               |
-| String  | Number  | String | `"foo" * 3 = "foofoofoo"`<br>`"foo" * 0 = ""`<br>`"foo" * -1 = "oof"`<br>`"foo" * -2 = "oofoof"`<br>`"foo" * 2.5 = "foofoo"` |
-| String  | String  | String | `"hello" * "world" = NaN`                                                                                                    |
-| String  | Boolean | String | `"hello" * true = "hello"`<br>`"hello" * false = ""`                                                                         |
-| String  | Null    | String | `"hello" + null = ""`                                                                                                        |
-| Boolean | Boolean | Number | `true * true = 1`<br>`true * false = 0`<br>`false * true = 0`<br>`false * false = 0`                                         |
-| Boolean | Number  | Number | `true * 1 = 1`<br>`false * 1 = 0`                                                                                            |
-| Boolean | String  | String | `true * "hello" = "hello"`<br>`false * "world" = ""`                                                                         |
-| Boolean | Null    | Number | `true * null = 0`<br>`false * null = 0`                                                                                      |
-| Null    | Null    | Number | `null * null = 0`                                                                                                            |
-| Null    | Boolean | Number | `null * true = 0`<br>`null * false = 0`                                                                                      |
-| Null    | String  | String | `null * "hello" = ""`                                                                                                        |
-| Null    | Number  | Number | `null * 1 = 0`                                                                                                               |
+```rockstar
+{% include_relative {{ page.examples }}addition_types.rock %}
+```
+### Multiplication
 
-Division
+Rockstar lets you multiply strings. Multiplying by positive integers will repeat the string. Multiply by `-1` to reverse the string, multiplying by decimal fractions will extract substrings. You'll figure it out.
 
+```rockstar
+{% include_relative {{ page.examples }}multiplication_types.rock %}
+```
 
+### Division
 
+...you know where this is going now. Yes, you can divide strings. A string divided by 2 gives you the first half. A string divided by half will be repeated. A string divided by -1 will reverse.
 
+Dividing anything by a string will tell you how many times the second string occurs in the string representation of the first operand. Dividing `haystack / needle` will be zero if it didn't find `needle` in `haystack`, and positive if it found it.
 
+Or, y'know, you can just stick to dividing numbers.
 
-
+```rockstar
+{% include_relative {{ page.examples }}division_types.rock %}
+```
 

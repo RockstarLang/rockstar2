@@ -10,7 +10,7 @@ Rockstar expressions are heavily inspired by JavaScript, in that they will almos
 
 ```rockstar
 {% include_relative {{ page.examples }}lyrical_expressions.rock %}
-``` 
+```
 
 ### Basic Arithmetic
 

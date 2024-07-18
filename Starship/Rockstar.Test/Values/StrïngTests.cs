@@ -16,16 +16,7 @@ public class StrïngTests(ITestOutputHelper output) {
 		(s1 == s2).ShouldBe(true);
 		s1.Equals(s2).ShouldBe(true);
 	}
-}
 
-public class NumberTests(ITestOutputHelper output) {
-	[Fact]
-	public void NumberEqualityWorks() {
-		var a = new Number(2);
-		var b = new Number(2);
-		(a == b).ShouldBe(true);
-		a.Equals(b).ShouldBe(true);
-	}
 
 	[Theory]
 	[InlineData("a", 1, "a")]
@@ -77,7 +68,7 @@ public class NumberTests(ITestOutputHelper output) {
 	[InlineData("", "", 0)]
 	[InlineData("banana", "na", 2)]
 	[InlineData("one potato two potato three potato four", "potato", 3)]
-	public void StringDivisionWorks(string numerator, string denominator, string quotient)
+	public void StringDivisionByStringWorks(string numerator, string denominator, string quotient)
 		=> new Strïng(numerator).DividedBy(new Strïng(denominator)).ShouldBe(new Number(quotient));
 
 	[Theory]
@@ -86,6 +77,7 @@ public class NumberTests(ITestOutputHelper output) {
 	[InlineData("abcde", 0.5, "abcdeabcde")]
 	[InlineData("abcdef", 2, "abc")]
 	[InlineData("abcde", -1, "edcba")]
-	public void StringDivisionWorks(string numerator, decimal denominator, string quotient)
+	public void StringDivisionByNumberWorks(string numerator, decimal denominator, string quotient)
 		=> new Strïng(numerator).DividedBy(denominator).ShouldBe(new Strïng(quotient));
+
 }

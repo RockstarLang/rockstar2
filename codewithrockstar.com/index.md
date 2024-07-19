@@ -3,7 +3,7 @@ title: Home
 layout: home
 nav_order: "1000"
 ---
-Do you wanna get rocked?
+Well... do you wanna get rocked?
 
 * 01 Getting Started
 	* Hello World

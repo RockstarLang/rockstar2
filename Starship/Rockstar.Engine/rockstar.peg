@@ -32,10 +32,12 @@ assign_stmt <Statement>
 		{ new Assign(v, e) }
 	/ let _ v:variable _ be _ e:expression
 		{ new Assign(v, e) }
-	/ v:variable _ says ' ' s:poetic_string
+	/ v:variable _ says_ s:poetic_string
 		{ new Assign(v, s) }
 	/ v:variable _is _ e:expression
 		{ new Assign(v, e) }
+
+says_ = says ("" ' '? / !letter)
 
 poetic_string <Strïng>
 	= s:("" [^\r\n]+) &('\r'? '\n')
@@ -73,8 +75,7 @@ equality = unary
 unary = comparison
 comparison = addition
 
-addition <Expression> -memoize
-	= lhs:addition op:(_plus_/_minus_) rhs:product
+addition <Expression> -memoize	= lhs:addition op:(_plus_/_minus_) rhs:product
 		{ new Binary(op, lhs, rhs) }
 	/ product
 

@@ -83,7 +83,14 @@ binary_nor = binary_or
 binary_or = binary_and
 binary_and = equality
 equality = unary
-unary = comparison
+unary <Expression>
+	= not_ u:unary
+		{ new Unary(Operator.Not, u) }
+	/ comparison
+
+not_
+	= (not _ / non _ / non '-' )
+
 comparison = addition
 
 addition <Expression> -memoize

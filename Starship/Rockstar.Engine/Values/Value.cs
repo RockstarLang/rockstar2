@@ -5,6 +5,15 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Rockstar.Engine.Values;
 
 public abstract class Value : Expression {
+
+	public override bool Equals(object? obj)
+		=> obj?.GetType() == this.GetType() && Equals((Value) obj);
+
+	protected abstract bool Equals(Value other);
+	public abstract override int GetHashCode();
+
+	public abstract bool Truthy { get; }
+
 	public abstract Strïng ToStrïng();
 	public static bool operator ==(Value? lhs, Value? rhs) => lhs?.Equals(rhs) ?? rhs is null;
 	public static bool operator !=(Value? lhs, Value? rhs) => !(lhs == rhs);

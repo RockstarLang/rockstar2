@@ -9,14 +9,16 @@ namespace Rockstar.Test.Values;
 
 public class StrïngTests(ITestOutputHelper output) {
 
-	[Fact]
-	public void StringEqualityWorks() {
-		var s1 = new Strïng(String.Empty);
-		var s2 = new Strïng(String.Empty);
+	[Theory]
+	[InlineData("")]
+	[InlineData("foo")]
+	[InlineData(" ")]
+	public void StringEqualityWorks(string s) {
+		var s1 = new Strïng(s);
+		var s2 = new Strïng(s);
 		(s1 == s2).ShouldBe(true);
 		s1.Equals(s2).ShouldBe(true);
 	}
-
 
 	[Theory]
 	[InlineData("a", 1, "a")]

@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 namespace Rockstar.Engine.Values;
 
 public class Strïng(string value) : ValueOf<string>(value) {
+
+	public override bool Truthy => !String.IsNullOrEmpty(value);
+
 	public override Strïng ToStrïng() => this;
 	public override string ToString() => this.Value;
 	public override void Print(StringBuilder sb, string prefix) {

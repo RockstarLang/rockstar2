@@ -1,0 +1,22 @@
+Print true and true (prints: true)
+Print true and false (prints: false)
+Print false and true (prints: false)
+Print false and false (prints: false)
+
+Print true or true (prints: true)
+Print true or false (prints: true)
+Print false or true (prints: true)
+Print false or false (prints: false)
+
+Print not true (prints: false)
+Print not false (prints: true)
+
+Print true and not true (prints: false)
+Print true and not false (prints: true)
+
+Print non-true (prints: false)
+Print non-non-non-non-non true (prints: false)
+
+Heinous is wrong!
+Bill is totally non-non-non-NON heinous!
+Print Bill (prints: true)

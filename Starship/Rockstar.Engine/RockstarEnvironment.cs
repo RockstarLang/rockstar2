@@ -69,6 +69,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Value value => value,
 		Binary binary => binary.Resolve(Eval),
 		Lookup lookup => Lookup(lookup.Variable),
+		Unary unary => unary.Resolve(Eval),
 		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
 	};
 

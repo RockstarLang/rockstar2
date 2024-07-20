@@ -1,0 +1,23 @@
+X is 1
+X is with 2
+Print X (prints: 3)
+
+Y is 5
+It is without 3
+Print it. (prints: 2)
+
+Z is 100
+It is over 5, 4, and 2
+Shout it (prints: 2.5)
+
+Z is 5.
+Let it be with 4, 3, 2, and 1
+Shout it (prints: 15)
+
+My variable is "foo"
+Let my variable be with "bar", and "baz"
+Print my variable (prints: foobarbaz)
+
+The moon is like fire.
+My heart is like a red red rose.
+It is over the moon. Shout it. (prints: 333.5)

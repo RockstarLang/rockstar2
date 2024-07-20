@@ -69,7 +69,6 @@ Or, y'know, you can just stick to dividing numbers.
 ```rockstar
 {% include_relative {{ page.examples }}division_types.rock %}
 ```
-
 ### Expression lists
 
 The right-hand side of a binary operation in Rockstar can be an list of primary expressions.
@@ -85,6 +84,14 @@ The right-hand side of a binary operation in Rockstar can be an list of primary 
 
 {% include_relative {{ page.examples }}expression_lists.rock %}
 ```
+
+### Compound Expressions
+
+Languages like C support shorthand expressions like `x++`, `x += 2`, and so on.
+
+The equivalent in Rockstar looks like this:
+
+
 
 
 

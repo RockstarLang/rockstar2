@@ -128,7 +128,7 @@ Words of 10 or more letters are counted modulo 10, so you can use 10-letter word
 {% include_relative {{ page.examples }}poetic_numbers_2.rock %}
 ```
 ### Poetic strings
-You can initialise string variables without quotes by using the `says` or `said` keyword. This will skip exactly one space character and then capture the rest of the line as a literal string:
+You can initialise string variables without quotes by using the `says` or `said` keyword. This will skip exactly one space character and then capture the rest of the line as a literal string. If the character immediately following the `says` keyword is not a space, it will be included in the string literal.
 
 ```rockstar
 {% include_relative {{ page.examples }}poetic_strings.rock %}

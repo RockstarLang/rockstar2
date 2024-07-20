@@ -6,7 +6,7 @@ namespace Rockstar.Engine.Expressions;
 public class Binary : Expression {
 	private readonly Operator op;
 	private readonly Expression lhs;
-	private readonly ICollection<Expression> rhs;
+	private readonly IEnumerable<Expression> rhs;
 
 	public Binary(Operator op, Expression lhs, Expression rhs) {
 		this.op = op;
@@ -14,7 +14,7 @@ public class Binary : Expression {
 		this.rhs = new List<Expression> { rhs };
 	}
 
-	public Binary(Operator op, Expression lhs, ICollection<Expression> rhs, Source source) {
+	public Binary(Operator op, Expression lhs, IEnumerable<Expression> rhs) {
 		this.op = op;
 		this.lhs = lhs;
 		this.rhs = rhs;

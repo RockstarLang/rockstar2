@@ -75,14 +75,28 @@ equality = unary
 unary = comparison
 comparison = addition
 
-addition <Expression> -memoize	= lhs:addition op:(_plus_/_minus_) rhs:product
+addition <Expression> -memoize
+	= lhs:addition op:(_plus_/_minus_) rhs:primary_list
+		{ new Binary(op, lhs, rhs) }
+	/ lhs:addition op:(_plus_/_minus_) rhs:product
 		{ new Binary(op, lhs, rhs) }
 	/ product
 
 product <Expression> -memoize
-	= lhs:product op:(_divide_/_times_) rhs:primary
+	= lhs:product op:(_divide_/_times_) rhs:primary_list
+		{ new Binary(op, lhs, rhs) }
+	/ lhs:product op:(_divide_/_times_) rhs:primary
 		{ new Binary(op, lhs, rhs) }
 	/ primary
+
+primary_list <IEnumerable<Expression>>
+	= head:primary _primary_list_separator_ tail:primary_list
+		{ head.Concat(tail) }
+	/ head:primary _primary_list_separator_ tail:primary 
+		{ new List<Expression> { head, tail } }
+
+_primary_list_separator_		
+	= (_? ', ' and _ / _? ('&' / ',' / "n'" / "'n'") _?)
 
 _plus_	<Operator>	= (_? '+' _? / _ plus _ ) { Operator.Plus }
 _minus_ <Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
@@ -95,7 +109,7 @@ primary <Expression>
 	/ number
 	/ lookup
 	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Expected expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+		#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 lookup <Expression>
 	= v:variable

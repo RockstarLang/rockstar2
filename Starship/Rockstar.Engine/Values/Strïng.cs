@@ -6,9 +6,16 @@ namespace Rockstar.Engine.Values;
 
 public class Strïng(string value) : ValueOf<string>(value) {
 
-	public override bool Truthy => !String.IsNullOrEmpty(value);
+	public override bool Truthy => !String.IsNullOrEmpty(Value);
 
 	public override Strïng ToStrïng() => this;
+
+	public override Booleän Equäls(Value that) =>
+		new(that.ToStrïng().Value.Equals(this.Value, StringComparison.InvariantCultureIgnoreCase));
+
+	public override Booleän IdenticalTo(Value that)
+		=> that is Strïng ? this.Equäls(that) : Booleän.False;
+
 	public override string ToString() => this.Value;
 	public override void Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append("string: \"").Append(Value).AppendLine("\"");

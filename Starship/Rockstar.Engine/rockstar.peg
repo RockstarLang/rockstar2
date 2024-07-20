@@ -54,7 +54,17 @@ poetic_string <Strïng>
 	= s:("" [^\r\n]+) &('\r'? '\n')
 		{ new Strïng(s) }
 
-_is = ("'s" / "'re" / _ is)
+_is <Operator> -memoize
+	= _is _ exactly
+		{ Operator.IdenticalTo }
+	/ ("'s" / "'re" / _ is)
+		{ Operator.Equals }
+
+_isnt <Operator> -memoize
+	= _isnt _ exactly
+		{ Operator.NotIdenticalTo }
+	/ (_is _ not / _ isnt)
+		{ Operator.NotEquals }
 
 variable <Variable>
 	= i:pronoun { new Pronoun(i) }
@@ -78,11 +88,28 @@ expression <Expression>
 	= boolean
 	/ primary
 
-boolean = binary_nor
-binary_nor = binary_or
-binary_or = binary_and
-binary_and = equality
-equality = unary
+boolean = binary_or
+
+binary_or <Expression>
+	= lhs:binary_nor _ or _ rhs:binary_or
+		{ new Binary(Operator.Or, lhs, rhs) }
+	/ binary_nor
+
+binary_nor <Expression>
+	= lhs:binary_and _ nor _ rhs:binary_nor
+		{ new Binary(Operator.Nor, lhs, rhs) }
+	/ binary_and
+
+binary_and <Expression>
+	= lhs:equality _ and _ rhs:binary_and
+		{ new Binary(Operator.And, lhs, rhs) }
+	/ equality
+
+equality <Expression>
+	= lhs:unary op:(_is / _isnt) _ rhs:equality
+		{ new Binary(op, lhs, rhs) }
+	/ unary
+
 unary <Expression>
 	= not_ u:unary
 		{ new Unary(Operator.Not, u) }
@@ -203,7 +230,8 @@ if = 'if' !letter
 build = 'build' !letter
 up = 'up' !letter
 down = 'down' !letter
-knock = 'knock' !letter 
+knock = 'knock' !letter
+exactly = 'exactly' !letter / 'totally' !letter / 'really' !letter
 and = 'and' !letter
 or = 'or' !letter
 back = 'back' !letter

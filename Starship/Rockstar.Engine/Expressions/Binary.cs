@@ -3,30 +3,6 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine.Expressions;
 
-public class Unary(Operator op, Expression expr)
-	: Expression {
-	public Value Resolve(Func<Expression, Value> eval) {
-		var v = eval(expr);
-		return op switch {
-			Operator.Not => Booleän.Not(v),
-			_ => throw new InvalidOperationException($"Can't apply {op} as a unary operator.")
-
-
-			//Operator.Equals => v.Equäls(eval(rhs.Single())),
-			//Operator.NotEquals => v.NotEquäls(eval(rhs.Single())),
-			//Operator.LessThanEqual => v.LessThanEqual(eval(rhs.Single())),
-			//Operator.MoreThanEqual => v.MoreThanEqual(eval(rhs.Single())),
-			//Operator.LessThan => v.LessThan(eval(rhs.Single())),
-			//Operator.MoreThan => v.MoreThan(eval(rhs.Single())),
-
-			//Operator.Nor => new Booleän(v.Falsy && eval(rhs.Single()).Falsy),
-			//Operator.And => v.Truthy ? eval(rhs.Single()) : v,
-			//Operator.Or => v.Truthy ? v : eval(rhs.Single()),
-		};
-	}
-
-}
-
 public class Binary : Expression {
 	private readonly Operator op;
 	private readonly Expression lhs;
@@ -44,6 +20,14 @@ public class Binary : Expression {
 		this.rhs = rhs;
 	}
 
+	private Booleän Equäls(Value lhs, Value rhs) => (lhs, rhs) switch {
+		(Booleän b, _) => b.Equäls(rhs),
+		(_, Booleän b) => b.Equäls(lhs),
+		(Strïng s, _) => s.Equäls(rhs),
+		(_, Strïng s) => s.Equäls(lhs),
+		_ => lhs.Equäls(rhs)
+	};
+
 	public Value Resolve(Func<Expression, Value> eval) {
 		var v = eval(lhs);
 		return op switch {
@@ -52,17 +36,20 @@ public class Binary : Expression {
 			Operator.Plus => v + rhs.Select(eval),
 			Operator.Minus => v - rhs.Select(eval),
 
-			//Operator.Equals => v.Equäls(eval(rhs.Single())),
-			//Operator.NotEquals => v.NotEquäls(eval(rhs.Single())),
+			Operator.Equals => Equäls(v, eval(rhs.Single())),
+			Operator.NotEquals => Equäls(v, eval(rhs.Single())).Nope,
+			Operator.IdenticalTo => v.IdenticalTo(eval(rhs.Single())),
+			Operator.NotIdenticalTo => v.IdenticalTo(eval(rhs.Single())).Nope,
+
 			//Operator.LessThanEqual => v.LessThanEqual(eval(rhs.Single())),
 			//Operator.MoreThanEqual => v.MoreThanEqual(eval(rhs.Single())),
 			//Operator.LessThan => v.LessThan(eval(rhs.Single())),
 			//Operator.MoreThan => v.MoreThan(eval(rhs.Single())),
 
-			//Operator.Nor => new Booleän(v.Falsy && eval(rhs.Single()).Falsy),
-			//Operator.And => v.Truthy ? eval(rhs.Single()) : v,
-			//Operator.Or => v.Truthy ? v : eval(rhs.Single()),
-			_ => throw new ArgumentOutOfRangeException(nameof(op), op, null)
+			Operator.Nor => new Booleän(!(v.Truthy || eval(rhs.Single()).Truthy)),
+			Operator.And => v.Truthy ? eval(rhs.Single()) : v,
+			Operator.Or => v.Truthy ? v : eval(rhs.Single()),
+			_ => throw new($"I don't know how to apply {op} to {v.GetType().Name}")
 		};
 	}
 

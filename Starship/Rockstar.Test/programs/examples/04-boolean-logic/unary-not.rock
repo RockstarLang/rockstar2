@@ -14,5 +14,3 @@ Say Heinous (prints: false)
 Bill is non heinous! Say Bill (prints: true)
 Bill is non-non heinous! Say Bill (prints: false)
 Bill is non-non-NON heinous! Say Bill (prints: true)
-
-

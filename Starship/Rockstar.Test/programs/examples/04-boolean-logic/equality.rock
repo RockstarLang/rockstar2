@@ -1,0 +1,17 @@
+Print 1 is 1 (prints: true)
+Print 1 isn't 2 (prints: true)
+Print 1 ain't 2 (prints: true)
+Print 1 is not 2 (prints: false)
+
+Print false is not true (prints: true)
+
+Print "rock" is "roll" (prints: false)
+Print "rock" ain't "roll" (prints: true)
+
+Print 0 is true (prints: false)
+Print 0 is false (prints: true)
+Print 1 is true (prints: true)
+Print 2 is true (prints: true)
+
+Print 123 is "123" (prints: true)
+Print "yeah!" is true (prints: true)

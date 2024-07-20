@@ -13,6 +13,7 @@ public abstract class Value : Expression {
 	public abstract override int GetHashCode();
 
 	public abstract bool Truthy { get; }
+	public bool Falsy => !Truthy;
 
 	public abstract Strïng ToStrïng();
 	public static bool operator ==(Value? lhs, Value? rhs) => lhs?.Equals(rhs) ?? rhs is null;
@@ -45,4 +46,6 @@ public abstract class Value : Expression {
 		(_, Strïng s2) => lhs.ToStrïng().DividedBy(s2),
 		(_, _) => throw new NotImplementedException($"I don't know how to divide {lhs.GetType().Name} by {rhs.GetType().Name}")
 	};
+	public abstract Booleän Equäls(Value that);
+	public abstract Booleän IdenticalTo(Value that);
 }

@@ -25,13 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <Content Include="programs\fixtures\**\*.rock" CopyToOutputDirectory="Always" />
-	  <Content Include="programs\fixtures\**\*.rock.out" CopyToOutputDirectory="Always" />
-	  <Content Include="programs\fixtures\**\*.rock.in" CopyToOutputDirectory="Always" />
+	  <Content Include="programs\v1-fixtures\**\*.rock" CopyToOutputDirectory="Always" />
+	  <Content Include="programs\v1-fixtures\**\*.rock.out" CopyToOutputDirectory="Always" />
+	  <Content Include="programs\v1-fixtures\**\*.rock.in" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="programs\fixtures\operators\short-circuit.rock" />
+    <None Remove="programs\v1-fixtures\operators\short-circuit.rock" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,12 +39,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="programs\fixtures\operators\short-circuit.rock">
+    <Content Update="programs\v1-fixtures\operators\short-circuit.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="programs\examples\00\if-else-scope.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\00\if-else.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\00\comparison.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

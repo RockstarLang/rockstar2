@@ -110,6 +110,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		filePath = QualifyRelativePath(relativePath);
 		var source = File.ReadAllText(filePath, Encoding.UTF8);
 		try {
+			testOutput.WriteLine($"   at <Rockstar code> in {filePath}:line 1");
 			return Parser.Parse(source);
 		} catch (FormatException ex) {
 			PrettyPrint(source, filePath, ex);

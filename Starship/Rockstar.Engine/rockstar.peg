@@ -22,19 +22,26 @@ block <Block>
 		{ new Block(head).Concat(tail) }
 	/ _? stmt:statement
 		{ new Block(stmt) }
-	// EOB { new Block() }
 
 statement = conditional / output_stmt / assign_stmt
 
-s_or_b <Block>
-	= _ s:statement EOB { new Block(s) }
-	/ EOL b:block EOB { b }
+EOB = EOL &EOL
+    / EOS* &(_? else)
+    / EOS* ','? _? end
+   	/ EOS* ','? _? 'o' &('o'+ 'h')
+    / EOF
 
-EOB = _? "ENDBLOCK" _?
+consequent <Block>
+	= EOL b:block EOB { b }
+	/ _ s:statement { new Block(s) }
 
 conditional <Statement>
-	= if _ e:expression d:s_or_b
-		{ new Conditional(e, d) }
+	= if _ e:expression (_ then)? c:consequent _? else a:consequent
+		{ new Conditional(e, c, a) }
+	/ if _ e:expression _ else a:consequent
+		{ new Conditional(e, new Block(), a ) }
+	/ if _ e:expression (_ then)? c:consequent
+		{ new Conditional(e, c) }
 
 output_stmt <Statement>
 	= print _ e:expression
@@ -248,7 +255,8 @@ to = 'to' !letter
 while = 'while' !letter
 until = 'until' !letter
 else = 'else' !letter / 'otherwise' !letter
-if = 'if' !letter
+end = 'end' !letter / 'yeah' !letter / 'baby' !letter / 'oh' !letter
+if = 'if' !letter / 'when' !letter
 build = 'build' !letter
 up = 'up' !letter
 down = 'down' !letter
@@ -280,6 +288,7 @@ push = 'rock' !letter / 'push' !letter
 pop = 'roll' !letter / 'pop' !letter
 with = 'with' !letter
 like = 'like' !letter
+then = 'then' !letter
 
 keyword
 	= mysterious / plus / minus / times / over / as / isnt / not / is / put / into / let / be / listen / to / while
@@ -297,4 +306,4 @@ comment	=
 EOS = _? [.?!;]
 	/ EOL
 EOL = _? '\r'? '\n'
-EOF = _? !.
+EOF = EOL* _? !.

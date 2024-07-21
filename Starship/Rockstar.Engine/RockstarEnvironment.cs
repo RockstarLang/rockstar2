@@ -56,8 +56,15 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Result Execute(Statement statement) => statement switch {
 		Output output => Output(output),
 		Assign assign => Assign(assign),
+		Conditional cond => Conditional(cond),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Conditional(Conditional cond)
+		=> Eval(cond.Condition).Truthy
+			? Execute(cond.Consequent)
+			: Execute(cond.Alternate ?? new Block());
+
 
 	private Result Output(Output output) {
 		var value = Eval(output.Expression);

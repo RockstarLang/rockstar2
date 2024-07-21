@@ -5,4 +5,6 @@ public abstract class ParserTestBase(ITestOutputHelper output) {
 
 	protected Program Parse(string source)
 		=> parser.Parse(source);
+
+	
 }

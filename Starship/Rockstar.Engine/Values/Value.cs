@@ -48,4 +48,24 @@ public abstract class Value : Expression {
 	};
 	public abstract Booleän Equäls(Value that);
 	public abstract Booleän IdenticalTo(Value that);
+
+	private int Compare(Strïng lhs, Strïng rhs)
+		=> String.Compare(lhs.Value, rhs.Value, StringComparison.InvariantCulture);
+
+	public Booleän Compare(Value lhs, Value rhs, Func<decimal, decimal, bool> comp)
+		=> new((lhs, rhs) switch {
+			(Strïng s, _) => comp(Compare(s, rhs.ToStrïng()), 0),
+			(_, Strïng s) => comp(Compare(lhs.ToStrïng(), s), 0),
+			(IHaveANumber lhn, IHaveANumber rhn) => comp(lhn.Value, rhn.Value),
+			_ => throw new("Invalid comparison")
+		});
+
+	public Value LessThanEqual(Value that) => Compare(this, that, (a, b) => a <= b);
+
+	public Value MoreThanEqual(Value that) => Compare(this, that, (a, b) => a >= b);
+
+	public Value LessThan(Value that) => Compare(this, that, (a, b) => a < b);
+
+	public Value MoreThan(Value that) => Compare(this, that, (a, b) => a > b);
+
 }

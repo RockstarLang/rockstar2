@@ -55,16 +55,61 @@ The `and` and `or` operators in Rockstar will short-circuit:
 In the following examples, short-circuiting means the division by zero is never evaluated:
 
 ```rockstar
-{% include_relative {{ page.examples }}short-circuit.rock %}
+{% include_relative {{ page.examples }}short-circuiting.rock %}
 ```
 
 ## Equality and Comparison
 
-Equality in Rockstar works as follows:
+Equality in Rockstar uses the `is`, `was`, `are` and `were` keywords. Equality is determined as follows:
 
-* If one operand is a Boolean, it's compared to the truthiness of the other argument
-* Otherwise, if one operand is a String, the string is compared to the string representation of the other argument
-* Otherwise, the values of the two operands are compared
+* If one operand is a Boolean, compare it to the truthiness of the other operand:
+	* All non-zero numbers and non-empty strings are equal to `true`
+* Otherwise, if one operand is a string, compare it with the string representation of the other argument
+	* 
+* Otherwise, the values of the two operands are compared.
+
+```rockstar
+{% include_relative {{ page.examples }}equality.rock %}
+```
+
+### Inequality
+
+Inequality uses the `isn't` and `ain't` keywords.
+
+> Watch out for `is not`: `not` is the unary negation operator, so `a is not b` will work as expected when `b` is a Boolean, but when `b` is a number or a string, it'll compare `a` with the logical `not` of the truthiness of `b`
+
+```rockstar
+{% include_relative {{ page.examples }}inequality.rock %}
+```
+
+### Identity
+To compare values without performing any type coercion, use the `exactly` keyword, or its aliases `really`, `actually` or `totally`:
+
+```rockstar
+{% include_relative {{ page.examples }}identity.rock %}
+```
+
+### Comparison
+
+Rockstar supports the following comparison operators:
+
+- `is higher/greater/bigger/stronger than` to denote ‘greater than’
+- `is lower/less/smaller/weaker than` to denote ‘less than’
+- `is as high/great/big/strong as` to denote ‘greater than or equal to’
+- `is as low/little/small/weak as` to denote ‘less than or equal to’
+
+By default, comparison use type coercion:
+
+* If either operand is a string, it's compared to the string representation of the other value
+	* This means that `10 < "2"`, because `10` is coerced to the string `10`, which is alphanumerically less than the string `2`
+* Otherwise, the numeric values of the operands are compared (`true` is `1`, `null` and `false` are 0)
+
+```rockstar
+{% include_relative {{ page.examples}}string-comparison.rock %}
+```
+ 
+
+
 
 
 

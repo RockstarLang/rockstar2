@@ -25,4 +25,9 @@ public class Booleän(bool value) : ValueOf<bool>(value), IHaveANumber {
 	public Booleän Nope => new(!Truthy);
 
 	public static Value Not(Value v) => new Booleän(!v.Truthy);
+
+	public static explicit operator Booleän(bool b) => b ? True : False;
+	public static explicit operator bool(Booleän b) => b.Truthy;
+	public static bool operator true(Booleän b) => b.Truthy;
+	public static bool operator false(Booleän b) => !b.Truthy;
 }

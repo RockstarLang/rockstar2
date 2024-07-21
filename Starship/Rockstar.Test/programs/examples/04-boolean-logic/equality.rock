@@ -1,12 +1,11 @@
 Print 1 is 1 (prints: true)
-Print 1 isn't 2 (prints: true)
-Print 1 ain't 2 (prints: true)
-Print 1 is not 2 (prints: false)
 
-Print false is not true (prints: true)
+Your memories are 1. My dreams are 1.
+Say your memories are my dreams (prints: true)
+It's with 3.
+Say your memories are my dreams (prints: false)
 
 Print "rock" is "roll" (prints: false)
-Print "rock" ain't "roll" (prints: true)
 
 Print 0 is true (prints: false)
 Print 0 is false (prints: true)

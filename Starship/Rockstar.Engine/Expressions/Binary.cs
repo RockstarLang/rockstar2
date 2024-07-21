@@ -41,10 +41,10 @@ public class Binary : Expression {
 			Operator.IdenticalTo => v.IdenticalTo(eval(rhs.Single())),
 			Operator.NotIdenticalTo => v.IdenticalTo(eval(rhs.Single())).Nope,
 
-			//Operator.LessThanEqual => v.LessThanEqual(eval(rhs.Single())),
-			//Operator.MoreThanEqual => v.MoreThanEqual(eval(rhs.Single())),
-			//Operator.LessThan => v.LessThan(eval(rhs.Single())),
-			//Operator.MoreThan => v.MoreThan(eval(rhs.Single())),
+			Operator.LessThanEqual => v.LessThanEqual(eval(rhs.Single())),
+			Operator.MoreThanEqual => v.MoreThanEqual(eval(rhs.Single())),
+			Operator.LessThan => v.LessThan(eval(rhs.Single())),
+			Operator.MoreThan => v.MoreThan(eval(rhs.Single())),
 
 			Operator.Nor => new Booleän(!(v.Truthy || eval(rhs.Single()).Truthy)),
 			Operator.And => v.Truthy ? eval(rhs.Single()) : v,

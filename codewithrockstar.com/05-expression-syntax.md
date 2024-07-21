@@ -1,8 +1,8 @@
 ---
-title: Arithmetic
+title: Expression Lists
 layout: home
 examples: examples/05-expression-syntax/
-nav_order: "1003"
+nav_order: "1005"
 ---
 ### Expression lists
 

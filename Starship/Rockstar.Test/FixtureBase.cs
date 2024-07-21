@@ -79,7 +79,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		return String.Join("", output).ReplaceLineEndings();
 	}
 
-	protected static readonly Parser Parser = new();
+	protected readonly Parser Parser = new();
 
 	private void PrettyPrint(string source, string filePath, Exception ex) {
 		var cursor = ex.Data["cursor"] as Cursor;
@@ -92,7 +92,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		testOutput.WriteLine(ncrunchOutputMessage);
 	}
 
-	private string RunProgram(Program program, Queue<string>? inputs = null) {
+	protected string RunProgram(Program program, Queue<string>? inputs = null) {
 		string? ReadInput() => inputs != null && inputs.TryDequeue(out var result) ? result : null;
 		var env = new TestEnvironment(ReadInput);
 		env.Execute(program);

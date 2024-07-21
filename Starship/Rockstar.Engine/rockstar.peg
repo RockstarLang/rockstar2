@@ -118,7 +118,16 @@ unary <Expression>
 not_
 	= (not _ / non _ / non '-' )
 
-comparison = addition
+comparison <Expression>
+	= lhs:addition op:comparator _ rhs:comparison
+		{ new Binary(op, lhs, rhs) }
+	/ addition 
+
+comparator <Operator>
+	= _is _ gtr _ than { Operator.MoreThan }
+	/ _is _ ltr _ than { Operator.LessThan }
+	/ _is _ as _ gte _ as { Operator.MoreThanEqual }
+	/ _is _ as _ lte _ as { Operator.LessThanEqual }
 
 addition <Expression> -memoize
 	= lhs:addition op:(_plus_/_minus_) rhs:primary_list
@@ -242,7 +251,7 @@ says = 'says' !letter / 'said' !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
     / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
 the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
-gtr = 'greater'/ 'higher' / 'bigger'	/ 'stronger' !letter/ 'more' !letter
+gtr = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
 ltr = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
 gte = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
 lte = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter

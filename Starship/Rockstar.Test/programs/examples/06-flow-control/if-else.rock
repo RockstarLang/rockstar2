@@ -1,0 +1,4 @@
+if 1
+if 2
+print 2 ENDBLOCK print 1 ENDBLOCK
+print 0

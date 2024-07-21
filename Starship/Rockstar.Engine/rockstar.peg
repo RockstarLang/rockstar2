@@ -14,14 +14,27 @@ program <Program>
 		{ new Program(head).Concat(tail) }
 	/ EOS* EOF
 		{ new Program() }
+	/ unexpected:("" [^ \t\r\n]+) 
+		#error{ $"Unexpected '{unexpected.Replace("\r", "\\r").Replace("\n", "\\n")}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 block <Block>
 	= _? head:statement EOS tail:block
 		{ new Block(head).Concat(tail) }
 	/ _? stmt:statement
 		{ new Block(stmt) }
+	// EOB { new Block() }
 
-statement = output_stmt / assign_stmt
+statement = conditional / output_stmt / assign_stmt
+
+s_or_b <Block>
+	= _ s:statement EOB { new Block(s) }
+	/ EOL b:block EOB { b }
+
+EOB = _? "ENDBLOCK" _?
+
+conditional <Statement>
+	= if _ e:expression d:s_or_b
+		{ new Conditional(e, d) }
 
 output_stmt <Statement>
 	= print _ e:expression
@@ -234,7 +247,7 @@ listen = 'listen' !letter
 to = 'to' !letter
 while = 'while' !letter
 until = 'until' !letter
-else = 'else' !letter
+else = 'else' !letter / 'otherwise' !letter
 if = 'if' !letter
 build = 'build' !letter
 up = 'up' !letter
@@ -281,10 +294,7 @@ comment	=
 	/ '{' [^\}]* '}'
 	/ '[' [^\]]* ']'
 
-EOB = EOS+
 EOS = _? [.?!;]
 	/ EOL
 EOL = _? '\r'? '\n'
 EOF = _? !.
-	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Unexpected '{unexpected.Replace("\r", "\\r").Replace("\n", "\\n")}' at line {state.Line}, col {state.Column - unexpected.Length}" }

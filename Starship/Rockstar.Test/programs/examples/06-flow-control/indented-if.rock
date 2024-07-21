@@ -1,0 +1,24 @@
+x is 6
+if x > 1
+	if x > 2
+		if x > 3
+			if x > 4
+				if x > 5
+					print "greater than 5"
+					end
+				print 4
+				end
+			print 3
+			end
+		print 2
+		end
+	print 1
+otherwise
+	print 0
+end
+
+(prints: greater than 5
+4
+3
+2
+1)

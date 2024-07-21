@@ -27,12 +27,12 @@ statement = conditional / output_stmt / assign_stmt
 
 EOB = EOL &EOL
     / EOS* &(_? else)
-    / EOS* ','? _? end
+    / EOS* ','? _? end (_ / [,?|.;])*
    	/ EOS* ','? _? 'o' &('o'+ 'h')
     / EOF
 
 consequent <Block>
-	= EOL b:block EOB { b }
+	= EOS b:block EOB { b }
 	/ _ s:statement { new Block(s) }
 
 conditional <Statement>
@@ -62,7 +62,7 @@ assign_stmt <Statement>
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 	/ v:variable _ says_ s:poetic_string
 		{ new Assign(v, s) }
-	/ v:variable _is _ e:expression
+	/ v:variable (_? '=' _? / _is _) e:expression
 		{ new Assign(v, e) }
 
 _operator_ =
@@ -139,15 +139,15 @@ not_
 	= (not _ / non _ / non '-' )
 
 comparison <Expression>
-	= lhs:addition op:comparator _ rhs:comparison
+	= lhs:addition op:comparator rhs:comparison
 		{ new Binary(op, lhs, rhs) }
 	/ addition 
 
 comparator <Operator>
-	= _is _ gtr _ than { Operator.MoreThan }
-	/ _is _ ltr _ than { Operator.LessThan }
-	/ _is _ as _ gte _ as { Operator.MoreThanEqual }
-	/ _is _ as _ lte _ as { Operator.LessThanEqual }
+	= (_? '>' _?  / _is _ more _ than _) { Operator.MoreThan }
+	/ (_? '<' _?  / _is _ less _ than _) { Operator.LessThan }
+	/ (_? '>=' _? / _is _ as _ as_great _ as _) { Operator.MoreThanEqual }
+	/ (_? '<=' _? / _is _ as _ as_small _ as _) { Operator.LessThanEqual }
 
 addition <Expression> -memoize
 	= lhs:addition op:(_plus_/_minus_) rhs:primary_list
@@ -272,10 +272,10 @@ says = 'says' !letter / 'said' !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
     / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
 the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
-gtr = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
-ltr = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
-gte = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
-lte = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter
+more = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
+less = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
+as_great = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
+as_small = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter
 than = 'than' !letter
 empty = 'empty' !letter / 'silent' !letter / 'silence' !letter
 true = "true" !letter/ "yes" !letter/ "ok" !letter/ "right"!letter 
@@ -293,7 +293,7 @@ then = 'then' !letter
 keyword
 	= mysterious / plus / minus / times / over / as / isnt / not / is / put / into / let / be / listen / to / while
 	/ until / else / if / build / up / down / knock / and / or / back / taking / give / takes / says / pronoun / the
-	/ gtr / ltr / gte / lte / than / empty / true / false / null / print / non
+	/ more / less / as_great / as_small / than / empty / true / false / null / print / non
 
 _ = "" (whitespace / comment)+
 whitespace = [ \t]
@@ -303,7 +303,7 @@ comment	=
 	/ '{' [^\}]* '}'
 	/ '[' [^\]]* ']'
 
-EOS = _? [.?!;]
-	/ EOL
+EOS = [,.?!; \t]* EOL
+	/ _? [.?!;]	
 EOL = _? '\r'? '\n'
 EOF = EOL* _? !.

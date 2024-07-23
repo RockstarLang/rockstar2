@@ -10,6 +10,8 @@ namespace Rockstar.Engine.Values;
 
 public class Function(IEnumerable<Variable> args, Block body)
 	: Value {
+	public Function(Block body) : this(new List<Variable>(), body) { }
+
 	public IList<Variable> Args => args.ToList();
 	public Block Body => body;
 	protected override bool Equals(Value other) => false;
@@ -29,8 +31,8 @@ public class Function(IEnumerable<Variable> args, Block body)
 	public override void Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append($"function(");
 		sb.Append(String.Join(", ", args.Select(a => a.Name)));
-		sb.AppendLine(")");
-		body.Print(sb, prefix + "|" + Statement.INDENT);
+		sb.AppendLine("):");
+		body.Print(sb, prefix + "|" + INDENT);
 	}
 }
 

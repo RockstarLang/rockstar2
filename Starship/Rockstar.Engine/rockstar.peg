@@ -40,7 +40,9 @@ return_stmt <Return>
 		{ new Return(e) }
 
 function <Statement>
-	= name:variable _ takes _ args:arguments body:consequent
+	= name:variable _ takes _ null body:consequent
+		{ new Assign(name, new Function(body)) }
+	/ name:variable _ takes _ args:arguments body:consequent
 		{ new Assign(name, new Function(args, body)) }
 
 arguments <IEnumerable<Variable>>
@@ -237,7 +239,11 @@ primary <Expression>
 	//	#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 function_call <FunctionCall>
-	= name:variable _ taking _ args:expression_list
+	= name:variable &'!'
+		{ new FunctionCall(name) }
+	/ call _ name:variable
+		{ new FunctionCall(name) }		
+	/ name:variable _ taking _ args:expression_list
 		{ new FunctionCall(name, args) }
 
 expression_list <IEnumerable<Expression>>
@@ -359,6 +365,7 @@ with = 'with' !letter
 like = 'like' !letter / 'so' !letter
 then = 'then' !letter
 write = 'write' !letter / 'whisper' !letter
+call = 'call' !letter
 
 keyword
 	= and 

@@ -26,7 +26,58 @@ Functions are called using the ‘taking’ keyword and must have at least one a
 
 Function arguments can be any kind of expression, including other function calls:
 
-- `Multiply taking 3, 5` is an expression returning (presumably) 15
-- `Search taking "hands", "lay your hands on me"`
-- `Put Multiply taking 3, 5, and 9 into Large` will set Large to `3 * 5 * 9` **NOT** `(3 * 5) && 9`.
+```rockstar
+{% include_relative {{ page.examples }}function-calls-as-arguments.rock %}
+```
+
+This is one of the few features where the language **grammar** is ambiguous, and what's produced by the parser doesn't necessarily match what's executed by the interpreter. The parser is greedy and it doesn't know anything about how many arguments a function takes (its *arity*), so this expression:
+
+```rockstar
+ FuncA taking FuncB taking 1, 2, FuncB taking 3, 4
+ ```
+
+will produce this parse tree:
+
+```
+call: FuncA
+  args:
+  1: call: FuncB:
+     args:
+     1: number: 1
+     2: number: 2
+     3: call: FuncB
+        args:
+        1: number: 3
+        2: number: 4
+```
+
+That's actually wrong, because it'll try to invoke FuncB with three arguments - so rather than failing, the Rockstar interpreter only evaluates as many function arguments as the function is expecting, and any "leftover" expressions will be passed back to the outer function call, so what actually gets executed is:
+
+```
+call: FuncA
+  args:
+  1: call: FuncB:
+     args:
+     1: number: 1
+     2: number: 2
+  2: call: FuncB    }
+     args:          } FuncB only expects two arguments, so 
+     1: number: 3   } the interpreter passes this one to the 
+     2: number: 4   } outermost function instead.
+```
+
+Functions can contain other functions, and because every function defines its own variable scope, nested functions can have the same names as the functions which enclose them. *(I have no idea why you would ever want to do this, but making it impossible would have been really difficult.)*
+
+```rockstar
+ {% include_relative {{ page.examples }}nested-functions.rock %}
+ ```
+
+To declare a function with no arguments, specify it `takes null` (or aliases `nothing`, `nowhere`, `nobody`). To call a function with no arguments, use the `call` keyword, or suffix the function name with an exclamation mark:
+
+```rockstar
+ {% include_relative {{ page.examples }}functions-with-no-arguments.rock %}
+ ```
+
+
+
 

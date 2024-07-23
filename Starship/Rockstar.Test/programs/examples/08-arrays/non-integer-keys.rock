@@ -1,0 +1,13 @@
+My string is "string"
+My decimal is 1.234
+My negative is -4
+My boolean is true
+
+The array at my string is "hey"
+The array at my decimal is "hey"
+The array at my negative is "my"
+The array at my boolean is "my"
+
+Print the array (prints: 0)
+The array at 1 is "rock & roll will never die"
+Print the array (prints: 1)

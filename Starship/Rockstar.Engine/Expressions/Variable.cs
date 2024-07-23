@@ -6,8 +6,12 @@ namespace Rockstar.Engine.Expressions;
 public abstract class Variable(string name) : Expression {
 	public string Name => name;
 
-	public override void Print(StringBuilder sb, string prefix)
-		=> sb.Append(prefix).AppendLine($"variable: {name}");
+	public override void Print(StringBuilder sb, string prefix) {
+		sb.Append(prefix).AppendLine($"variable: {name}");
+		if (Index == default) return;
+		sb.Append(INDENT).AppendLine("index:");
+		Index.Print(sb, prefix + INDENT);
+	}
 
 	private static readonly Regex whitespace = new("\\s+", RegexOptions.Compiled);
 
@@ -18,4 +22,11 @@ public abstract class Variable(string name) : Expression {
 
 	public IEnumerable<Variable> Concat(IEnumerable<Variable> tail)
 		=> new List<Variable> { this }.Concat(tail);
+
+	public Expression? Index { get; private set; }
+
+	public Variable AtIndex(Expression index) {
+		this.Index = index;
+		return this;
+	}
 }

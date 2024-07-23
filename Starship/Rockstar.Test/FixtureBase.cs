@@ -145,6 +145,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			var expect = ExtractExpects(filePath);
 			if (String.IsNullOrEmpty(expect)) return result;
 			result.ShouldBe(expect);
+			testOutput.WriteLine($"   at <Rockstar code> in {filePath}:line 1");
 		} catch (Exception) {
 			testOutput.WriteNCrunchFilePath(filePath);
 			throw;

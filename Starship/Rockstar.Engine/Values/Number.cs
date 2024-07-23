@@ -9,7 +9,10 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 		return s.Contains('.') ? s.TrimEnd('0').TrimEnd('.') : s;
 	}
 
+	public bool IsNonNegativeInteger { get; } = value >= 0 && value == (int) value;
+
 	public Number(string value) : this(Decimal.Parse(value)) { }
+
 	public override bool Truthy => Value != 0;
 	public override Strïng ToStrïng() => new(FormatNumber(Value));
 

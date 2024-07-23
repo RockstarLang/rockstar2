@@ -6,6 +6,8 @@ namespace Rockstar.Engine.Values;
 
 public class Strïng(string value) : ValueOf<string>(value) {
 
+	public Strïng(params char[] chars) : this(new string(chars)) { }
+
 	public override bool Truthy => !String.IsNullOrEmpty(Value);
 
 	public override Strïng ToStrïng() => this;
@@ -31,7 +33,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		var token = Value;
 		if (n < 0) {
 			var chars = token.ToCharArray();
-			Array.Reverse(chars);
+			System.Array.Reverse(chars);
 			token = new(chars);
 		}
 		var repeat = Int32.Abs((int)n);
@@ -47,7 +49,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public Value Minus(Strïng s) {
 		var body = Value;
 		var tail = s.Value;
-		if (body.EndsWith(tail)) body = body.Substring(0, body.Length - tail.Length);
+		if (body.EndsWith(tail)) body = body[..^tail.Length];
 		return new Strïng(body);
 	}
 
@@ -55,4 +57,9 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	public Value DividedBy(Strïng d)
 		=> new Number(this.Value.Split(d.Value).Length - 1);
+
+	internal Value CharAt(IHaveANumber number) {
+		var index = (int) number.Value;
+		return index < Value.Length ? new Strïng(Value[index]) : Values.Mysterious.Instance;
+	}
 }

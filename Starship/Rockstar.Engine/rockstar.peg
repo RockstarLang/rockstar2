@@ -14,8 +14,8 @@ program <Program>
 		{ new Program(head).Concat(tail) }
 	/ EOS* EOF
 		{ new Program() }
-	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Unexpected '{unexpected.Replace("\r", "\\r").Replace("\n", "\\n")}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+	// unexpected:("" [^ \t\r\n]+) 
+	//	#error{ $"Unexpected '{unexpected.Replace("\r", "\\r").Replace("\n", "\\n")}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 block <Block>
 	= _? head:statement EOS tail:block
@@ -99,19 +99,28 @@ binary_rhs <IEnumerable<Expression>>
 	= primary_list
 	/ e:expression { new List<Expression> { e } }
 
+index <Expression>
+	= _ at _ i:numeric_expression
+		{ i }
+
+assignable <Variable>
+	= v:variable i:index
+		{ v.AtIndex(i) }
+	/ v:variable { v }
+
 assign_stmt <Statement>
-	= put _ e:expression _ into _ v:variable
+	= put _ e:expression _ into _ v:assignable
 		{ new Assign(v, e) }
-	/ let _ v:variable _ be op:_operator_ e:binary_rhs
+	/ let _ v:assignable _ be op:_operator_ e:binary_rhs
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
-	/ let _ v:variable _ be _ e:expression
+	/ let _ v:assignable _ be _ e:expression
 		{ new Assign(v, e) }
-	/ v:variable _is op:_operator_ e:binary_rhs
-		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
-	/ v:variable _ says_ s:poetic_string
+	/ v:assignable _ says_ s:poetic_string
 		{ new Assign(v, s) }
-	/ v:variable (_? '=' _? / _is _) e:expression
+	/ v:assignable (_? '=' _? / _is _) e:expression
 		{ new Assign(v, e) }
+	/ v:assignable _is op:_operator_ e:binary_rhs
+		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 
 _operator_ =
 	_plus_ / _minus_ / _times_ / _divide_
@@ -197,6 +206,9 @@ comparator <Operator>
 	/ (_? '>=' _? / _is _ as _ as_great _ as _) { Operator.MoreThanEqual }
 	/ (_? '<=' _? / _is _ as _ as_small _ as _) { Operator.LessThanEqual }
 
+numeric_expression
+	= addition
+
 addition <Expression> -memoize
 	= lhs:addition op:(_plus_/_minus_) rhs:primary_list
 		{ new Binary(op, lhs, rhs) }
@@ -257,7 +269,9 @@ _expression_list_separator_
 	/ _primary_list_separator_
 
 lookup <Expression>
-	= v:variable
+	= v:variable i:index
+		{ new Lookup(v.AtIndex(i)) }
+	/ v:variable
 		{ new Lookup(v) }
 
 constant <Value>	
@@ -268,12 +282,13 @@ constant <Value>
 
 number <Number>
     = like _ n:poetic_number { n }
-	/ d:digits&{ decimal.TryParse(d, out var value) }
+	/ d:digits&{ decimal.TryParse(d, out var _) }
 		{ new Number(d) }
 	/ d:digits
 		#error{ $"Number {d} is out of range" }
-digits 
-	= ("" (('-' /'+')? [0-9]+ ("." [0-9]+)?) / (('-' /'+')? "." [0-9]+))	
+digits
+	= d:("" (('-' /'+')? [0-9]+ ("." [0-9]+)?)
+	/ (('-' /'+')? "." [0-9]+))	
 
 poetic_number <Number>
 	= whole_part:poetic_digits _? ('...' / '…') _ fractional_part:poetic_digits

@@ -1,6 +1,7 @@
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
+using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Engine;
 
@@ -36,15 +37,22 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var scope = GetScope(target) ?? this;
 		if (variable is Pronoun pronoun) {
 			scope.SetLocal(target, value);
-			//} else if (variable.Index != default) {
-			//	var index = Eval(variable.Index);
-			//	scope.SetArray(variable, index, value);
+		} else if (variable.Index != default) {
+			var index = Eval(variable.Index);
+			scope.SetArray(variable, index, value);
 		} else {
 			pronounTarget = target;
 			scope.SetLocal(target, value);
 		}
-
 		return new(value);
+	}
+
+	private Value SetArray(Variable variable, Value index, Value value) {
+		variables.TryAdd(variable.Key, new Array());
+		return variables[variable.Key] switch {
+			Array array => array.Set(index, value),
+			_ => throw new($"Can't assign {variable.Name} at index {index} - {variable.Name} is not an indexed variable")
+		};
 	}
 
 	public Result Execute(Program program)
@@ -159,7 +167,13 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public Value Lookup(Variable variable) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;
 		var value = LookupValue(key);
-		if (value != null) return value;
-		throw new($"Unknown variable '{variable.Name}'");
+		if (variable.Index == default) return value ?? throw new($"Unknown variable '{variable.Name}'");
+		var index = Eval(variable.Index);
+		return (value, index) switch {
+			(Strïng s, Number i) => s.CharAt(i),
+			(Array a, _) => a.Get(index),
+			_ => throw new($"Unknown array '{variable.Name}'")
+		};
 	}
+
 }

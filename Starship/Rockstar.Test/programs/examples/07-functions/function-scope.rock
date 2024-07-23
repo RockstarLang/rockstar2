@@ -1,14 +1,23 @@
-Global is 1
 SetGlobal takes X
 Global is X
 end
+
+Global is 1
 
 Write global
 SetGlobal taking 2
 Write global
 SetGlobal taking 3
 Write global
-(Writes: 123)
+(writes: 123)
 
+SetLocal takes local, value
+local is value
+write local
+end
 
-
+Local is 1
+setlocal taking local, 2 (writes: 2)
+Write local (writes: 1)
+setlocal taking local, 3 (writes: 3)
+Write local (writes: 1)

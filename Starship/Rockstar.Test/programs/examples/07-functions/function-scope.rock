@@ -3,7 +3,12 @@ SetGlobal takes X
 Global is X
 end
 
-Shout Global
-SetGlobal 
+Write global
+SetGlobal taking 2
+Write global
+SetGlobal taking 3
+Write global
+(Writes: 123)
+
 
 

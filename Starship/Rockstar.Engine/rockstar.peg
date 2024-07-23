@@ -24,12 +24,33 @@ block <Block>
 		{ new Block(stmt) }
 
 statement
-	= break_stmt
+	= function
+	/ function_call
+	/ return_stmt
+	/ break_stmt
 	/ continue_stmt
 	/ loop
 	/ conditional
 	/ output_stmt
 	/ assign_stmt
+	// e:expression &EOS { new ExpressionStatement(e) }
+
+return_stmt <Return>
+	= return (_ back)? _ e:expression (_ back)?
+		{ new Return(e) }
+
+function <Statement>
+	= name:variable _ takes _ args:arguments body:consequent
+		{ new Assign(name, new Function(args, body)) }
+
+arguments <IEnumerable<Variable>>
+	= head:variable _variable_list_separator_ tail:arguments
+		{ head.Concat(tail) }
+  / arg:variable { new List<Variable> { arg } }
+
+_variable_list_separator_
+	= _ and _
+	/ _primary_list_separator_
 
 break_stmt <Statement>
 	= break wildcard
@@ -194,8 +215,12 @@ primary_list <IEnumerable<Expression>>
 	/ head:primary _primary_list_separator_ tail:primary 
 		{ new List<Expression> { head, tail } }
 
-_primary_list_separator_		
-	= (_? ', ' and _ / _? ('&' / ',' / "n'" / "'n'") _?)
+nacton = '&' / "n'" / "'n'"
+
+_primary_list_separator_
+	= ',' _? nacton _?
+	/ _? nacton _?
+	/ ',' _?
 
 _plus_	<Operator>	= (_? '+' _? / _ plus _ ) { Operator.Plus }
 _minus_ <Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
@@ -203,12 +228,27 @@ _times_	<Operator>	= (_? '*' _? / _ times _ ) { Operator.Times }
 _divide_ <Operator>	= (_? '/' _? / _ divided_by _ ) { Operator.Divide }
 
 primary <Expression>
-	= constant
+	= function_call
+	/ constant
 	/ string
 	/ number
 	/ lookup
 	// unexpected:("" [^ \t\r\n]+) 
 	//	#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+
+function_call <FunctionCall>
+	= name:variable _ taking _ args:expression_list
+		{ new FunctionCall(name, args) }
+
+expression_list <IEnumerable<Expression>>
+	= head:expression _expression_list_separator_ tail:expression_list
+		{ head.Concat(tail) }
+	/ expr:expression
+		{ new List<Expression> { expr } }
+
+_expression_list_separator_
+	= _? ', ' and _
+	/ _primary_list_separator_
 
 lookup <Expression>
 	= v:variable
@@ -221,7 +261,7 @@ constant <Value>
 	/ empty { Strïng.Empty }
 
 number <Number>
-    = 'like' _ n:poetic_number { n }
+    = like _ n:poetic_number { n }
 	/ d:digits&{ decimal.TryParse(d, out var value) }
 		{ new Number(d) }
 	/ d:digits
@@ -294,7 +334,7 @@ and = 'and' !letter
 or = 'or' !letter
 back = 'back' !letter
 taking = 'taking' !letter
-give = 'return' !letter / 'give' !letter / 'send' !letter
+return = 'return' !letter / 'giving' !letter / 'give' !letter / 'send' !letter
 takes = 'takes' !letter / 'wants' !letter
 says = 'says' !letter / 'said' !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
@@ -316,7 +356,7 @@ continue = 'continue' !letter / 'take' !letter
 push = 'rock' !letter / 'push' !letter
 pop = 'roll' !letter / 'pop' !letter
 with = 'with' !letter
-like = 'like' !letter
+like = 'like' !letter / 'so' !letter
 then = 'then' !letter
 write = 'write' !letter / 'whisper' !letter
 
@@ -334,7 +374,6 @@ keyword
 	/ empty 
 	/ end
 	/ false 
-	/ give 
 	/ if 
 	/ into 
 	/ is 
@@ -355,6 +394,7 @@ keyword
 	/ print 
 	/ pronoun 
 	/ put 
+	/ return 
 	/ says 
 	/ takes 
 	/ taking 

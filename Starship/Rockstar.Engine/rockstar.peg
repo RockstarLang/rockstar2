@@ -34,7 +34,25 @@ statement
 	/ conditional
 	/ output_stmt
 	/ assign_stmt
+	/ enlist_stmt
 	// e:expression &EOS { new ExpressionStatement(e) }
+
+enlist_stmt <Statement>
+	= push _ e:expression _ into _ v:variable
+		{ new Enlist(v, e) }
+//	/ push _ v:variable _ like _ e:(literal/poetic_literal)
+//		{ new Enlist(v, e) }
+	/ push _ v:variable (_ with)? _ e:expression_list
+		{ new Enlist(v, e) }
+	/ push _ v:variable
+		{ new Enlist(v) }
+	/ d:delist _ into _ t:assignable
+		{ new Assign(t, d) }
+
+delist <Delist>
+	= pop _ v:variable
+		{ new Delist(v) }
+
 
 return_stmt <Return>
 	= return (_ back)? _ e:expression (_ back)?

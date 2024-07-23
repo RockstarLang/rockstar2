@@ -54,7 +54,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 			Array array => array.Set(indexes, value),
 			Strïng s => s.SetCharAt(indexes, value),
 			Number n => n.SetBit(indexes, value),
-			_ => throw new($"{variable.Name} is not an indexed variable"),
+			_ => throw new($"{variable.Name} is not an indexed variable")
 		};
 	}
 
@@ -84,9 +84,30 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Return r => Return(r),
 		Continue => Result.Skip,
 		Break => Result.Break,
+		Enlist e => Enlist(e),
 		ExpressionStatement e => ExpressionStatement(e),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+
+	private Result Delist(Delist delist) {
+		var key = delist.Variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : delist.Variable.Key;
+		var value = LookupValue(key);
+		if (value is Array array) return new(array.Pop());
+		return new(new Null());
+	}
+
+	private Result Enlist(Enlist e) {
+		var key = (e.Variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : e.Variable.Key);
+		var value = LookupValue(key);
+		if (value is not Array array) {
+			array = value == Mysterious.Instance ? new Array() : new(value);
+			SetLocal(e.Variable, array);
+		}
+		foreach (var expr in e.Expressions) array.Push(Eval(expr));
+		return new(array);
+	}
+
 
 	private Result ExpressionStatement(ExpressionStatement e)
 		=> Result.Return(Eval(e.Expression));
@@ -153,13 +174,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Lookup lookup => Lookup(lookup.Variable),
 		Unary unary => unary.Resolve(Eval),
 		FunctionCall call => Call(call).Value,
+		Delist delist => Delist(delist).Value,
 		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
 	};
 
-
 	public Result Assign(Variable variable, Value value)
 		=> SetVariable(variable, value);
-
 
 	public Result Assign(Assign assign)
 		=> Assign(assign.Variable, Eval(assign.Expression));

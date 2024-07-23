@@ -27,6 +27,8 @@ public class Array : Value {
 		for (var i = 0; i < values.Count; i++) Set(new Number(i), values[i]);
 	}
 
+	public Array(Value value) => Set(new Number(0), value);
+
 	protected override bool Equals(Value other)
 		=> other is Array that && ArrayEquals(that);
 

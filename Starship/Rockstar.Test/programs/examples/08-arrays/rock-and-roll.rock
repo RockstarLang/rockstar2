@@ -1,0 +1,18 @@
+Tommy says let's rock!
+Rock Tommy
+Shout Tommy (prints: 1)
+Shout Tommy at 0 (prints: let's rock!)
+
+Rock Tommy "yeah!"
+Rock Tommy 12345
+Rock Tommy true
+Rock Tommy like a renegade razorblade
+Rock Tommy with nothing
+Rock Tommy with lies
+Shout Tommy (prints: 7)
+
+While Tommy ain't nothing
+Roll Tommy into the fire
+Whisper the fire, whisper ", ", yeah
+(writes: let's rock!, yeah!, 12345, true, 180, null, false, )
+

@@ -103,8 +103,14 @@ index <Expression>
 	= _ at _ i:numeric_expression
 		{ i }
 
+indexes <IEnumerable<Expression>>
+	= head:index tail:indexes
+		{ head.Concat(tail) }
+	/ head:index
+		{ new List<Expression> { head } }
+
 assignable <Variable>
-	= v:variable i:index
+	= v:variable i:indexes
 		{ v.AtIndex(i) }
 	/ v:variable { v }
 
@@ -269,7 +275,7 @@ _expression_list_separator_
 	/ _primary_list_separator_
 
 lookup <Expression>
-	= v:variable i:index
+	= v:variable i:indexes
 		{ new Lookup(v.AtIndex(i)) }
 	/ v:variable
 		{ new Lookup(v) }

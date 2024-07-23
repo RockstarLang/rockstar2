@@ -1,6 +1,7 @@
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
+using System;
 using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Engine;
@@ -37,9 +38,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var scope = GetScope(target) ?? this;
 		if (variable is Pronoun pronoun) {
 			scope.SetLocal(target, value);
-		} else if (variable.Index != default) {
-			var index = Eval(variable.Index);
-			scope.SetArray(variable, index, value);
+		} else if (variable.Indexes.Any()) {
+			var indexes = variable.Indexes.Select(Eval).ToList();
+			scope.SetArray(variable, new(indexes), value);
 		} else {
 			pronounTarget = target;
 			scope.SetLocal(target, value);
@@ -47,12 +48,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(value);
 	}
 
-	private Value SetArray(Variable variable, Value index, Value value) {
+	private Value SetArray(Variable variable, List<Value> indexes, Value value) {
 		variables.TryAdd(variable.Key, new Array());
-		return variables[variable.Key] switch {
-			Array array => array.Set(index, value),
-			_ => throw new($"Can't assign {variable.Name} at index {index} - {variable.Name} is not an indexed variable")
-		};
+		if (variables[variable.Key] is not Array array)
+			throw new($"Error: {variable.Name} is not an indexed variable");
+		array.Set(indexes, value);
+		return variables[variable.Key];
 	}
 
 	public Result Execute(Program program)
@@ -161,19 +162,15 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public Result Assign(Assign assign)
 		=> Assign(assign.Variable, Eval(assign.Expression));
 
-	private Value? LookupValue(string key)
-		=> variables.TryGetValue(key, out var value) ? value : Parent?.LookupValue(key);
+	private Value LookupValue(string key)
+		=> variables.TryGetValue(key, out var value) ? value : Parent?.LookupValue(key) ?? Mysterious.Instance;
 
 	public Value Lookup(Variable variable) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;
 		var value = LookupValue(key);
-		if (variable.Index == default) return value ?? throw new($"Unknown variable '{variable.Name}'");
-		var index = Eval(variable.Index);
-		return (value, index) switch {
-			(Strïng s, Number i) => s.CharAt(i),
-			(Array a, _) => a.Get(index),
-			_ => throw new($"Unknown array '{variable.Name}'")
-		};
+		if (value is not Array array) return value;
+		var indexes = variable.Indexes.Select(Eval).ToList();
+		return array.Get(indexes);
 	}
 
 }

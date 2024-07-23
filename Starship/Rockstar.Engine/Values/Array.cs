@@ -1,3 +1,4 @@
+using Rockstar.Engine.Expressions;
 using System.Text;
 
 namespace Rockstar.Engine.Values;
@@ -11,14 +12,19 @@ public class Array : Value {
 		if (this.Length != that.Length) return false;
 		foreach (var key in this.entries.Keys) {
 			if (!(this.entries.TryGetValue(key, out var thisValue)
-			      && that.entries.TryGetValue(key, out var thatValue)
-			      && thisValue.Equäls(thatValue).Truthy)) return false;
+				  && that.entries.TryGetValue(key, out var thatValue)
+				  && thisValue.Equäls(thatValue).Truthy)) return false;
 		}
+
 		return true;
 	}
 
-	public Array(params Value[] args) {
-		for (var i = 0; i < args.Length; i++) Set(new Number(i), args[i]);
+	public Array() { }
+
+	public Array(Value index, Value value) => Set(index, value);
+
+	public Array(IList<Value> values) {
+		for (var i = 0; i < values.Count; i++) Set(new Number(i), values[i]);
 	}
 
 	protected override bool Equals(Value other)
@@ -32,13 +38,15 @@ public class Array : Value {
 	public override Strïng ToStrïng()
 		=> new("[" + String.Join(", ", entries.Select(e => e.Key.ToStrïng() + ":" + e.Value.ToStrïng()).ToArray()) + "]");
 
+	public override string ToString() => this.ToStrïng().Value;
+
 	public override Booleän Equäls(Value that)
 		=> new(Equals(that));
 
 	public override Booleän IdenticalTo(Value that)
 		=> new(Object.ReferenceEquals(this, that));
 
-	public Value Set(Value index, Value value) {
+	public T Set<T>(Value index, T value) where T : Value {
 		entries[index] = value;
 		if (index is Number { IsNonNegativeInteger: true } n && n.Value > maxIndex) maxIndex = (int) n.Value;
 		return value;
@@ -46,6 +54,13 @@ public class Array : Value {
 
 	private bool IsInRange(Value index)
 		=> index is Number { IsNonNegativeInteger: true } n && n.Value < maxIndex;
+
+	public T GetOrAdd<T>(Value index, T value) where T : Value {
+		var found = entries.TryGetValue(index, out var v);
+		if (found) return v as T ?? throw new("Error: not an indexed variable");
+		Set(index, value);
+		return value;
+	}
 
 	public Value Get(Value index)
 		=> entries.TryGetValue(index, out var value)
@@ -74,5 +89,28 @@ public class Array : Value {
 			if (temp != null) entries[new Number(n.Value - 1)] = temp;
 		}
 		return value ?? Mysterious.Instance;
+	}
+
+	public Value Set(List<Value> indexes, Value value) {
+		var array = this;
+		for (var i = 0; i < indexes.Count; i++) {
+			var index = indexes[i];
+			if (i == indexes.Count - 1) return array.Set(index, value);
+			array = array.GetOrAdd(index, new Array());
+		}
+		return value;
+	}
+
+	public Value Get(List<Value> indexes) {
+		if (!indexes.Any()) return Length;
+		Value value = this;
+		foreach (var index in indexes) {
+			value = (value, index) switch {
+				(Strïng s, Number i) => s.CharAt(i),
+				(Array a, _) => a.Get(index),
+				_ => throw new($"Not an array.'")
+			};
+		}
+		return value;
 	}
 }

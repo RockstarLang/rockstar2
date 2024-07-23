@@ -1,0 +1,7 @@
+The array at 1 at 2 at 3 is "yeah"
+Print the array at 1 at 2 at 3 (prints: yeah)
+
+The words at 2 is "Slash"
+Print the words at 2 at 0 (prints: S)
+Print the words at 2 (prints: Slash)
+Print the words (prints: 3)

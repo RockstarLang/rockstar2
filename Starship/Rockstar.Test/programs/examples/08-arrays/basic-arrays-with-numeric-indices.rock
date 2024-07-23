@@ -8,9 +8,3 @@ Print Absolution at 0 (prints: Intro)
 Print Absolution at 7 (prints: Hysteria)
 Print Absolution at 2 (prints: null)
 Print Absolution at 999 (prints: mysterious)
-
-Print Absolution at 0 at 0 (prints: I)
-Print Absolution at 5 at 1 (prints: S)
-
-My string says 🎸✨🎆
-Print my string at 1 (prints: ✨)

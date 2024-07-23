@@ -53,6 +53,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return variables[variable.Key] switch {
 			Array array => array.Set(indexes, value),
 			Strïng s => s.SetCharAt(indexes, value),
+			Number n => n.SetBit(indexes, value),
 			_ => throw new($"{variable.Name} is not an indexed variable"),
 		};
 	}

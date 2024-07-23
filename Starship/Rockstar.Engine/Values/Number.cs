@@ -35,4 +35,13 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public override void Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine(ToString());
 	}
+
+	public Value SetBit(List<Value> indexes, Value value) {
+		if (indexes.Count != 1) return this;
+		if (indexes[0] is not IHaveANumber index) return this;
+		var oldValue = (long) this.Value;
+		var bitIndex = 1L << (int) index.Value;
+		this.Value = value.Truthy ? oldValue | bitIndex : oldValue & ~bitIndex;
+		return this;
+	}
 }

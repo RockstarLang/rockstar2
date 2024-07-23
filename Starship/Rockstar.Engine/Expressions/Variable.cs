@@ -15,4 +15,7 @@ public abstract class Variable(string name) : Expression {
 		=> String.Join("_", whitespace.Split(Name));
 
 	public abstract string Key { get; }
+
+	public IEnumerable<Variable> Concat(IEnumerable<Variable> tail)
+		=> new List<Variable> { this }.Concat(tail);
 }

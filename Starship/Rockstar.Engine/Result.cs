@@ -2,14 +2,6 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine;
 
-public enum WhatToDo {
-	Unknown,
-	Next,
-	Skip,
-	Break,
-	Return
-}
-
 public class Result(Value value, WhatToDo whatToDo = WhatToDo.Next) {
 	public Value Value => value;
 	public WhatToDo WhatToDo => whatToDo;

@@ -116,7 +116,7 @@ As well as referring to variables by name, you can refer to them using pronouns.
 One of Rockstar's unique features is the ability to initialise variables using song lyrics.
 ### Poetic Numbers
 
-A poetic number begins with the `like` keyword followed by a series of words. The Rockstar parser takes the length of each word and interprets it as a decimal digit:
+A poetic number begins with the `like` or `so` keyword, followed by a series of words. The Rockstar parser takes the length of each word and interprets it as a decimal digit:
 
 ```rockstar
 {% include_relative {{ page.examples }}poetic-numbers.rock %}

@@ -18,7 +18,10 @@ public class AssignmentTests(ITestOutputHelper output) : ParserTestBase(output) 
 	[InlineData("5ive")]
 	[InlineData("_foo")]
 	public void ParserRejectsInvalidVariableNames(string name) {
-		Should.Throw<Exception>(() => Parse($"{name} is 1"));
+		Should.Throw<Exception>(() => {
+			var program = Parse($"{name} is 1");
+			return program;
+		});
 	}
 
 	[Theory]

@@ -36,13 +36,14 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var scope = GetScope(target) ?? this;
 		if (variable is Pronoun pronoun) {
 			scope.SetLocal(target, value);
-		//} else if (variable.Index != default) {
-		//	var index = Eval(variable.Index);
-		//	scope.SetArray(variable, index, value);
+			//} else if (variable.Index != default) {
+			//	var index = Eval(variable.Index);
+			//	scope.SetArray(variable, index, value);
 		} else {
 			pronounTarget = target;
 			scope.SetLocal(target, value);
 		}
+
 		return new(value);
 	}
 
@@ -59,6 +60,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 				case WhatToDo.Return: return result;
 			}
 		}
+
 		return result;
 	}
 
@@ -67,10 +69,46 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Assign assign => Assign(assign),
 		Loop loop => Loop(loop),
 		Conditional cond => Conditional(cond),
+		FunctionCall call => Call(call),
+		Return r => Return(r),
 		Continue => Result.Skip,
 		Break => Result.Break,
+		ExpressionStatement e => ExpressionStatement(e),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result ExpressionStatement(ExpressionStatement e)
+		=> Result.Return(Eval(e.Expression));
+
+	private Result Return(ExpressionStatement r) {
+		var value = Eval(r.Expression);
+		return Result.Return(value);
+	}
+
+	private Result Call(FunctionCall call)
+		=> Call(call, []);
+
+	private Result Call(FunctionCall call, Stack<Expression> bucket) {
+		var value = Lookup(call.Function);
+		if (value is not Function function) throw new($"'{call.Function.Name}' is not a function");
+		var names = function.Args.ToList();
+		List<Value> values = [];
+		foreach (var arg in call.Args.Take(names.Count)) {
+			if (arg is FunctionCall nestedCall) {
+				values.Add(Call(nestedCall, bucket).Value);
+			} else {
+				values.Add(Eval(arg));
+			}
+		}
+		if (call.Args.Count + bucket.Count < names.Count) {
+			throw new($"Not enough arguments supplied to function {call.Function.Name} - expected {names.Count} ({String.Join(", ", names.Select(v => v.Name))}), got {call.Args.Count}");
+		}
+		while (values.Count < names.Count) values.Add(Eval(bucket.Pop()));
+		foreach (var expression in call.Args.Skip(names.Count)) bucket.Push(expression);
+		var scope = this.Extend();
+		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i]);
+		return scope.Execute(function.Body);
+	}
 
 	private Result Conditional(Conditional cond)
 		=> Eval(cond.Condition).Truthy
@@ -79,7 +117,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Loop(Loop loop) {
 		var result = Result.Unknown;
-		outer: while (Eval(loop.Condition).Truthy == loop.CompareTo) {
+	outer: while (Eval(loop.Condition).Truthy == loop.CompareTo) {
 			result = Execute(loop.Body);
 			switch (result.WhatToDo) {
 				case WhatToDo.Skip: continue;
@@ -103,8 +141,10 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Binary binary => binary.Resolve(Eval),
 		Lookup lookup => Lookup(lookup.Variable),
 		Unary unary => unary.Resolve(Eval),
+		FunctionCall call => Call(call).Value,
 		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
 	};
+
 
 	public Result Assign(Variable variable, Value value)
 		=> SetVariable(variable, value);

@@ -1,0 +1,5 @@
+Kebab takes alpha, beta, gamma
+Give back alpha with "-", beta, "-", gamma
+
+Shout kebab taking "a" + "b", "c", and "d"+"e","f", and "g"+"h"'n'"i"
+(prints: abc-def-ghi)

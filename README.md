@@ -45,3 +45,23 @@ codewithrockstar.com
   /js
  	/rockstar-editor.js (from codemirror)
 ```
+
+
+Function currying
+
+```
+output
+  function call: product
+    function call: sum
+      number: 2
+      number: 4
+      function call: sum
+        number: 5
+        number: 6
+```
+
+So: `product(sum(2,4,sum(5,6))` needs to be translated to `product(sum(2,4),sum(5,6))` based on the arity of the functions
+
+So `sum(2,4,sum(5,6))` needs to evaluate `sum(2,4)` and leave the expression `sum(5,6)` in the bucket
+
+Then `product(sum(2,4)`

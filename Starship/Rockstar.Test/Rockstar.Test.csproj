@@ -45,13 +45,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="programs\examples\00\if-else-scope.rock">
+    <None Update="programs\examples\99-appendix\if-else-scope.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\00\if-else.rock">
+    <None Update="programs\examples\99-appendix\if-else.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\00\comparison.rock">
+    <None Update="programs\examples\99-appendix\comparison.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\01-getting-started\comments.rock">

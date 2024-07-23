@@ -13,3 +13,18 @@ public class BlockTests(ITestOutputHelper output) : ParserTestBase(output) {
 		program.Blocks.Select(b => b.Statements.Count).ShouldBe(counts);
 	}
 }
+
+public class CommentTests(ITestOutputHelper output) : ParserTestBase(output) {
+	[Theory]
+	[InlineData("(comment)\nsay 1(comment)")]
+	[InlineData("""
+	            The sky is like fire
+	            My heart is nothing
+	            The night is like schizoidism
+	            Until my heart is as high as the sky
+	            Whisper it, it's with the night baby.
+	            """)]
+	public void ParserParsesBlocks(string source) {
+		var program = Parse(source);
+	}
+}

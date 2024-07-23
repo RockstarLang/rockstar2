@@ -6,6 +6,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	protected static readonly string ExamplesDirectory = Path.Combine("programs", "examples");
 	protected static readonly string FixturesDirectory = Path.Combine("programs", "fixtures");
+	protected static readonly string V1FixturesDirectory = Path.Combine("programs", "v1-fixtures");
 
 	private static string QualifyRelativePath(string path) {
 #if NCRUNCH
@@ -27,6 +28,9 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	public static IEnumerable<object[]> AllExampleFiles()
 		=> ListRockFiles(ExamplesDirectory).Select(filePath => new[] { filePath });
+
+	public static IEnumerable<object[]> AllV1FixtureFiles()
+		=> ListRockFiles(V1FixturesDirectory).Select(filePath => new[] { filePath });
 
 	public static IEnumerable<object[]> AllFixtureFiles()
 		=> ListRockFiles(FixturesDirectory).Select(filePath => new[] { filePath });
@@ -63,14 +67,18 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		var limit = source.Length;
 		var output = new List<string>();
 		for (var i = 0; i < limit; i++) {
-			switch (source.SafeSubstring(i, 9)) {
+			var token = source.SafeSubstring(i, 9);
+			switch (token) {
 				case "(expect: ":
 				case "(prints: ":
+				case "(writes: ":
 					i += 9;
 					var j = i;
 					while (j < limit && source[j] != ')') j++;
 					var expected = Regex.Unescape(source.Substring(i, j - i));
-					if (!expected.EndsWith(Environment.NewLine)) expected += Environment.NewLine;
+					if (token != "(writes: " && !expected.EndsWith(Environment.NewLine)) {
+						expected += Environment.NewLine;
+					}
 					output.Add(expected);
 					i = j;
 					break;

@@ -1,0 +1,8 @@
+(writes: 12345)
+x is 1
+while x is less than 10
+write x
+x is with 1
+if x is more than 5 break
+end
+

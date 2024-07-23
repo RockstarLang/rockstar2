@@ -94,6 +94,22 @@ You can also close as many blocks as you need to by using Rockstar's `oooh` keyw
 
 ### Loops: While and Until
 
+Loops are denoted by the `while` and `until` keywords.
+
+```rockstar
+{% include_relative {{page.examples}}while.rock %}
+```
+
+```rockstar
+{% include_relative {{page.examples}}until.rock %}
+```
+
+Nested loops create block scope: as with `if` statements, you must end the block with a newline, `end`, `yeah`, `baby`, and you can end one or more blocks using the `oooh` syntax:
+
+```rockstar
+{% include_relative {{page.examples}}nested-loops.rock %}
+```
+
 
 
  

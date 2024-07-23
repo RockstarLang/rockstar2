@@ -23,11 +23,27 @@ block <Block>
 	/ _? stmt:statement
 		{ new Block(stmt) }
 
-statement = conditional / output_stmt / assign_stmt
+statement
+	= break_stmt
+	/ continue_stmt
+	/ loop
+	/ conditional
+	/ output_stmt
+	/ assign_stmt
+
+break_stmt <Statement>
+	= break 
+		{ new Break() }
+
+continue_stmt <Statement>
+	= continue 
+		{ new Continue() }
+
 
 EOB = EOL &EOL
     / EOS* &(_? else)
-    / EOS* ','? _? end (_ / [,?|.;])*
+    / EOS* ','? _? end (_ / [,?!.;])*
+    / EOS* ','? _? end (_ / [,?!.;])*
    	/ EOS* ','? _? 'o' &('o'+ 'h')
     / EOF
 
@@ -43,9 +59,17 @@ conditional <Statement>
 	/ if _ e:expression (_ then)? c:consequent
 		{ new Conditional(e, c) }
 
+loop <Statement>
+	= while _ test:expression body:consequent
+		{ new WhileLoop(test, body) }
+	/ until _ test:expression body:consequent
+		{ new UntilLoop(test,body) }
+
 output_stmt <Statement>
-	= print _ e:expression
+	= write _ e:expression
 		{ new Output(e) }
+	/ print _ e:expression
+		{ new Output(e, Environment.NewLine) }
 
 binary_rhs <IEnumerable<Expression>>
 	= primary_list
@@ -90,7 +114,7 @@ variable <Variable>
 	= i:pronoun { new Pronoun(i) }
 	/ i:proper_variable { new ProperVariable(i) }
 	/ i:(the _ identifier) { new CommonVariable(i) }
-	/ i:identifier { new SimpleVariable(i) }
+	/ !keyword i:identifier { new SimpleVariable(i) }
 
 proper_variable	= proper_noun (_ proper_noun)+
 
@@ -182,8 +206,8 @@ primary <Expression>
 	/ string
 	/ number
 	/ lookup
-	/ unexpected:("" [^ \t\r\n]+) 
-		#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+	// unexpected:("" [^ \t\r\n]+) 
+	//	#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 lookup <Expression>
 	= v:variable
@@ -289,11 +313,53 @@ pop = 'roll' !letter / 'pop' !letter
 with = 'with' !letter
 like = 'like' !letter
 then = 'then' !letter
+write = 'write' !letter / 'whisper' !letter
 
 keyword
-	= mysterious / plus / minus / times / over / as / isnt / not / is / put / into / let / be / listen / to / while
-	/ until / else / if / build / up / down / knock / and / or / back / taking / give / takes / says / pronoun / the
-	/ more / less / as_great / as_small / than / empty / true / false / null / print / non
+	= and 
+	/ as 
+	/ as_great 
+	/ as_small 
+	/ back 
+	/ be 
+	/ build 
+	/ down 
+	/ else 
+	/ empty 
+	/ end
+	/ false 
+	/ give 
+	/ if 
+	/ into 
+	/ is 
+	/ isnt 
+	/ knock 
+	/ less 
+	/ let 
+	/ listen 
+	/ minus 
+	/ more 
+	/ mysterious 
+	/ non 
+	/ not 
+	/ null 
+	/ or 
+	/ over 
+	/ plus 
+	/ print 
+	/ pronoun 
+	/ put 
+	/ says 
+	/ takes 
+	/ taking 
+	/ than 
+	/ the
+	/ times 
+	/ to 
+	/ true 
+	/ until 
+	/ up 
+	/ while	
 
 _ = "" (whitespace / comment)+
 whitespace = [ \t]
@@ -303,7 +369,7 @@ comment	=
 	/ '{' [^\}]* '}'
 	/ '[' [^\]]* ']'
 
-EOS = [,.?!; \t]* EOL
-	/ _? [.?!;]	
+EOS = [,.?!;: \t]* EOL
+	/ _? [,.?!;:]	
 EOL = _? '\r'? '\n'
 EOF = EOL* _? !.

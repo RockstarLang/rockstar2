@@ -14,7 +14,6 @@ public class RockstarEnvironment(IRockstarIO io) {
 	protected IRockstarIO IO = io;
 
 	public string? ReadInput() => IO.Read();
-	public void WriteLine(string? output) => IO.Write((output ?? String.Empty) + Environment.NewLine);
 	public void Write(string output) => IO.Write(output);
 
 	private Variable? pronounTarget;
@@ -50,13 +49,26 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public Result Execute(Program program)
 		=> program.Blocks.Aggregate(Result.Unknown, (_, block) => Execute(block));
 
-	private Result Execute(Block block)
-		=> block.Statements.Aggregate(Result.Unknown, (_, statement) => Execute(statement));
+	private Result Execute(Block block) {
+		var result = Result.Unknown;
+		foreach (var statement in block.Statements) {
+			result = Execute(statement);
+			switch (result.WhatToDo) {
+				case WhatToDo.Skip: return result;
+				case WhatToDo.Break: return result;
+				case WhatToDo.Return: return result;
+			}
+		}
+		return result;
+	}
 
 	private Result Execute(Statement statement) => statement switch {
 		Output output => Output(output),
 		Assign assign => Assign(assign),
+		Loop loop => Loop(loop),
 		Conditional cond => Conditional(cond),
+		Continue => Result.Skip,
+		Break => Result.Break,
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
 
@@ -65,10 +77,25 @@ public class RockstarEnvironment(IRockstarIO io) {
 			? Execute(cond.Consequent)
 			: Execute(cond.Alternate ?? new Block());
 
+	private Result Loop(Loop loop) {
+		var result = Result.Unknown;
+		while (Eval(loop.Condition).Truthy == loop.CompareTo) {
+			result = Execute(loop.Body);
+			switch (result.WhatToDo) {
+				case WhatToDo.Skip: continue;
+				case WhatToDo.Break: break;
+				case WhatToDo.Return:
+					return result;
+			}
+		}
+		return result;
+	}
+
 
 	private Result Output(Output output) {
 		var value = Eval(output.Expression);
-		WriteLine(value.ToStrïng().Value);
+		Write(value.ToStrïng().Value);
+		Write(output.Suffix);
 		return new(value);
 	}
 

@@ -18,6 +18,12 @@ Printing things isn't very rock‘n’roll, though. Rockers don't print, they `s
 {% include_relative {{ page.examples }}hello_world_aliases.rock %}
 ```
 
+`print`  adds a newline to the end of the output. If you don't want this, use `write` or the alias `whisper`:
+
+```rockstar
+{% include_relative {{ page.examples }}write_whisper.rock %}
+```
+
 Almost everything in Rockstar is case-insensitive, and most whitespace is ignored:
 
 ```rockstar

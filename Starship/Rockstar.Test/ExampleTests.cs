@@ -12,7 +12,7 @@ public class ExampleTests(ITestOutputHelper output) : FixtureBase(output) {
 			try {
 				ParseFile(filePath, ExamplesDirectory);
 				throw new("Parser should have failed.");
-			} catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.Message.ShouldBe(error);
 			}
 		} else {

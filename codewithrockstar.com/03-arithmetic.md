@@ -20,7 +20,7 @@ Rockstar supports the standard infix arithmetic operators `+`, `-`, `*`, `/`, wi
 
 
 ```rockstar
-{% include_relative {{ page.examples }}lyrical_expressions.rock %}
+{% include_relative {{ page.examples }}lyrical-expressions.rock %}
 ```
 
 Operator precedence obeys the convention of multiplication, division, addition, subtraction.
@@ -28,7 +28,7 @@ Operator precedence obeys the convention of multiplication, division, addition, 
 > Rockstar doesn't support parentheses in expressions. If the default operator precedence doesn't do what you need, you'll have to decompose your expression into multiple evaluations and assignments.
 
 ```rockstar
-{% include_relative {{ page.examples }}basic_arithmetic.rock %}
+{% include_relative {{ page.examples }}basic-arithmetic.rock %}
 ```
 
 Here's how Rockstar operators are defined for various combinations of types.
@@ -40,7 +40,7 @@ As a rough rule, operations involving numbers will return numbers. For arithmeti
 Addition adds numbers and concatenates strings.
 
 ```rockstar
-{% include_relative {{ page.examples }}addition_types.rock %}
+{% include_relative {{ page.examples }}addition-types.rock %}
 ```
 
 ### Subtraction
@@ -48,14 +48,14 @@ Addition adds numbers and concatenates strings.
 If both operands  have a numeric value, subtraction is numeric. If either or both operands is a string, Rockstar will "subtract" strings by removing the the bit you're taking away (the *subtrahend*, if you want to get technical) from the bit you're taking it away from (the *minuend*). Most of the time, this has no effect and subtraction just returns the string representation of the left-hand argument, but hey -- you're the one trying to subtract strings here; let's not make out like I'm the one who has a problem.
 
 ```rockstar
-{% include_relative {{ page.examples }}addition_types.rock %}
+{% include_relative {{ page.examples }}addition-types.rock %}
 ```
 ### Multiplication
 
 Rockstar lets you multiply strings. Multiplying by positive integers will repeat the string. Multiply by `-1` to reverse the string, multiplying by decimal fractions will extract substrings. You'll figure it out.
 
 ```rockstar
-{% include_relative {{ page.examples }}multiplication_types.rock %}
+{% include_relative {{ page.examples }}multiplication-types.rock %}
 ```
 
 ### Division
@@ -67,5 +67,5 @@ Dividing anything by a string will tell you how many times the second string occ
 Or, y'know, you can just stick to dividing numbers.
 
 ```rockstar
-{% include_relative {{ page.examples }}division_types.rock %}
+{% include_relative {{ page.examples }}division-types.rock %}
 ```

@@ -32,13 +32,14 @@ statement
 	/ assign_stmt
 
 break_stmt <Statement>
-	= break 
+	= break
 		{ new Break() }
 
 continue_stmt <Statement>
-	= continue 
+	= continue
 		{ new Continue() }
 
+wildcard = .* &EOS
 
 EOB = EOL &EOL
     / EOS* &(_? else)
@@ -168,8 +169,8 @@ comparison <Expression>
 	/ addition 
 
 comparator <Operator>
-	= (_? '>' _?  / _is _ more _ than _) { Operator.MoreThan }
-	/ (_? '<' _?  / _is _ less _ than _) { Operator.LessThan }
+	= (_? '>' _?  / _is _ (above / more _ than) _) { Operator.MoreThan }
+	/ (_? '<' _?  / _is _ (under / less _ than) _) { Operator.LessThan }
 	/ (_? '>=' _? / _is _ as _ as_great _ as _) { Operator.MoreThanEqual }
 	/ (_? '<=' _? / _is _ as _ as_small _ as _) { Operator.LessThanEqual }
 
@@ -199,7 +200,7 @@ _primary_list_separator_
 _plus_	<Operator>	= (_? '+' _? / _ plus _ ) { Operator.Plus }
 _minus_ <Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
 _times_	<Operator>	= (_? '*' _? / _ times _ ) { Operator.Times }
-_divide_ <Operator>	= (_? '/' _? / _ over _ ) { Operator.Divide }
+_divide_ <Operator>	= (_? '/' _? / _ divided_by _ ) { Operator.Divide }
 
 primary <Expression>
 	= constant
@@ -261,7 +262,10 @@ mysterious = 'mysterious' !letter
 plus = 'plus' !letter / 'with' !letter
 minus = 'minus' !letter / 'without' !letter
 times = 'times' !letter / 'of' !letter
-over = 'over' !letter / 'between' !letter
+over = 'over' !letter
+under = 'under' !letter
+above = 'above' !letter / over
+divided_by = 'divided' _ 'by' !letter / 'between' !letter / over
 as = 'as' !letter
 isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter
 	/ "wasn't" !letter / "wasnt" !letter / "aren't" !letter / "arent" !letter
@@ -297,6 +301,7 @@ pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her'
     / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
 the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
 more = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
+
 less = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
 as_great = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
 as_small = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter
@@ -307,7 +312,7 @@ false = "false" !letter/ "lies" !letter/ "no" !letter/ "wrong"!letter
 null = 'null' !letter/ 'nothing' !letter/ 'nowhere' !letter/ 'nobody' !letter/ 'gone'!letter
 print = "print" !letter / "shout" !letter / "say" !letter / "scream" !letter / "whisper" !letter
 break = 'break' !letter
-continue = 'continue' !letter / 'take' _ 'it' _ 'to' _ 'the' _ 'top' !letter
+continue = 'continue' !letter / 'take' !letter
 push = 'rock' !letter / 'push' !letter
 pop = 'roll' !letter / 'pop' !letter
 with = 'with' !letter
@@ -322,7 +327,8 @@ keyword
 	/ as_small 
 	/ back 
 	/ be 
-	/ build 
+	/ build
+	/ divided_by
 	/ down 
 	/ else 
 	/ empty 

@@ -4,21 +4,18 @@ if x > 1
 		if x > 3
 			if x > 4
 				if x > 5
-					print "greater than 5"
+					write "six,"
 					end
-				print 4
+				write "five,"
 				end
-			print 3
+			write "four,"
 			end
-		print 2
+		write "three,"
 		end
-	print 1
+	write "two,"
 otherwise
-	print 0
+	write "one,"
 end
+write "done!"
 
-(prints: greater than 5
-4
-3
-2
-1)
+(writes: six,five,four,three,two,done!)

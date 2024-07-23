@@ -79,13 +79,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Loop(Loop loop) {
 		var result = Result.Unknown;
-		while (Eval(loop.Condition).Truthy == loop.CompareTo) {
+		outer: while (Eval(loop.Condition).Truthy == loop.CompareTo) {
 			result = Execute(loop.Body);
 			switch (result.WhatToDo) {
 				case WhatToDo.Skip: continue;
-				case WhatToDo.Break: break;
-				case WhatToDo.Return:
-					return result;
+				case WhatToDo.Break: return result;
+				case WhatToDo.Return: return result;
 			}
 		}
 		return result;

@@ -110,7 +110,19 @@ Nested loops create block scope: as with `if` statements, you must end the block
 {% include_relative {{page.examples}}nested-loops.rock %}
 ```
 
+ To break out of a loop, use the `break` keyword.
 
+```rockstar
+{% include_relative {{page.examples}}break.rock %}
+```
+
+To skip the rest of the current loop and start the next iteration, use the `continue` keyword:
+ 
+```rockstar
+{% include_relative {{page.examples}}continue.rock %}
+```
+ 
+`break` and `continue` are **wildcard keywords** - everything between the keyword and the next end-of-statement is ignored:
 
  
 

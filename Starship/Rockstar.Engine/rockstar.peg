@@ -32,14 +32,14 @@ statement
 	/ assign_stmt
 
 break_stmt <Statement>
-	= break
+	= break wildcard
 		{ new Break() }
 
 continue_stmt <Statement>
 	= continue
 		{ new Continue() }
 
-wildcard = .* &EOS
+wildcard = (letter / _)* &EOS
 
 EOB = EOL &EOL
     / EOS* &(_? else)

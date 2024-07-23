@@ -122,9 +122,19 @@ To skip the rest of the current loop and start the next iteration, use the `cont
 {% include_relative {{page.examples}}continue.rock %}
 ```
  
-`break` and `continue` are **wildcard keywords** - everything between the keyword and the next end-of-statement is ignored:
+`break` and `continue` are **wildcard keywords** - everything between the keyword and the next end-of-statement is ignored, so the following are all equivalent:
 
- 
+```
+break it down
+break my heart
+break on through to the other side
+```
+
+```rockstar
+{% include_relative {{page.examples}}break-and-continue-wildcard.rock %}
+```
+
+
 
 
 

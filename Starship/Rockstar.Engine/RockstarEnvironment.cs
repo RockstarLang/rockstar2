@@ -91,23 +91,22 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 
 	private Result Delist(Delist delist) {
-		var key = delist.Variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : delist.Variable.Key;
-		var value = LookupValue(key);
+		var variable = QualifyPronoun(delist.Variable);
+		var value = LookupValue(variable.Key);
 		if (value is Array array) return new(array.Pop());
 		return new(new Null());
 	}
 
 	private Result Enlist(Enlist e) {
-		var key = (e.Variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : e.Variable.Key);
-		var value = LookupValue(key);
+		var variable = QualifyPronoun(e.Variable);
+		var value = LookupValue(variable.Key);
 		if (value is not Array array) {
 			array = value == Mysterious.Instance ? new Array() : new(value);
-			SetLocal(e.Variable, array);
+			SetLocal(variable, array);
 		}
 		foreach (var expr in e.Expressions) array.Push(Eval(expr));
 		return new(array);
 	}
-
 
 	private Result ExpressionStatement(ExpressionStatement e)
 		=> Result.Return(Eval(e.Expression));
@@ -126,11 +125,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var names = function.Args.ToList();
 		List<Value> values = [];
 		foreach (var arg in call.Args.Take(names.Count)) {
-			if (arg is FunctionCall nestedCall) {
-				values.Add(Call(nestedCall, bucket).Value);
-			} else {
-				values.Add(Eval(arg));
-			}
+			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg);
+			values.Add(value);
 		}
 		if (call.Args.Count + bucket.Count < names.Count) {
 			throw new($"Not enough arguments supplied to function {call.Function.Name} - expected {names.Count} ({String.Join(", ", names.Select(v => v.Name))}), got {call.Args.Count}");
@@ -149,7 +145,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Loop(Loop loop) {
 		var result = Result.Unknown;
-	outer: while (Eval(loop.Condition).Truthy == loop.CompareTo) {
+		while (Eval(loop.Condition).Truthy == loop.CompareTo) {
 			result = Execute(loop.Body);
 			switch (result.WhatToDo) {
 				case WhatToDo.Skip: continue;

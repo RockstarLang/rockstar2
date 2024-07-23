@@ -50,29 +50,21 @@ Trying to assign an indexed value to an existing variable which is not an array 
 ### Queue operations
 
 Rockstar arrays can also be created and manipulated by the queue operations `rock` and `roll`. (The aliases `push` and `pop` are supported for Rockstar developers who are into 80s dance music.)
-
 #### Pushing elements onto an array
 
-To create a new empty array, `rock` the name of the array:
+To create a new empty array, `push` or `rock` the name of the array. To push an element onto the end of the array, `push <array> <expression>`.
 
-```
-Rock the array (the array is now [])
-```
-
-To push an element onto the end of an array:
-
-```
-Rock the array with the element
+```$rockstar
+{% include_relative {{ page.examples }}rock-and-roll.rock %}
 ```
 
-This supports list expressions, so you can push multiple elements onto the end of an array:
+You can rock list expressions, so you can push multiple elements onto the end of an array:
 
-```
-Rock ints with 1, 2, 3 (ints is now [1, 2, 3])
-Rock the array with the first, the second, and the third
+```$rockstar
+{% include_relative {{ page.examples }}rock-and-roll-tommy.rock %}
 ```
 
-Remember the `with` keyword is context-sensitive, so in this example:
+If it makes for better lyrics, you can use the `with` keyword - `rock <array> with <expression>`. Remember the `with` keyword is context-sensitive, so in this example:
 
 ```
 Rock ints with 1, 2 with 3, 4, 5
@@ -82,13 +74,6 @@ Rock ints with 1, 2 with 3, 4, 5
           +------------ this 'with' is part of the array push syntax
           
 (ints is now [ 1, 5, 4, 5 ])
-```
-
-Rockstar supports a special syntax for pushing poetic literals onto a queue:
-
-```rockstar
-Rock the array like the poetic literal (the array is now [ 367 ])
-Rock the array like a wolf (the array is now [ 367, 14 ])
 ```
 
 This syntax is very useful for initialising strings without using string literals - see below. It also means that the following line is valid Rockstar:

@@ -384,9 +384,10 @@ back = 'back' !letter
 taking = 'taking' !letter
 return = 'return' !letter / 'giving' !letter / 'give' !letter / 'send' !letter
 takes = 'takes' !letter / 'wants' !letter
-says = 'says' !letter / 'said' !letter
+says = 'say' !letter / 'says' !letter / 'said' !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
     / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
+	/ 'you' !letter / 'me' !letter / 'i' !letter
 the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
 more = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
 

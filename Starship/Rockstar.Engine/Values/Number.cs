@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 
 namespace Rockstar.Engine.Values;
@@ -9,7 +10,7 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 		return s.Contains('.') ? s.TrimEnd('0').TrimEnd('.') : s;
 	}
 
-	public bool IsNonNegativeInteger { get; } = value >= 0 && value == (int) value;
+	public bool IsNonNegativeInteger { get; } = value >= 0 && Math.Truncate(value) == value;
 
 	public Number(string value) : this(Decimal.Parse(value)) { }
 
@@ -24,6 +25,11 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 
 	public override Booleän IdenticalTo(Value that)
 		=> that is Number ? this.Equäls(that) : Booleän.False;
+
+	public override Value AtIndex(Value index) => index switch {
+		IHaveANumber n => new Booleän((1 << (int) n.Value & (int) this.Value) > 0),
+		_ => Mysterious.Instance
+	};
 
 	public override string ToString() => "number: " + this.ToStrïng().Value;
 	public override void Print(StringBuilder sb, string prefix) {

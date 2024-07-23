@@ -18,6 +18,11 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public override Booleän IdenticalTo(Value that)
 		=> that is Strïng ? this.Equäls(that) : Booleän.False;
 
+	public override Value AtIndex(Value index) => index switch {
+		IHaveANumber n => CharAt(n),
+		_ => this
+	};
+
 	public override string ToString() => this.Value;
 	public override void Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append("string: \"").Append(Value).AppendLine("\"");
@@ -60,6 +65,15 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	internal Value CharAt(IHaveANumber number) {
 		var index = (int) number.Value;
-		return index < Value.Length ? new Strïng(Value[index]) : Values.Mysterious.Instance;
+		return index < Value.Length ? new Strïng(Value[index]) : Mysterious.Instance;
+	}
+
+	public Value SetCharAt(List<Value> indexes, Value value) {
+		if (indexes is not [IHaveANumber { Value: >= 0 } number] || number.Value >= Value.Length) return this;
+		var newValue = this.Value[..(int) number.Value]
+		               + value.ToStrïng().Value
+		               + this.Value[((int) number.Value + 1)..];
+		this.Value = newValue;
+		return this;
 	}
 }

@@ -35,23 +35,20 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	public static IEnumerable<object[]> AllFixtureFiles()
 		=> ListRockFiles(FixturesDirectory).Select(filePath => new[] { filePath });
 
-	public static bool ExtractedExpectedError(string filePathOrSourceCode, out string? error) {
+	public static bool ExtractedExpectedError(string filePathOrSourceCode, string label, out string? error) {
 		error = null;
 		var source = (File.Exists(filePathOrSourceCode)
 			? File.ReadAllText(filePathOrSourceCode, Encoding.UTF8)
 			: filePathOrSourceCode);
 		var limit = source.Length;
-		var output = new List<string>();
+		var token = $"({label}: ";
 		for (var i = 0; i < limit; i++) {
-			var token = source.SafeSubstring(i, 14);
-			switch (token) {
-				case "(parse error: ":
-					i += 14;
-					var j = i;
-					while (j < limit && source[j] != ')') j++;
-					error = Regex.Unescape(source.Substring(i, j - i));
-					return true;
-			}
+			if (source.SafeSubstring(i, token.Length) != token) continue;
+			i += token.Length;
+			var j = i;
+			while (j < limit && source[j] != ')') j++;
+			error = Regex.Unescape(source.Substring(i, j - i));
+			return true;
 		}
 		return false;
 	}
@@ -107,10 +104,10 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		return env.Output;
 	}
 
-	public bool CheckForExpectedError(string filePath, string directory, out string? error) {
+	public bool CheckForExpectedError(string filePath, string directory, string label, out string? error) {
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);
-		return ExtractedExpectedError(filePath, out error);
+		return ExtractedExpectedError(filePath, label, out error);
 	}
 
 	public Program ParseFile(string filePath, string directory) {
@@ -127,7 +124,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	}
 
 	public string RunFile(string filePath, string directory) {
-		if (CheckForExpectedError(filePath, directory, out var _)) return ($"Skipping {filePath} since it has expected errors.");
+		if (CheckForExpectedError(filePath, directory, "error", out _)) return ($"Skipping {filePath} since it has expected errors.");
 		var relativePath = Path.Combine(directory, filePath);
 		filePath = QualifyRelativePath(relativePath);
 		var source = File.ReadAllText(filePath, Encoding.UTF8);

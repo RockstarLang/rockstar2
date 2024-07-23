@@ -26,6 +26,7 @@ block <Block>
 statement
 	= function
 	/ function_call
+	/ call_stmt
 	/ return_stmt
 	/ break_stmt
 	/ continue_stmt
@@ -256,12 +257,14 @@ primary <Expression>
 	// unexpected:("" [^ \t\r\n]+) 
 	//	#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
-function_call <FunctionCall>
+call_stmt <Statement>
 	= name:variable &'!'
 		{ new FunctionCall(name) }
 	/ call _ name:variable
 		{ new FunctionCall(name) }		
-	/ name:variable _ taking _ args:expression_list
+
+function_call <FunctionCall>
+	= name:variable _ taking _ args:expression_list
 		{ new FunctionCall(name, args) }
 
 expression_list <IEnumerable<Expression>>

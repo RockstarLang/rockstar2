@@ -8,7 +8,7 @@ public class V1FixturesTests(ITestOutputHelper output) : FixtureBase(output) {
 	[Theory]
 	[MemberData(nameof(AllV1FixtureFiles))]
 	public void ParseV1Fixtures(string filePath) {
-		if (CheckForExpectedError(filePath, V1FixturesDirectory, out var error)) {
+		if (CheckForExpectedError(filePath, V1FixturesDirectory, "error", out var error)) {
 			try {
 				ParseFile(filePath, V1FixturesDirectory);
 				throw new("Parser should have failed.");

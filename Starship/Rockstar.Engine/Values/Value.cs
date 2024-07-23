@@ -68,4 +68,11 @@ public abstract class Value : Expression {
 
 	public Value MoreThan(Value that) => Compare(this, that, (a, b) => a > b);
 
+	public virtual Value AtIndex(List<Value> indexes) {
+		var value = this;
+		return indexes.Aggregate(value, (current, index) => current.AtIndex(index));
+	}
+
+	public virtual Value AtIndex(Value index) => this;
+
 }

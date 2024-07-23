@@ -62,7 +62,7 @@ public class Array : Value {
 		return value;
 	}
 
-	public Value Get(Value index)
+	public override Value AtIndex(Value index)
 		=> entries.TryGetValue(index, out var value)
 			? value
 			: IsInRange(index) ? Null.Instance : Mysterious.Instance;
@@ -101,16 +101,8 @@ public class Array : Value {
 		return value;
 	}
 
-	public Value Get(List<Value> indexes) {
+	public override Value AtIndex(List<Value> indexes) {
 		if (!indexes.Any()) return Length;
-		Value value = this;
-		foreach (var index in indexes) {
-			value = (value, index) switch {
-				(Strïng s, Number i) => s.CharAt(i),
-				(Array a, _) => a.Get(index),
-				_ => throw new($"Not an array.'")
-			};
-		}
-		return value;
+		return base.AtIndex(indexes);
 	}
 }

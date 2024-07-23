@@ -9,15 +9,14 @@ nav_order: "1008"
 Rockstar supports JavaScript-style arrays. Arrays are zero-based, and dynamically allocated when values are assigned using numeric indexes. Array elements are initialised to `null`; passing an out-of-range index returns `mysterious`:
 
 ```$rockstar
-{% include_relative {{ page.examples }}basic-arrays-with-numeric-indices %}
+{% include_relative {{ page.examples }}basic-arrays.rock %}
 ```
 
 > Array indexers can be primary values or arithmetic expressions, but **you can't use a logical expression as an array indexer.**
 > 
 > Consider `My array at 2 is 4`
 > 
-> If not for this restriction, the parser would consume `2 is 4` as a comparison expression, return `false`, try to set `My array at false` and then blow up 'cos there's nothing to put in it.
-
+> If not for this restriction, the parser would consume `2 is 4` as a comparison *("2 is 4 - true or false?")*, return `false`, try to set `My array at false` and then blow up 'cos there's nothing to put in it.
 
 Returning an array in a scalar context will return the current length of the array:
 
@@ -25,31 +24,29 @@ Returning an array in a scalar context will return the current length of the arr
 {% include_relative {{ page.examples }}array-length-as-scalar.rock %}
 ```
 
-Rockstar also supports non-numeric array keys, so it is valid to say:
+Array indexes can be of any type, and you can mix key types within the same array. The array length only considers keys whose values are non-negative integers:
 
-```
-let my array at "some_key" be "some_value"
-Shout my array at "some_key"
-```
-
-You can mix string and numeric keys within the same array. The array length property ignores any non-numeric keys:
-
-```
-Let my array at "some_key" be "some_value"
-Shout my array (will print 0, since there are no numeric indexes)
-Let my array at 7 be "some other value"
-Shout my array (will now print 8, since assigning my array at 7 modifies the array length)
+```$rockstar
+{% include_relative {{ page.examples }}non-integer-keys.rock %}
 ```
 
-You can also use array index syntax to read (but not write) specific characters from a string
+Arrays in Rockstar are one-dimensional, but they can contain other arrays:
 
-```$
-Let my string be "abcdefg"
-Shout my string at 0 (will print "a")
-Shout my string at 1 (will print "b")
-Let the character be my string at 2
+```$rockstar
+{% include_relative {{ page.examples }}non-integer-keys.rock %}
 ```
 
+You can use indexes to read characters from strings, and extract bits from numbers. You can also use indexers to modify individual characters in a string:
+
+```$rockstar
+{% include_relative {{ page.examples }}indexers-for-scalar-types.rock %}
+```
+
+Trying to assign an indexed value to an existing variable which is not an array will cause an error:
+
+```$rockstar
+{% include_relative {{ page.examples }}invalid-assignment.rock %}
+```
 ### Queue operations
 
 Rockstar arrays can also be created and manipulated by the queue operations `rock` and `roll`. (The aliases `push` and `pop` are supported for Rockstar developers who are into 80s dance music.)

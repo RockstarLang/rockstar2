@@ -1,0 +1,12 @@
+X is 43605. Index is 0
+Until index is 16
+If x at index write 1 else write 0
+Index is with 1
+end
+(writes: 1010101001010101)
+
+The string is "Han Valen"
+The string at 0 is "V"
+The string at 4 is "H"
+Shout the string (prints: Van Halen)
+

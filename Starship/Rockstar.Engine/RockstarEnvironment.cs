@@ -50,10 +50,11 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Value SetArray(Variable variable, List<Value> indexes, Value value) {
 		variables.TryAdd(variable.Key, new Array());
-		if (variables[variable.Key] is not Array array)
-			throw new($"Error: {variable.Name} is not an indexed variable");
-		array.Set(indexes, value);
-		return variables[variable.Key];
+		return variables[variable.Key] switch {
+			Array array => array.Set(indexes, value),
+			Strïng s => s.SetCharAt(indexes, value),
+			_ => throw new($"{variable.Name} is not an indexed variable"),
+		};
 	}
 
 	public Result Execute(Program program)
@@ -168,9 +169,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public Value Lookup(Variable variable) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;
 		var value = LookupValue(key);
-		if (value is not Array array) return value;
 		var indexes = variable.Indexes.Select(Eval).ToList();
-		return array.Get(indexes);
+		return value.AtIndex(indexes);
 	}
 
 }

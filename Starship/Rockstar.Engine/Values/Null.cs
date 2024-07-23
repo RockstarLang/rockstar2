@@ -12,6 +12,8 @@ public class Null : Value, IHaveANumber {
 	public override Booleän IdenticalTo(Value that)
 		=> new(that is Null);
 
+	public override Value AtIndex(Value index) => this;
+
 	public static readonly Null Instance = new();
 	public decimal Value => 0;
 }

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Rockstar.Engine;
 
-const string DIRECTORY = "../Rockstar.Test/programs/examples";
+const string DIRECTORY = "../Rockstar.Test/programs";
 var fullPath = Path.GetFullPath(DIRECTORY);
 Console.WriteLine(fullPath);
 var files = Directory.GetFiles(fullPath, "*.rock", SearchOption.AllDirectories);
@@ -11,9 +11,9 @@ var stopwatch = new Stopwatch();
 const int FACTOR = 2;
 foreach (var file in files) {
 	stopwatch.Restart();
-	int parseTime = 0;
-	int runTime = 0;
-	var error = false;
+	var parseTime = 0;
+	var runTime = 0;
+	bool error;
 	Exception exception = null;
 	try {
 		var program = parser.Parse(File.ReadAllText(file));

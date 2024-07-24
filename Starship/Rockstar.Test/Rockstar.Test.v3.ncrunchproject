@@ -1,10 +1,5 @@
 ﻿<ProjectConfiguration>
   <Settings>
     <DefaultTestTimeout>0</DefaultTestTimeout>
-    <IgnoredTests>
-      <FixtureTestSelector>
-        <FixtureName>Rockstar.Test.V1FixturesTests</FixtureName>
-      </FixtureTestSelector>
-    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

@@ -5,6 +5,8 @@ public static class Program {
 	private static readonly RockstarEnvironment env = new(new ConsoleIO());
 	private static readonly Parser parser = new();
 	public static void Main(string[] args) {
+		RunFile(@"D:\Projects\github\RockstarLang\rockstar2\Starship\Rockstar.Test\programs\v1-fixtures\examples\fibonacci.rock");
+		//RunFile(@"D:\Projects\github\RockstarLang\rockstar2\Starship\Rockstar.Test\programs\v1-fixtures\examples\factorial.rock");
 		switch (args.Length) {
 			case > 1:
 				Console.WriteLine("Usage: rockstar <program.rock>");

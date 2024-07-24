@@ -30,8 +30,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Value SetLocal(Variable variable, Value value)
 		=> variables[variable.Key] = value;
 
-	public RockstarEnvironment? GetScope(Variable variable)
-		=> variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
+	private int StackDepth
+		=> this.Parent == null ? 0 : 1 + this.Parent.StackDepth;
+
+	public RockstarEnvironment? GetScope(Variable variable) {
+		return variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
+	}
 
 	public Result SetVariable(Variable variable, Value value) {
 		var target = QualifyPronoun(variable);
@@ -231,8 +235,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public Result Assign(Assign assign)
 		=> Assign(assign.Variable, Eval(assign.Expression));
 
-	private Value LookupValue(string key)
-		=> variables.TryGetValue(key, out var value) ? value : Parent?.LookupValue(key) ?? Mysterious.Instance;
+	private Value LookupValue(string key) {
+		if (variables.TryGetValue(key, out var value)) return value;
+		if (Parent != default) return Parent.LookupValue(key);
+		return Mysterious.Instance;
+	}
+		// =>  ? value : Parent?.LookupValue(key) ?? Mysterious.Instance;
 
 	public Value Lookup(Variable variable, bool preserveArrays = false) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;

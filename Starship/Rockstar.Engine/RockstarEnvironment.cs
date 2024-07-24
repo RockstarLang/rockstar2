@@ -94,9 +94,40 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Enlist e => Enlist(e),
 		Mutation m => Mutation(m),
 		Rounding r => Rounding(r),
+		Listen listen => Listen(listen),
+		Increment inc => Increment(inc),
+		Decrement dec => Decrement(dec),
 		ExpressionStatement e => ExpressionStatement(e),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Increment(Increment inc) {
+		var variable = QualifyPronoun(inc.Variable);
+		return Eval(variable) switch {
+			Null n => Assign(variable, new Number(inc.Multiple)),
+			Number n => Assign(variable, new Number(n.Value + inc.Multiple)),
+			Booleän b => inc.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
+		};
+	}
+
+	private Result Decrement(Decrement dec) {
+		var variable = QualifyPronoun(dec.Variable);
+		return Eval(dec.Variable) switch {
+			Null n => Assign(variable, new Number(-dec.Multiple)),
+			Number n => Assign(variable, new Number(n.Value - dec.Multiple)),
+			Booleän b => dec.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
+		};
+	}
+
+
+	private Result Listen(Listen l) {
+		var input = ReadInput();
+		Value value = input == default ? new Null() : new Strïng(input);
+		if (l.Variable != default) SetVariable(l.Variable, value);
+		return new(value);
+	}
 
 	private Result Mutation(Mutation m)
 		=> m.Operator switch {

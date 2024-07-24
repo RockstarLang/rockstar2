@@ -22,6 +22,7 @@ public class Booleän(bool value) : ValueOf<bool>(value), IHaveANumber {
 	public static Booleän True = new(true);
 	decimal IHaveANumber.Value => value ? 1 : 0;
 	public Booleän Nope => new(!Truthy);
+	public Value Negate => Not(this);
 
 	public static Value Not(Value v) => new Booleän(!v.Truthy);
 

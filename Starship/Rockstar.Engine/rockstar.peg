@@ -24,7 +24,8 @@ block <Block>
 		{ new Block(stmt) }
 
 statement
-	= function
+	= listen_stmt
+	/ function
 	/ function_call
 	/ call_stmt
 	/ return_stmt
@@ -52,11 +53,19 @@ enlist_stmt <Statement>
 		{ new Enlist(v) }
 	/ d:delist _ into _ t:assignable
 		{ new Assign(t, d) }
+	/ d:delist
+		{ new ExpressionStatement(d) }
 
 delist <Delist>
 	= pop _ v:variable
 		{ new Delist(v) }
 
+
+listen_stmt <Statement>
+	= listen _ to _ v:variable
+		{ new Listen(v) }
+	/ listen
+		{ new Listen() }
 
 return_stmt <Return>
 	= return (_ back)? _ e:expression (_ back)?
@@ -141,7 +150,7 @@ molecular_product <Expression> -memoize
 
 	
 expression_list <IEnumerable<Expression>>
-	= head:expression _XLS_ tail:expression_list { head.Concat(tail) }
+	= head:expression _ALS_ tail:expression_list { head.Concat(tail) }
 	/ expr:expression { new List<Expression> { expr } }
 
 oxford_comma = ',' _ and 
@@ -362,11 +371,11 @@ lookup <Expression>
 		{ new Lookup(v) }
 
 increment <Increment>
-	= build _ v:variable t:(_ up)+
+	= build _ v:variable t:((_? ',')? _? up)+
 		{ new Increment(v, t.Count) }
 
 decrement <Decrement>
-	= knock _ v:variable t:(_ down)+
+	= knock _ v:variable t:((_? ',')? _? down)+
 		{ new Decrement(v, t.Count) }
 
 mutator <Operator>
@@ -414,6 +423,7 @@ constant <Value>
 	/ true { Booleän.True }
 	/ false { Booleän.False }
 	/ empty { Strïng.Empty }
+	/ mysterious { Mysterious.Instance }
 
 number <Number>
     = like _ n:poetic_number { n }
@@ -590,6 +600,6 @@ comment	=
 	/ '[' [^\]]* ']'
 
 EOS = [,.?!;: \t]* EOL
-	/ _? [,.?!;:]	
+	/ _? [,.?!;:]
 EOL = _? '\r'? '\n'
-EOF = EOL* _? !.
+EOF = EOS* _? !.

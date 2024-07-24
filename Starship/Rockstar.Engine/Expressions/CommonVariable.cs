@@ -8,7 +8,7 @@ public class CommonVariable(string name) : Variable(name) {
 }
 
 public class ProperVariable : Variable {
-	private static readonly Regex validator = new("^(\\p{Lu}\\w+\\W+)+(\\p{Lu}\\w+)$");
+	private static readonly Regex validator = new("^(\\p{Lu}\\w*\\W+)+(\\p{Lu}\\w*)$");
 	public ProperVariable(string name) : base(name) {
 		if (!validator.IsMatch(name)) throw new ArgumentException($"'{name}' is not a valid proper variable name");
 	}

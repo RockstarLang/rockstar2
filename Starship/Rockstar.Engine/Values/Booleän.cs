@@ -17,7 +17,9 @@ public class Booleän(bool value) : ValueOf<bool>(value), IHaveANumber {
 
 	public override Booleän IdenticalTo(Value that)
 		=> that is Booleän ? that.Equäls(this) : False;
-	
+
+	public override Value Clone() => this;
+
 	public static Booleän False = new(false);
 	public static Booleän True = new(true);
 	decimal IHaveANumber.Value => value ? 1 : 0;

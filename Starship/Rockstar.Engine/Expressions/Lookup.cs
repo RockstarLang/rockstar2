@@ -8,5 +8,5 @@ public class Lookup(Variable variable) : Expression {
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).Append("lookup: ").AppendLine(variable.Name);
 
-	public override string ToString() => $"lookup: {Variable.Name}";
+	public override string ToString() => $"lookup: {Variable}";
 }

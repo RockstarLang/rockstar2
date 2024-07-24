@@ -37,7 +37,7 @@ public abstract class Value : Expression {
 		(IHaveANumber a, IHaveANumber b) => new Number(a.Value * b.Value),
 		(IHaveANumber n, Strïng s) => s.Times(n.Value),
 		(Strïng s, IHaveANumber n) => s.Times(n.Value),
-		(_, _) => throw new NotImplementedException($"I don't know how to multiply {lhs.GetType().Name} by {rhs.GetType().Name}")
+		(_, _) => Mysterious.Instance
 	};
 
 	public static Value operator /(Value lhs, Value rhs) => (lhs, rhs) switch {
@@ -75,4 +75,5 @@ public abstract class Value : Expression {
 
 	public virtual Value AtIndex(Value index) => this;
 
+	public abstract Value Clone();
 }

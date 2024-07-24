@@ -13,6 +13,7 @@ public class Null : Value, IHaveANumber {
 		=> new(that is Null);
 
 	public override Value AtIndex(Value index) => this;
+	public override Value Clone() => this;
 
 	public static readonly Null Instance = new();
 	public decimal Value => 0;

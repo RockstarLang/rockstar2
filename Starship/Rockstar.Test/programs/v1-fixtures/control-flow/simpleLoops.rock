@@ -1,9 +1,9 @@
-put 10 into I
-while I
-say I
-knock I down
+put 10 into variable
+while variable
+say variable
+knock variable down
 (end loop)
-until I
-say I
-build I up
+until variable
+say variable
+build variable up
 (end loop)

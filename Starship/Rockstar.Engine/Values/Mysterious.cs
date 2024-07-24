@@ -15,4 +15,6 @@ public class Mysterious : Value {
 
 	public override Booleän IdenticalTo(Value that)
 		=> new(Object.ReferenceEquals(this, that));
+
+	public override Value Clone() => this;
 }

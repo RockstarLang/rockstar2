@@ -1,7 +1,8 @@
 using System.Diagnostics;
+using Rockstar;
 using Rockstar.Engine;
 
-const string DIRECTORY = "../Rockstar.Test/programs";
+const string DIRECTORY = "D:/Projects/github/RockstarLang/rockstar2/Starship/Rockstar.Test/programs";
 var fullPath = Path.GetFullPath(DIRECTORY);
 Console.WriteLine(fullPath);
 var files = Directory.GetFiles(fullPath, "*.rock", SearchOption.AllDirectories);
@@ -16,9 +17,10 @@ foreach (var file in files) {
 	bool error;
 	Exception exception = null;
 	try {
+		if (!file.Contains("array_functions")) continue;
 		var program = parser.Parse(File.ReadAllText(file));
 		parseTime = (int)(stopwatch.ElapsedMilliseconds / FACTOR);
-		var e = new RockstarEnvironment(new StringBuilderIO());
+		var e = new RockstarEnvironment(new ConsoleIO());
 		stopwatch.Restart();
 		var timeout = Task.Delay(TimeSpan.FromMilliseconds(1000));
 		error = await Task.WhenAny(Task.Run(() => e.Execute(program)), timeout) == timeout;

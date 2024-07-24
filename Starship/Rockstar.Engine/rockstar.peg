@@ -47,7 +47,7 @@ enlist_stmt <Statement>
 		{ new Enlist(v, e) }
 //	/ push _ v:variable _ like _ e:(literal/poetic_literal)
 //		{ new Enlist(v, e) }
-	/ push _ v:variable (_ with)? _ e:argument_list
+	/ push _ v:variable (_ with)? _ e:expression_list 
 		{ new Enlist(v, e) }
 	/ push _ v:variable
 		{ new Enlist(v) }
@@ -85,9 +85,13 @@ primary_list <IEnumerable<Expression>>
 	= head:primary _XLS_ tail:primary_list { head.Concat(tail) }
 	/ head:primary _XLS_ tail:primary { new List<Expression> { head, tail } }
 
+molecule_list <IEnumerable<Expression>>
+  	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
+  	/ head:molecule { new List<Expression> { head } }
+
 argument_list <IEnumerable<Expression>>
-	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
-	/ head:molecule { new List<Expression> { head } }
+  	= head:primary _ALS_ tail:argument_list { head.Concat(tail) }
+  	/ head:primary { new List<Expression> { head } }
 
 argument
 	= molecule
@@ -168,7 +172,7 @@ break_stmt <Statement>
 		{ new Break() }
 
 continue_stmt <Statement>
-	= continue
+	= continue wildcard
 		{ new Continue() }
 
 wildcard = (letter / _)* &EOS

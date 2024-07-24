@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rockstar.Engine\Rockstar.Engine.csproj" />
+    <ProjectReference Include="..\Rockstar\Rockstar.csproj" />
   </ItemGroup>
 
 </Project>

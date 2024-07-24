@@ -23,6 +23,8 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		_ => this
 	};
 
+	public override Value Clone() => new Strïng(Value);
+
 	public override string ToString() => this.Value;
 
 	public override StringBuilder Print(StringBuilder sb, string prefix)

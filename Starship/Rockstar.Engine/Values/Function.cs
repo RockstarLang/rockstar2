@@ -29,6 +29,7 @@ public class Function(IEnumerable<Variable> args, Block body)
 		=> new(Object.ReferenceEquals(this, that));
 
 	public override Value AtIndex(Value index) => this;
+	public override Value Clone() => this;
 
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append($"function(");

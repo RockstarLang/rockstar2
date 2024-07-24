@@ -5,6 +5,13 @@ namespace Rockstar.Engine.Values;
 
 public class Array : Value {
 	private readonly Dictionary<Value, Value> entries = new();
+
+	private static Array Clone(Array source) {
+		var a = new Array();
+		foreach (var pair in source.entries) a.entries[pair.Key] = pair.Value.Clone();
+		return a;
+	}
+
 	private int maxIndex = -1;
 	public Number Length => new(maxIndex + 1);
 
@@ -68,6 +75,8 @@ public class Array : Value {
 		=> entries.TryGetValue(index, out var value)
 			? value
 			: IsInRange(index) ? Null.Instance : Mysterious.Instance;
+
+	public override Value Clone() => Array.Clone(this);
 
 	public Strïng Join(string joiner) {
 		return new Strïng(String.Join(joiner, this.entries.Where(e => e.Key is Number)

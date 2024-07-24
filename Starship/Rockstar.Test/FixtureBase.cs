@@ -146,7 +146,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			result.ShouldBe(expect);
 			testOutput.WriteLine($"   at <Rockstar code> in {UncrunchFilePath(relativePath)}:line 1");
 		} catch (Exception) {
-			testOutput.WriteNCrunchFilePath(filePath);
+			testOutput.WriteNCrunchFilePath(UncrunchFilePath(relativePath));
 			throw;
 		}
 

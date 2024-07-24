@@ -214,7 +214,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		List<Value> values = [];
 
 		foreach (var arg in call.Args.Take(names.Count)) {
-			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg);
+			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg, true);
 			values.Add(value);
 		}
 		if (call.Args.Count + bucket.Count < names.Count) {
@@ -223,7 +223,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		while (values.Count < names.Count) values.Add(Eval(bucket.Dequeue()));
 		foreach (var expression in call.Args.Skip(names.Count)) bucket.Enqueue(expression);
 		var scope = this.Extend();
-		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i]);
+		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i].Clone());
 		if (names.Any()) scope.pronounTarget = names.Last();
 		var result = scope.Execute(function.Body);
 		return result;

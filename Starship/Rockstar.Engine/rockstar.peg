@@ -362,11 +362,11 @@ lookup <Expression>
 		{ new Lookup(v) }
 
 increment <Increment>
-	= build _ v:variable _ t:(up _)+
+	= build _ v:variable t:(_ up)+
 		{ new Increment(v, t.Count) }
 
 decrement <Decrement>
-	= knock _ v:variable _ t:(down _)+
+	= knock _ v:variable t:(_ down)+
 		{ new Decrement(v, t.Count) }
 
 mutator <Operator>

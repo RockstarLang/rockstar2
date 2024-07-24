@@ -44,4 +44,19 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 		this.Value = value.Truthy ? oldValue | bitIndex : oldValue & ~bitIndex;
 		return this;
 	}
+	private static readonly List<char> digits = [.."0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()];
+
+	private static long BaseToLong(string number, int @base) {
+		var chars = number.ToUpperInvariant().ToCharArray();
+		var m = chars.Length - 1;
+		return chars.Select(c
+			=> digits.IndexOf(c))
+			.Select(x => x * (long) Math.Pow(@base, m--))
+			.Sum();
+	}
+
+	public static Number Parse(Strïng strïng, Value modifier)
+		=> modifier is IHaveANumber n
+			? new(BaseToLong(strïng.Value, (int) n.Value))
+			: new(Decimal.Parse(strïng.Value));
 }

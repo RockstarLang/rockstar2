@@ -37,21 +37,3 @@ public class Function(IEnumerable<Variable> args, Block body)
 		body.Print(sb, prefix + "|" + INDENT);
 	}
 }
-
-public class Return(Expression expr) : ExpressionStatement(expr) {
-	public override void Print(StringBuilder sb, string prefix) {
-		base.Print(sb, prefix);
-		Expression.Print(sb, prefix + INDENT);
-	}
-}
-
-public class FunctionCall(Variable function, IEnumerable<Expression>? args = default)
-	: Statement {
-	public Variable Function { get; } = function;
-	public List<Expression> Args { get; } = (args ?? []).ToList();
-
-	public override void Print(StringBuilder sb, string prefix) {
-		sb.Append(prefix).AppendLine($"function call: {Function.Name}");
-		foreach (var arg in Args) arg.Print(sb, prefix + INDENT);
-	}
-}

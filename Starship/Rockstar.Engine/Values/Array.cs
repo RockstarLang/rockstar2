@@ -23,8 +23,8 @@ public class Array : Value {
 
 	public Array(Value index, Value value) => Set(index, value);
 
-	public Array(IList<Value> values) {
-		for (var i = 0; i < values.Count; i++) Set(new Number(i), values[i]);
+	public Array(IReadOnlyList<Value> values) {
+		for (var i = 0; i < values.Count(); i++) Set(new Number(i), values[i]);
 	}
 
 	public Array(Value value) => Set(new Number(0), value);

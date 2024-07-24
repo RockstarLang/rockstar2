@@ -85,10 +85,59 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Continue => Result.Skip,
 		Break => Result.Break,
 		Enlist e => Enlist(e),
+		Mutation m => Mutation(m),
 		ExpressionStatement e => ExpressionStatement(e),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
 
+	private Result Mutation(Mutation m)
+		=> m.Operator switch {
+			Operator.Join => Join(m),
+			Operator.Split => Split(m),
+			Operator.Cast => Cast(m),
+			_ => throw new($"Unsupported mutation operator {m.Operator}")
+		};
+
+	private Result Cast(Mutation m) {
+		var input = Eval(m.Expression);
+		var modifier = Eval(m.Modifier ?? Mysterious.Instance);
+		Value value = input switch {
+			Strïng s => Number.Parse(s, modifier),
+			IHaveANumber n => new Strïng(Char.ConvertFromUtf32((int)n.Value)),
+			_ => throw new($"Can't cast expression of type {input.GetType().Name}")
+		};
+		if (m.Target != default) SetLocal(QualifyPronoun(m.Target), value);
+		return new(value);
+	}
+	private Result Split(Mutation m) {
+		var value = Eval(m.Expression);
+		if (value is not Strïng s) throw new("Only strings can be split.");
+		var delimiter = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
+		var array = s.Split(delimiter);
+		if (m.Target != default) SetLocal(m.Target, array);
+		return new(array);
+	}
+	private Result Join(Mutation m) {
+		var value = Eval(m.Expression);
+		if (value is not Array array) throw new("Can't join something which is not an array.");
+		var joiner = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
+		var joined = array.Join(joiner);
+		if (m.Target != default) SetLocal(m.Target, joined);
+		return new(joined);
+	}
+
+	private Result Rounding(Rounding r) {
+		var value = Lookup(r.Variable);
+		if (value is not Number n) throw new($"Can't apply rounding to variable {r.Variable.Name} of type {value.GetType().Name}");
+		var rounded = new Number(r.Round switch {
+			Round.Down => Math.Floor(n.Value),
+			Round.Up => Math.Ceiling(n.Value),
+			Round.Nearest => Math.Round(n.Value),
+			_ => throw new ArgumentOutOfRangeException()
+		});
+		SetVariable(r.Variable, rounded);
+		return new(rounded);
+	}
 
 	private Result Delist(Delist delist) {
 		var variable = QualifyPronoun(delist.Variable);
@@ -168,6 +217,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Value value => value,
 		Binary binary => binary.Resolve(Eval),
 		Lookup lookup => Lookup(lookup.Variable),
+		Variable v => Lookup(v),
 		Unary unary => unary.Resolve(Eval),
 		FunctionCall call => Call(call).Value,
 		Delist delist => Delist(delist).Value,
@@ -187,7 +237,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;
 		var value = LookupValue(key);
 		var indexes = variable.Indexes.Select(Eval).ToList();
-		return value.AtIndex(indexes);
+		return indexes.Any() ? value.AtIndex(indexes) : value;
 	}
 
 }

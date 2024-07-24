@@ -1,0 +1,18 @@
+Let X be "123.45"
+Shout X + X (prints: 123.45123.45)
+Cast X
+Shout X + X (prints: 246.9)
+Let X be "FF"
+Cast X with 16 (cast using base 16)
+Shout X (prints: 255)    
+
+Cast 65 into result
+Shout result (prints: A)
+
+Cast 1046 into result
+Shout result (prints: Ж)
+
+Guitar says 1F3B8
+Cast it with 16.
+Cast it.
+Shout it. (prints: 🎸)

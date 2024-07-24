@@ -35,6 +35,10 @@ statement
 	/ output_stmt
 	/ assign_stmt
 	/ enlist_stmt
+	/ increment
+	/ decrement
+	/ mutation
+	/ rounding
 	// e:expression &EOS { new ExpressionStatement(e) }
 
 enlist_stmt <Statement>
@@ -268,6 +272,7 @@ _divide_ <Operator>	= (_? '/' _? / _ divided_by _ ) { Operator.Divide }
 
 primary <Expression>
 	= function_call
+	/ delist
 	/ constant
 	/ string
 	/ number
@@ -300,6 +305,54 @@ lookup <Expression>
 		{ new Lookup(v.AtIndex(i)) }
 	/ v:variable
 		{ new Lookup(v) }
+
+increment <Increment>
+	= build _ v:variable _ t:(up _)+
+		{ new Increment(v, t.Count) }
+
+decrement <Decrement>
+	= knock _ v:variable _ t:(down _)+
+		{ new Decrement(v, t.Count) }
+
+mutator <Operator>
+	= split
+		{ Operator.Split }
+	/ cast
+		{ Operator.Cast }
+	/ join
+		{ Operator.Join }
+
+mutation <Statement>
+	= op:mutator _ s:expression _ into _ t:assignable _ using _ m:expression
+		{ new Mutation(op, s, target: t, m) }
+	/ op:mutator _ s:expression _ into _ t:assignable
+		{ new Mutation(op, s, target: t) }
+	/op:mutator _ s:assignable _ using _ m:expression
+		{ new Mutation(op, s, target: s, modifier: m) }
+	/ op:mutator _ s:assignable
+		{ new Mutation(op, s, target: s) }
+
+rounding <Statement>
+	= floor / ceil / math_round
+
+floor <Statement>
+	= turn _ v:variable _ down
+		{ new Rounding(v, Round.Down) }
+	/ turn _ down _ v:variable
+		{ new Rounding(v, Round.Down) }
+
+ceil <Statement>
+	= turn _ v:variable _ up
+		{ new Rounding(v, Round.Up) }
+	/ turn _ up _ v:variable
+		{ new Rounding(v, Round.Up) }
+
+math_round <Statement>
+	= turn _ v:variable _ around
+		{ new Rounding(v, Round.Nearest) }
+	/ turn _ around _ v:variable
+		{ new Rounding(v, Round.Nearest) }
+
 
 constant <Value>	
 	= null { Null.Instance }
@@ -418,6 +471,7 @@ keyword
 	/ back 
 	/ be 
 	/ build
+	/ cast
 	/ divided_by
 	/ down 
 	/ else 
@@ -427,7 +481,8 @@ keyword
 	/ if 
 	/ into 
 	/ is 
-	/ isnt 
+	/ isnt
+	/ join
 	/ knock 
 	/ less 
 	/ let 
@@ -445,7 +500,8 @@ keyword
 	/ pronoun 
 	/ put 
 	/ return 
-	/ says 
+	/ says
+	/ split
 	/ takes 
 	/ taking 
 	/ than 

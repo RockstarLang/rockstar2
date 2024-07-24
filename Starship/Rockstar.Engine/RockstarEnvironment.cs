@@ -39,7 +39,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		if (variable is Pronoun pronoun) {
 			scope.SetLocal(target, value);
 		} else if (variable.Indexes.Any()) {
-			var indexes = variable.Indexes.Select(Eval).ToList();
+			var indexes = variable.Indexes.Select(expr => Eval(expr)).ToList();
 			scope.SetArray(variable, new(indexes), value);
 		} else {
 			pronounTarget = target;
@@ -86,6 +86,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Break => Result.Break,
 		Enlist e => Enlist(e),
 		Mutation m => Mutation(m),
+		Rounding r => Rounding(r),
 		ExpressionStatement e => ExpressionStatement(e),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
@@ -118,7 +119,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(array);
 	}
 	private Result Join(Mutation m) {
-		var value = Eval(m.Expression);
+		var value = Eval(m.Expression, preserveArrays: true);
 		if (value is not Array array) throw new("Can't join something which is not an array.");
 		var joiner = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
 		var joined = array.Join(joiner);
@@ -213,15 +214,15 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(value);
 	}
 
-	private Value Eval(Expression expr) => expr switch {
+	private Value Eval(Expression expression, bool preserveArrays = false) => expression switch {
 		Value value => value,
-		Binary binary => binary.Resolve(Eval),
-		Lookup lookup => Lookup(lookup.Variable),
-		Variable v => Lookup(v),
-		Unary unary => unary.Resolve(Eval),
+		Binary binary => binary.Resolve(expr => Eval(expr)),
+		Lookup lookup => Lookup(lookup.Variable, preserveArrays),
+		Variable v => Lookup(v, preserveArrays),
+		Unary unary => unary.Resolve(expr => Eval(expr)),
 		FunctionCall call => Call(call).Value,
 		Delist delist => Delist(delist).Value,
-		_ => throw new NotImplementedException($"Eval not implemented for {expr.GetType()}")
+		_ => throw new NotImplementedException($"Eval not implemented for {expression.GetType()}")
 	};
 
 	public Result Assign(Variable variable, Value value)
@@ -233,11 +234,11 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Value LookupValue(string key)
 		=> variables.TryGetValue(key, out var value) ? value : Parent?.LookupValue(key) ?? Mysterious.Instance;
 
-	public Value Lookup(Variable variable) {
+	public Value Lookup(Variable variable, bool preserveArrays = false) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;
 		var value = LookupValue(key);
-		var indexes = variable.Indexes.Select(Eval).ToList();
-		return indexes.Any() ? value.AtIndex(indexes) : value;
+		if (preserveArrays) return value;
+		var indexes = variable.Indexes.Select(expr => Eval(expr)).ToList();
+		return value.AtIndex(indexes);
 	}
-
 }

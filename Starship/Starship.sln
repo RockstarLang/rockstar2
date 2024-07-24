@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rockstar.Test", "Rockstar.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rockstar.Engine", "Rockstar.Engine\Rockstar.Engine.csproj", "{1B294891-B457-46AD-8AB5-131C9E0487C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rockstar.Profiler", "Rockstar.Profiler\Rockstar.Profiler.csproj", "{DD04952A-ACE2-4D4E-973B-D8FEA85668DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{1B294891-B457-46AD-8AB5-131C9E0487C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B294891-B457-46AD-8AB5-131C9E0487C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B294891-B457-46AD-8AB5-131C9E0487C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD04952A-ACE2-4D4E-973B-D8FEA85668DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD04952A-ACE2-4D4E-973B-D8FEA85668DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD04952A-ACE2-4D4E-973B-D8FEA85668DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD04952A-ACE2-4D4E-973B-D8FEA85668DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

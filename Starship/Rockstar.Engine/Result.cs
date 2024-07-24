@@ -3,6 +3,14 @@ using Rockstar.Engine.Values;
 namespace Rockstar.Engine;
 
 public class Result(Value value, WhatToDo whatToDo = WhatToDo.Next) {
+	public override string ToString() => WhatToDo switch {
+		WhatToDo.Return => $"value: {value}",
+		WhatToDo.Skip => "skip",
+		WhatToDo.Break => "break",
+		WhatToDo.Next => "next",
+		_ => "unknown"
+	};
+
 	public Value Value => value;
 	public WhatToDo WhatToDo => whatToDo;
 	//public bool Return => switch WhatToDo {

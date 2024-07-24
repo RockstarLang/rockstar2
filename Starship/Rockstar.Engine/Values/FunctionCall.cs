@@ -13,4 +13,6 @@ public class FunctionCall(Variable function, IEnumerable<Expression>? args = def
 		sb.Append(prefix).AppendLine($"function call: {Function.Name}");
 		foreach (var arg in Args) arg.Print(sb, prefix + INDENT);
 	}
+
+	public override string ToString() => $"call: {function.Key}({String.Join(", ", Args.Select(a => a.ToString()))}";
 }

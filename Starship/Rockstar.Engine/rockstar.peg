@@ -293,8 +293,14 @@ call_stmt <Statement>
 		{ new FunctionCall(name) }		
 
 function_call <FunctionCall>
-	= name:variable _ taking _ args:expression_list
+	= name:variable _ taking _ args:argument_list
 		{ new FunctionCall(name, args) }
+
+argument_list <IEnumerable<Expression>>
+	= head:primary _expression_list_separator_ tail:argument_list
+		{ head.Concat(tail) }
+	/ expr:primary
+		{ new List<Expression> { expr } }
 
 expression_list <IEnumerable<Expression>>
 	= head:expression _expression_list_separator_ tail:expression_list

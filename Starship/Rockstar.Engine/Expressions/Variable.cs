@@ -6,6 +6,8 @@ namespace Rockstar.Engine.Expressions;
 public abstract class Variable(string name) : Expression {
 	public string Name => name;
 
+	public override string ToString() => $"{GetType().Name.ToLowerInvariant()}: {Key}";
+
 	public override void Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine($"variable: {name}");
 		switch (Indexes.Count) {

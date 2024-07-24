@@ -24,11 +24,26 @@ Function bodies can also be a block. Functions in Rockstar specified by the `re
 
 Functions are called using the ‘taking’ keyword and must have at least one argument. Multiple arguments are separated with one of the following: `,` `&` `, and` `'n'`.
 
-Function arguments can be any kind of expression, including other function calls:
+Function arguments must be primary expressions:
 
 ```rockstar
 {% include_relative {{ page.examples }}function-calls-as-arguments.rock %}
 ```
+
+> The reason you can't use operators inside function arguments is that it makes it awkward to write recursive function calls. Consider this expression
+> 
+> ```rockstar
+>  {% include_relative {{ page.examples }}fibonacci.rock %}
+> Fibonacci takes a number
+> If a number is 
+> result = foo taking 1 + foo taking 2
+> ```
+> ...is that `foo(1 + foo(2)`, or `foo(1 + foo(2))`? Without using parentheses to surround function arguments, the parser 
+```
+> 
+> 
+```
+
 
 This is one of the few features where the language **grammar** is ambiguous, and what's produced by the parser doesn't necessarily match what's executed by the interpreter. The parser is greedy and it doesn't know anything about how many arguments a function takes (its *arity*), so this expression:
 

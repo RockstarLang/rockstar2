@@ -183,10 +183,16 @@
     <None Update="programs\examples\07-functions\expression-lists-as-function-arguments.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\07-functions\pronoun-argument.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\07-functions\function-calls-as-arguments.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\07-functions\function-scope.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\07-functions\fibonacci.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\07-functions\functions-with-no-arguments.rock">

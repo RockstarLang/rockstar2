@@ -9,4 +9,6 @@ public class Lookup(Variable variable) : Expression {
 		base.Print(sb, prefix);
 		variable.Print(sb, prefix + INDENT);
 	}
+
+	public override string ToString() => $"lookup: {Variable.Name}";
 }

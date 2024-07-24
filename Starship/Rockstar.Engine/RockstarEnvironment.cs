@@ -12,7 +12,13 @@ public class RockstarEnvironment(IRockstarIO io) {
 	}
 
 	public RockstarEnvironment? Parent { get; init; }
-	public RockstarEnvironment Extend() => new(IO, this);
+
+	public RockstarEnvironment Extend() {
+		var scope = new RockstarEnvironment(IO, this);
+		foreach (var variable in variables) scope.variables[variable.Key] = variable.Value;
+		return scope;
+	}
+
 	protected IRockstarIO IO = io;
 
 	public string? ReadInput() => IO.Read();
@@ -29,9 +35,6 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Value SetLocal(Variable variable, Value value)
 		=> variables[variable.Key] = value;
-
-	private int StackDepth
-		=> this.Parent == null ? 0 : 1 + this.Parent.StackDepth;
 
 	public RockstarEnvironment? GetScope(Variable variable) {
 		return variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
@@ -178,8 +181,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		if (value is not Function function) throw new($"'{call.Function.Name}' is not a function");
 		var names = function.Args.ToList();
 		List<Value> values = [];
+
 		foreach (var arg in call.Args.Take(names.Count)) {
-			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg);
+			value = arg is FunctionCall nestedCall && bucket.Any() ? Call(nestedCall, bucket).Value : Eval(arg);
 			values.Add(value);
 		}
 		if (call.Args.Count + bucket.Count < names.Count) {
@@ -189,7 +193,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		foreach (var expression in call.Args.Skip(names.Count)) bucket.Push(expression);
 		var scope = this.Extend();
 		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i]);
-		return scope.Execute(function.Body);
+		scope.pronounTarget = names.Last();
+		var result = scope.Execute(function.Body);
+		return result;
 	}
 
 	private Result Conditional(Conditional cond)

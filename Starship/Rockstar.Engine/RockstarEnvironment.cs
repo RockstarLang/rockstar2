@@ -176,24 +176,24 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Result Call(FunctionCall call)
 		=> Call(call, []);
 
-	private Result Call(FunctionCall call, Stack<Expression> bucket) {
+	private Result Call(FunctionCall call, Queue<Expression> bucket) {
 		var value = Lookup(call.Function);
 		if (value is not Function function) throw new($"'{call.Function.Name}' is not a function");
 		var names = function.Args.ToList();
 		List<Value> values = [];
 
 		foreach (var arg in call.Args.Take(names.Count)) {
-			value = arg is FunctionCall nestedCall && bucket.Any() ? Call(nestedCall, bucket).Value : Eval(arg);
+			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg);
 			values.Add(value);
 		}
 		if (call.Args.Count + bucket.Count < names.Count) {
 			throw new($"Not enough arguments supplied to function {call.Function.Name} - expected {names.Count} ({String.Join(", ", names.Select(v => v.Name))}), got {call.Args.Count}");
 		}
-		while (values.Count < names.Count) values.Add(Eval(bucket.Pop()));
-		foreach (var expression in call.Args.Skip(names.Count)) bucket.Push(expression);
+		while (values.Count < names.Count) values.Add(Eval(bucket.Dequeue()));
+		foreach (var expression in call.Args.Skip(names.Count)) bucket.Enqueue(expression);
 		var scope = this.Extend();
 		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i]);
-		scope.pronounTarget = names.Last();
+		if (names.Any()) scope.pronounTarget = names.Last();
 		var result = scope.Execute(function.Body);
 		return result;
 	}

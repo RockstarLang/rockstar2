@@ -1,11 +1,13 @@
+Rock my world
+Rock my world with "a" + "b", "c", and "d" + "e" , "f", and "g" + "h" 'n' "i"
+Join my world with "-"
+Shout my world
+(prints: abc-def-ghi)
+
+
 Reverse takes a string giving -1 times a string
 
 X is "hello "
 X is with reverse taking "dlrow", and 5 * 2, and " ", and 6/2, and " " and "foo", and " ", and true and true
 Shout X
 
-Rock my world
-Rock my world with "a" + "b", "c", and "d"+"e","f", and "g"+"h"'n'"i"
-Join my world with "-"
-Shout my world
-(prints: abc-def-ghi)

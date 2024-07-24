@@ -46,7 +46,7 @@ enlist_stmt <Statement>
 		{ new Enlist(v, e) }
 //	/ push _ v:variable _ like _ e:(literal/poetic_literal)
 //		{ new Enlist(v, e) }
-	/ push _ v:variable (_ with)? _ e:expression_list
+	/ push _ v:variable (_ with)? _ e:argument_list
 		{ new Enlist(v, e) }
 	/ push _ v:variable
 		{ new Enlist(v) }
@@ -65,17 +65,94 @@ return_stmt <Return>
 function <Statement>
 	= name:variable _ takes _ null body:consequent
 		{ new Assign(name, new Function(body)) }
-	/ name:variable _ takes _ args:arguments body:consequent
+	/ name:variable _ takes _ args:variable_list body:consequent
 		{ new Assign(name, new Function(args, body)) }
 
-arguments <IEnumerable<Variable>>
-	= head:variable _variable_list_separator_ tail:arguments
-		{ head.Concat(tail) }
-  / arg:variable { new List<Variable> { arg } }
+variable_list <IEnumerable<Variable>>
+	= head:variable _VLS_ tail:variable_list { head.Concat(tail) }
+	/ arg:variable { new List<Variable> { arg } }
 
-_variable_list_separator_
-	= _ and _
-	/ _expression_list_separator_
+primary_list <IEnumerable<Expression>>
+	= head:primary _XLS_ tail:primary_list { head.Concat(tail) }
+	/ head:primary _XLS_ tail:primary { new List<Expression> { head, tail } }
+
+argument_list <IEnumerable<Expression>>
+	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
+	/ head:molecule { new List<Expression> { head } }
+
+argument
+	= molecule
+
+molecule <Expression>
+	= molecular_boolean
+	/ primary
+
+molecular_boolean = molecular_binary_or
+
+molecular_binary_or <Expression>
+	= lhs:molecular_binary_nor _ or _ rhs:molecular_binary_or { new Binary(Operator.Or, lhs, rhs) }
+	/ molecular_binary_nor
+
+molecular_binary_nor <Expression>
+	= lhs:molecular_binary_and _ nor _ rhs:molecular_binary_nor { new Binary(Operator.Nor, lhs, rhs) }
+	/ molecular_binary_and
+
+molecular_binary_and <Expression>
+	= lhs:molecular_equality _ and _ rhs:molecular_binary_and { new Binary(Operator.And, lhs, rhs) }
+	/ molecular_equality
+
+molecular_equality <Expression>
+	= lhs:molecular_unary op:(_is / _isnt) _ rhs:molecular_equality { new Binary(op, lhs, rhs) }
+	/ molecular_unary
+
+molecular_unary <Expression>
+	= not_ u:molecular_unary { new Unary(Operator.Not, u) }
+	/ molecular_comparison
+
+molecular_comparison <Expression>
+	= lhs:molecular_addition op:comparator rhs:molecular_comparison { new Binary(op, lhs, rhs) }
+	/ molecular_addition 
+
+molecular_addition <Expression> -memoize
+	= lhs:molecular_addition op:(_plus_/_minus_) rhs:molecular_product
+		{ new Binary(op, lhs, rhs) }
+	/ molecular_product
+
+molecular_product <Expression> -memoize
+	= lhs:molecular_product op:(_divide_/_times_) rhs:primary
+		{ new Binary(op, lhs, rhs) }
+	/ primary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+expression_list <IEnumerable<Expression>>
+	= head:expression _XLS_ tail:expression_list { head.Concat(tail) }
+	/ expr:expression { new List<Expression> { expr } }
+
+oxford_comma = ',' _ and 
+_nacton	= (_ "n'" / _? "'n'")
+_VLS_	=  _ and _ / _ALS_
+_ALS_	= oxford_comma _ / _XLS_
+_XLS_	= (',' _? ('&' _?)?)
+		/ _nacton _?
+		/  _? '&' _?
+		/ _? ',' _?
+		
 
 break_stmt <Statement>
 	= break wildcard
@@ -147,6 +224,9 @@ assign_stmt <Statement>
 	/ v:assignable _ says_ s:poetic_string
 		{ new Assign(v, s) }
 
+	/ v:assignable _is op:_operator_ e:expression_list
+		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
+
 	// BREAKING CHANGE
 	/ v:assignable (_? '=' _? / _is _) p:v1_poetic_number
 		{ new Assign(v, p) }
@@ -154,8 +234,6 @@ assign_stmt <Statement>
 	/ v:assignable (_? '=' _? / _is _) e:expression
 		{ new Assign(v, e) }
 
-	/ v:assignable _is op:_operator_ e:expression_list
-		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 
 _operator_ =
 	_plus_ / _minus_ / _times_ / _divide_
@@ -203,36 +281,30 @@ expression <Expression>
 boolean = binary_or
 
 binary_or <Expression>
-	= lhs:binary_nor _ or _ rhs:binary_or
-		{ new Binary(Operator.Or, lhs, rhs) }
+	= lhs:binary_nor _ or _ rhs:binary_or { new Binary(Operator.Or, lhs, rhs) }
 	/ binary_nor
 
 binary_nor <Expression>
-	= lhs:binary_and _ nor _ rhs:binary_nor
-		{ new Binary(Operator.Nor, lhs, rhs) }
+	= lhs:binary_and _ nor _ rhs:binary_nor { new Binary(Operator.Nor, lhs, rhs) }
 	/ binary_and
 
 binary_and <Expression>
-	= lhs:equality _ and _ rhs:binary_and
-		{ new Binary(Operator.And, lhs, rhs) }
+	= lhs:equality _ and _ rhs:binary_and { new Binary(Operator.And, lhs, rhs) }
 	/ equality
 
 equality <Expression>
-	= lhs:unary op:(_is / _isnt) _ rhs:equality
-		{ new Binary(op, lhs, rhs) }
+	= lhs:unary op:(_is / _isnt) _ rhs:equality { new Binary(op, lhs, rhs) }
 	/ unary
 
 unary <Expression>
-	= not_ u:unary
-		{ new Unary(Operator.Not, u) }
+	= not_ u:unary { new Unary(Operator.Not, u) }
 	/ comparison
 
 not_
 	= (not _ / non _ / non '-' )
 
 comparison <Expression>
-	= lhs:addition op:comparator rhs:comparison
-		{ new Binary(op, lhs, rhs) }
+	= lhs:addition op:comparator rhs:comparison { new Binary(op, lhs, rhs) }
 	/ addition 
 
 comparator <Operator>
@@ -258,19 +330,6 @@ product <Expression> -memoize
 		{ new Binary(op, lhs, rhs) }
 	/ primary
 
-primary_list <IEnumerable<Expression>>
-	= head:primary _primary_list_separator_ tail:primary_list
-		{ head.Concat(tail) }
-	/ head:primary _primary_list_separator_ tail:primary 
-		{ new List<Expression> { head, tail } }
-
-nacton = '&' / "n'" / "'n'"
-
-_primary_list_separator_
-	= ',' _? nacton _?
-	/ _? nacton _?
-	/ ',' _?
-
 _plus_	<Operator>	= (_? '+' _? / _ plus _ ) { Operator.Plus }
 _minus_ <Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
 _times_	<Operator>	= (_? '*' _? / _ times _ ) { Operator.Times }
@@ -295,22 +354,6 @@ call_stmt <Statement>
 function_call <FunctionCall>
 	= name:variable _ taking _ args:argument_list
 		{ new FunctionCall(name, args) }
-
-argument_list <IEnumerable<Expression>>
-	= head:primary _primary_list_separator_ tail:argument_list
-		{ head.Concat(tail) }
-	/ expr:primary
-		{ new List<Expression> { expr } }
-
-expression_list <IEnumerable<Expression>>
-	= head:expression _expression_list_separator_ tail:expression_list
-		{ head.Concat(tail) }
-	/ expr:expression
-		{ new List<Expression> { expr } }
-
-_expression_list_separator_
-	= _? ', ' and _
-	/ _primary_list_separator_
 
 lookup <Expression>
 	= v:variable i:indexes
@@ -438,9 +481,7 @@ under = 'under' !letter
 above = 'above' !letter / over
 divided_by = 'divided' _ 'by' !letter / 'between' !letter / over
 as = 'as' !letter
-isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter
-	/ "wasn't" !letter / "wasnt" !letter / "aren't" !letter / "arent" !letter
-	/ "weren't" !letter / "werent" !letter 
+isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter / "wasn't" !letter / "wasnt" !letter / "aren't" !letter / "arent" !letter / "weren't" !letter / "werent" !letter 
 not = 'not' !letter
 non = 'non' !letter
 nor = 'nor' !letter
@@ -468,12 +509,9 @@ taking = 'taking' !letter
 return = 'return' !letter / 'giving' !letter / 'give' !letter / 'send' !letter
 takes = 'takes' !letter / 'wants' !letter
 says = 'say' !letter / 'says' !letter / 'said' !letter
-pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter
-    / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter
-	/ 'you' !letter / 'me' !letter / 'i' !letter
+pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter / 'you' !letter / 'me' !letter / 'i' !letter
 the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
 more = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
-
 less = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
 as_great = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
 as_small = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter

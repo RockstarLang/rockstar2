@@ -1,4 +1,4 @@
-namespace Rockstar.Test;
+namespace Rockstar.Test.Fixtures;
 
 public class FixtureTests(ITestOutputHelper output) : FixtureBase(output) {
 	[Theory]

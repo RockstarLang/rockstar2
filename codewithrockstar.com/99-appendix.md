@@ -34,9 +34,9 @@ Elements in a primary list are separated by one of:
 
 Rockstar supports both the **UK nacton** `'n'` (as in *fish 'n' chips*) and the **US nacton** `n'` (as in *Guns n' Roses*.)
 
-Next, there are **expression lists**, used to pass arguments to functions. An expression list supports the same separators as the primary list, but also supports the **Oxford comma** separator `, and `
+Next, there are **expression lists**. An expression list supports the same separators as the primary list, but also supports the **Oxford comma** separator `, and ` Because you can't put an Oxford comma in a primary list, this means an expression list can contain expressions that themselves contain primary lists; the Oxford comma provides an unambiguous way to separate the sub-expressions.
 
-Because you can't put an Oxford comma in a primary list, this means an expression list can contain expressions that themselves contain primary lists; the Oxford comma provides an unambiguous way to separate the sub-expressions:
+Expression lists are supported as arguments to compound expressions and when rocking arrays:
 
 ```rockstar
 {% include_relative {{ page.examples }}expression-lists.rock %}

@@ -32,9 +32,8 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	};
 
 	public override string ToString() => "number: " + this.ToStrïng().Value;
-	public override void Print(StringBuilder sb, string prefix) {
-		sb.Append(prefix).AppendLine(ToString());
-	}
+	public override StringBuilder Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).AppendLine(ToString());
 
 	public Value SetBit(List<Value> indexes, Value value) {
 		if (indexes.Count != 1) return this;

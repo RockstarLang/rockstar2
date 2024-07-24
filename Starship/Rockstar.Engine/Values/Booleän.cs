@@ -3,9 +3,8 @@ using System.Text;
 namespace Rockstar.Engine.Values;
 
 public class Booleän(bool value) : ValueOf<bool>(value), IHaveANumber {
-	public override void Print(StringBuilder sb, string prefix) {
-		sb.Append(prefix).Append("boolean: ").AppendLine(this.ToStrïng().Value);
-	}
+	public override StringBuilder Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).Append("boolean: ").AppendLine(this.ToStrïng().Value);
 
 	public static Booleän operator !(Booleän that) => new(that.Falsy);
 

@@ -5,8 +5,8 @@ using Rockstar.Engine.Statements;
 namespace Rockstar.Engine.Values;
 
 public class Return(Expression expr) : ExpressionStatement(expr) {
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		base.Print(sb, prefix);
-		Expression.Print(sb, prefix + INDENT);
+		return Expression.Print(sb, prefix + INDENT);
 	}
 }

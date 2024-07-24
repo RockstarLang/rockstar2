@@ -24,9 +24,9 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	};
 
 	public override string ToString() => this.Value;
-	public override void Print(StringBuilder sb, string prefix) {
-		sb.Append(prefix).Append("string: \"").Append(Value).AppendLine("\"");
-	}
+
+	public override StringBuilder Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).Append("string: \"").Append(Value).AppendLine("\"");
 
 	public static readonly Strïng True = new("true");
 	public static readonly Strïng False = new("false");

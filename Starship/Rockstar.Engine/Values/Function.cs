@@ -30,10 +30,10 @@ public class Function(IEnumerable<Variable> args, Block body)
 
 	public override Value AtIndex(Value index) => this;
 
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append($"function(");
 		sb.Append(String.Join(", ", args.Select(a => a.Name)));
 		sb.AppendLine("):");
-		body.Print(sb, prefix + "|" + INDENT);
+		return body.Print(sb, prefix + NESTER);
 	}
 }

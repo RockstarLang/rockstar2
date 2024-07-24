@@ -8,10 +8,11 @@ public class Enlist(Variable variable) : Statement {
 	public Variable Variable { get; } = variable;
 	public List<Expression> Expressions = [];
 
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		base.Print(sb, prefix);
 		Variable.Print(sb, prefix + INDENT);
 		foreach (var expr in Expressions) expr.Print(sb, prefix + INDENT);
+		return sb;
 	}
 
 	public Enlist(Variable variable, Expression expr) : this(variable)

@@ -8,10 +8,10 @@ public abstract class Variable(string name) : Expression {
 
 	public override string ToString() => $"{GetType().Name.ToLowerInvariant()}: {Key}";
 
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine($"variable: {name}");
 		switch (Indexes.Count) {
-			case 0: return;
+			case 0: return sb;
 			case 1:
 				sb.Append(INDENT).AppendLine("index:");
 				break;
@@ -20,6 +20,7 @@ public abstract class Variable(string name) : Expression {
 				break;
 		}
 		foreach (var index in Indexes) index.Print(sb, prefix + INDENT);
+		return sb;
 	}
 
 	private static readonly Regex whitespace = new("\\s+", RegexOptions.Compiled);

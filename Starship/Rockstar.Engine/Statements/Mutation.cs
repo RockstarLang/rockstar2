@@ -10,15 +10,15 @@ public class Mutation(Operator op, Expression expr, Variable? target = default, 
 	public Variable? Target => target;
 	public Expression? Modifier => modifier;
 
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append(op.ToString().ToLowerInvariant()).AppendLine(":");
 		Expression.Print(sb, prefix + INDENT);
 		if (Target != default) {
 			sb.Append(prefix + INDENT).AppendLine("target:");
 			Target.Print(sb, prefix + INDENT + INDENT);
 		}
-		if (Modifier == default) return;
+		if (Modifier == default) return sb;
 		sb.Append(prefix + INDENT).AppendLine("using:");
-		Modifier.Print(sb, prefix + INDENT + INDENT);
+		return Modifier.Print(sb, prefix + INDENT + INDENT);
 	}
 }

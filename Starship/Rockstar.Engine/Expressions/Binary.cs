@@ -53,10 +53,11 @@ public class Binary : Expression {
 		};
 	}
 
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine($"{op}:".ToLowerInvariant());
 		lhs.Print(sb, prefix + INDENT);
 		foreach (var expr in rhs) expr.Print(sb, prefix + INDENT);
+		return sb;
 	}
 
 	public override string ToString() {

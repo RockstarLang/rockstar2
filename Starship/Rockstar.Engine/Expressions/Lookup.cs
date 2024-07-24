@@ -5,10 +5,8 @@ namespace Rockstar.Engine.Expressions;
 
 public class Lookup(Variable variable) : Expression {
 	public Variable Variable => variable;
-	public override void Print(StringBuilder sb, string prefix) {
-		base.Print(sb, prefix);
-		variable.Print(sb, prefix + INDENT);
-	}
+	public override StringBuilder Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).Append("lookup: ").AppendLine(variable.Name);
 
 	public override string ToString() => $"lookup: {Variable.Name}";
 }

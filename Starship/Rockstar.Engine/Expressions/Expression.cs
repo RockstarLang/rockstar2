@@ -7,7 +7,7 @@ public abstract class Expression {
 	public const string INDENT = "  ";
 	public const string NESTER = "| ";
 
-	public virtual void Print(StringBuilder sb, string prefix)
+	public virtual StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).AppendLine(this.GetType().Name.ToLowerInvariant());
 
 	public IEnumerable<Expression> Concat(IEnumerable<Expression> tail)

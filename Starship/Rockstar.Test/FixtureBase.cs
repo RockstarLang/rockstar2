@@ -8,7 +8,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	protected static readonly string FixturesDirectory = Path.Combine("programs", "fixtures");
 	protected static readonly string V1FixturesDirectory = Path.Combine("programs", "v1-fixtures");
 
-	private static string QualifyRelativePath(string path) {
+	private static string UncrunchFilePath(string path) {
 #if NCRUNCH
 		var testProjectFilePath = NCrunchEnvironment.GetOriginalProjectPath();
 		var testProjectDirectory = Path.GetDirectoryName(testProjectFilePath);
@@ -18,6 +18,8 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		return Path.GetFullPath(path);
 #endif
 	}
+
+	private static string QualifyRelativePath(string path) => Path.GetFullPath(path);
 
 	private static IEnumerable<string> ListRockFiles(string relativePath) {
 		var absolutePath = QualifyRelativePath(relativePath);
@@ -93,7 +95,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		var line = source.Split('\n')[cursor.Line - 1].TrimEnd('\r');
 		testOutput.WriteLine(line);
 		testOutput.WriteLine(String.Empty.PadLeft(cursor.Column - 1) + "^ error is here!");
-		var ncrunchOutputMessage = $"   at <Rockstar code> in {filePath}:line {outputLine}";
+		var ncrunchOutputMessage = $"   at <Rockstar code> in {UncrunchFilePath(filePath)}:line {outputLine}";
 		testOutput.WriteLine(ncrunchOutputMessage);
 	}
 
@@ -112,13 +114,13 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 
 	public Program ParseFile(string filePath, string directory) {
 		var relativePath = Path.Combine(directory, filePath);
-		filePath = QualifyRelativePath(relativePath);
-		var source = File.ReadAllText(filePath, Encoding.UTF8);
+		var testFilePath = QualifyRelativePath(relativePath);
+		var source = File.ReadAllText(QualifyRelativePath(testFilePath), Encoding.UTF8);
 		try {
-			testOutput.WriteLine($"   at <Rockstar code> in {filePath}:line 1");
+			testOutput.WriteLine($"   at <Rockstar code> in {UncrunchFilePath(relativePath)}:line 1");
 			return Parser.Parse(source);
 		} catch (FormatException ex) {
-			PrettyPrint(source, filePath, ex);
+			PrettyPrint(source, UncrunchFilePath(relativePath), ex);
 			throw;
 		}
 	}
@@ -126,14 +128,14 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	public string RunFile(string filePath, string directory) {
 		if (CheckForExpectedError(filePath, directory, "error", out _)) return ($"Skipping {filePath} since it has expected errors.");
 		var relativePath = Path.Combine(directory, filePath);
-		filePath = QualifyRelativePath(relativePath);
-		var source = File.ReadAllText(filePath, Encoding.UTF8);
+		var testFilePath = QualifyRelativePath(relativePath);
+		var source = File.ReadAllText(testFilePath, Encoding.UTF8);
 		Program program;
 		string result;
 		try {
 			program = Parser.Parse(source);
 		} catch (FormatException ex) {
-			PrettyPrint(source, filePath, ex);
+			PrettyPrint(source, UncrunchFilePath(relativePath), ex);
 			throw;
 		}
 		try {
@@ -142,7 +144,7 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			var expect = ExtractExpects(filePath);
 			if (String.IsNullOrEmpty(expect)) return result;
 			result.ShouldBe(expect);
-			testOutput.WriteLine($"   at <Rockstar code> in {filePath}:line 1");
+			testOutput.WriteLine($"   at <Rockstar code> in {UncrunchFilePath(relativePath)}:line 1");
 		} catch (Exception) {
 			testOutput.WriteNCrunchFilePath(filePath);
 			throw;

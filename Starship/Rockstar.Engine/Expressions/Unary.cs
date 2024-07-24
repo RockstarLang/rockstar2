@@ -5,9 +5,9 @@ namespace Rockstar.Engine.Expressions;
 
 public class Unary(Operator op, Expression expr)
 	: Expression {
-	public override void Print(StringBuilder sb, string prefix) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).Append("unary: ").AppendLine(op.ToString().ToLowerInvariant());
-		expr.Print(sb, prefix + INDENT);
+		return expr.Print(sb, prefix + INDENT);
 	}
 
 	public Value Resolve(Func<Expression, Value> eval) {

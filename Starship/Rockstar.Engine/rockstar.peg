@@ -75,7 +75,7 @@ arguments <IEnumerable<Variable>>
 
 _variable_list_separator_
 	= _ and _
-	/ _primary_list_separator_
+	/ _expression_list_separator_
 
 break_stmt <Statement>
 	= break wildcard
@@ -140,7 +140,7 @@ assignable <Variable>
 assign_stmt <Statement>
 	= put _ e:expression _ into _ v:assignable
 		{ new Assign(v, e) }
-	/ let _ v:assignable _ be op:_operator_ e:binary_rhs
+	/ let _ v:assignable _ be op:_operator_ e:expression_list
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 	/ let _ v:assignable _ be _ e:expression
 		{ new Assign(v, e) }
@@ -154,7 +154,7 @@ assign_stmt <Statement>
 	/ v:assignable (_? '=' _? / _is _) e:expression
 		{ new Assign(v, e) }
 
-	/ v:assignable _is op:_operator_ e:binary_rhs
+	/ v:assignable _is op:_operator_ e:expression_list
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 
 _operator_ =
@@ -297,7 +297,7 @@ function_call <FunctionCall>
 		{ new FunctionCall(name, args) }
 
 argument_list <IEnumerable<Expression>>
-	= head:primary _expression_list_separator_ tail:argument_list
+	= head:primary _primary_list_separator_ tail:argument_list
 		{ head.Concat(tail) }
 	/ expr:primary
 		{ new List<Expression> { expr } }

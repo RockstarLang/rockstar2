@@ -8,6 +8,36 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Expressions {
 	public class EnvironmentTests {
+
+		[Fact]
+		public void GlobalScopeWorks() {
+			var io = new StringBuilderIO();
+			var e1 = new RockstarEnvironment(io);
+			var foo = new SimpleVariable("foo");
+			var bar = new SimpleVariable("bar");
+			var value = new Number(123);
+			e1.SetVariable(foo, value);
+			var e2 = e1.Extend();
+			e2.SetVariable(bar, value);
+			var e3 = e2.Extend();
+			var e4 = e2.Extend();
+			e4.GetScope(foo).ShouldBe(e4);
+			e4.GetScope(bar).ShouldBe(e4);
+
+			var n = new Number(456);
+			e4.SetVariable(foo, n);
+			e4.Lookup(foo).ShouldBe(n);
+			e3.Lookup(foo).ShouldBe(value);
+			e2.Lookup(foo).ShouldBe(value);
+			e1.Lookup(foo).ShouldBe(value);
+
+			e4.SetVariable(foo, n, true);
+			e4.Lookup(foo).ShouldBe(n);
+			e3.Lookup(foo).ShouldBe(n);
+			e2.Lookup(foo).ShouldBe(n);
+			e1.Lookup(foo).ShouldBe(n);
+		}
+
 		[Theory]
 		[InlineData("MY VARIABLE", "my   variable")]
 		[InlineData("thE SKY", "the\tsky")]

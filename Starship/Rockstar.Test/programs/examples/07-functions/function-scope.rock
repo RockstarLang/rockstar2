@@ -1,18 +1,17 @@
 SetGlobal takes X
-Global is X
+Put X into Global
 end
 
 Global is 1
 
-Write global
+Write global (writes: 1)
 SetGlobal taking 2
-Write global
+Write global (writes: 2)
 SetGlobal taking 3
-Write global
-(writes: 123)
+Write global (writes: 3)
 
 SetLocal takes local, value
-local is value
+local is now value
 write local
 end
 

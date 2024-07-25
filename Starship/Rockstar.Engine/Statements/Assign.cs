@@ -1,5 +1,8 @@
+using System.Formats.Asn1;
+using System.Net;
 using System.Text;
 using Rockstar.Engine.Expressions;
+using Rockstar.Engine.Values;
 
 namespace Rockstar.Engine.Statements;
 
@@ -8,7 +11,7 @@ public class Assign(Variable variable, Expression expression) : ExpressionStatem
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		base.Print(sb, prefix);
 		variable.Print(sb, prefix + INDENT);
-		return expression.Print(sb, prefix + INDENT);
+		return Expression.Print(sb, prefix + INDENT);
 	}
 }
 

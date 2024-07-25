@@ -2,6 +2,8 @@ using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
 using System;
+using System.Numerics;
+using static System.Formats.Asn1.AsnWriter;
 using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Engine;
@@ -24,23 +26,29 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public string? ReadInput() => IO.Read();
 	public void Write(string output) => IO.Write(output);
 
-	private Variable? pronounTarget;
+	private Variable? pronounSubject;
+	internal void UpdatePronounTarget(Variable variable) => pronounSubject = variable;
 
 	private Variable QualifyPronoun(Variable variable) =>
 		variable is Pronoun pronoun
-			? pronounTarget ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')")
+			? pronounSubject ?? throw new($"You must assign a variable before using a pronoun ('{pronoun.Name}')")
 			: variable;
 
 	private readonly Dictionary<string, Value> variables = new();
 
-	private Value SetLocal(Variable variable, Value value)
+	internal Value SetLocal(Variable variable, Value value)
 		=> variables[variable.Key] = value;
 
-	public RockstarEnvironment? GetScope(Variable variable) {
-		return variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
-	}
+	//private RockstarEnvironment? FindScope(Variable variable)
+	//	=> variables.ContainsKey(variable.Key) ? GetGlobalScope(variable) : null;
 
-	public Result SetVariable(Variable variable, Value value) {
+	//public RockstarEnvironment? GetGlobalScope(Variable variable)
+	//	=> Parent?.FindScope(variable) ?? this;
+
+	public RockstarEnvironment? GetScope(Variable variable)
+		=> variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
+
+	public Result SetVariable(Variable variable, Value value, bool global = false) {
 		var target = QualifyPronoun(variable);
 		var scope = GetScope(target) ?? this;
 		if (variable is Pronoun pronoun) {
@@ -49,7 +57,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 			var indexes = variable.Indexes.Select(expr => Eval(expr)).ToList();
 			scope.SetArray(variable, new(indexes), value);
 		} else {
-			pronounTarget = target;
+			pronounSubject = target;
 			scope.SetLocal(target, value);
 		}
 		return new(value);
@@ -68,7 +76,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public Result Execute(Program program)
 		=> program.Blocks.Aggregate(Result.Unknown, (_, block) => Execute(block));
 
-	private Result Execute(Block block) {
+	internal Result Execute(Block block) {
 		var result = Result.Unknown;
 		foreach (var statement in block.Statements) {
 			result = Execute(statement);
@@ -129,40 +137,39 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(value);
 	}
 
-	private Result Mutation(Mutation m)
-		=> m.Operator switch {
-			Operator.Join => Join(m),
-			Operator.Split => Split(m),
-			Operator.Cast => Cast(m),
+	private Result Mutation(Mutation m) {
+		var source = Eval(m.Expression, true);
+		var modifier = m.Modifier == null ? null : Eval(m.Modifier);
+		var result = m.Operator switch {
+			Operator.Join => Join(source, modifier),
+			Operator.Split => Split(source, modifier),
+			Operator.Cast => Cast(source, modifier),
 			_ => throw new($"Unsupported mutation operator {m.Operator}")
 		};
+		if (m.Target == default) return new(result);
+		SetLocal(QualifyPronoun(m.Target), result);
+		if (m.Target is not Pronoun) this.pronounSubject = m.Target;
+		return new(result);
+	}
 
-	private Result Cast(Mutation m) {
-		var input = Eval(m.Expression);
-		var modifier = Eval(m.Modifier ?? Mysterious.Instance);
-		Value value = input switch {
+	private static Value Cast(Value source, Value modifier) {
+		return source switch {
 			Strïng s => Number.Parse(s, modifier),
-			IHaveANumber n => new Strïng(Char.ConvertFromUtf32((int)n.Value)),
-			_ => throw new($"Can't cast expression of type {input.GetType().Name}")
+			IHaveANumber n => new Strïng(Char.ConvertFromUtf32((int) n.Value)),
+			_ => throw new($"Can't cast expression of type {source.GetType().Name}")
 		};
-		if (m.Target != default) SetLocal(QualifyPronoun(m.Target), value);
-		return new(value);
 	}
-	private Result Split(Mutation m) {
-		var value = Eval(m.Expression);
-		if (value is not Strïng s) throw new("Only strings can be split.");
-		var delimiter = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
-		var array = s.Split(delimiter);
-		if (m.Target != default) SetLocal(m.Target, array);
-		return new(array);
+
+	private static Array Split(Value source, Value? modifier) {
+		if (source is not Strïng s) throw new("Only strings can be split.");
+		var splitter = modifier?.ToString() ?? "";
+		return s.Split(splitter);
 	}
-	private Result Join(Mutation m) {
-		var value = Eval(m.Expression, preserveArrays: true);
-		if (value is not Array array) throw new("Can't join something which is not an array.");
-		var joiner = m.Modifier == default ? "" : Eval(m.Modifier).ToString();
-		var joined = array.Join(joiner);
-		if (m.Target != default) SetLocal(m.Target, joined);
-		return new(joined);
+
+	private static Value Join(Value source, Value? modifier) {
+		if (source is not Array array) throw new("Can't join something which is not an array.");
+		var joiner = modifier?.ToString() ?? "";
+		return array.Join(joiner);
 	}
 
 	private Result Rounding(Rounding r) {
@@ -197,7 +204,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 	}
 
 	private Result ExpressionStatement(ExpressionStatement e)
-		=> Result.Return(Eval(e.Expression));
+		=> new Result(Eval(e.Expression));
 
 	private Result Return(ExpressionStatement r) {
 		var value = Eval(r.Expression);
@@ -209,8 +216,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Call(FunctionCall call, Queue<Expression> bucket) {
 		var value = Lookup(call.Function);
-		if (value is not Function function) throw new($"'{call.Function.Name}' is not a function");
-		var names = function.Args.ToList();
+		if (value is not Closure closure) throw new($"'{call.Function.Name}' is not a function");
+		var names = closure.Function.Args.ToList();
+
 		List<Value> values = [];
 
 		foreach (var arg in call.Args.Take(names.Count)) {
@@ -222,11 +230,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		}
 		while (values.Count < names.Count) values.Add(Eval(bucket.Dequeue()));
 		foreach (var expression in call.Args.Skip(names.Count)) bucket.Enqueue(expression);
-		var scope = this.Extend();
-		for (var i = 0; i < names.Count; i++) scope.SetLocal(names[i], values[i].Clone());
-		if (names.Any()) scope.pronounTarget = names.Last();
-		var result = scope.Execute(function.Body);
-		return result;
+		Dictionary<Variable, Value> args = new();
+		for (var i = 0; i < names.Count; i++) args[names[i]] = values[i].Clone();
+		return closure.Apply(args);
 	}
 
 	private Result Conditional(Conditional cond)
@@ -266,18 +272,20 @@ public class RockstarEnvironment(IRockstarIO io) {
 		_ => throw new NotImplementedException($"Eval not implemented for {expression.GetType()}")
 	};
 
-	public Result Assign(Variable variable, Value value)
-		=> SetVariable(variable, value);
+	public Result Assign(Variable variable, Value value) => value switch {
+		Function function => SetVariable(variable, MakeLambda(function)),
+		_ => SetVariable(variable, value)
+	};
+
+	private Value MakeLambda(Function function) => new Closure(function, this);
 
 	public Result Assign(Assign assign)
 		=> Assign(assign.Variable, Eval(assign.Expression));
 
 	private Value LookupValue(string key) {
 		if (variables.TryGetValue(key, out var value)) return value;
-		if (Parent != default) return Parent.LookupValue(key);
-		return Mysterious.Instance;
+		return Parent != default ? Parent.LookupValue(key) : Mysterious.Instance;
 	}
-		// =>  ? value : Parent?.LookupValue(key) ?? Mysterious.Instance;
 
 	public Value Lookup(Variable variable, bool preserveArrays = false) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;

@@ -242,6 +242,9 @@ assign_stmt <Statement>
 	/ v:assignable _is op:_operator_ e:expression_list
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 
+	/ v:assignable _is _ now _ e:expression
+			{ new Assign(v, e) }
+
 	// BREAKING CHANGE
 	/ v:assignable (_? '=' _? / _is _) p:v1_poetic_number
 		{ new Assign(v, p) }
@@ -497,6 +500,7 @@ isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter / "wa
 not = 'not' !letter
 non = 'non' !letter
 nor = 'nor' !letter
+now = 'now' !letter
 is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter
 put = 'put' !letter
 into = 'into' !letter / 'in' !letter
@@ -545,7 +549,7 @@ call = 'call' !letter
 
 keywords_which_can_begin_an_expression
 	= plus / minus / times / divided_by
-	/ like / and / or / nor / not
+	/ like / and / or / nor / not / non
 	/ null / true / false / empty / mysterious 
 
 keyword

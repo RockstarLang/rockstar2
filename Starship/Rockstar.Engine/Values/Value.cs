@@ -9,10 +9,11 @@ public abstract class Value : Expression {
 	public override bool Equals(object? obj)
 		=> obj?.GetType() == this.GetType() && Equals((Value) obj);
 
-	protected abstract bool Equals(Value other);
+	protected virtual bool Equals(Value other) => ReferenceEquals(this, other);
+
 	public abstract override int GetHashCode();
 
-	public abstract bool Truthy { get; }
+	public virtual bool Truthy => false;
 	public bool Falsy => !Truthy;
 
 	public abstract Strïng ToStrïng();
@@ -46,8 +47,9 @@ public abstract class Value : Expression {
 		(_, Strïng s2) => lhs.ToStrïng().DividedBy(s2),
 		(_, _) => throw new NotImplementedException($"I don't know how to divide {lhs.GetType().Name} by {rhs.GetType().Name}")
 	};
-	public abstract Booleän Equäls(Value that);
-	public abstract Booleän IdenticalTo(Value that);
+
+	public virtual Booleän Equäls(Value that) => IdenticalTo(that);
+	public virtual Booleän IdenticalTo(Value that) => new(ReferenceEquals(this, that));
 
 	private int Compare(Strïng lhs, Strïng rhs)
 		=> String.Compare(lhs.Value, rhs.Value, StringComparison.InvariantCulture);
@@ -61,11 +63,8 @@ public abstract class Value : Expression {
 		});
 
 	public Value LessThanEqual(Value that) => Compare(this, that, (a, b) => a <= b);
-
 	public Value MoreThanEqual(Value that) => Compare(this, that, (a, b) => a >= b);
-
 	public Value LessThan(Value that) => Compare(this, that, (a, b) => a < b);
-
 	public Value MoreThan(Value that) => Compare(this, that, (a, b) => a > b);
 
 	public virtual Value AtIndex(List<Value> indexes) {
@@ -74,6 +73,5 @@ public abstract class Value : Expression {
 	}
 
 	public virtual Value AtIndex(Value index) => this;
-
-	public abstract Value Clone();
+	public virtual Value Clone() => this;
 }

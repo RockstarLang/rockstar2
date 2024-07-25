@@ -183,6 +183,9 @@
     <None Update="programs\examples\07-functions\expression-lists-as-function-arguments.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\07-functions\closures.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\07-functions\pronoun-argument.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

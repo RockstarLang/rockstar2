@@ -6,7 +6,7 @@ x is with 1
 end
 
 (writes: 54321)
-x is 1
+x is 5
 until x is nothing
 write x
 x is without 1
@@ -18,5 +18,5 @@ The night is like schizoidism
 My heart is nothing 
 Until my heart is as high as the sky
 It's with the night
-Whisper it, baby.
+Write it, baby.
 

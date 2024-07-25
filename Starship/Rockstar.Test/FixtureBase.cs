@@ -96,6 +96,9 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			var expect = rockFile.ExpectedOutput;
 			if (String.IsNullOrEmpty(expect)) return;
 			result.ShouldBe(expect);
+		} catch(Exception ex) {
+			if (rockFile.ExtractedExpectedError("runtime error", out var error) && ex.Message == error) return;
+			throw;
 		} finally {
 			testOutput.WriteNCrunchFilePath(rockFile);
 			testOutput.WriteLine(result);

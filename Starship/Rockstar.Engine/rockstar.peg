@@ -540,7 +540,7 @@ pop = 'roll' !letter / 'pop' !letter
 with = 'with' !letter
 like = 'like' !letter / 'so' !letter
 then = 'then' !letter
-write = 'write' !letter / 'whisper' !letter
+write = 'write' !letter 
 call = 'call' !letter
 
 keywords_which_can_begin_an_expression

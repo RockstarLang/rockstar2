@@ -1,3 +1,5 @@
+using Rockstar.Engine.Statements;
+using System.Globalization;
 using System.IO;
 
 namespace Rockstar.Test;
@@ -8,94 +10,31 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 	protected static readonly string FixturesDirectory = Path.Combine("programs", "fixtures");
 	protected static readonly string V1FixturesDirectory = Path.Combine("programs", "v1-fixtures");
 
-	private static string UncrunchFilePath(string path) {
-#if NCRUNCH
-		var testProjectFilePath = NCrunchEnvironment.GetOriginalProjectPath();
-		var testProjectDirectory = Path.GetDirectoryName(testProjectFilePath);
-		var fileInfo = new FileInfo(Path.Combine(testProjectDirectory, path));
-		return fileInfo.FullName;
-#else
-		return Path.GetFullPath(path);
-#endif
+	//private static string QualifyRelativePath(string path) => Path.GetFullPath(path);
+
+	private static IEnumerable<RockFile> ListRockFiles(string relativePath) {
+		//var absolutePath = QualifyRelativePath(relativePath);
+		var allFiles = Directory.GetFiles(relativePath, "*.rock", SearchOption.AllDirectories);
+		return allFiles.Select(filePath => new RockFile(filePath)).ToList();
 	}
 
-	private static string QualifyRelativePath(string path) => Path.GetFullPath(path);
+	private static IEnumerable<object[]> MemberData(string directory)
+		=> ListRockFiles(directory).Select(file => (object[]) [file]).ToList();
 
-	private static IEnumerable<string> ListRockFiles(string relativePath) {
-		var absolutePath = QualifyRelativePath(relativePath);
-		var allFiles = Directory.GetFiles(absolutePath, "*.rock", SearchOption.AllDirectories);
-		var trimmedFiles = allFiles.Select(f => f.Replace(absolutePath, "").Trim(Path.DirectorySeparatorChar));
-		return trimmedFiles;
-	}
-
-	public static IEnumerable<object[]> AllExampleFiles()
-		=> ListRockFiles(ExamplesDirectory).Select(filePath => new[] { filePath });
-
-	public static IEnumerable<object[]> AllV1FixtureFiles()
-		=> ListRockFiles(V1FixturesDirectory).Select(filePath => new[] { filePath });
-
-	public static IEnumerable<object[]> AllFixtureFiles()
-		=> ListRockFiles(FixturesDirectory).Select(filePath => new[] { filePath });
-
-	public static bool ExtractedExpectedError(string filePathOrSourceCode, string label, out string? error) {
-		error = null;
-		var source = (File.Exists(filePathOrSourceCode)
-			? File.ReadAllText(filePathOrSourceCode, Encoding.UTF8)
-			: filePathOrSourceCode);
-		var limit = source.Length;
-		var token = $"({label}: ";
-		for (var i = 0; i < limit; i++) {
-			if (source.SafeSubstring(i, token.Length) != token) continue;
-			i += token.Length;
-			var j = i;
-			while (j < limit && source[j] != ')') j++;
-			error = Regex.Unescape(source.Substring(i, j - i));
-			return true;
-		}
-		return false;
-	}
-
-	public static string ExtractExpects(string filePathOrSourceCode) {
-		if (File.Exists(filePathOrSourceCode + ".out")) {
-			return File.ReadAllText(filePathOrSourceCode + ".out", Encoding.UTF8).ReplaceLineEndings();
-		}
-
-		var source = (File.Exists(filePathOrSourceCode)
-			? File.ReadAllText(filePathOrSourceCode, Encoding.UTF8)
-			: filePathOrSourceCode);
-		var limit = source.Length;
-		var output = new List<string>();
-		for (var i = 0; i < limit; i++) {
-			var token = source.SafeSubstring(i, 9);
-			switch (token) {
-				case "(expect: ":
-				case "(prints: ":
-				case "(writes: ":
-					i += 9;
-					var j = i;
-					while (j < limit && source[j] != ')') j++;
-					var expected = Regex.Unescape(source.Substring(i, j - i));
-					if (token != "(writes: " && !expected.EndsWith(Environment.NewLine)) {
-						expected += Environment.NewLine;
-					}
-					output.Add(expected);
-					i = j;
-					break;
-			}
-		}
-		return String.Join("", output).ReplaceLineEndings();
-	}
+	public static IEnumerable<object[]> AllExampleFiles() => MemberData(ExamplesDirectory);
+	public static IEnumerable<object[]> AllV1FixtureFiles() => MemberData(V1FixturesDirectory);
+	public static IEnumerable<object[]> AllFixtureFiles() => MemberData(FixturesDirectory);
 
 	protected readonly Parser Parser = new();
 
-	private void PrettyPrint(string source, string filePath, Exception ex) {
+	private void PrettyPrint(RockFile file, Exception ex) {
 		var cursor = ex.Data["cursor"] as Cursor;
 		if (cursor == default) return;
 		var outputLine = cursor.Line;
-		var line = source.Split('\n')[cursor.Line - 1].TrimEnd('\r');
+		var line = file.Contents.Split('\n')[cursor.Line - 1].TrimEnd('\r');
 		testOutput.WriteLine(line);
 		testOutput.WriteLine(String.Empty.PadLeft(cursor.Column - 1) + "^ error is here!");
-		var ncrunchOutputMessage = $"   at <Rockstar code> in {UncrunchFilePath(filePath)}:line {outputLine}";
+		var ncrunchOutputMessage = $"   at <Rockstar code> in {file.UncrunchedFilePath}:line {outputLine}";
 		testOutput.WriteLine(ncrunchOutputMessage);
 	}
 
@@ -106,53 +45,60 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		return env.Output;
 	}
 
-	public bool CheckForExpectedError(string filePath, string directory, string label, out string? error) {
-		var relativePath = Path.Combine(directory, filePath);
-		filePath = QualifyRelativePath(relativePath);
-		return ExtractedExpectedError(filePath, label, out error);
-	}
+	//public bool CheckForExpectedError(string filePath, string directory, string label, out string? error) {
+	//	var relativePath = Path.Combine(directory, filePath);
+	//	filePath = QualifyRelativePath(relativePath);
+	//	return ExtractedExpectedError(filePath, label, out error);
+	//}
 
-	public Program ParseFile(string filePath, string directory) {
-		var relativePath = Path.Combine(directory, filePath);
-		var testFilePath = QualifyRelativePath(relativePath);
-		var source = File.ReadAllText(QualifyRelativePath(testFilePath), Encoding.UTF8);
+	public Program ParseFile(RockFile rockFile) {
+		var source = rockFile.Contents;
 		try {
-			testOutput.WriteLine($"   at <Rockstar code> in {UncrunchFilePath(relativePath)}:line 1");
+			testOutput.WriteLine($"   at <Rockstar code> in {rockFile.UncrunchedFilePath}:line 1");
 			return Parser.Parse(source);
 		} catch (FormatException ex) {
-			PrettyPrint(source, UncrunchFilePath(relativePath), ex);
+			PrettyPrint(rockFile, ex);
 			throw;
 		}
 	}
 
-	public string RunFile(string filePath, string directory) {
-		if (CheckForExpectedError(filePath, directory, "error", out _)) return ($"Skipping {filePath} since it has expected errors.");
-		var relativePath = Path.Combine(directory, filePath);
-		var testFilePath = QualifyRelativePath(relativePath);
-		var source = File.ReadAllText(testFilePath, Encoding.UTF8);
+	protected void TestParser(RockFile rockFile) {
+		if (rockFile.ExtractedExpectedError("error", out var error)) {
+			try {
+				ParseFile(rockFile);
+				throw new("Parser should have failed.");
+			} catch (Exception ex) {
+				ex.Message.ShouldBe(error);
+			}
+		} else {
+			var program = ParseFile(rockFile);
+			testOutput.WriteLine(program);
+		}
+	}
+
+	public void RunFile(RockFile rockFile) {
+		if (rockFile.HasExpectedErrors("error")) {
+			testOutput.WriteLine($"Skipping {rockFile.UncrunchedFilePath} since it has expected errors.");
+			return;
+		}
+		var source = rockFile.Contents;
 		Program program;
-		string result;
 		try {
 			program = Parser.Parse(source);
 		} catch (FormatException ex) {
-			PrettyPrint(source, UncrunchFilePath(relativePath), ex);
+			PrettyPrint(rockFile, ex);
 			throw;
 		}
+		var result = String.Empty;
 		try {
-			var inputs = ReadInputs(testFilePath);
+			var inputs = rockFile.SimulateInputs();
 			result = RunProgram(program, inputs);
-			var expect = ExtractExpects(relativePath);
-			if (String.IsNullOrEmpty(expect)) return result;
+			var expect = rockFile.ExpectedOutput;
+			if (String.IsNullOrEmpty(expect)) return;
 			result.ShouldBe(expect);
-			testOutput.WriteLine($"   at <Rockstar code> in {UncrunchFilePath(relativePath)}:line 1");
-		} catch (Exception) {
-			testOutput.WriteNCrunchFilePath(UncrunchFilePath(relativePath));
-			throw;
+		} finally {
+			testOutput.WriteNCrunchFilePath(rockFile);
+			testOutput.WriteLine(result);
 		}
-
-		return result;
 	}
-
-	private Queue<string>? ReadInputs(string filePath)
-		=> File.Exists(filePath + ".in") ? new(File.ReadAllLines(filePath + ".in")) : null;
 }

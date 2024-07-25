@@ -17,10 +17,11 @@ foreach (var file in files) {
 	bool error;
 	Exception exception = null;
 	try {
-		if (!file.Contains("array_functions")) continue;
+		// if (!file.Contains("array_functions")) continue;
 		var program = parser.Parse(File.ReadAllText(file));
 		parseTime = (int)(stopwatch.ElapsedMilliseconds / FACTOR);
-		var e = new RockstarEnvironment(new ConsoleIO());
+		var io = new StringBuilderIO(() => "1");
+		var e = new RockstarEnvironment(io);
 		stopwatch.Restart();
 		var timeout = Task.Delay(TimeSpan.FromMilliseconds(1000));
 		error = await Task.WhenAny(Task.Run(() => e.Execute(program)), timeout) == timeout;

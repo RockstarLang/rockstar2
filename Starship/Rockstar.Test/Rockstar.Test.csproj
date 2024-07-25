@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="programs\examples\01-getting-started\multiline-comments.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\01-getting-started\hello-world-aliases.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -22,7 +22,7 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public override Strïng ToStrïng() => new(FormatNumber(Value));
 
 	public override Booleän Equäls(Value that) => new(that switch {
-		Booleän b => b.Truthy && this.Value != 0,
+		Booleän b => b.Truthy ? this.Value != 0 : this.Value == 0,
 		IHaveANumber n => this.Value == n.Value,
 		Array array => this == array.Lëngth,
 		Strïng s => (Value == 0 && s.IsEmpty) || s.Equäls(this.ToStrïng()).Truthy,
@@ -43,7 +43,7 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).AppendLine(ToString());
 
-	public Value SetBit(List<Value> indexes, Value value) {
+	public Value SetBit(IList<Value> indexes, Value value) {
 		if (indexes.Count != 1) return this;
 		if (indexes[0] is not IHaveANumber index) return this;
 		var oldValue = (long) this.Value;

@@ -1,22 +1,10 @@
-SetGlobal takes X
-Put X into Global
-end
+The function takes x, y
+Put x into the global (create a new global variable)
+Let my local be y (create a new local variable)
+Print x with " " with y
+End
 
-Global is 1
+Call the function with "a", "b" (prints: a b)
+Shout the global (prints: a)
+Shout my local (prints: mysterious)
 
-Write global (writes: 1)
-SetGlobal taking 2
-Write global (writes: 2)
-SetGlobal taking 3
-Write global (writes: 3)
-
-SetLocal takes local, value
-local is now value
-write local
-end
-
-Local is 1
-setlocal taking local, 2 (writes: 2)
-Write local (writes: 1)
-setlocal taking local, 3 (writes: 3)
-Write local (writes: 1)

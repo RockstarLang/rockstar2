@@ -2,11 +2,18 @@ using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
 using System;
+using System.Diagnostics;
+using System.Formats.Asn1;
 using System.Numerics;
 using static System.Formats.Asn1.AsnWriter;
 using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Engine;
+
+public enum Scope {
+	Global,
+	Local
+}
 
 public class RockstarEnvironment(IRockstarIO io) {
 	public RockstarEnvironment(IRockstarIO io, RockstarEnvironment parent) : this(io) {
@@ -16,9 +23,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public RockstarEnvironment? Parent { get; init; }
 
 	public RockstarEnvironment Extend() {
-		var scope = new RockstarEnvironment(IO, this);
-		foreach (var variable in variables) scope.variables[variable.Key] = variable.Value;
-		return scope;
+		return new RockstarEnvironment(IO, this);
+		//foreach (var variable in variables) store.variables[variable.Key] = variable.Value;
+		// return store;
 	}
 
 	protected IRockstarIO IO = io;
@@ -27,7 +34,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 	public void Write(string output) => IO.Write(output);
 
 	private Variable? pronounSubject;
-	internal void UpdatePronounTarget(Variable variable) => pronounSubject = variable;
+	internal void UpdatePronounSubject(Variable variable) => pronounSubject = variable;
 
 	private Variable QualifyPronoun(Variable variable) =>
 		variable is Pronoun pronoun
@@ -36,34 +43,34 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private readonly Dictionary<string, Value> variables = new();
 
-	internal Value SetLocal(Variable variable, Value value)
-		=> variables[variable.Key] = value;
+	private bool Owns(Variable variable)
+		=> variables.ContainsKey(variable.Key);
 
-	//private RockstarEnvironment? FindScope(Variable variable)
-	//	=> variables.ContainsKey(variable.Key) ? GetGlobalScope(variable) : null;
-
-	//public RockstarEnvironment? GetGlobalScope(Variable variable)
-	//	=> Parent?.FindScope(variable) ?? this;
-
-	public RockstarEnvironment? GetScope(Variable variable)
-		=> variables.ContainsKey(variable.Key) ? this : Parent?.GetScope(variable);
-
-	public Result SetVariable(Variable variable, Value value, bool global = false) {
-		var target = QualifyPronoun(variable);
-		var scope = GetScope(target) ?? this;
-		if (variable is Pronoun pronoun) {
-			scope.SetLocal(target, value);
-		} else if (variable.Indexes.Any()) {
-			var indexes = variable.Indexes.Select(expr => Eval(expr)).ToList();
-			scope.SetArray(variable, new(indexes), value);
-		} else {
-			pronounSubject = target;
-			scope.SetLocal(target, value);
-		}
-		return new(value);
+	private RockstarEnvironment FindStore(Variable variable) {
+		if (Parent == default) return this;
+		if (this.Owns(variable)) return this;
+		return Parent.FindStore(variable);
 	}
 
-	private Value SetArray(Variable variable, List<Value> indexes, Value value) {
+	public RockstarEnvironment GetStore(Variable variable, Scope scope) => scope switch {
+		Scope.Global => FindStore(variable),
+		_ => this
+	};
+
+
+	public Result SetVariable(Variable variable, Value value, Scope scope = Scope.Global) {
+		var target = QualifyPronoun(variable);
+		var store = GetStore(target, scope);
+		if (variable is not Pronoun) UpdatePronounSubject(target);
+		var indexes = variable.Indexes.Select(Eval).ToList();
+		var stored = store.Set(target, indexes, value);
+		return new(stored);
+	}
+
+	private Value Set(Variable variable, Value value) => Set(variable, [], value);
+
+	private Value Set(Variable variable, IList<Value> indexes, Value value) {
+		if (!indexes.Any()) return variables[variable.Key] = value;
 		variables.TryAdd(variable.Key, new Array());
 		return variables[variable.Key] switch {
 			Array array => array.Set(indexes, value),
@@ -92,6 +99,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Execute(Statement statement) => statement switch {
 		Output output => Output(output),
+		Declare declare => Declare(declare),
 		Assign assign => Assign(assign),
 		Loop loop => Loop(loop),
 		Conditional cond => Conditional(cond),
@@ -147,8 +155,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 			_ => throw new($"Unsupported mutation operator {m.Operator}")
 		};
 		if (m.Target == default) return new(result);
-		SetLocal(QualifyPronoun(m.Target), result);
-		if (m.Target is not Pronoun) this.pronounSubject = m.Target;
+		Set(QualifyPronoun(m.Target), [], result);
+		if (m.Target is not Pronoun) UpdatePronounSubject(m.Target);
 		return new(result);
 	}
 
@@ -197,7 +205,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var value = LookupValue(variable.Key);
 		if (value is not Array array) {
 			array = value == Mysterious.Instance ? new Array() : new(value);
-			SetLocal(variable, array);
+			Set(variable, array);
 		}
 		foreach (var expr in e.Expressions) array.Push(Eval(expr));
 		return new(array);
@@ -232,7 +240,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		foreach (var expression in call.Args.Skip(names.Count)) bucket.Enqueue(expression);
 		Dictionary<Variable, Value> args = new();
 		for (var i = 0; i < names.Count; i++) args[names[i]] = values[i].Clone();
-		return closure.Apply(args);
+		return new(closure.Apply(args).Value);
 	}
 
 	private Result Conditional(Conditional cond)
@@ -275,15 +283,21 @@ public class RockstarEnvironment(IRockstarIO io) {
 		_ => throw new NotImplementedException($"Eval not implemented for {expression.GetType()}")
 	};
 
-	public Result Assign(Variable variable, Value value) => value switch {
-		Function function => SetVariable(variable, MakeLambda(function)),
-		_ => SetVariable(variable, value)
-	};
-
-	private Value MakeLambda(Function function) => new Closure(function, this);
+	private Result Declare(Declare declare) {
+		var value = declare.Expression == default ? Mysterious.Instance : Eval(declare.Expression);
+		return Assign(declare.Variable, value, Scope.Local);
+	}
 
 	public Result Assign(Assign assign)
-		=> Assign(assign.Variable, Eval(assign.Expression));
+		=> Assign(assign.Variable, Eval(assign.Expression), Scope.Global);
+
+	public Result Assign(Variable variable, Value value, Scope scope = Scope.Global) => value switch {
+		Function function => SetVariable(variable, MakeLambda(function), Scope.Local),
+		_ => SetVariable(variable, value, scope)
+	};
+
+	private Value MakeLambda(Function function)
+		=> this.Parent == default ? new(function, this.Extend()) : new Closure(function, this);
 
 	private Value LookupValue(string key) {
 		if (variables.TryGetValue(key, out var value)) return value;

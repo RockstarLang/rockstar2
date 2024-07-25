@@ -93,6 +93,21 @@ To declare a function with no arguments, specify it `takes null` (or aliases `no
  {% include_relative {{ page.examples }}functions-with-no-arguments.rock %}
  ```
 
+### Variables, Closures and Function Scope
+Rockstar uses the same scoping mechanism as JavaScript:
+
+* Variables are global unless you declare them with `let`
+* Global variables aren't *really* global unless they're declared at the top level of your program.
+
+In this example, calling `My function` initialises two variables:
+
+```rockstar
+ {% include_relative {{ page.examples }}function-scope.rock %}
+ ```
+
+You can declare variables inside functions, functions can contain other functions, and declaring a function inside another function creates a *closure*, which captures the state of any variables that existed when the function was declared.
+
+
 
 
 

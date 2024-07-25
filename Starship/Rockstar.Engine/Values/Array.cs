@@ -110,7 +110,7 @@ public class Array : Value {
 		return value ?? Mysterious.Instance;
 	}
 
-	public Value Set(List<Value> indexes, Value value) {
+	public Value Set(IList<Value> indexes, Value value) {
 		var array = this;
 		for (var i = 0; i < indexes.Count; i++) {
 			var index = indexes[i];

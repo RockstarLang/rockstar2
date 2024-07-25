@@ -61,9 +61,7 @@ Rockstar `null` represents an expression which has no meaningful value. Aliases 
 
 ## Variables and Assignment
 
-Rockstar variables are dynamically typed; a variable is declared when you assign it a value.
-
-There are three different ways to assign a variable in Rockstar:
+Rockstar variables are dynamically typed. There are three different ways to assign a variable in Rockstar.
 
 1. `<variable> is <expression>`.  Valid aliases for `is` are `are`, `am`, `was`, `were`, and the contractions `'s` and `'re`
 2. `put <expression> into <variable>`
@@ -73,7 +71,10 @@ There are three different ways to assign a variable in Rockstar:
 {% include_relative {{ page.examples }}assignment.rock %}
 ```
 
-Rockstar supports three different kinds of variables.
+Rockstar variables are function scoped - see variable scope in the section on functions for more about how this work. 
+### Variable names
+
+Rockstar supports three different kinds of variable names.
 
 **Simple variables** can be any valid identifier that isn't a reserved keyword. A simple variable name must contain only letters, and cannot contain spaces. Note that Rockstar does not allow numbers or underscores in variable names - remember the golden rule of Rockstar syntax: if you can’t sing it, you can’t have it. Simple variables are case-insensitive.
 
@@ -109,7 +110,6 @@ As well as referring to variables by name, you can refer to them using pronouns.
 
 
 > (Please don’t file issues pointing out that 80s rockers were a bunch of misogynists and gender-inclusive pronouns aren’t really idiomatic. You’re right, we know, and we’ve all learned a lot since then. Besides, [_Look What The Cat Dragged In_](https://en.wikipedia.org/wiki/Look_What_the_Cat_Dragged_In) was recorded by four cishet guys who spent more money on lipgloss and hairspray than they did on studio time, and it’s an absolute classic.)
-
 
 ## Poetic Literals
 

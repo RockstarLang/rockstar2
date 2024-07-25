@@ -34,7 +34,8 @@ statement
 	/ loop
 	/ conditional
 	/ output_stmt
-	/ assign_stmt
+	/ declaration 
+	/ assignment
 	/ enlist_stmt
 	/ increment
 	/ decrement
@@ -187,7 +188,7 @@ EOB = EOL &EOL
     / EOF
 
 consequent <Block>
-	= EOS b:block EOB { b }
+	= EOS+ b:block EOB { b }
 	/ _ s:statement { new Block(s) }
 
 conditional <Statement>
@@ -229,29 +230,28 @@ assignable <Variable>
 		{ v.AtIndex(i) }
 	/ v:variable { v }
 
-assign_stmt <Statement>
-	= put _ e:expression _ into _ v:assignable
-		{ new Assign(v, e) }
-	/ let _ v:assignable _ be op:_operator_ e:expression_list
-		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
+declaration <Statement>
+	= let _ v:assignable _ be op:_operator_ e:expression_list
+		{ new Declare(v, new Binary(op, new Lookup(v), e)) }
 	/ let _ v:assignable _ be _ e:expression
+		{ new Declare(v, e) }
+	/ let _ v:assignable
+		{ new Declare(v) }
+	
+assignment <Statement>
+	= put _ e:expression _ into _ v:assignable
 		{ new Assign(v, e) }
 	/ v:assignable _ says_ s:poetic_string
 		{ new Assign(v, s) }
-
 	/ v:assignable _is op:_operator_ e:expression_list
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
-
 	/ v:assignable _is _ now _ e:expression
 			{ new Assign(v, e) }
-
-	// BREAKING CHANGE
+	// Legacy workaround to preserve compatibility with v1 poetic literal syntax
 	/ v:assignable (_? '=' _? / _is _) p:v1_poetic_number
-		{ new Assign(v, p) }
-	
+		{ new Assign(v, p) }	
 	/ v:assignable (_? '=' _? / _is _) e:expression
 		{ new Assign(v, e) }
-
 
 _operator_ =
 	_plus_ / _minus_ / _times_ / _divide_
@@ -364,7 +364,13 @@ primary <Expression>
 	//	#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 call_stmt <Statement>
-	= call _ name:variable
+	= call _ name:variable _ with _ args:argument_list _ into _ a:assignable
+		{ new Assign(a, new FunctionCall(name, args)) }
+	/ call _ name:variable _ with _ args:argument_list
+		{ new FunctionCall(name, args) }
+	/ call _ name:variable _ into _ a:assignable
+		{ new Assign(a, new FunctionCall(name)) }
+	/ call _ name:variable
 		{ new FunctionCall(name) }		
 
 function_call <FunctionCall>

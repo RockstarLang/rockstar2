@@ -76,7 +76,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		return index < Value.Length ? new Strïng(Value[index]) : Mysterious.Instance;
 	}
 
-	public Value SetCharAt(List<Value> indexes, Value value) {
+	public Value SetCharAt(IList<Value> indexes, Value value) {
 		if (indexes is not [IHaveANumber { Value: >= 0 } number] || number.Value >= Value.Length) return this;
 		var newValue = this.Value[..(int) number.Value]
 					   + value.ToStrïng().Value

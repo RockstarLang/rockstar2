@@ -16,26 +16,35 @@ namespace Rockstar.Test.Expressions {
 			var foo = new SimpleVariable("foo");
 			var bar = new SimpleVariable("bar");
 			var value = new Number(123);
-			e1.SetVariable(foo, value);
 			var e2 = e1.Extend();
-			e2.SetVariable(bar, value);
 			var e3 = e2.Extend();
-			var e4 = e2.Extend();
-			e4.GetScope(foo).ShouldBe(e4);
-			e4.GetScope(bar).ShouldBe(e4);
+			var e4 = e3.Extend();
+			e1.SetVariable(foo, value, Scope.Local);
+			e2.SetVariable(bar, value, Scope.Local);
+			e4.GetStore(foo, Scope.Global).ShouldBe(e1);
+			e4.GetStore(bar, Scope.Global).ShouldBe(e2);
 
 			var n = new Number(456);
-			e4.SetVariable(foo, n);
+			e4.SetVariable(foo, n, Scope.Local);
 			e4.Lookup(foo).ShouldBe(n);
 			e3.Lookup(foo).ShouldBe(value);
 			e2.Lookup(foo).ShouldBe(value);
 			e1.Lookup(foo).ShouldBe(value);
 
-			e4.SetVariable(foo, n, true);
+			e4.SetVariable(foo, n, Scope.Local);
 			e4.Lookup(foo).ShouldBe(n);
 			e3.Lookup(foo).ShouldBe(value);
 			e2.Lookup(foo).ShouldBe(value);
 			e1.Lookup(foo).ShouldBe(value);
+
+			var s1 = new Strïng("foo");
+			var s2 = new Strïng("bar");
+			e4.SetVariable(bar, s1);
+			e1.SetVariable(bar, s2);
+			e4.Lookup(bar).ShouldBe(s1);
+			e3.Lookup(bar).ShouldBe(s1);
+			e2.Lookup(bar).ShouldBe(s1);
+			e1.Lookup(bar).ShouldBe(s2);
 		}
 
 		[Theory]

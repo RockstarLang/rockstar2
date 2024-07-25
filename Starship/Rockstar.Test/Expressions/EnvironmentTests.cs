@@ -33,9 +33,9 @@ namespace Rockstar.Test.Expressions {
 
 			e4.SetVariable(foo, n, true);
 			e4.Lookup(foo).ShouldBe(n);
-			e3.Lookup(foo).ShouldBe(n);
-			e2.Lookup(foo).ShouldBe(n);
-			e1.Lookup(foo).ShouldBe(n);
+			e3.Lookup(foo).ShouldBe(value);
+			e2.Lookup(foo).ShouldBe(value);
+			e1.Lookup(foo).ShouldBe(value);
 		}
 
 		[Theory]

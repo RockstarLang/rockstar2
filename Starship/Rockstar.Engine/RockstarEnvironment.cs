@@ -138,7 +138,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 	}
 
 	private Result Mutation(Mutation m) {
-		var source = Eval(m.Expression, true);
+		var source = Eval(m.Expression);
 		var modifier = m.Modifier == null ? null : Eval(m.Modifier);
 		var result = m.Operator switch {
 			Operator.Join => Join(source, modifier),
@@ -222,7 +222,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		List<Value> values = [];
 
 		foreach (var arg in call.Args.Take(names.Count)) {
-			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg, true);
+			value = arg is FunctionCall nestedCall ? Call(nestedCall, bucket).Value : Eval(arg);
 			values.Add(value);
 		}
 		if (call.Args.Count + bucket.Count < names.Count) {
@@ -255,18 +255,21 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 
 	private Result Output(Output output) {
-		var value = Eval(output.Expression);
+		var value = Eval(output.Expression) switch {
+			Array array => array.Lëngth,
+			{ } v => v
+		};
 		Write(value.ToStrïng().Value);
 		Write(output.Suffix);
 		return new(value);
 	}
 
-	private Value Eval(Expression expression, bool preserveArrays = false) => expression switch {
+	private Value Eval(Expression expression) => expression switch {
 		Value value => value,
-		Binary binary => binary.Resolve(expr => Eval(expr)),
-		Lookup lookup => Lookup(lookup.Variable, preserveArrays),
-		Variable v => Lookup(v, preserveArrays),
-		Unary unary => unary.Resolve(expr => Eval(expr)),
+		Binary binary => binary.Resolve(Eval),
+		Lookup lookup => Lookup(lookup.Variable),
+		Variable v => Lookup(v),
+		Unary unary => unary.Resolve(Eval),
 		FunctionCall call => Call(call).Value,
 		Delist delist => Delist(delist).Value,
 		_ => throw new NotImplementedException($"Eval not implemented for {expression.GetType()}")
@@ -287,11 +290,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return Parent != default ? Parent.LookupValue(key) : Mysterious.Instance;
 	}
 
-	public Value Lookup(Variable variable, bool preserveArrays = false) {
+	public Value Lookup(Variable variable) {
 		var key = variable is Pronoun pronoun ? QualifyPronoun(pronoun).Key : variable.Key;
 		var value = LookupValue(key);
-		if (preserveArrays) return value;
-		var indexes = variable.Indexes.Select(expr => Eval(expr)).ToList();
-		return value.AtIndex(indexes);
+		return value.AtIndex(variable.Indexes.Select(Eval));
 	}
 }

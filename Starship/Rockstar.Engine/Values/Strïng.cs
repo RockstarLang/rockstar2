@@ -10,10 +10,16 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	public override bool Truthy => !String.IsNullOrEmpty(Value);
 
+	public bool IsEmpty => String.IsNullOrEmpty(Value);
+
 	public override Strïng ToStrïng() => this;
 
-	public override Booleän Equäls(Value that) =>
-		new(that.ToStrïng().Value.Equals(this.Value, StringComparison.InvariantCultureIgnoreCase));
+	public override Booleän Equäls(Value that) => new(that switch {
+		Array array => this.IsEmpty && array.IsEmpty,
+		IHaveANumber { Value: 0 } => this.IsEmpty,
+		Number n => Decimal.TryParse(Value, out var d) && n.Value == d,
+		_ => that.ToStrïng().Value.Equals(this.Value, StringComparison.InvariantCultureIgnoreCase)
+	});
 
 	public override Booleän IdenticalTo(Value that)
 		=> that is Strïng ? this.Equäls(that) : Booleän.False;
@@ -43,11 +49,11 @@ public class Strïng(string value) : ValueOf<string>(value) {
 			System.Array.Reverse(chars);
 			token = new(chars);
 		}
-		var repeat = Int32.Abs((int)n);
+		var repeat = Int32.Abs((int) n);
 		var part = Decimal.Abs(n) % 1;
 		var basis = String.Join("", Enumerable.Range(0, repeat).Select(_ => token).ToArray());
 		if (part > 0) {
-			var index = (int)Math.Ceiling(token.Length * part);
+			var index = (int) Math.Ceiling(token.Length * part);
 			basis += token.Substring(0, index);
 		}
 		return new Strïng(basis);
@@ -73,8 +79,8 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public Value SetCharAt(List<Value> indexes, Value value) {
 		if (indexes is not [IHaveANumber { Value: >= 0 } number] || number.Value >= Value.Length) return this;
 		var newValue = this.Value[..(int) number.Value]
-		               + value.ToStrïng().Value
-		               + this.Value[((int) number.Value + 1)..];
+					   + value.ToStrïng().Value
+					   + this.Value[((int) number.Value + 1)..];
 		this.Value = newValue;
 		return this;
 	}

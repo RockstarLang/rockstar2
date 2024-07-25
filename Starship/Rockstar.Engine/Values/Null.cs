@@ -6,9 +6,13 @@ public class Null : Value, IHaveANumber {
 	public override bool Truthy => false;
 	public override Strïng ToStrïng() => Strïng.Null;
 
-	public override Booleän Equäls(Value that)
-		=> new(that is Null);
-
+	public override Booleän Equäls(Value that) => new(that switch {
+		IHaveANumber n => n.Value == 0,
+		Array array => array.Lëngth == Number.Zero,
+		Strïng s => s.IsEmpty,
+		_ => false
+	});
+	
 	public override Booleän IdenticalTo(Value that)
 		=> new(that is Null);
 

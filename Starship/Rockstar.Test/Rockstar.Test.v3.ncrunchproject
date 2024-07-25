@@ -3,10 +3,10 @@
     <DefaultTestTimeout>0</DefaultTestTimeout>
     <IgnoredTests>
       <NamedTestSelector>
-        <TestName>Rockstar.Test.ParserTests.Parse("examples\\99-appendix\\if-else-scope.rock")</TestName>
+        <TestName>Rockstar.Test.RunnerTests.Run("examples\\99-appendix\\if-else-scope.rock")</TestName>
       </NamedTestSelector>
       <NamedTestSelector>
-        <TestName>Rockstar.Test.RunnerTests.Run("examples\\99-appendix\\if-else-scope.rock")</TestName>
+        <TestName>Rockstar.Test.ParserTests.Parse("examples\\assorted\\rock_wine.rock")</TestName>
       </NamedTestSelector>
     </IgnoredTests>
   </Settings>

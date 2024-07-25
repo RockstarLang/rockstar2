@@ -6,7 +6,7 @@ public class Booleän(bool value) : ValueOf<bool>(value), IHaveANumber {
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).Append("boolean: ").AppendLine(this.ToStrïng().Value);
 
-	public static Booleän operator !(Booleän that) => new(that.Falsy);
+	public static Booleän operator !(Booleän that) => new(that.Falsey);
 
 	public override bool Truthy => value;
 

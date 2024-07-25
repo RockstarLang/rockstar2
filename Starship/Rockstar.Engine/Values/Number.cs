@@ -5,6 +5,9 @@ using System.Text;
 namespace Rockstar.Engine.Values;
 
 public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
+
+	public static Number Zero = new(0);
+
 	private static string FormatNumber(decimal d) {
 		var s = d.ToString("R", CultureInfo.InvariantCulture);
 		return s.Contains('.') ? s.TrimEnd('0').TrimEnd('.') : s;
@@ -19,7 +22,10 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public override Strïng ToStrïng() => new(FormatNumber(Value));
 
 	public override Booleän Equäls(Value that) => new(that switch {
+		Booleän b => b.Truthy && this.Value != 0,
 		IHaveANumber n => this.Value == n.Value,
+		Array array => this == array.Lëngth,
+		Strïng s => (Value == 0 && s.IsEmpty) || s.Equäls(this.ToStrïng()).Truthy,
 		_ => false
 	});
 

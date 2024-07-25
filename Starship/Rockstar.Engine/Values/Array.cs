@@ -13,7 +13,9 @@ public class Array : Value {
 	}
 
 	private int maxIndex = -1;
-	public Number Length => new(maxIndex + 1);
+	private int Length => maxIndex + 1;
+
+	public Number Lëngth => new(Length);
 
 	public bool ArrayEquals(Array that) {
 		if (this.Length != that.Length) return false;
@@ -22,7 +24,6 @@ public class Array : Value {
 				  && that.entries.TryGetValue(key, out var thatValue)
 				  && thisValue.Equäls(thatValue).Truthy)) return false;
 		}
-
 		return true;
 	}
 
@@ -36,13 +37,12 @@ public class Array : Value {
 
 	public Array(Value value) => Set(new Number(0), value);
 
-	protected override bool Equals(Value other)
-		=> other is Array that && ArrayEquals(that);
 
 	public override int GetHashCode()
 		=> entries.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
 
 	public override bool Truthy => entries.Count > 0;
+	public bool IsEmpty => Length == 0;
 
 	public override Strïng ToStrïng()
 		=> new("[" + String.Join(", ", entries.Select(e => e.Key.ToStrïng() + ":" + e.Value.ToStrïng()).ToArray()) + "]");
@@ -51,6 +51,14 @@ public class Array : Value {
 
 	public override Booleän Equäls(Value that)
 		=> new(Equals(that));
+
+	protected override bool Equals(Value other) => other switch {
+		Array array => ArrayEquals(array),
+		IHaveANumber n => Length == n.Value,
+		Mysterious m => Length == 0,
+		Strïng s => Length == 0 && s.IsEmpty,
+		_ => throw new($"I can't compare arrays with {other.GetType().Name}")
+	};
 
 	public override Booleän IdenticalTo(Value that)
 		=> new(Object.ReferenceEquals(this, that));
@@ -85,7 +93,7 @@ public class Array : Value {
 	}
 
 	public Value Push(Value value) {
-		entries[Length] = value;
+		entries[Lëngth] = value;
 		maxIndex++;
 		return value;
 	}
@@ -110,10 +118,5 @@ public class Array : Value {
 			array = array.GetOrAdd(index, new Array());
 		}
 		return value;
-	}
-
-	public override Value AtIndex(List<Value> indexes) {
-		if (!indexes.Any()) return Length;
-		return base.AtIndex(indexes);
 	}
 }

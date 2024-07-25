@@ -24,7 +24,7 @@ public class Unary(Operator op, Expression expr)
 			//Operator.LessThan => v.LessThan(eval(rhs.Single())),
 			//Operator.MoreThan => v.MoreThan(eval(rhs.Single())),
 
-			//Operator.Nor => new Booleän(v.Falsy && eval(rhs.Single()).Falsy),
+			//Operator.Nor => new Booleän(v.Falsey && eval(rhs.Single()).Falsey),
 			//Operator.And => v.Truthy ? eval(rhs.Single()) : v,
 			//Operator.Or => v.Truthy ? v : eval(rhs.Single()),
 		};

@@ -14,7 +14,7 @@ public abstract class Value : Expression {
 	public abstract override int GetHashCode();
 
 	public virtual bool Truthy => false;
-	public bool Falsy => !Truthy;
+	public bool Falsey => !Truthy;
 
 	public abstract Strïng ToStrïng();
 	public static bool operator ==(Value? lhs, Value? rhs) => lhs?.Equals(rhs) ?? rhs is null;
@@ -67,7 +67,7 @@ public abstract class Value : Expression {
 	public Value LessThan(Value that) => Compare(this, that, (a, b) => a < b);
 	public Value MoreThan(Value that) => Compare(this, that, (a, b) => a > b);
 
-	public virtual Value AtIndex(List<Value> indexes) {
+	public virtual Value AtIndex(IEnumerable<Value> indexes) {
 		var value = this;
 		return indexes.Aggregate(value, (current, index) => current.AtIndex(index));
 	}

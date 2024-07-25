@@ -139,9 +139,9 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			throw;
 		}
 		try {
-			var inputs = ReadInputs(filePath);
+			var inputs = ReadInputs(testFilePath);
 			result = RunProgram(program, inputs);
-			var expect = ExtractExpects(filePath);
+			var expect = ExtractExpects(relativePath);
 			if (String.IsNullOrEmpty(expect)) return result;
 			result.ShouldBe(expect);
 			testOutput.WriteLine($"   at <Rockstar code> in {UncrunchFilePath(relativePath)}:line 1");

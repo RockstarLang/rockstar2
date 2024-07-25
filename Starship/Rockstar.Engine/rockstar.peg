@@ -40,7 +40,7 @@ statement
 	/ decrement
 	/ mutation
 	/ rounding
-	// e:expression &EOS { new ExpressionStatement(e) }
+	/ e:expression &EOS { new ExpressionStatement(e) }
 
 enlist_stmt <Statement>
 	= push _ e:expression _ into _ v:variable
@@ -54,7 +54,7 @@ enlist_stmt <Statement>
 	/ d:delist _ into _ t:assignable
 		{ new Assign(t, d) }
 	/ d:delist
-		{ new ExpressionStatement(d) }
+		{ new ExpressionStatement(d) } 
 
 delist <Delist>
 	= pop _ v:variable
@@ -178,6 +178,8 @@ continue_stmt <Statement>
 wildcard = (letter / _)* &EOS
 
 EOB = EOL &EOL
+	/ EOL _ &EOL
+	/ (_ / [,?!.;])* EOL &((_ / [,?!.;])? EOL)
     / EOS* &(_? else)
     / EOS* ','? _? end (_ / [,?!.;])*
     / EOS* ','? _? end (_ / [,?!.;])*
@@ -359,9 +361,7 @@ primary <Expression>
 	//	#error{ $"Expected primary expression, found '{unexpected}' at line {state.Line}, col {state.Column - unexpected.Length}" }
 
 call_stmt <Statement>
-	= name:variable &'!'
-		{ new FunctionCall(name) }
-	/ call _ name:variable
+	= call _ name:variable
 		{ new FunctionCall(name) }		
 
 function_call <FunctionCall>
@@ -451,8 +451,6 @@ poetic_number <Number>
 // the new syntax, by retrofitting a rule that a poetic number using v1
 // syntax must start with a letter, and can't start with any keyword
 // indicating an arithmetic or logical operator.
-keywords_which_can_begin_an_expression
-	= plus / minus / times / divided_by / like / and / or / nor / not
 v1_digit_filter
 	= &letter !keywords_which_can_begin_an_expression
 
@@ -545,8 +543,13 @@ then = 'then' !letter
 write = 'write' !letter / 'whisper' !letter
 call = 'call' !letter
 
+keywords_which_can_begin_an_expression
+	= plus / minus / times / divided_by
+	/ like / and / or / nor / not
+	/ null / true / false / empty / mysterious 
+
 keyword
-	= and 
+	= keywords_which_can_begin_an_expression
 	/ as 
 	/ as_great 
 	/ as_small 
@@ -554,10 +557,8 @@ keyword
 	/ be 
 	/ build
 	/ cast
-	/ divided_by
 	/ down 
 	/ else 
-	/ empty 
 	/ end
 	/ false 
 	/ if 
@@ -569,15 +570,12 @@ keyword
 	/ less 
 	/ let 
 	/ listen 
-	/ minus 
 	/ more 
-	/ mysterious 
 	/ non 
 	/ not 
 	/ null 
 	/ or 
 	/ over 
-	/ plus 
 	/ print 
 	/ pronoun 
 	/ put 
@@ -588,9 +586,7 @@ keyword
 	/ taking 
 	/ than 
 	/ the
-	/ times 
 	/ to 
-	/ true 
 	/ until 
 	/ up 
 	/ while	

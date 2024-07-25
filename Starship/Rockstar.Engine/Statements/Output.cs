@@ -12,7 +12,7 @@ public class Output(Expression expr, string suffix = "") : ExpressionStatement(e
 		return Expression switch {
 			Lookup lookup => sb.AppendLine(lookup.ToString()),
 			Value value => sb.AppendLine(value.ToString()),
-			_ => Expression.Print(sb, prefix + INDENT)
+			_ => Expression.Print(sb.AppendLine(), prefix + INDENT)
 		};
 	}
 }

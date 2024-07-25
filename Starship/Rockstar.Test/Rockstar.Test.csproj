@@ -246,6 +246,9 @@
     <None Update="programs\examples\08-arrays\the-scorpions.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\09-conversions\mutations-update-pronouns.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\09-conversions\cast.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -337,6 +340,72 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\99-appendix\variable-lists.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\99_beers.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\decimal_to_binary_converter.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\factorization.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\fizzbuzz-using-stacks-and-cast.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\fizzbuzz.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\fizzbuzz_minimalist.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\hello-world.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\isPalindrome.rock.in">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\isPalindrome.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\mandelbrot-minimalist.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\mandelbrot.rock.out">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\mandelbrot.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\nth-fibonacci.rock.in">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\nth-fibonacci.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\primes_with_input.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\primes_with_input_v2.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\README.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\rock_wine.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\rock_wine_minimalist.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\rot13.rock.in">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\rot13.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\assorted\The-Final-Stand.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\fixtures\conditionals\if-block-else-block.rock">

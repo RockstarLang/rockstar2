@@ -402,12 +402,6 @@
     <None Update="programs\examples\assorted\README.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\assorted\rock_wine.rock">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="programs\examples\assorted\rock_wine_minimalist.rock">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="programs\examples\assorted\rot13.rock.in">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -30,7 +30,7 @@ say true is null
 say false is null
 say null is null
 say ""
-say "Checking Boolean strings"
+say "Checking boolean strings"
 say true is "true"
 say true is "RIGht"
 say true is "lies"
@@ -99,7 +99,7 @@ say the values were 6
 
 say "proper variable"
 Proper Value is 1
-say Proper VALUE is 1
+say Proper VALUE IS 1
 PROPER VALUE'S 2
 say Proper Value's 2
 Proper Values are 3

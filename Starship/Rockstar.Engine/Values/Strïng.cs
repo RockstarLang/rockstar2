@@ -98,4 +98,10 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		Value = Value[1..];
 		return new Strïng(result);
 	}
+
+	public Value ToCharCodes() {
+		if (Value.Length == 0) return new Array();
+		if (Value.Length == 1) return new Number(Value[0]);
+		return new Array(Value.ToCharArray().Select(c => new Number(c)));
+	}
 }

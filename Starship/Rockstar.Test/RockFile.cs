@@ -12,28 +12,34 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 		return String.Join(Path.DirectorySeparatorChar, result.ToArray());
 	}
 
+	public string NameThing => ToString().Replace(Path.DirectorySeparatorChar, '_');
+
 	private string AbsolutePath { get; set; } = absolutePath;
 
 	public string Contents => File.ReadAllText(AbsolutePath, Encoding.UTF8);
 
-	public string UncrunchedFilePath {
-		get {
-#if NCRUNCH
-			var originalProjectPath = NCrunchEnvironment.GetOriginalProjectPath();
-			var testProjectDirectory = Path.GetDirectoryName(originalProjectPath)!;
-			var segments = new Stack<string>(AbsolutePath.Split(Path.DirectorySeparatorChar));
-			var pathToTest = String.Empty;
-			while (segments.Any()) {
-				pathToTest = Path.Combine(segments.Pop(), pathToTest);
-				var candidate = Path.Combine(testProjectDirectory, pathToTest);
-				if (File.Exists(candidate)) return candidate;
-			}
-			throw new($"Couldn't determine original project path for {AbsolutePath}");
-#else
-			return AbsolutePath;
-#endif
+	public string ActualOutputPath => Uncrunch(AbsolutePath) + "-actual";
+	public string ExpectOutputPath => Uncrunch(AbsolutePath) + "-expect";
+
+	public static string Uncrunch(string filePath) {
+		var originalProjectPath = NCrunchEnvironment.GetOriginalProjectPath();
+		var testProjectDirectory = Path.GetDirectoryName(originalProjectPath)!;
+		var segments = new Stack<string>(filePath.Split(Path.DirectorySeparatorChar));
+		var pathToTest = String.Empty;
+		while (segments.Any()) {
+			pathToTest = Path.Combine(segments.Pop(), pathToTest);
+			var candidate = Path.Combine(testProjectDirectory, pathToTest);
+			if (File.Exists(candidate)) return candidate;
 		}
+		throw new($"Couldn't determine original project path for {filePath}");
 	}
+
+	public string UncrunchedFilePath =>
+#if NCRUNCH
+		Uncrunch(this.AbsolutePath);
+#else
+		AbsolutePath;
+#endif
 
 	private string? expectedOutput = null;
 

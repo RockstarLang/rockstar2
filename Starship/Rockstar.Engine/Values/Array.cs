@@ -6,8 +6,9 @@ namespace Rockstar.Engine.Values;
 public class Array : Value, IHaveANumber {
 
 	decimal IHaveANumber.Value => Length;
+	public int IntegerValue => Length;
 
-	private readonly List<Value> list = [];
+	private readonly List<Value> list;
 	private readonly Dictionary<Value, Value> hash = new();
 
 	private static Array Clone(Array source) {

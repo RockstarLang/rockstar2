@@ -1,5 +1,6 @@
 namespace Rockstar.Engine.Values;
 
-interface IHaveANumber {
+public interface IHaveANumber {
 	decimal Value { get; }
+	int IntegerValue { get; }
 }

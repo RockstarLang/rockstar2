@@ -95,9 +95,12 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			result = RunProgram(program, inputs);
 			var expect = rockFile.ExpectedOutput;
 			if (String.IsNullOrEmpty(expect)) return;
+			var actualOutputPath = $@"D:\rockshit\actual\{rockFile.NameThing}.txt";
+			var expectOutputPath = $@"D:\rockshit\expect\{rockFile.NameThing}.txt";
+			testOutput.WriteLine(actualOutputPath);
 			try {
-				File.WriteAllText("D:\\actual.txt", result.WithDebugInformationRemoved());
-				File.WriteAllText("D:\\expect.txt", expect);
+				File.WriteAllText(actualOutputPath, result.WithDebugInformationRemoved());
+				File.WriteAllText(expectOutputPath, expect);
 			} catch (Exception ex) {
 				// Don't care.
 			}

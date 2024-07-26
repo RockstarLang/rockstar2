@@ -171,9 +171,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(result);
 	}
 
-	private static Value Cast(Value source, Value modifier) {
+	private static Value Cast(Value source, Value? modifier) {
 		return source switch {
-			Strïng s => Number.Parse(s, modifier),
+			Strïng s => modifier switch {
+				IHaveANumber numberBase => Number.Parse(s, numberBase),
+				_ => s.ToCharCodes()
+			},
 			IHaveANumber n => new Strïng(Char.ConvertFromUtf32((int) n.Value)),
 			_ => throw new($"Can't cast expression of type {source.GetType().Name}")
 		};

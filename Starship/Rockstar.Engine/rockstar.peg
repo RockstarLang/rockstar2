@@ -331,10 +331,10 @@ comparison <Expression>
 	/ addition 
 
 comparator <Operator>
-	= (_? '>' _?  / _is _ (above / more _ than) _) { Operator.MoreThan }
-	/ (_? '<' _?  / _is _ (under / less _ than) _) { Operator.LessThan }
-	/ (_? '>=' _? / _is _ as _ as_great _ as _) { Operator.MoreThanEqual }
+	= (_? '>=' _? / _is _ as _ as_great _ as _) { Operator.MoreThanEqual }
 	/ (_? '<=' _? / _is _ as _ as_small _ as _) { Operator.LessThanEqual }
+	/ (_? '>' _?  / _is _ (above / more _ than) _) { Operator.MoreThan }
+	/ (_? '<' _?  / _is _ (under / less _ than) _) { Operator.LessThan }
 
 numeric_expression
 	= addition

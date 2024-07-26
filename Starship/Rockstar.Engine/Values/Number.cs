@@ -52,19 +52,33 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 		this.Value = value.Truthy ? oldValue | bitIndex : oldValue & ~bitIndex;
 		return this;
 	}
-	private static readonly List<char> digits = [.."0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()];
+	private static readonly List<char> digits = [.. "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()];
 
-	private static long BaseToLong(string number, int @base) {
+	private static decimal BaseToDecimal(string number, int @base) {
 		var chars = number.ToUpperInvariant().ToCharArray();
-		var m = chars.Length - 1;
-		return chars.Select(c
-			=> digits.IndexOf(c))
-			.Select(x => x * (long) Math.Pow(@base, m--))
-			.Sum();
+		var d = 0m;
+		var i = 0;
+		while (i < chars.Length) {
+			if (chars[i] == '.') break;
+			var index = digits.IndexOf(chars[i]);
+			if (index >= 0) d = d * @base + index;
+			i++;
+		}
+		if (i == chars.Length) return d;
+		i++;
+		var multiplier = 1.0m / @base;
+		while (i < chars.Length) {
+			var index = digits.IndexOf(chars[i]);
+			if (index >= 0) d += (multiplier * index);
+			multiplier /= @base;
+			i++;
+		}
+		return d;
 	}
 
-	public static Number Parse(Strïng strïng, Value modifier)
-		=> modifier is IHaveANumber n
-			? new(BaseToLong(strïng.Value, (int) n.Value))
-			: new(Decimal.Parse(strïng.Value));
+	public static Number Parse(Strïng strïng, IHaveANumber numberBase)
+			=> new(numberBase.Value == 10
+				? Decimal.Parse(strïng.Value)
+				: BaseToDecimal(strïng.Value, numberBase.IntegerValue));
+
 }

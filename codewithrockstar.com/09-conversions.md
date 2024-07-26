@@ -31,7 +31,7 @@ To join an array in Rockstar, use the `join` mutation, or the alias `unite`
 
 Type Conversions
 
-To convert any value to a string, `write` or `whisper` the value into a variable:
+To convert any value to a string, add it to the empty string.
 
 ```rockstar
 {% include_relative {{ page.examples }}join-arrays.rock %}
@@ -40,8 +40,10 @@ To convert any value to a string, `write` or `whisper` the value into a variable
 The built-in `cast` function (aka `burn`) will parse strings into numbers, or convert a number into a Unicode character corresponding to the number's code point.
 
 ```rockstar
-{% include_relative {{ page.examples }}join-arrays.rock %}
+{% include_relative {{ page.examples }}cast.rock %}
 ```
+
+
 #### Arithmetic Rounding
 
 Rounding in Rockstar is performed by the `turn` keyword. `Turn up` will round up (i.e. towards positive infinity), to the nearest integer; `turn down` will round down (towards negative infinity) to the nearest integer, and `turn round` will round to the nearest integer. Bonnie Tyler enthusiasts will be pleased to note that Rockstar accepts `turn around` as a valid alias.

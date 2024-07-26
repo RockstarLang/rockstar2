@@ -21,4 +21,5 @@ public class Null : Value, IHaveANumber {
 
 	public static readonly Null Instance = new();
 	public decimal Value => 0;
+	public int IntegerValue => 0;
 }

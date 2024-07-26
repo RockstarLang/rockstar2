@@ -64,13 +64,13 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var store = GetStore(target, scope);
 		if (variable is not Pronoun) UpdatePronounSubject(target);
 		var indexes = variable.Indexes.Select(Eval).ToList();
-		var stored = store.Set(target, indexes, value);
+		var stored = store.SetLocal(target, indexes, value);
 		return new(stored);
 	}
 
-	private Value Set(Variable variable, Value value) => Set(variable, [], value);
+	private Value SetLocal(Variable variable, Value value) => SetLocal(variable, [], value);
 
-	private Value Set(Variable variable, IList<Value> indexes, Value value) {
+	private Value SetLocal(Variable variable, IList<Value> indexes, Value value) {
 		if (!indexes.Any()) return variables[variable.Key] = value;
 		variables.TryAdd(variable.Key, new Array());
 		return variables[variable.Key] switch {
@@ -121,7 +121,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Debug(Debug debug) {
 		var value = Eval(debug.Expression);
-		Write("DEBUG: " + value.GetType().Name + ": " + value);
+		Write("DEBUG: ");
+		if (debug.Expression is Lookup lookup) Write(lookup.Variable.Name + ": ");
+		Write(value.GetType().Name + ": " + value);
 		Write(Environment.NewLine);
 		return new(value);
 	}
@@ -164,7 +166,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 			_ => throw new($"Unsupported mutation operator {m.Operator}")
 		};
 		if (m.Target == default) return new(result);
-		Set(QualifyPronoun(m.Target), [], result);
+		SetLocal(QualifyPronoun(m.Target), [], result);
 		if (m.Target is not Pronoun) UpdatePronounSubject(m.Target);
 		return new(result);
 	}
@@ -183,9 +185,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return s.Split(splitter);
 	}
 
-	private static Value Join(Value source, Value? modifier) {
+	private static Value Join(Value source, Value? joiner) {
 		if (source is not Array array) throw new("Can't join something which is not an array.");
-		var joiner = modifier?.ToString() ?? "";
 		return array.Join(joiner);
 	}
 
@@ -205,8 +206,11 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Result Delist(Delist delist) {
 		var variable = QualifyPronoun(delist.Variable);
 		var value = LookupValue(variable.Key);
-		if (value is Array array) return new(array.Pop());
-		return new(new Null());
+		return value switch {
+			Array array => new(array.Pop()),
+			Strïng strïng => new(strïng.Pop()),
+			_ => new(Null.Instance)
+		};
 	}
 
 	private Result Enlist(Enlist e) {
@@ -214,7 +218,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var value = LookupValue(variable.Key);
 		if (value is not Array array) {
 			array = value == Mysterious.Instance ? new Array() : new(value);
-			Set(variable, array);
+			SetLocal(variable, array);
 		}
 		foreach (var expr in e.Expressions) array.Push(Eval(expr));
 		return new(array);
@@ -270,7 +274,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 			result = Execute(loop.Body);
 			switch (result.WhatToDo) {
 				case WhatToDo.Skip: continue;
-				case WhatToDo.Break: return result;
+				case WhatToDo.Break: return new(result.Value);
 				case WhatToDo.Return: return result;
 			}
 		}

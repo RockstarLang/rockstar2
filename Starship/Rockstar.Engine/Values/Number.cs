@@ -13,6 +13,7 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 		return s.Contains('.') ? s.TrimEnd('0').TrimEnd('.') : s;
 	}
 
+	public int IntegerValue => (int) Math.Truncate(value);
 	public bool IsNonNegativeInteger { get; } = value >= 0 && Math.Truncate(value) == value;
 
 	public Number(string value) : this(Decimal.Parse(value)) { }

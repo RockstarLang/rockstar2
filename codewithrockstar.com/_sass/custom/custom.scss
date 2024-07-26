@@ -1,11 +1,16 @@
 pre.rockstar-output {
 	border: 2px solid #000;
+	height: 64px;
+}
+
+button.rockstar-button {
+	padding: 16px;
+	border: 1px solid $link-color;
+	background-color: $button-color !important;
 }
 
 pre {
-	padding: 8px !important;
 	tab-size: 2 !important;
-	outline: 1px solid #303 !important;
 }
 
-
+code { border: 0; font-size: 1.1em !important; }

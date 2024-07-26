@@ -150,6 +150,9 @@
     <None Update="programs\examples\05-expression-syntax\expression-lists.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\06-flow-control\block-syntax.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\06-flow-control\break-and-continue-wildcard.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -273,6 +276,12 @@
     <None Update="programs\examples\09-conversions\write-strings.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\99-appendix\acid-test.rock.in">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\99-appendix\acid-test.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\99-appendix\expression-lists.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -376,9 +385,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\assorted\isPalindrome.rock">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="programs\examples\assorted\mandelbrot-minimalist.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\assorted\mandelbrot.rock.out">

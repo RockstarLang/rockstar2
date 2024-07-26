@@ -1,20 +1,28 @@
 using System;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
+using System.Threading.Tasks;
 using Rockstar.Engine;
 
 namespace Rockstar.Wasm;
 
+public class WasmIO(Action<string> output) : IRockstarIO {
+	public string? Read() => null;
+
+	public void Write(string s) => output(s);
+}
 public partial class RockstarRunner {
 	private static readonly Parser parser = new();
-	private static readonly StringBuilderIO io = new StringBuilderIO();
-	private static readonly RockstarEnvironment env = new(io);
 
 	[JSExport]
-	public static string Run(string source) {
-		var program = parser.Parse(source);
-		io.Reset();
-		env.Execute(program);
-		return io.Output;
+	public static Task<string> Run(string source,
+		[JSMarshalAs<JSType.Function<JSType.String>>] Action<string> output) {
+		return Task.Run(() => {
+			var program = parser.Parse(source);
+			var e = new WasmIO(output);
+			var env = new RockstarEnvironment(e);
+			var result = env.Execute(program);
+			return result?.Value?.ToString() ?? "";
+		});
 	}
 }

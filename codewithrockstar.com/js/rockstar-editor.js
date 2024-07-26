@@ -26447,7 +26447,7 @@ createTheme({
 });
 
 // Author: unknown
-createTheme({
+const boysAndGirls = createTheme({
     variant: 'dark',
     settings: {
         background: '#000205',
@@ -26529,7 +26529,7 @@ createTheme({
 });
 
 // Author: Jacob Rus
-createTheme({
+const cobalt = createTheme({
     variant: 'dark',
     settings: {
         background: '#00254b',
@@ -27043,7 +27043,7 @@ createTheme({
 });
 
 // Author: Chris Kempson
-createTheme({
+const tomorrow = createTheme({
     variant: 'light',
     settings: {
         background: '#FFFFFF',
@@ -27094,4 +27094,4 @@ createTheme({
     ],
 });
 
-export { EditorView, Rockstar, basicSetup, coolGlow };
+export { EditorView, Rockstar, basicSetup, boysAndGirls, cobalt, coolGlow, tomorrow };

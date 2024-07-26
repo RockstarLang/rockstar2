@@ -1,7 +1,5 @@
-using System.Runtime.CompilerServices;
-using Array = Rockstar.Engine.Values.Array;
 using Rockstar.Engine.Values;
-using Shouldly.Configuration;
+using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Test.Values {
 	public enum ValueType {
@@ -67,11 +65,26 @@ namespace Rockstar.Test.Values {
 			new Number(1).Equäls(Null.Instance).ShouldBeFalsey();
 			new Number(5).Equäls(new Number(4)).ShouldBeFalsey();
 		}
+
+		[Fact]
+		public void CloningArraysWorks() {
+			var a = new Array(new Strïng("a"), new Strïng("b"), new Strïng("c"));
+			a.Set(new Number(0.5m), new Strïng("half"));
+			a.Set(Null.Instance, new Strïng("null"));
+			var b = (Array)a.Clone();
+			b.AtIndex(0).ShouldBeStrïng("a");
+			b.AtIndex(1).ShouldBeStrïng("b");
+			b.AtIndex(2).ShouldBeStrïng("c");
+			b.AtIndex(new Number(0.5m)).ShouldBeStrïng("half");
+			b.AtIndex(Null.Instance).ShouldBeStrïng("null");
+		}
 	}
 }
 
 
 public static class ValueExtensions {
 	public static void ShouldBeTruthy(this Value v) => v.Truthy.ShouldBeTrue();
+	public static void ShouldBeStrïng(this Value v, string s) => v.ToStrïng().Value.ShouldBe(s);
 	public static void ShouldBeFalsey(this Value v) => v.Truthy.ShouldBeFalse();
+	public static void ShouldBeMysterious(this Value v) => v.Equäls(Mysterious.Instance).ShouldBeTruthy();
 }

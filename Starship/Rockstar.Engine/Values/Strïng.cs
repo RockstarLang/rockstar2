@@ -91,4 +91,11 @@ public class Strïng(string value) : ValueOf<string>(value) {
 			: this.Value.Split(delimiter).Select(s => new Strïng(s)).ToArray();
 		return new(tokens);
 	}
+
+	public Value Pop() {
+		if (Value.Length <= 0) return Mysterious.Instance;
+		var result = Value[0];
+		Value = Value[1..];
+		return new Strïng(result);
+	}
 }

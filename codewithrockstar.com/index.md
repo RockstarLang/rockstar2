@@ -3,6 +3,18 @@ title: Home
 layout: home
 nav_order: "1000"
 ---
+Run some Rockstar:
+
+```rockstar
+Shout "Hello, World!"
+
+
+
+
+
+
+```
+
 Well... do you wanna get rocked?
 
 * 01 Getting Started

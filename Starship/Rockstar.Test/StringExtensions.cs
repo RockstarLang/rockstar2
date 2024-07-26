@@ -11,4 +11,7 @@ public static class StringExtensions {
 		if (index + length >= s.Length) length = s.Length - index;
 		return s.Substring(index, length);
 	}
+	public static string WithDebugInformationRemoved(this string s)
+		=> String.Join(Environment.NewLine, s.ReplaceLineEndings().Split(Environment.NewLine)
+			.Where(line => !line.StartsWith("DEBUG: ")));
 }

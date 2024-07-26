@@ -80,4 +80,3 @@ Expression lists are supported as arguments to compound expressions and when roc
 Finally, there are **variable lists**, used to specify the arguments when defining a function.
 
 Because the elements in the list can **only** be variable names, a variable list supports all the separators used in primary and expression lists, and also the bareword ` and ` (with no commas or punctuation required).
-

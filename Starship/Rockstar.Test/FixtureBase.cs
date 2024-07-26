@@ -95,7 +95,13 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			result = RunProgram(program, inputs);
 			var expect = rockFile.ExpectedOutput;
 			if (String.IsNullOrEmpty(expect)) return;
-			result.ShouldBe(expect);
+			try {
+				File.WriteAllText("D:\\actual.txt", result.WithDebugInformationRemoved());
+				File.WriteAllText("D:\\expect.txt", expect);
+			} catch (Exception ex) {
+				// Don't care.
+			}
+			result.WithDebugInformationRemoved().ShouldBe(expect);
 		} catch(Exception ex) {
 			if (rockFile.ExtractedExpectedError("runtime error", out var error) && ex.Message == error) return;
 			testOutput.WriteLine(program.ToString());

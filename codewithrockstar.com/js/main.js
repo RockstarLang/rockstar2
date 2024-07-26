@@ -1,47 +1,59 @@
-import { EditorView, basicSetup, coolGlow, Rockstar } from './rockstar-editor.js';
+import { EditorView, basicSetup, coolGlow, Rockstar, boysAndGirls } from './rockstar-editor.js';
 
-import { dotnet } from '../wasm/wwwroot/_framework/dotnet.js'
-
-const { setModuleImports, getAssemblyExports, getConfig } = await dotnet
-    .withDiagnosticTracing(false)
-    .withApplicationArgumentsFromQuery()
-    .create();
-
-const config = getConfig();
-const exports = await getAssemblyExports(config.mainAssemblyName);
-await dotnet.run();
-
-function RunRockstarProgram(source) {
-	return exports.Rockstar.Wasm.RockstarRunner.Run(source);
+function handleMessageFromWorker(message) {
+	if (message.data.editorId) {
+		var output = document.getElementById(`rockstar-output-${message.data.editorId}`);
+		var button = document.getElementById(`rockstar-button-${message.data.editorId}`);
+		button.classList.remove("running");
+		button.innerText = "Rock";
+		if (message.data.error) {
+			output.innerText = message.data.error;
+		} else {
+			output.innerText += message.data.output;
+		}
+	} else {
+		console.log(message);
+	}
 }
 
+var worker = new Worker("/js/worker.js", { type: 'module' });
+worker.addEventListener("message", handleMessageFromWorker);
 
-function replaceElementWithEditor(element, RunRockstarProgram) {
-	let view = new EditorView({
-		doc: element.innerText,
-		extensions: [basicSetup, coolGlow, Rockstar()],
-	});
+function executeProgram(program, editorId) {
+	worker.postMessage({ program: program, editorId: editorId });
+}
+
+function replaceElementWithEditor(element) {
+	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, boysAndGirls, Rockstar()] });
 	element.parentNode.insertBefore(view.dom, element);
-	let button = document.createElement("button");
-	button.innerText = "ROCK";
-	let output = document.createElement("pre");
-	output.className = "rockstar-output";
-	element.parentNode.insertBefore(button, element);
-	element.parentNode.insertBefore(output, element);
-	button.onclick = () => {
-		let source = view.state.doc.toString();
-		try {
-			let result = RunRockstarProgram(source);
-			console.log(result);
-			output.innerText = result;
-		} catch (e) {
-			output.innerText = e;
-		}
-	};
 	element.style.display = "none";
 	return view;
 }
 
+var editorId = 90125;
 document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
-	replaceElementWithEditor(el, RunRockstarProgram);
+	editorId++;
+	let output = document.createElement("pre");
+	let button = document.createElement("button");
+	button.className = "rockstar-button";
+	output.className = "rockstar-output";
+	button.id = `rockstar-button-${editorId}`;
+	output.id = `rockstar-output-${editorId}`;
+	button.innerText = "Rock";
+	var editor = replaceElementWithEditor(el);
+	el.parentNode.insertBefore(button, el);
+	el.parentNode.insertBefore(output, el);
+	button.onclick = () => {
+		button.innerText = "Stop";
+		button.classList.add("running");
+		output.innerText = "";
+		let source = editor.state.doc.toString();
+		try {
+			executeProgram(source, editorId);
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
 });
+

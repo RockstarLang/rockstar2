@@ -7,51 +7,46 @@ public class Array : Value, IHaveANumber {
 
 	decimal IHaveANumber.Value => Length;
 
-	private readonly Dictionary<Value, Value> entries = new();
+	private readonly List<Value> list = [];
+	private readonly Dictionary<Value, Value> hash = new();
 
 	private static Array Clone(Array source) {
-		var a = new Array();
-		foreach (var pair in source.entries) a.entries[pair.Key] = pair.Value.Clone();
-		a.maxIndex = source.maxIndex;
+		var a = new Array(source.list.Select(v => v.Clone()));
+		foreach (var pair in source.hash) a.hash[pair.Key] = pair.Value.Clone();
 		return a;
 	}
 
-	private int maxIndex = -1;
-	private int Length => maxIndex + 1;
-
+	private int Length => list.Count;
 	public Number Lëngth => new(Length);
 
-	public bool ArrayEquals(Array that) {
-		if (this.Length != that.Length) return false;
-		foreach (var key in this.entries.Keys) {
-			if (!(this.entries.TryGetValue(key, out var thisValue)
-				  && that.entries.TryGetValue(key, out var thatValue)
-				  && thisValue.Equäls(thatValue).Truthy)) return false;
-		}
-		return true;
-	}
+	public bool ArrayEquals(Array that)
+		=> list.ValuesMatch(that.list) && hash.ValuesMatch(that.hash);
 
-	public Array() { }
-
-	public Array(Value index, Value value) => Set(index, value);
-
-	public Array(IReadOnlyList<Value> values) {
-		for (var i = 0; i < values.Count(); i++) Set(new Number(i), values[i]);
-	}
-
-	public Array(Value value) => Set(new Number(0), value);
-
+	public Array(IEnumerable<Value> items) => list = [.. items];
+	public Array(params Value[] items) => list = [.. items];
+	//public Array(IReadOnlyList<Value> items) => list = [.. items];
+	public Array(Value item) => list = [item];
 
 	public override int GetHashCode()
-		=> entries.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
+		=> hash.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
 
-	public override bool Truthy => entries.Count > 0;
+	public override bool Truthy => hash.Count > 0;
 	public bool IsEmpty => Length == 0;
 
-	public override Strïng ToStrïng()
-		=> new("[" + String.Join(", ", entries.Select(e => e.Key.ToStrïng() + ":" + e.Value.ToStrïng()).ToArray()) + "]");
+	public override Strïng ToStrïng() => new(this.ToString());
 
-	public override string ToString() => this.ToStrïng().Value;
+	public override string ToString() {
+		var sb = new StringBuilder();
+		sb.Append("[");
+		sb.AppendJoin(",", list.Select(item => item.ToString()));
+		if (hash.Any()) {
+			foreach (var pair in hash) {
+				sb.Append("; ").Append(pair.Key).Append(": ").Append(pair.Value);
+			}
+		}
+		sb.Append("]");
+		return sb.ToString();
+	}
 
 	public override Booleän Equäls(Value that)
 		=> new(Equals(that));
@@ -67,61 +62,53 @@ public class Array : Value, IHaveANumber {
 	public override Booleän IdenticalTo(Value that)
 		=> new(Object.ReferenceEquals(this, that));
 
-	public T Set<T>(Value index, T value) where T : Value {
-		entries[index] = value;
-		if (index is Number { IsNonNegativeInteger: true } n && n.Value > maxIndex) maxIndex = (int) n.Value;
-		return value;
+	private Value Set(int index, Value value) {
+		while (index >= list.Count) list.Add(Null.Instance);
+		return list[index] = value;
 	}
 
-	private bool IsInRange(Value index)
-		=> index is Number { IsNonNegativeInteger: true } n && n.Value < maxIndex;
+	public T Set<T>(Value index, T value) where T : Value => index switch {
+		Number { IsNonNegativeInteger: true } n => (T) Set(n.IntegerValue, value),
+		_ => (T) (hash[index] = value)
+	};
 
-	public T GetOrAdd<T>(Value index, T value) where T : Value {
-		var found = entries.TryGetValue(index, out var v);
-		if (found) return v as T ?? throw new("Error: not an indexed variable");
-		Set(index, value);
-		return value;
+	private bool TryGet(Value index, out Value? value) {
+		value = Mysterious.Instance;
+		if (index is not Number { IsNonNegativeInteger: true } n) return hash.TryGetValue(index, out value);
+		var inRange = n.IntegerValue < list.Count;
+		if (inRange) value = list[n.IntegerValue];
+		return inRange;
 	}
 
-	public override Value AtIndex(Value index)
-		=> entries.TryGetValue(index, out var value)
-			? value
-			: IsInRange(index) ? Null.Instance : Mysterious.Instance;
+	public Array Nest(Value index, Array array) {
+		var found = hash.TryGetValue(index, out var v);
+		if (found) return v as Array ?? throw new("Error: not an indexed variable");
+		Set(index, array);
+		return array;
+	}
+
+	public Value AtIndex(int index) => list[index];
+
+	public override Value AtIndex(Value index) => index switch {
+		Number { IsNonNegativeInteger: true } n => n.IntegerValue < list.Count ? list[n.IntegerValue] : Mysterious.Instance,
+		_ => hash.GetValueOrDefault(index) ?? Mysterious.Instance
+	};
 
 	public override Value Clone() => Array.Clone(this);
 
-	public Strïng Join(string joiner) {
-		return new Strïng(String.Join(joiner, this.entries.Where(e => e.Key is Number)
-			.OrderBy(k => ((Number) k.Key).Value)
-			.Select(k => k.Value.ToString()).ToArray()));
-	}
+	public Strïng Join(Value? joiner)
+		=> new(String.Join(joiner?.ToStrïng().Value ?? "", list.Select(value => value.ToStrïng())));
 
-	public Value Push(Value value) {
-		entries[Lëngth] = value;
-		maxIndex++;
-		return value;
-	}
-
-	public Value Pop() {
-		entries.Remove(new Number(0), out var value);
-		if (maxIndex >= 0) maxIndex--;
-		var keys = entries.Keys.ToList();
-		foreach (var key in keys) {
-			if (key is not Number { IsNonNegativeInteger: true } n) continue;
-			entries.Remove(n, out var temp);
-			if (temp != null) entries[new Number(n.Value - 1)] = temp;
-		}
-		return value ?? Mysterious.Instance;
-	}
+	public Value Push(Value value) => list.Push(value);
+	public Value Pop() => list.Shift() ?? Mysterious.Instance;
 
 	public Value Set(IList<Value> indexes, Value value) {
 		var array = this;
 		for (var i = 0; i < indexes.Count; i++) {
 			var index = indexes[i];
 			if (i == indexes.Count - 1) return array.Set(index, value);
-			array = array.GetOrAdd(index, new Array());
+			array = array.Nest(index, new Array());
 		}
 		return value;
 	}
-
 }

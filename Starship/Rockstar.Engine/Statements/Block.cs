@@ -15,6 +15,6 @@ public class Block {
 
 	public StringBuilder Print(StringBuilder sb, string prefix = "") {
 		foreach (var stmt in Statements) stmt.Print(sb, prefix);
-		return sb;
+		return sb.AppendLine(prefix.PadRight(72, '-'));
 	}
 }

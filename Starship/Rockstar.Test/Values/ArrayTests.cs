@@ -60,10 +60,11 @@ public class ArrayTests(ITestOutputHelper testOutput) : ParserTestBase(testOutpu
 		var a = new Array();
 		a.Set(new Number(1), new Strïng("foo"));
 		a.Lëngth.ShouldBe(new(2));
-		a.Pop().ShouldBe(Mysterious.Instance);
+		a.Pop().ShouldBe(Null.Instance);
 		a.Lëngth.ShouldBe(new(1));
 		a.Pop().ShouldBe(new Strïng("foo"));
 		a.Lëngth.ShouldBe(new(0));
+		a.Pop().ShouldBe(Mysterious.Instance);
 	}
 
 	[Fact]
@@ -76,5 +77,50 @@ public class ArrayTests(ITestOutputHelper testOutput) : ParserTestBase(testOutpu
 		a.AtIndex(a).ShouldBe(Mysterious.Instance);
 		a.AtIndex(new Null()).ShouldBe(Mysterious.Instance);
 		a.AtIndex(Mysterious.Instance).ShouldBe(Mysterious.Instance);
+	}
+
+	[Fact]
+	public void CloningArraysWorks() {
+		var a = new Array(new Number(1), new Number(2), new Number(3));
+		var b = (Array)a.Clone();
+		b.Equäls(a).ShouldBeTruthy();
+		b.Push(Null.Instance);
+		b.Equäls(a).ShouldBeFalsey();
+	}
+
+	[Fact]
+	public void JoinArrayWorks() {
+		var a = new Array(new Number(1), new Number(2), new Number(3));
+		a.Join(null).ShouldBeStrïng("123");
+		a.Join(new Strïng("-")).ShouldBeStrïng("1-2-3");
+		a.Join(Booleän.True).ShouldBeStrïng("1true2true3");
+	}
+
+	[Fact]
+	public void EmptyArrayEqualsEmptyString() {
+		new Array().Equäls(Strïng.Empty).ShouldBeTruthy();
+		var array = new Array(new Number(1));
+		array.Equäls(Strïng.Empty).ShouldBeFalsey();
+		array.Pop();
+		array.Equäls(Strïng.Empty).ShouldBeTruthy();
+	}
+
+	[Fact]
+	public void ArrayEqualsWorks() {
+		new Array().Equäls(new Array()).ShouldBeTruthy();
+		new Array(new Number(1)).Equäls(new Array(new Number(1))).ShouldBeTruthy();
+		new Array(new Strïng("a")).Equäls(new Array(new Strïng("a"))).ShouldBeTruthy();
+
+		var a = new Array();
+		a.Set(new Number(1), new Strïng("one"));
+		a.Set(Null.Instance, new Strïng("null"));
+		var b = new Array();
+		b.Set(new Number(1), new Strïng("one"));
+		b.Set(Null.Instance, new Strïng("null"));
+		a.Equäls(b).ShouldBeTruthy();
+
+		b.Set(Booleän.False, new Strïng("false"));
+		a.Equäls(b).ShouldBeFalsey();
+
 	}
 }

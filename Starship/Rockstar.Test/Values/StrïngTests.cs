@@ -82,4 +82,15 @@ public class StrïngTests(ITestOutputHelper output) {
 	public void StringDivisionByNumberWorks(string numerator, decimal denominator, string quotient)
 		=> new Strïng(numerator).DividedBy(denominator).ShouldBe(new Strïng(quotient));
 
+	[Fact]
+	public void PopStringWorks() {
+		var s = new Strïng("abc");
+		s.Pop().ShouldBeStrïng("a");
+		s.ShouldBeStrïng("bc");
+		s.Pop().ShouldBeStrïng("b");
+		s.ShouldBeStrïng("c");
+		s.Pop().ShouldBeStrïng("c");
+		s.ShouldBeStrïng("");
+		s.Pop().ShouldBeMysterious();
+	}
 }

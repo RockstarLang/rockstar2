@@ -7,6 +7,19 @@
 @using Rockstar.Engine.Values
 @trace true
 
+/*
+
+Notes on Rockstar grammar
+
+Rockstar has significant whitespace. Most operators, keywords, etc. *must* be separated by _.
+
+Rules beginning with _ include their own leading whitespace, so should
+go immediately after the preceding expression. Rules ending with _ including their own trailing
+whitespace.
+
+*/
+
+
 @ignorecase true
 
 program <Program>
@@ -23,7 +36,7 @@ block <Block>
 	/ _? stmt:statement
 		{ new Block(stmt) }
 
-statement
+statement -memoize
 	= listen_stmt
 	/ output_stmt
 	/ function
@@ -36,18 +49,16 @@ statement
 	/ conditional
 	/ declaration 
 	/ assignment
-	/ enlist_stmt
+	/ enlistment
 	/ increment
 	/ decrement
 	/ mutation
 	/ rounding
 	/ e:expression &EOS { new ExpressionStatement(e) }
 
-enlist_stmt <Statement>
+enlistment <Statement>
 	= push _ e:expression _ into _ v:variable
 		{ new Enlist(v, e) }
-//	/ push _ v:variable _ like _ e:(literal/poetic_literal)
-//		{ new Enlist(v, e) }
 	/ push _ v:variable (_ with)? _ e:expression_list 
 		{ new Enlist(v, e) }
 	/ push _ v:variable
@@ -60,7 +71,6 @@ enlist_stmt <Statement>
 delist <Delist>
 	= pop _ v:variable
 		{ new Delist(v) }
-
 
 listen_stmt <Statement>
 	= listen _ to _ v:variable
@@ -143,13 +153,13 @@ expression_list <IEnumerable<Expression>>
 
 oxford_comma = ',' _ and 
 _nacton	= (_ "n'" / _? "'n'")
+
 _VLS_	=  _ and _ / _ALS_
 _ALS_	= oxford_comma _ / _XLS_
 _XLS_	= (',' _? ('&' _?)?)
 		/ _nacton _?
 		/  _? '&' _?
-		/ _? ',' _?
-		
+		/ _? ',' _?		
 
 break_stmt <Statement>
 	= break wildcard
@@ -175,14 +185,20 @@ consequent <Block>
 	= EOS+ b:block EOB { b }
 	/ _ s:statement { new Block(s) }
 
+if_test <Expression>
+	= if _ e:expression (_ then)?
+		{ e }
+
 conditional <Statement>
-	= if _ e:expression (_ then)? c:consequent _? else a:consequent
+	= e:if_test c:consequent _? else a:consequent
 		{ new Conditional(e, c, a) }
-	/ if _ e:expression _ else a:consequent
+	/ e:if_test c:consequent EOS+ else a:consequent
+		{ new Conditional(e, c, a) }
+	/ e:if_test _ else a:consequent
 		{ new Conditional(e, new Block(), a ) }
-	/ if _ e:expression EOS+ else a:consequent
+	/ e:if_test EOS+ else a:consequent
 		{ new Conditional(e, new Block(), a ) }
-	/ if _ e:expression (_ then)? c:consequent
+	/ e:if_test (_ then)? c:consequent
 		{ new Conditional(e, c) }
 
 loop <Statement>
@@ -270,7 +286,8 @@ variable <Variable>
 
 proper_variable	= proper_noun (_ proper_noun)+
 
-proper_noun	= !keyword &uppercase_letter identifier
+proper_noun	= uppercase_letter '.'
+			/ !keyword &uppercase_letter identifier
 
 identifier
 	= letter (letter / [0-9_])*
@@ -341,7 +358,7 @@ _minus_ <Operator>	= (_? '-' _? / _ minus _ ) { Operator.Minus }
 _times_	<Operator>	= (_? '*' _? / _ times _ ) { Operator.Times }
 _divide_ <Operator>	= (_? '/' _? / _ divided_by _ ) { Operator.Divide }
 
-primary <Expression>
+primary <Expression> -memoize
 	= function_call
 	/ delist
 	/ constant
@@ -489,7 +506,7 @@ plus = 'plus' !letter / 'with' !letter
 minus = 'minus' !letter / 'without' !letter
 times = 'times' !letter / 'of' !letter
 over = 'over' !letter
-under = 'under' !letter
+under = 'under' !letter / 'below' !letter
 above = 'above' !letter / over
 divided_by = 'divided' _ 'by' !letter / 'between' !letter / over
 as = 'as' !letter
@@ -498,7 +515,7 @@ not = 'not' !letter
 non = 'non' !letter
 nor = 'nor' !letter
 now = 'now' !letter
-is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter
+is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter / 'am' !letter
 put = 'put' !letter
 into = 'into' !letter / 'in' !letter
 let = 'let' !letter

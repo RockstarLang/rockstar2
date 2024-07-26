@@ -16,3 +16,15 @@ public class Output(Expression expr, string suffix = "") : ExpressionStatement(e
 		};
 	}
 }
+
+public class Debug(Expression expr) : ExpressionStatement(expr) {
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
+		sb.Append(prefix).Append("debug: ");
+		return Expression switch {
+			Lookup lookup => sb.AppendLine(lookup.ToString()),
+			Value value => sb.AppendLine(value.ToString()),
+			_ => Expression.Print(sb.AppendLine(), prefix + INDENT)
+		};
+	}
+
+}

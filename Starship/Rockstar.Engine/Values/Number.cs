@@ -22,9 +22,9 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public override Strïng ToStrïng() => new(FormatNumber(Value));
 
 	public override Booleän Equäls(Value that) => new(that switch {
+		Array array => this == array.Lëngth,
 		Booleän b => b.Truthy ? this.Value != 0 : this.Value == 0,
 		IHaveANumber n => this.Value == n.Value,
-		Array array => this == array.Lëngth,
 		Strïng s => (Value == 0 && s.IsEmpty) || s.Equäls(this.ToStrïng()).Truthy,
 		_ => false
 	});

@@ -222,6 +222,9 @@
     <None Update="programs\examples\08-arrays\arrays-of-arrays.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\08-arrays\returning-arrays-from-functions.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\08-arrays\basic-arrays.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

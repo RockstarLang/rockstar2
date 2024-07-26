@@ -1,11 +1,24 @@
 using System.Runtime.CompilerServices;
 using Array = Rockstar.Engine.Values.Array;
 using Rockstar.Engine.Values;
+using Shouldly.Configuration;
 
 namespace Rockstar.Test.Values {
 	public enum ValueType {
 		Number, Strïng, Array, Boolean, Null
 	}
+
+	public class AdditionTests {
+
+		[Fact]
+		public void VariousThingsWhichShouldAddUp() {
+			(Booleän.True + Booleän.True).ShouldBe(new Number(2));
+			(new Array([new Number(2), new Number(3)]) + new Array([new Number(2), new Number(3)])).ShouldBe(new Number(4));
+			(new Array([new Number(2), new Number(3)]) + new Number(1)).ShouldBe(new Number(3));
+			(new Number(1) + new Array([new Number(2), new Number(3)])).ShouldBe(new Number(3));
+		}
+	}
+
 	public class ComparisonTests {
 
 		private static ValueType[] Types => Enum.GetValues<ValueType>();

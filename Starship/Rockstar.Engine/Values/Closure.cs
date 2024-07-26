@@ -6,7 +6,8 @@ public class Closure(Function function, RockstarEnvironment scope) : Value {
 	public Function Function => function;
 	public override int GetHashCode() => function.GetHashCode() ^ scope.GetHashCode();
 	public override Strïng ToStrïng() => new("[closure]");
-	
+	public override bool Truthy => true;
+
 	public Result Apply(Dictionary<Variable, Value> args) {
 		var local = scope.Extend();
 		foreach (var arg in args) local.SetVariable(arg.Key, arg.Value, Scope.Local);

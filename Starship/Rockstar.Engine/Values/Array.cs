@@ -3,12 +3,16 @@ using System.Text;
 
 namespace Rockstar.Engine.Values;
 
-public class Array : Value {
+public class Array : Value, IHaveANumber {
+
+	decimal IHaveANumber.Value => Length;
+
 	private readonly Dictionary<Value, Value> entries = new();
 
 	private static Array Clone(Array source) {
 		var a = new Array();
 		foreach (var pair in source.entries) a.entries[pair.Key] = pair.Value.Clone();
+		a.maxIndex = source.maxIndex;
 		return a;
 	}
 
@@ -119,4 +123,5 @@ public class Array : Value {
 		}
 		return value;
 	}
+
 }

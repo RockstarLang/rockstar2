@@ -4,6 +4,15 @@ using Rockstar.Engine.Values;
 namespace Rockstar.Engine.Expressions;
 
 public class Binary : Expression {
+
+	public bool ShouldUpdatePronounSubject(out Variable subject) {
+		subject = new SimpleVariable("__NOPE__");
+		if (!op.IsComparison() || lhs is not Lookup { Variable: not Pronoun } lookup) return false;
+		subject = lookup.Variable;
+		return true;
+
+	}
+
 	private readonly Operator op;
 	private readonly Expression lhs;
 	private readonly IEnumerable<Expression> rhs;

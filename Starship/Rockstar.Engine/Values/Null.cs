@@ -7,8 +7,8 @@ public class Null : Value, IHaveANumber {
 	public override Strïng ToStrïng() => Strïng.Null;
 
 	public override Booleän Equäls(Value that) => new(that switch {
-		IHaveANumber n => n.Value == 0,
 		Array array => array.Lëngth == Number.Zero,
+		IHaveANumber n => n.Value == 0,
 		Strïng s => s.IsEmpty,
 		_ => false
 	});

@@ -5,7 +5,7 @@ say global
 (end of function)
 
 SetGlobal takes x
-let global be x
+Put x into global
 put CheckGlobal taking 0 into dummy
 (end of function)
 

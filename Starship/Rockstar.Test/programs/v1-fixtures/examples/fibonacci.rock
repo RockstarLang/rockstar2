@@ -2,8 +2,8 @@ Fib takes N
 if N is smaller than 2
 give back N
 (end if)
-put N without 1 into OneBefore
-put N without 2 into TwoBefore
+Let OneBefore be N without 1 
+Let TwoBefore be N without 2
 give back Fib taking OneBefore plus Fib taking TwoBefore
 (end fib)
-say Fib taking 3
+say Fib taking 10

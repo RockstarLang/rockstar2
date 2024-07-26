@@ -1,7 +1,7 @@
 Fibonacci takes a number
 If it's less than 2 give it back
-Put a number without 2 into the first
-Put a number without 1 into the second
+Let the first be a number without 2
+Let the second be a number without 1
 Give back Fibonacci taking the first plus Fibonacci taking the second
 End
 

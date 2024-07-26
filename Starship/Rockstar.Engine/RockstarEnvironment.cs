@@ -7,6 +7,7 @@ using System.Formats.Asn1;
 using System.Numerics;
 using static System.Formats.Asn1.AsnWriter;
 using Array = Rockstar.Engine.Values.Array;
+using Debug = Rockstar.Engine.Statements.Debug;
 
 namespace Rockstar.Engine;
 
@@ -113,16 +114,24 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Listen listen => Listen(listen),
 		Increment inc => Increment(inc),
 		Decrement dec => Decrement(dec),
+		Debug debug => Debug(debug),
 		ExpressionStatement e => ExpressionStatement(e),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Debug(Debug debug) {
+		var value = Eval(debug.Expression);
+		Write("DEBUG: " + value.GetType().Name + ": " + value);
+		Write(Environment.NewLine);
+		return new(value);
+	}
 
 	private Result Increment(Increment inc) {
 		var variable = QualifyPronoun(inc.Variable);
 		return Eval(variable) switch {
 			Null n => Assign(variable, new Number(inc.Multiple)),
-			Number n => Assign(variable, new Number(n.Value + inc.Multiple)),
 			Booleän b => inc.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			IHaveANumber n => Assign(variable, new Number(n.Value + inc.Multiple)),
 			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
@@ -131,8 +140,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var variable = QualifyPronoun(dec.Variable);
 		return Eval(dec.Variable) switch {
 			Null n => Assign(variable, new Number(-dec.Multiple)),
-			Number n => Assign(variable, new Number(n.Value - dec.Multiple)),
 			Booleän b => dec.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			IHaveANumber n => Assign(variable, new Number(n.Value - dec.Multiple)),
 			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
@@ -243,13 +252,20 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(closure.Apply(args).Value);
 	}
 
-	private Result Conditional(Conditional cond)
-		=> Eval(cond.Condition).Truthy
-			? Execute(cond.Consequent)
-			: Execute(cond.Alternate ?? new Block());
+	private Expression UpdatePronounSubjectBasedOnSubjectOfCondition(Expression condition) {
+		if (condition is Binary binary && binary.ShouldUpdatePronounSubject(out var subject)) UpdatePronounSubject(subject);
+		return condition;
+	}
+
+	private Result Conditional(Conditional cond) {
+		UpdatePronounSubjectBasedOnSubjectOfCondition(cond.Condition);
+		if (Eval(cond.Condition).Truthy) return Execute(cond.Consequent);
+		return cond.Alternate != default ? Execute(cond.Alternate) : Result.Unknown;
+	}
 
 	private Result Loop(Loop loop) {
 		var result = Result.Unknown;
+		UpdatePronounSubjectBasedOnSubjectOfCondition(loop.Condition);
 		while (Eval(loop.Condition).Truthy == loop.CompareTo) {
 			result = Execute(loop.Body);
 			switch (result.WhatToDo) {

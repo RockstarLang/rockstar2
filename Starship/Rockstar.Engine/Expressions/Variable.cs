@@ -47,4 +47,9 @@ public abstract class Variable(string name) : Expression {
 		Indexes.AddRange(indexes);
 		return this;
 	}
+
+	public string PrintIndexes() {
+		if (Indexes.Any()) return ("[" + String.Join(",", Indexes.Select(i => i.ToString()).ToArray()) + "]");
+		return String.Empty;
+	}
 }

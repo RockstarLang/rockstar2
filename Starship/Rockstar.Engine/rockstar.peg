@@ -25,6 +25,7 @@ block <Block>
 
 statement
 	= listen_stmt
+	/ output_stmt
 	/ function
 	/ function_call
 	/ call_stmt
@@ -33,7 +34,6 @@ statement
 	/ continue_stmt
 	/ loop
 	/ conditional
-	/ output_stmt
 	/ declaration 
 	/ assignment
 	/ enlist_stmt
@@ -196,6 +196,8 @@ conditional <Statement>
 		{ new Conditional(e, c, a) }
 	/ if _ e:expression _ else a:consequent
 		{ new Conditional(e, new Block(), a ) }
+	/ if _ e:expression EOS+ else a:consequent
+		{ new Conditional(e, new Block(), a ) }
 	/ if _ e:expression (_ then)? c:consequent
 		{ new Conditional(e, c) }
 
@@ -206,7 +208,9 @@ loop <Statement>
 		{ new UntilLoop(test,body) }
 
 output_stmt <Statement>
-	= write _ e:expression
+	= debug _ e:expression
+		{ new Debug(e) }
+	/ write _ e:expression
 		{ new Output(e) }
 	/ print _ e:expression
 		{ new Output(e, Environment.NewLine) }
@@ -402,9 +406,11 @@ mutator <Operator>
 mutation <Statement>
 	= op:mutator _ s:expression _ into _ t:assignable _ using _ m:expression
 		{ new Mutation(op, s, target: t, m) }
+	/ op:mutator _ s:expression _ using _ m:expression _ into _ t:assignable
+		{ new Mutation(op, s, target: t, modifier: m) }
 	/ op:mutator _ s:expression _ into _ t:assignable
 		{ new Mutation(op, s, target: t) }
-	/op:mutator _ s:assignable _ using _ m:expression
+	/ op:mutator _ s:assignable _ using _ m:expression
 		{ new Mutation(op, s, target: s, modifier: m) }
 	/ op:mutator _ s:assignable
 		{ new Mutation(op, s, target: s) }
@@ -488,6 +494,7 @@ quoted_string
 
 at = 'at' !letter
 turn = 'turn' !letter
+debug = 'debug' !letter
 around = 'around' !letter / 'round' !letter
 using = 'using' !letter / 'with' !letter
 split = 'cut' !letter / 'split' !letter / 'shatter' !letter

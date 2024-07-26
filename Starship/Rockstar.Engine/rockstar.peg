@@ -136,23 +136,6 @@ molecular_product <Expression> -memoize
 	= lhs:molecular_product op:(_divide_/_times_) rhs:primary
 		{ new Binary(op, lhs, rhs) }
 	/ primary
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
 expression_list <IEnumerable<Expression>>
 	= head:expression _ALS_ tail:expression_list { head.Concat(tail) }
@@ -178,7 +161,8 @@ continue_stmt <Statement>
 
 wildcard = (letter / _)* &EOS
 
-EOB = EOL &EOL
+EOB -memoize
+	= EOL &EOL
 	/ EOL _ &EOL
 	/ (_ / [,?!.;])* EOL &((_ / [,?!.;])? EOL)
     / EOS* &(_? else)

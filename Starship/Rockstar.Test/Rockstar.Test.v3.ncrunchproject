@@ -8,6 +8,9 @@
       <NamedTestSelector>
         <TestName>Rockstar.Test.ParserTests.Parse("examples\\assorted\\rock_wine.rock")</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>Rockstar.Test.ParserTests.Parse("examples\\99-appendix\\if-else-scope.rock")</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

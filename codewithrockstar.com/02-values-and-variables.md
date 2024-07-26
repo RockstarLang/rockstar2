@@ -102,7 +102,16 @@ Rockstar keywords and variable names are all case-insensitive, with the exceptio
 
 ## Pronouns
 
-As well as referring to variables by name, you can refer to them using pronouns. The keywords `it`, `he`, `she`, `him`, `her`, `they`, `them`, `ze`, `hir`, `zie`, `zir`, `xe`, `xem`, `ve`, and `ver` refer to the **variable which was most recently assigned.**
+As well as referring to variables by name, you can refer to them using pronouns. The keywords `it`, `he`, `she`, `him`, `her`, `they`, `them`, `ze`, `hir`, `zie`, `zir`, `xe`, `xem`, `ve`, and `ver` refer to the current **pronoun subject**.
+
+The pronoun subject is updated when:
+
+* A variable is declared or assigned:
+  
+   `My heart is true. Say it` - `it` here refers to `my heart`
+* A variable is the left-hand side of a comparison used as the condition in an `if`, `while` or `until` statement
+  
+   `If my heart is true, give it back, yeah` - `it` refers to `my heart`
 
 ```rockstar
 {% include_relative {{ page.examples }}pronouns.rock %}

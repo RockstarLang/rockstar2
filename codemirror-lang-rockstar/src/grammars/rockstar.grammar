@@ -1,28 +1,43 @@
-@top Program { expression* }
+@external propSource highlighting from "./highlight.js"
 
-@skip { space | LineComment }
+@top Program { statement* }
 
-expression {
+@skip { LineComment | BlockComment }
+
+statement {
+	Assignment
+	|
   Identifier |
   String |
   Boolean |
   Application { "(" expression* ")" }
 }
 
-
+Assignment {
+	Variable is expression
+}
 
 @tokens {
-  Identifier { $[a-zA-Z_\-0-9]+ }
-
-  String { '"' (!["\\] | "\\" _)* '"' }
-
-  Boolean { "#t" | "#f" }
-
-  LineComment { ";" ![\n]* }
-
-  space { $[ \t\n\r]+ }
-
-  "(" ")"
+	@precedence { Boolean, Variable, Identifier }
+	expression { $[0-9]+ }
+	Variable { "The variable" }
+	is { "is" | "are" | "were" | "was" }
+	ProperVariable { "Ziggurat "}
+	CommonVariable { common_prefix Identifier }
+	common_prefix { "an" ![A-Za-z] | "a" ![A-Za-z] | "the" }
+	Identifier { $[a-zA-Z_\-0-9]+ }
+	String { '"' (!["\\] | "\\" _)* '"' }
+	Boolean { "true" | "false" }
+	LineComment { "#" ![\n]* }
+	BlockComment {
+		"(" ![)]* ")"
+		|
+		"[" ![\]]* "]"
+		|
+		"{" ![}]* "}"
+	}
+	space { $[ \t\n\r]+ }
+	"(" ")"
 }
 
 @detectDelim

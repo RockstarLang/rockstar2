@@ -9,7 +9,7 @@ export const kitchenSink = createTheme({
 		selection: '#0000ff',
 		gutterBackground: '#006666',
 		gutterForeground: 'rgb(50, 90, 150)',
-		lineHighlight: '#ffff00',
+		lineHighlight: '#333333',
 	},
 	styles: makeStyles()
 });

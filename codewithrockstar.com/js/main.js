@@ -46,7 +46,7 @@ document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	button.id = `rockstar-button-${editorId}`;
 	output.id = `rockstar-output-${editorId}`;
 	button.innerText = "Rock";
-	var editor = replaceElementWithEditor(el, Rockstar, blackSabbath);
+	var editor = replaceElementWithEditor(el, Rockstar, kitchenSink);
 	el.parentNode.insertBefore(button, el);
 	el.parentNode.insertBefore(output, el);
 	button.onclick = () => {

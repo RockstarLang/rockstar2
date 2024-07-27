@@ -1,43 +1,21 @@
-https://codemirror.net/examples/bundle/
+# CodeMirror 6 language package template
 
-Step 1: create editor.mjs
+This is an example repository containing a minimal [CodeMirror](https://codemirror.net/6/) language support package. The idea is to clone it, rename it, and edit it to create support for a new language.
 
-```javascript
+Things you'll need to do (see the [language support example](https://codemirror.net/6/examples/lang-package/) for a more detailed tutorial):
 
-import {EditorView, basicSetup} from "codemirror"
-import {rockstar} from "???"
+ * `git grep EXAMPLE` and replace all instances with your language name.
 
-let editor = new EditorView({
-  extensions: [basicSetup, rockstar()],
-  parent: document.body
-})
-```
+ * Rewrite the grammar in `src/syntax.grammar` to cover your language. See the [Lezer system guide](https://lezer.codemirror.net/docs/guide/#writing-a-grammar) for information on this file format.
 
-Install the pacakges
-```cmd
-# The CodeMirror packages used in our script
-npm i codemirror
-# Rollup and its plugin
-npm i rollup @rollup/plugin-node-resolve
-```
+ * Adjust the metadata in `src/index.ts` to work with your new grammar.
 
-Run the rollup:
+ * Adjust the grammar tests in `test/cases.txt`.
 
-```
-node_modules/.bin/rollup editor.mjs -f iife -o editor.bundle.js -p @rollup/plugin-node-resolve
-```
+ * Build (`npm run prepare`) and test (`npm test`).
 
-Create `rollup.config.mjs`:
+ * Rewrite this readme file.
 
-```javascript
-import {nodeResolve} from "@rollup/plugin-node-resolve"
-export default {
-  input: "./editor.mjs",
-  output: {
-    file: "./editor.bundle.js",
-    format: "iife"
-  },
-  plugins: [nodeResolve()]
-}
-```
+ * Optionally add a license.
 
+ * Publish. Put your package on npm under a name like `codemirror-lang-EXAMPLE`.

@@ -5,29 +5,14 @@
 @skip { LineComment | BlockComment }
 
 statement {
-	Assignment
-	|
-  Identifier |
-  String |
-  Boolean |
-  Application { "(" expression* ")" }
+	VariableName
 }
 
-Assignment {
-	Variable is expression
-}
+VariableName { properVariable }
+
+@external tokens matchProperVariable from "./tokens" { properVariable }
 
 @tokens {
-	@precedence { Boolean, Variable, Identifier }
-	expression { $[0-9]+ }
-	Variable { "The variable" }
-	is { "is" | "are" | "were" | "was" }
-	ProperVariable { "Ziggurat "}
-	CommonVariable { common_prefix Identifier }
-	common_prefix { "an" ![A-Za-z] | "a" ![A-Za-z] | "the" }
-	Identifier { $[a-zA-Z_\-0-9]+ }
-	String { '"' (!["\\] | "\\" _)* '"' }
-	Boolean { "true" | "false" }
 	LineComment { "#" ![\n]* }
 	BlockComment {
 		"(" ![)]* ")"
@@ -36,8 +21,7 @@ Assignment {
 		|
 		"{" ![}]* "}"
 	}
-	space { $[ \t\n\r]+ }
-	"(" ")"
+	_ { $[ \t] }
 }
 
 @detectDelim

@@ -1,46 +1,10 @@
 {
-	"name": "codemirror-lang-rockstar",
-	"version": "0.2.0",
-	"description": "Rockstar language support for CodeMirror",
-	"watch": {
-		"prepare": {
-			"patterns": "src",
-			"extensions": "js,jsx,mjs,grammar"
-		}
-	},
 	"scripts": {
-		"build": "lezer-generator src/grammars/rockstar.grammar -o src/parsers/rockstar-parser.js && lezer-generator src/grammars/kitchen-sink.grammar -o src/parsers/kitchen-sink-parser.js && rollup -c",
-		"prepare": "npm run build",
-		"watch": "npm-watch"
+		"rollup": "rollup -c"
 	},
-	"type": "module",
-	"main": "dist/codemirror-lang-rockstar.cjs",
-	"module": "dist/rockstar.js",
-	"exports": {
-		"import": "./dist/rockstar.js",
-		"require": "./dist/rockstar.cjs"
-	},
-	"types": "dist/rockstar.d.ts",
-	"sideEffects": false,
-	"dependencies": {
-		"@codemirror/autocomplete": "^6.17.0",
-		"@codemirror/language": "^6.0.0",
-		"@codemirror/state": "^6.0.0",
-		"@codemirror/view": "^6.0.0",
-		"@lezer/highlight": "^1.0.0",
-		"@lezer/lr": "^1.0.0",
-		"codemirror": "^6.0.1",
-		"npm-watch": "^0.13.0",
-		"thememirror": "^2.0.1"
-	},
-	"devDependencies": {
-		"@lezer/generator": "^1.0.0",
-		"@rollup/plugin-node-resolve": "^15.2.3",
-		"mocha": "^9.0.1",
-		"rollup": "^2.60.2",
-		"rollup-plugin-dts": "^4.0.1",
-		"rollup-plugin-ts": "^3.0.2",
-		"typescript": "^4.3.4"
-	},
-	"license": "MIT"
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "codemirror": "^6.0.1",
+    "rollup": "^4.19.1"
+  }
 }

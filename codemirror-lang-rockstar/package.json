@@ -5,12 +5,14 @@
 	"watch": {
 		"prepare": {
 			"patterns": "src",
-			"extensions": "js,jsx,mjs,grammar,ts"
+			"extensions": "grammar,ts"
 		}
 	},
 	"scripts": {
+		"build": "lezer-generator src/grammars/rockstar.grammar -o src/grammars/rockstar && lezer-generator src/grammars/kitchen-sink.grammar -o src/grammars/kitchen-sink && rollup -c",
+		"build-debug": "lezer-generator src/javascript.grammar --names -o src/parser && rollup -c",
 		"test": "mocha test/test.js",
-		"prepare": "rollup -c",
+		"prepare": "npm run build",
 		"watch": "npm-watch"
 	},
 	"type": "module",

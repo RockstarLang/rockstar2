@@ -10,8 +10,6 @@ statement {
 
 VariableName { properVariable }
 
-@external tokens matchProperVariable from "./tokens" { properVariable }
-
 @tokens {
 	LineComment { "#" ![\n]* }
 	BlockComment {
@@ -23,5 +21,7 @@ VariableName { properVariable }
 	}
 	_ { $[ \t] }
 }
+
+@external tokens matchProperVariable from "./tokens" { properVariable }
 
 @detectDelim

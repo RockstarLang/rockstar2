@@ -24368,7 +24368,8 @@ class Stack {
         var _a;
         let depth = action >> 19 /* Action.ReduceDepthShift */, type = action & 65535 /* Action.ValueMask */;
         let { parser } = this.p;
-        if (this.reducePos < this.pos - 25 /* Lookahead.Margin */)
+        let lookaheadRecord = this.reducePos < this.pos - 25 /* Lookahead.Margin */;
+        if (lookaheadRecord)
             this.setLookAhead(this.pos);
         let dPrec = parser.dynamicPrecedence(type);
         if (dPrec)
@@ -24378,7 +24379,7 @@ class Stack {
             // Zero-depth reductions are a special case—they add stuff to
             // the stack without popping anything off.
             if (type < parser.minRepeatTerm)
-                this.storeNode(type, this.reducePos, this.reducePos, 4, true);
+                this.storeNode(type, this.reducePos, this.reducePos, lookaheadRecord ? 8 : 4, true);
             this.reduceContext(type, this.reducePos);
             return;
         }
@@ -24424,7 +24425,7 @@ class Stack {
     /**
     @internal
     */
-    storeNode(term, start, end, size = 4, isReduce = false) {
+    storeNode(term, start, end, size = 4, mustSink = false) {
         if (term == 0 /* Term.Err */ &&
             (!this.stack.length || this.stack[this.stack.length - 1] < this.buffer.length + this.bufferBase)) {
             // Try to omit/merge adjacent error nodes
@@ -24442,22 +24443,31 @@ class Stack {
                 }
             }
         }
-        if (!isReduce || this.pos == end) { // Simple case, just append
+        if (!mustSink || this.pos == end) { // Simple case, just append
             this.buffer.push(term, start, end, size);
         }
         else { // There may be skipped nodes that have to be moved forward
             let index = this.buffer.length;
-            if (index > 0 && this.buffer[index - 4] != 0 /* Term.Err */)
-                while (index > 0 && this.buffer[index - 2] > end) {
-                    // Move this record forward
-                    this.buffer[index] = this.buffer[index - 4];
-                    this.buffer[index + 1] = this.buffer[index - 3];
-                    this.buffer[index + 2] = this.buffer[index - 2];
-                    this.buffer[index + 3] = this.buffer[index - 1];
-                    index -= 4;
-                    if (size > 4)
-                        size -= 4;
+            if (index > 0 && this.buffer[index - 4] != 0 /* Term.Err */) {
+                let mustMove = false;
+                for (let scan = index; scan > 0 && this.buffer[scan - 2] > end; scan -= 4) {
+                    if (this.buffer[scan - 1] >= 0) {
+                        mustMove = true;
+                        break;
+                    }
                 }
+                if (mustMove)
+                    while (index > 0 && this.buffer[index - 2] > end) {
+                        // Move this record forward
+                        this.buffer[index] = this.buffer[index - 4];
+                        this.buffer[index + 1] = this.buffer[index - 3];
+                        this.buffer[index + 2] = this.buffer[index - 2];
+                        this.buffer[index + 3] = this.buffer[index - 1];
+                        index -= 4;
+                        if (size > 4)
+                            size -= 4;
+                    }
+            }
             this.buffer[index] = term;
             this.buffer[index + 1] = start;
             this.buffer[index + 2] = end;
@@ -26179,7 +26189,7 @@ function Rockstar() {
   return new LanguageSupport(RockstarLanguage, [ RockstarAutocomplete ])
 }
 
-const createTheme = ({ variant, settings, styles }) => {
+const createTheme$2 = ({ variant, settings, styles }) => {
     const theme = EditorView.theme({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         '&': {
@@ -26214,7 +26224,7 @@ const createTheme = ({ variant, settings, styles }) => {
 };
 
 // Author: William D. Neumann
-createTheme({
+createTheme$2({
     variant: 'dark',
     settings: {
         background: '#200020',
@@ -26298,7 +26308,7 @@ createTheme({
 });
 
 // Author: Konstantin Pschera
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#fcfcfc',
@@ -26374,7 +26384,7 @@ createTheme({
 });
 
 // Author: unknown
-createTheme({
+createTheme$2({
     variant: 'dark',
     settings: {
         background: '#15191EFA',
@@ -26432,7 +26442,7 @@ createTheme({
 });
 
 // Author: Michael Diolosa
-createTheme({
+createTheme$2({
     variant: 'dark',
     settings: {
         background: '#2e241d',
@@ -26484,7 +26494,7 @@ createTheme({
 });
 
 // Author: Joe Bergantine
-createTheme({
+createTheme$2({
     variant: 'dark',
     settings: {
         background: '#3b2627',
@@ -26548,7 +26558,7 @@ createTheme({
 });
 
 // Author: unknown
-const boysAndGirls = createTheme({
+const boysAndGirls = createTheme$2({
     variant: 'dark',
     settings: {
         background: '#000205',
@@ -26586,7 +26596,7 @@ const boysAndGirls = createTheme({
 });
 
 // Author: Fred LeBlanc
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#fff',
@@ -26630,7 +26640,7 @@ createTheme({
 });
 
 // Author: Jacob Rus
-const cobalt = createTheme({
+const cobalt = createTheme$2({
     variant: 'dark',
     settings: {
         background: '#00254b',
@@ -26704,7 +26714,7 @@ const cobalt = createTheme({
 });
 
 // Author: unknown
-const coolGlow = createTheme({
+const coolGlow = createTheme$2({
     variant: 'dark',
     settings: {
         background: '#060521',
@@ -26766,7 +26776,7 @@ const coolGlow = createTheme({
 });
 
 // Author: Zeno Rocha
-createTheme({
+createTheme$2({
     variant: 'dark',
     settings: {
         background: '#2d2f3f',
@@ -26815,7 +26825,7 @@ createTheme({
 });
 
 // Author: TextMate
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#FFFFFF',
@@ -26857,7 +26867,7 @@ createTheme({
 });
 
 // Author: Liviu Schera
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#f2f1f8',
@@ -26934,7 +26944,7 @@ createTheme({
 });
 
 // Author: Rosé Pine
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#faf4ed',
@@ -26990,7 +27000,7 @@ createTheme({
 });
 
 // Author: Kenneth Reitz
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#FFFFFF',
@@ -27070,7 +27080,7 @@ createTheme({
 });
 
 // Author: Ethan Schoonover
-createTheme({
+createTheme$2({
     variant: 'light',
     settings: {
         background: '#fef7e5',
@@ -27144,7 +27154,7 @@ createTheme({
 });
 
 // Author: Chris Kempson
-const tomorrow = createTheme({
+const tomorrow = createTheme$2({
     variant: 'light',
     settings: {
         background: '#FFFFFF',
@@ -27195,4 +27205,96 @@ const tomorrow = createTheme({
     ],
 });
 
-export { EditorView, Rockstar, basicSetup, boysAndGirls, cobalt, coolGlow, tomorrow };
+const createTheme = ({ variant, settings, styles }) => {
+    const theme = EditorView.theme({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        '&': {
+            backgroundColor: settings.background,
+            color: settings.foreground,
+        },
+        '.cm-content': {
+            caretColor: settings.caret,
+        },
+        '.cm-cursor, .cm-dropCursor': {
+            borderLeftColor: settings.caret,
+        },
+        '&.cm-focused .cm-selectionBackgroundm .cm-selectionBackground, .cm-content ::selection': {
+            backgroundColor: settings.selection,
+        },
+        '.cm-activeLine': {
+            backgroundColor: settings.lineHighlight,
+        },
+        '.cm-gutters': {
+            backgroundColor: settings.gutterBackground,
+            color: settings.gutterForeground,
+        },
+        '.cm-activeLineGutter': {
+            backgroundColor: settings.lineHighlight,
+        },
+    }, {
+        dark: variant === 'dark',
+    });
+    const highlightStyle = HighlightStyle.define(styles);
+    const extension = [theme, syntaxHighlighting(highlightStyle)];
+    return extension;
+};
+var createTheme$1 = createTheme;
+
+const blackSabbath = createTheme$1({
+	variant: 'dark',
+	settings: {
+		background: '#000000',
+		foreground: '#ffffff',
+		caret: '#ff00ff',
+		selection: '#0000ff',
+		gutterBackground: '#006666',
+		gutterForeground: 'rgb(50, 90, 150)',
+		lineHighlight: '#ffff00',
+	},
+	styles: makeStyles()
+	// [
+	// 	{ tag: t.comment, color: '#000000' }, { tag: t.lineComment, color: '#200000' }, { tag: t.blockComment, color: '#400000' }, { tag: t.docComment, color: '#600000' }, { tag: t.name, color: '#800000' }, { tag: t.variableName, color: '#a00000' }, { tag: t.typeName, color: '#c00000' }, { tag: t.tagName, color: '#e00000' }, { tag: t.propertyName, color: '#000020' }, { tag: t.attributeName, color: '#200020' }, { tag: t.className, color: '#400020' }, { tag: t.labelName, color: '#600020' }, { tag: t.namespace, color: '#800020' }, { tag: t.macroName, color: '#a00020' }, { tag: t.literal, color: '#c00020' }, { tag: t.string, color: '#e00020' }, { tag: t.docString, color: '#000040' }, { tag: t.character, color: '#200040' }, { tag: t.attributeValue, color: '#400040' }, { tag: t.number, color: '#600040' }, { tag: t.integer, color: '#800040' }, { tag: t.float, color: '#a00040' }, { tag: t.bool, color: '#c00040' }, { tag: t.regexp, color: '#e00040' }, { tag: t.escape, color: '#000060' }, { tag: t.color, color: '#200060' }, { tag: t.url, color: '#400060' }, { tag: t.keyword, color: '#600060' }, { tag: t.self, color: '#800060' }, { tag: t.null, color: '#a00060' }, { tag: t.atom, color: '#c00060' }, { tag: t.unit, color: '#e00060' }, { tag: t.modifier, color: '#000080' }, { tag: t.operatorKeyword, color: '#200080' }, { tag: t.controlKeyword, color: '#400080' }, { tag: t.definitionKeyword, color: '#600080' }, { tag: t.moduleKeyword, color: '#800080' }, { tag: t.operator, color: '#a00080' }, { tag: t.derefOperator, color: '#c00080' }, { tag: t.arithmeticOperator, color: '#e00080' }, { tag: t.logicOperator, color: '#0000a0' }, { tag: t.bitwiseOperator, color: '#2000a0' }, { tag: t.compareOperator, color: '#4000a0' }, { tag: t.updateOperator, color: '#6000a0' }, { tag: t.definitionOperator, color: '#8000a0' }, { tag: t.typeOperator, color: '#a000a0' }, { tag: t.controlOperator, color: '#c000a0' }, { tag: t.punctuation, color: '#e000a0' }, { tag: t.separator, color: '#0000c0' }, { tag: t.bracket, color: '#2000c0' }, { tag: t.angleBracket, color: '#4000c0' }, { tag: t.squareBracket, color: '#6000c0' }, { tag: t.paren, color: '#8000c0' }, { tag: t.brace, color: '#a000c0' }, { tag: t.content, color: '#c000c0' }, { tag: t.heading, color: '#e000c0' }, { tag: t.heading1, color: '#0000e0' }, { tag: t.heading2, color: '#2000e0' }, { tag: t.heading3, color: '#4000e0' }, { tag: t.heading4, color: '#6000e0' }, { tag: t.heading5, color: '#8000e0' }, { tag: t.heading6, color: '#a000e0' }, { tag: t.contentSeparator, color: '#c000e0' }, { tag: t.list, color: '#e000e0' }, { tag: t.quote, color: '#002000' }, { tag: t.emphasis, color: '#202000' }, { tag: t.strong, color: '#402000' }, { tag: t.link, color: '#602000' }, { tag: t.monospace, color: '#802000' }, { tag: t.strikethrough, color: '#a02000' }, { tag: t.inserted, color: '#c02000' }, { tag: t.deleted, color: '#e02000' }, { tag: t.changed, color: '#002020' }, { tag: t.invalid, color: '#202020' }, { tag: t.meta, color: '#402020' }, { tag: t.documentMeta, color: '#602020' }, { tag: t.annotation, color: '#802020' }, { tag: t.processingInstruction, color: '#a02020' },
+	// ],
+});
+
+function makeStyles() {
+
+	var tags$1 = [tags.comment, tags.lineComment, tags.blockComment, tags.docComment, tags.name, tags.variableName, tags.typeName, tags.tagName, tags.propertyName,
+	tags.attributeName, tags.className, tags.labelName, tags.namespace, tags.macroName, tags.literal, tags.string, tags.docString, tags.character, tags.attributeValue,
+	tags.number, tags.integer, tags.float, tags.bool, tags.regexp, tags.escape, tags.color, tags.url, tags.keyword, tags.self, tags.null, tags.atom, tags.unit, tags.modifier,
+	tags.operatorKeyword, tags.controlKeyword, tags.definitionKeyword, tags.moduleKeyword, tags.operator, tags.derefOperator, tags.arithmeticOperator,
+	tags.logicOperator, tags.bitwiseOperator, tags.compareOperator, tags.updateOperator, tags.definitionOperator, tags.typeOperator, tags.controlOperator,
+	tags.punctuation, tags.separator, tags.bracket, tags.angleBracket, tags.squareBracket, tags.paren, tags.brace, tags.content, tags.heading,
+	tags.heading1, tags.heading2, tags.heading3, tags.heading4, tags.heading5, tags.heading6, tags.contentSeparator, tags.list, tags.quote, tags.emphasis, tags.strong,
+	tags.link, tags.monospace, tags.strikethrough, tags.inserted, tags.deleted, tags.changed, tags.invalid, tags.meta, tags.documentMeta, tags.annotation, tags.processingInstruction];
+
+	const ZERO = 121;
+	const BUMP = 17;
+	var red = ZERO;
+	var green = ZERO;
+	var blue = ZERO;
+	var result = [];
+	for (var i = 0; i < tags$1.length; i++) {
+		var random = (red <= blue && green <= blue ? 0 : green <= red && green <= blue ? 1 : 2); // Math.floor(Math.random() * 3);
+		var rgb =
+			(random == 0 ? "00" : (red + 256).toString(16).substring(1, 3))
+			+
+			(random == 1 ? "00" : (green + 256).toString(16).substring(1, 3))
+			+
+			(random == 2 ? "00" : (blue + 256).toString(16).substring(1, 3));
+		result.push({ tag: tags$1[i], color: `#${rgb}` });
+		red += BUMP;
+		if (red > 255) {
+			red = ZERO;
+			green += BUMP;
+			if (green > 255) {
+				green = ZERO;
+				blue += BUMP;
+				if (blue > 255) blue = ZERO;
+			}
+		}
+	}
+	return result;
+}
+
+export { EditorView, Rockstar, basicSetup, blackSabbath, boysAndGirls, cobalt, coolGlow, tomorrow };

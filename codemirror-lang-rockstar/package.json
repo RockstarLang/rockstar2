@@ -12,6 +12,7 @@
 		}
 	},
 	"scripts": {
+		"build" : "tsc",
 		"test": "mocha test/test.js",
 		"prepare": "rollup -c",
 		"watch": "npm-watch"

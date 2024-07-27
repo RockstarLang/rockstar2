@@ -4425,15 +4425,17 @@ function scrollRectIntoView(dom, rect, side, x, y, xMargin, yMargin, ltr) {
         }
     }
 }
-function scrollableParent(dom) {
-    let doc = dom.ownerDocument;
+function scrollableParents(dom) {
+    let doc = dom.ownerDocument, x, y;
     for (let cur = dom.parentNode; cur;) {
-        if (cur == doc.body) {
+        if (cur == doc.body || (x && y)) {
             break;
         }
         else if (cur.nodeType == 1) {
-            if (cur.scrollHeight > cur.clientHeight || cur.scrollWidth > cur.clientWidth)
-                return cur;
+            if (!y && cur.scrollHeight > cur.clientHeight)
+                y = cur;
+            if (!x && cur.scrollWidth > cur.clientWidth)
+                x = cur;
             cur = cur.assignedSlot || cur.parentNode;
         }
         else if (cur.nodeType == 11) {
@@ -4443,7 +4445,7 @@ function scrollableParent(dom) {
             break;
         }
     }
-    return null;
+    return { x, y };
 }
 class DOMSelectionState {
     constructor() {
@@ -8197,7 +8199,7 @@ class MouseSelection {
         this.scrollSpeed = { x: 0, y: 0 };
         this.scrolling = -1;
         this.lastEvent = startEvent;
-        this.scrollParent = scrollableParent(view.contentDOM);
+        this.scrollParents = scrollableParents(view.contentDOM);
         this.atoms = view.state.facet(atomicRanges).map(f => f(view));
         let doc = view.contentDOM.ownerDocument;
         doc.addEventListener("mousemove", this.move = this.move.bind(this));
@@ -8213,24 +8215,26 @@ class MouseSelection {
             this.select(event);
     }
     move(event) {
-        var _a;
         if (event.buttons == 0)
             return this.destroy();
         if (this.dragging || this.dragging == null && dist(this.startEvent, event) < 10)
             return;
         this.select(this.lastEvent = event);
         let sx = 0, sy = 0;
-        let rect = ((_a = this.scrollParent) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect())
-            || { left: 0, top: 0, right: this.view.win.innerWidth, bottom: this.view.win.innerHeight };
+        let left = 0, top = 0, right = this.view.win.innerWidth, bottom = this.view.win.innerHeight;
+        if (this.scrollParents.x)
+            ({ left, right } = this.scrollParents.x.getBoundingClientRect());
+        if (this.scrollParents.y)
+            ({ top, bottom } = this.scrollParents.y.getBoundingClientRect());
         let margins = getScrollMargins(this.view);
-        if (event.clientX - margins.left <= rect.left + dragScrollMargin)
-            sx = -dragScrollSpeed(rect.left - event.clientX);
-        else if (event.clientX + margins.right >= rect.right - dragScrollMargin)
-            sx = dragScrollSpeed(event.clientX - rect.right);
-        if (event.clientY - margins.top <= rect.top + dragScrollMargin)
-            sy = -dragScrollSpeed(rect.top - event.clientY);
-        else if (event.clientY + margins.bottom >= rect.bottom - dragScrollMargin)
-            sy = dragScrollSpeed(event.clientY - rect.bottom);
+        if (event.clientX - margins.left <= left + dragScrollMargin)
+            sx = -dragScrollSpeed(left - event.clientX);
+        else if (event.clientX + margins.right >= right - dragScrollMargin)
+            sx = dragScrollSpeed(event.clientX - right);
+        if (event.clientY - margins.top <= top + dragScrollMargin)
+            sy = -dragScrollSpeed(top - event.clientY);
+        else if (event.clientY + margins.bottom >= bottom - dragScrollMargin)
+            sy = dragScrollSpeed(event.clientY - bottom);
         this.setScrollSpeed(sx, sy);
     }
     up(event) {
@@ -8259,13 +8263,17 @@ class MouseSelection {
         }
     }
     scroll() {
-        if (this.scrollParent) {
-            this.scrollParent.scrollLeft += this.scrollSpeed.x;
-            this.scrollParent.scrollTop += this.scrollSpeed.y;
+        let { x, y } = this.scrollSpeed;
+        if (x && this.scrollParents.x) {
+            this.scrollParents.x.scrollLeft += x;
+            x = 0;
         }
-        else {
-            this.view.win.scrollBy(this.scrollSpeed.x, this.scrollSpeed.y);
+        if (y && this.scrollParents.y) {
+            this.scrollParents.y.scrollTop += y;
+            y = 0;
         }
+        if (x || y)
+            this.view.win.scrollBy(x, y);
         if (this.dragging === false)
             this.select(this.lastEvent);
     }
@@ -8457,8 +8465,7 @@ function rangeForClick(view, pos, bias, type) {
         return EditorSelection.range(from, to);
     }
 }
-let insideY = (y, rect) => y >= rect.top && y <= rect.bottom;
-let inside = (x, y, rect) => insideY(y, rect) && x >= rect.left && x <= rect.right;
+let inside = (x, y, rect) => y >= rect.top && y <= rect.bottom && x >= rect.left && x <= rect.right;
 // Try to determine, for the given coordinates, associated with the
 // given position, whether they are related to the element before or
 // the element after the position.
@@ -8480,8 +8487,8 @@ function findPositionSide(view, pos, x, y) {
     if (after && inside(x, y, after))
         return 1;
     // This is probably a line wrap point. Pick before if the point is
-    // beside it.
-    return before && insideY(y, before) ? -1 : 1;
+    // above its bottom.
+    return before && before.bottom >= y ? -1 : 1;
 }
 function queryPos(view, event) {
     let pos = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
@@ -11242,6 +11249,10 @@ class DOMObserver {
         clearTimeout(this.resizeTimeout);
         this.win.cancelAnimationFrame(this.delayedFlush);
         this.win.cancelAnimationFrame(this.flushingAndroidKey);
+        if (this.editContext) {
+            this.view.contentDOM.editContext = null;
+            this.editContext.destroy();
+        }
     }
 }
 function findChild(cView, dom, dir) {
@@ -11301,13 +11312,14 @@ class EditContextManager {
         // that sometimes breaks series of multiple edits made for a single
         // user action on some Android keyboards)
         this.pendingContextChange = null;
+        this.handlers = Object.create(null);
         this.resetRange(view.state);
         let context = this.editContext = new window.EditContext({
             text: view.state.doc.sliceString(this.from, this.to),
             selectionStart: this.toContextPos(Math.max(this.from, Math.min(this.to, view.state.selection.main.anchor))),
             selectionEnd: this.toContextPos(view.state.selection.main.head)
         });
-        context.addEventListener("textupdate", e => {
+        this.handlers.textupdate = e => {
             let { anchor } = view.state.selection.main;
             let change = { from: this.toEditorPos(e.updateRangeStart),
                 to: this.toEditorPos(e.updateRangeEnd),
@@ -11322,13 +11334,16 @@ class EditContextManager {
             if (change.from == change.to && !change.insert.length)
                 return;
             this.pendingContextChange = change;
-            applyDOMChangeInner(view, change, EditorSelection.single(this.toEditorPos(e.selectionStart), this.toEditorPos(e.selectionEnd)));
+            if (!view.state.readOnly)
+                applyDOMChangeInner(view, change, EditorSelection.single(this.toEditorPos(e.selectionStart), this.toEditorPos(e.selectionEnd)));
             // If the transaction didn't flush our change, revert it so
             // that the context is in sync with the editor state again.
-            if (this.pendingContextChange)
+            if (this.pendingContextChange) {
                 this.revertPending(view.state);
-        });
-        context.addEventListener("characterboundsupdate", e => {
+                this.setSelection(view.state);
+            }
+        };
+        this.handlers.characterboundsupdate = e => {
             let rects = [], prev = null;
             for (let i = this.toEditorPos(e.rangeStart), end = this.toEditorPos(e.rangeEnd); i < end; i++) {
                 let rect = view.coordsForChar(i);
@@ -11337,8 +11352,8 @@ class EditContextManager {
                 rects.push(prev);
             }
             context.updateCharacterBounds(e.rangeStart, rects);
-        });
-        context.addEventListener("textformatupdate", e => {
+        };
+        this.handlers.textformatupdate = e => {
             let deco = [];
             for (let format of e.getTextFormats()) {
                 let lineStyle = format.underlineStyle, thickness = format.underlineThickness;
@@ -11349,17 +11364,19 @@ class EditContextManager {
                 }
             }
             view.dispatch({ effects: setEditContextFormatting.of(Decoration.set(deco)) });
-        });
-        context.addEventListener("compositionstart", () => {
+        };
+        this.handlers.compositionstart = () => {
             if (view.inputState.composing < 0) {
                 view.inputState.composing = 0;
                 view.inputState.compositionFirstChange = true;
             }
-        });
-        context.addEventListener("compositionend", () => {
+        };
+        this.handlers.compositionend = () => {
             view.inputState.composing = -1;
             view.inputState.compositionFirstChange = null;
-        });
+        };
+        for (let event in this.handlers)
+            context.addEventListener(event, this.handlers[event]);
         this.measureReq = { read: view => {
                 this.editContext.updateControlBounds(view.contentDOM.getBoundingClientRect());
                 let sel = getSelection(view.root);
@@ -11406,13 +11423,14 @@ class EditContextManager {
         return !abort;
     }
     update(update) {
+        let reverted = this.pendingContextChange;
         if (!this.applyEdits(update) || !this.rangeIsValid(update.state)) {
             this.pendingContextChange = null;
             this.resetRange(update.state);
             this.editContext.updateText(0, this.editContext.text.length, update.state.doc.sliceString(this.from, this.to));
             this.setSelection(update.state);
         }
-        else if (update.docChanged || update.selectionSet) {
+        else if (update.docChanged || update.selectionSet || reverted) {
             this.setSelection(update.state);
         }
         if (update.geometryChanged || update.docChanged || update.selectionSet)
@@ -11426,7 +11444,7 @@ class EditContextManager {
     revertPending(state) {
         let pending = this.pendingContextChange;
         this.pendingContextChange = null;
-        this.editContext.updateText(this.toContextPos(pending.from), this.toContextPos(pending.to + pending.insert.length), state.doc.sliceString(pending.from, pending.to));
+        this.editContext.updateText(this.toContextPos(pending.from), this.toContextPos(pending.from + pending.insert.length), state.doc.sliceString(pending.from, pending.to));
     }
     setSelection(state) {
         let { main } = state.selection;
@@ -11443,6 +11461,10 @@ class EditContextManager {
     }
     toEditorPos(contextPos) { return contextPos + this.from; }
     toContextPos(editorPos) { return editorPos - this.from; }
+    destroy() {
+        for (let event in this.handlers)
+            this.editContext.removeEventListener(event, this.handlers[event]);
+    }
 }
 
 // The editor's update state machine looks something like this:
@@ -13969,9 +13991,10 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
             let arrowHeight = arrow ? 7 /* Arrow.Size */ : 0;
             let width = size.right - size.left, height = (_a = knownHeight.get(tView)) !== null && _a !== void 0 ? _a : size.bottom - size.top;
             let offset = tView.offset || noOffset, ltr = this.view.textDirection == Direction.LTR;
-            let left = size.width > space.right - space.left ? (ltr ? space.left : space.right - size.width)
-                : ltr ? Math.min(pos.left - (arrow ? 14 /* Arrow.Offset */ : 0) + offset.x, space.right - width)
-                    : Math.max(space.left, pos.left - width + (arrow ? 14 /* Arrow.Offset */ : 0) - offset.x);
+            let left = size.width > space.right - space.left
+                ? (ltr ? space.left : space.right - size.width)
+                : ltr ? Math.max(space.left, Math.min(pos.left - (arrow ? 14 /* Arrow.Offset */ : 0) + offset.x, space.right - width))
+                    : Math.min(Math.max(space.left, pos.left - width + (arrow ? 14 /* Arrow.Offset */ : 0) - offset.x), space.right - width);
             let above = this.above[i];
             if (!tooltip.strictSide && (above
                 ? pos.top - (size.bottom - size.top) - offset.y < space.top
@@ -26013,29 +26036,107 @@ function getSpecializer(spec) {
 }
 
 const highlighting = styleTags({
-	Identifier: tags.variableName,
-	Boolean: tags.bool,
-	String: tags.string,
 	Comment: tags.comment,
-	// "( )": tags.paren
+	LineComment: tags.lineComment,
+	BlockComment: tags.blockComment,
+	DocComment: tags.docComment,
+	Name: tags.name,
+	VariableName: tags.variableName,
+	TypeName: tags.typeName,
+	TagName: tags.tagName,
+	PropertyName: tags.propertyName,
+	AttributeName: tags.attributeName,
+	ClassName: tags.className,
+	LabelName: tags.labelName,
+	Namespace: tags.namespace,
+	MacroName: tags.macroName,
+	Literal: tags.literal,
+	String: tags.string,
+	DocString: tags.docString,
+	Character: tags.character,
+	AttributeValue: tags.attributeValue,
+	Number: tags.number,
+	Integer: tags.integer,
+	Float: tags.float,
+	Bool: tags.bool,
+	Regexp: tags.regexp,
+	Escape: tags.escape,
+	Color: tags.color,
+	Url: tags.url,
+	Keyword: tags.keyword,
+	Self: tags.self,
+	Null: tags.null,
+	Atom: tags.atom,
+	Unit: tags.unit,
+	Modifier: tags.modifier,
+	OperatorKeyword: tags.operatorKeyword,
+	ControlKeyword: tags.controlKeyword,
+	DefinitionKeyword: tags.definitionKeyword,
+	ModuleKeyword: tags.moduleKeyword,
+	Operator: tags.operator,
+	DerefOperator: tags.derefOperator,
+	ArithmeticOperator: tags.arithmeticOperator,
+	LogicOperator: tags.logicOperator,
+	BitwiseOperator: tags.bitwiseOperator,
+	CompareOperator: tags.compareOperator,
+	UpdateOperator: tags.updateOperator,
+	DefinitionOperator: tags.definitionOperator,
+	TypeOperator: tags.typeOperator,
+	ControlOperator: tags.controlOperator,
+	Punctuation: tags.punctuation,
+	Separator: tags.separator,
+	Bracket: tags.bracket,
+	AngleBracket: tags.angleBracket,
+	SquareBracket: tags.squareBracket,
+	Paren: tags.paren,
+	Brace: tags.brace,
+	Content: tags.content,
+	Heading: tags.heading,
+	Heading1: tags.heading1,
+	Heading2: tags.heading2,
+	Heading3: tags.heading3,
+	Heading4: tags.heading4,
+	Heading5: tags.heading5,
+	Heading6: tags.heading6,
+	ContentSeparator: tags.contentSeparator,
+	List: tags.list,
+	Quote: tags.quote,
+	Emphasis: tags.emphasis,
+	Strong: tags.strong,
+	Link: tags.link,
+	Monospace: tags.monospace,
+	Strikethrough: tags.strikethrough,
+	Inserted: tags.inserted,
+	Deleted: tags.deleted,
+	Changed: tags.changed,
+	Invalid: tags.invalid,
+	Meta: tags.meta,
+	DocumentMeta: tags.documentMeta,
+	Annotation: tags.annotation,
+	ProcessingInstruction: tags.processingInstruction,
+
+	// Tags from here on down are modifier and crash the editor.
+	// https://lezer.codemirror.net/docs/ref/#highlight.tags.definition
+	// Definition: tags.definition,
+	// Constant: tags.constant,
+	// Function: tags.function,
+	// Standard: tags.standard,
+	// Local: tags.local,
+	// Special: tags.special
 });
 
 // This file was generated by lezer-generator. You probably shouldn't edit it.
 const parser = LRParser.deserialize({
   version: 14,
-  states: "!WQYQPOOOhQPO'#CdOOQO'#Ci'#CiOOQO'#Ce'#CeQYQPOOOOQO,59O,59OOyQPO,59OOOQO-E6c-E6cOOQO1G.j1G.j",
-  stateData: "![~O[OSPOS~ORQOSQOTQOVPO~ORQOSQOTQOUTOVPO~ORQOSQOTQOUWOVPO~O",
-  goto: "u^PPPPPPPP_ePPPoXQOPSUQSOQUPTVSUXROPSU",
-  nodeNames: "⚠ Comment Program Identifier String Boolean ) ( Application",
-  maxTerm: 13,
-  nodeProps: [
-    ["openedBy", 6,"("],
-    ["closedBy", 7,")"]
-  ],
+  states: "nQYQPOOOOQO'#EY'#EYOOQO'#EU'#EUQYQPOOOOQO-E8S-E8S",
+  stateData: "&o~O!{OSPOS~ORPOSPOTPOUPOVPOWPOXPOYPOZPO[PO]PO^PO_PO`POaPObPOcPOdPOePOfPOgPOhPOiPOjPOkPOlPOmPOnPOoPOpPOqPOrPOsPOtPOuPOvPOwPOxPOyPOzPO{PO|PO}PO!OPO!PPO!QPO!RPO!SPO!TPO!UPO!VPO!WPO!XPO!YPO!ZPO![PO!]PO!^PO!_PO!`PO!aPO!bPO!cPO!dPO!ePO!fPO!gPO!hPO!iPO!jPO!kPO!lPO!mPO!nPO!oPO!pPO!qPO!rPO!sPO!tPO!uPO!vPO!wPO~O",
+  goto: "#Y!}PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#OPPP#UQRORSRTQOR",
+  nodeNames: "⚠ LineComment Program Comment BlockComment DocComment Name VariableName TypeName TagName PropertyName AttributeName ClassName LabelName Namespace MacroName Literal String DocString Character AttributeValue Number Integer Float Bool Regexp Escape Color Url Keyword Self Null Atom Unit Modifier OperatorKeyword ControlKeyword DefinitionKeyword ModuleKeyword Operator DerefOperator ArithmeticOperator LogicOperator BitwiseOperator CompareOperator UpdateOperator DefinitionOperator TypeOperator ControlOperator Punctuation Separator Bracket AngleBracket SquareBracket Paren Brace Content Heading Heading1 Heading2 Heading3 Heading4 Heading5 Heading6 ContentSeparator List Quote Emphasis Strong Link Monospace Strikethrough Inserted Deleted Changed Invalid Meta DocumentMeta Annotation ProcessingInstruction Definition Constant Function Standard Local Special",
+  maxTerm: 90,
   propSources: [highlighting],
   skippedNodes: [0,1],
   repeatNodeCount: 1,
-  tokenData: "%u~R]XYzYZz]^zpqzrs!]st#yxy$Xyz%[}!O%a!Q![%a!c!}%a#R#S%a#T#o%a~!PS[~XYzYZz]^zpqz~!`VOr!]rs!us#O!]#O#P!z#P;'S!];'S;=`#s<%lO!]~!zOS~~!}RO;'S!];'S;=`#W;=`O!]~#ZWOr!]rs!us#O!]#O#P!z#P;'S!];'S;=`#s;=`<%l!]<%lO!]~#vP;=`<%l!]~#|Q#Y#Z$S#h#i$S~$XOT~~$^TV~Oy$myz%Pz;'S$m;'S;=`%U<%lO$m~$pTOy$myz%Pz;'S$m;'S;=`%U<%lO$m~%UOP~~%XP;=`<%l$m~%aOU~~%fTR~}!O%a!Q![%a!c!}%a#R#S%a#T#o%a",
+  tokenData: "!Ad~RhXY!mYZ!m]^!mpq!m!c!d#O!d!e*g!e!f/`!f!g:R!g!hBv!h!iDi!j!kFU!k!lHR!m!nJf!n!oKa!o!p!#S!p!q!'{!q!r!*U!r!s!,T!s!t!1|!t!u!2k!u!v!3`!v!w!:c!w!x!=`!x!y!?y~!rS!{~XY!mYZ!m]^!mpq!m~#RR#b#c#[#f#g%s#h#i'|~#_Q#Z#[#e#b#c$r~#hP#`#a#k~#nP#X#Y#q~#tP!d!e#w~#zP#f#g#}~$QP#T#U$T~$WP#V#W$Z~$^P#_#`$a~$dP#X#Y$g~$jP#h#i$m~$rO!U~~$uP#c#d$x~${P#h#i%O~%RP#T#U%U~%XP#h#i%[~%_P#]#^%b~%eP#c#d%h~%kP#b#c%n~%sO!p~~%vP#]#^%y~%|P#h#i&P~&SP#[#]&V~&YP#a#b&]~&`P#X#Y&c~&fP#h#i&i~&lP#]#^&o~&rP#V#W&u~&xP!q!r&{~'OP#d#e'R~'UP#X#Y'X~'[P#f#g'_~'bP#T#U'e~'hP#h#i'k~'nP#c#d'q~'tP#f#g'w~'|Oy~~(PQ#c#d(V#h#i(b~(YP#a#b(]~(bOp~~(eP#f#g(h~(kP#]#^(n~(qP#U#V(t~(wP#i#j(z~(}P#h#i)Q~)TP#X#Y)W~)ZQ!p!q)a!x!y)x~)dP#T#U)g~)jP#a#b)m~)pP#X#Y)s~)xOZ~~){P#T#U*O~*RP#`#a*U~*XP#i#j*[~*_P#X#Y*b~*gOd~~*jS#]#^*v#`#a,m#c#d.Q#f#g.c~*yP#h#i*|~+PP#k#l+S~+VP#]#^+Y~+]P#g#h+`~+cP#X#Y+f~+iP!q!r+l~+oP#d#e+r~+uP#X#Y+x~+{P#f#g,O~,RP#T#U,U~,XP#h#i,[~,_P#c#d,b~,eP#f#g,h~,mO{~~,pP#c#d,s~,vP#V#W,y~,|P#_#`-P~-SP!e!f-V~-YP#c#d-]~-`P#a#b-c~-fP#a#b-i~-lP#X#Y-o~-rP#b#c-u~-xP#h#i-{~.QOS~~.TP#c#d.W~.ZP#`#a.^~.cOh~~.fP#T#U.i~.lP#V#W.o~.rQ#X#Y.x#_#`.}~.}O!X~~/QP#X#Y/T~/WP#h#i/Z~/`O!T~~/cR#[#]/l#`#a1X#c#d2Y~/oP#T#U/r~/uQ#b#c/{#f#g0d~0OP#Z#[0R~0UP#X#Y0X~0[P#W#X0_~0dO!l~~0gP#T#U0j~0mP#V#W0p~0sP#h#i0v~0yP#X#Y0|~1PP#f#g1S~1XOc~~1[P#T#U1_~1bP#g#h1e~1hP#g#h1k~1nP!p!q1q~1tP#T#U1w~1zP#a#b1}~2QP#X#Y2T~2YO[~~2]R#`#a2f#a#b2w#b#c5S~2iP#c#d2l~2oP#f#g2r~2wOk~~2zQ#a#b3Q#d#e3i~3TP#X#Y3W~3ZP#b#c3^~3aP#h#i3d~3iOR~~3lP#T#U3o~3rP#f#g3u~3xP#X#Y3{~4OP!q!r4R~4UP#d#e4X~4[P#X#Y4_~4bP#f#g4e~4hP#T#U4k~4nP#h#i4q~4tP#c#d4w~4zP#f#g4}~5SO|~~5VQ#g#h5]#h#i5z~5`P#h#i5c~5fP#T#U5i~5lP#b#c5o~5rP#h#i5u~5zO!s~~5}Q#X#Y6T#f#g7p~6WP#b#c6Z~6^P#h#i6a~6fP!Y~!u!v6i~6lP#X#Y6o~6rP#d#e6u~6xP#T#U6{~7OP#f#g7R~7UP#T#U7X~7[P#h#i7_~7bP#c#d7e~7hP#f#g7k~7pO!b~~7sP#c#d7v~7yP#`#a7|~8PQ!m!n8V!q!r9Q~8YP#X#Y8]~8`P#m#n8c~8fP#k#l8i~8lP#c#d8o~8rP#f#g8u~8xP#W#X8{~9QOt~~9TP#d#e9W~9ZP#X#Y9^~9aP#f#g9d~9gP#T#U9j~9mP#h#i9p~9sP#c#d9v~9yP#f#g9|~:RO!Q~~:UQ#X#Y:[#c#d?m~:_R#Y#Z:h#`#a=k#f#g>Y~:kP#]#^:n~:qP#b#c:t~:wP#]#^:z~:}P#h#i;Q~;TP#]#^;W~;ZP#c#d;^~;aP#b#c;d~;iQ!r~!m!n;o!q!r<j~;rP#X#Y;u~;xP#m#n;{~<OP#k#l<R~<UP#c#d<X~<[P#f#g<_~<bP#W#X<e~<jOu~~<mP#d#e<p~<sP#X#Y<v~<yP#f#g<|~=PP#T#U=S~=VP#h#i=Y~=]P#c#d=`~=cP#f#g=f~=kO!O~~=nP#X#Y=q~=tP#h#i=w~=zP#X#Y=}~>QP#W#X>T~>YO!k~~>]P#X#Y>`~>cP#Y#Z>f~>iP!q!r>l~>oP#d#e>r~>uP#X#Y>x~>{P#f#g?O~?RP#T#U?U~?XP#h#i?[~?_P#c#d?b~?eP#f#g?h~?mOx~~?pP#V#W?s~?vR!e!f@P!u!v@z#i#jAo~@SP#c#d@V~@YP#a#b@]~@`P#a#b@c~@fP#X#Y@i~@lP#b#c@o~@rP#h#i@u~@zOT~~@}P#h#iAQ~ATP#f#gAW~AZP#]#^A^~AaP#b#cAd~AgP#Z#[Aj~AoOb~~ArP#a#bAu~AxP#X#YA{~BOP#b#cBR~BUP#h#iBX~B[P!o!pB_~BbP#X#YBe~BhP#h#iBk~BnP#T#UBq~BvO!o~~ByQ#a#bCP#g#hCz~CSP#d#eCV~CYP#[#]C]~C`P#T#UCc~CfP#g#hCi~ClP#]#^Co~CrP#g#hCu~CzO!e~~C}P#V#WDQ~DTP#T#UDW~DZP#d#eD^~DaP#X#YDd~DiOj~~DlQ#`#aDr#i#jEZ~DuP#c#dDx~D{P#T#UEO~ERP#h#iEU~EZOg~~E^P#b#cEa~EdP#V#WEg~EjP#h#iEm~EpP#]#^Es~EvP#c#dEy~E|P#b#cFP~FUO!t~~FXP#X#YF[~F_P#T#UFb~FeP#W#XFh~FkP#]#^Fn~FqP#b#cFt~FwP#Z#[Fz~GPU!Z~!R!SGc!S!TGh!T!UGm!U!VGr!V!WGw!W!XG|~GhO![~~GmO!]~~GrO!^~~GwO!_~~G|O!`~~HRO!a~~HUP#b#cHX~H[R#g#hHe#h#iIY#j#kIw~HhP#X#YHk~HnP#f#gHq~HtP#h#iHw~HzP#X#YH}~IQP#W#XIT~IYO!j~~I]P#X#YI`~IcP#Z#[If~IiP#X#YIl~IoP#f#gIr~IwOf~~IzP#T#UI}~JQP#`#aJT~JWP#]#^JZ~J^P#W#XJa~JfO!m~~JiP#X#YJl~JoP#m#nJr~JuP#k#lJx~J{P#c#dKO~KRP#f#gKU~KXP#W#XK[~KaOm~~KdR#T#UKm#]#^Ln#c#d! T~KpP#U#VKs~KvP#X#YKy~K|P#`#aLP~LSP!p!qLV~LYP#T#UL]~L`P#a#bLc~LfP#X#YLi~LnO]~~LqR#b#cLz#g#hNZ#h#iNf~L}Q#X#YMT#_#`NU~MWP!e!fMZ~M^P#c#dMa~MdP#a#bMg~MjP#a#bMm~MpP#X#YMs~MvP#b#cMy~M|P#h#iNP~NUOP~~NZO!g~~N^P#h#iNa~NfO!c~~NiP#X#YNl~NoP#f#gNr~NuP#T#UNx~N{P#`#a! O~! TO`~~! WQ#V#W! ^#Z#[! o~! aP#T#U! d~! gP#`#a! j~! oO!v~~! rP#]#^! u~! xP#V#W! {~!!OP!q!r!!R~!!UP#d#e!!X~!![P#X#Y!!_~!!bP#f#g!!e~!!hP#T#U!!k~!!nP#h#i!!q~!!tP#c#d!!w~!!zP#f#g!!}~!#SOz~~!#VR#T#U!#`#X#Y!$a#c#d!$r~!#cP#V#W!#f~!#iP#f#g!#l~!#oP#c#d!#r~!#uP!p!q!#x~!#{P#T#U!$O~!$RP#a#b!$U~!$XP#X#Y!$[~!$aO_~~!$dP#h#i!$g~!$jP#T#U!$m~!$rO!n~~!$uQ#W#X!${#b#c!'Q~!%OQ#]#^!%U#i#j!%s~!%XP#Y#Z!%[~!%_P#]#^!%b~!%eP#X#Y!%h~!%kP#f#g!%n~!%sOr~~!%vP#`#a!%y~!%|P#X#Y!&P~!&SP!m!n!&V~!&YP#X#Y!&]~!&`P#m#n!&c~!&fP#k#l!&i~!&lP#c#d!&o~!&rP#f#g!&u~!&xP#W#X!&{~!'QOv~~!'TP#c#d!'W~!'ZP#g#h!'^~!'aP#d#e!'d~!'gP#T#U!'j~!'mP#V#W!'p~!'sP#X#Y!'v~!'{O!h~~!(OQ#T#U!(U#i#j!)X~!(XP#a#b!([~!(_P#X#Y!(b~!(gPU~#g#h!(j~!(mP#d#e!(p~!(sP#T#U!(v~!(yP#V#W!(|~!)PP#X#Y!)S~!)XO^~~!)[Q#`#a!)b#a#b!)m~!)eP#`#a!)h~!)mOo~~!)pP#U#V!)s~!)vP#X#Y!)y~!)|P#f#g!*P~!*UOe~~!*XP#d#e!*[~!*_P#X#Y!*b~!*eP#f#g!*h~!*kP#T#U!*n~!*qP#h#i!*t~!*wP#c#d!*z~!*}P#f#g!+Q~!+VPw~!m!n!+Y~!+]P#X#Y!+`~!+cP#m#n!+f~!+iP#k#l!+l~!+oP#c#d!+r~!+uP#f#g!+x~!+{P#W#X!,O~!,TOs~~!,WR#T#U!,a#f#g!,x#i#j!0o~!,dP#f#g!,g~!,jP#X#Y!,m~!,pP#b#c!,s~!,xO!W~~!,{P#c#d!-O~!-RQ#V#W!-X#d#e!/h~!-[P#X#Y!-_~!-bP#g#h!-e~!-hP#g#h!-k~!-nP#]#^!-q~!-tP#b#c!-w~!-zP#Z#[!-}~!.QP!k!l!.T~!.WP#b#c!.Z~!.^P#g#h!.a~!.dP#h#i!.g~!.jP#f#g!.m~!.pP#i#j!.s~!.vP#V#W!.y~!.|P#h#i!/P~!/SP#]#^!/V~!/YP#c#d!/]~!/`P#b#c!/c~!/hO!q~~!/kP#X#Y!/n~!/qP#f#g!/t~!/wP#h#i!/z~!/}P#m#n!0Q~!0TP!p!q!0W~!0ZP#T#U!0^~!0aP#a#b!0d~!0gP#X#Y!0j~!0oOY~~!0rP#b#c!0u~!0xP#V#W!0{~!1OP#h#i!1R~!1UP#i#j!1X~!1[P#T#U!1_~!1bP#h#i!1e~!1hP#]#^!1k~!1nP#c#d!1q~!1tP#b#c!1w~!1|O!R~~!2PP#i#j!2S~!2VP#c#d!2Y~!2]P#h#i!2`~!2cP#X#Y!2f~!2kO!d~~!2nP#X#Y!2q~!2tP#Z#[!2w~!2zP#X#Y!2}~!3QP#l#m!3T~!3WP#d#e!3Z~!3`Oi~~!3cS#X#Y!3o#d#e!5O#e#f!5s#h#i!7^~!3rQ#`#a!3x#d#e!4T~!3{P#Y#Z!4O~!4TOn~~!4WP#T#U!4Z~!4^P#f#g!4a~!4dP#T#U!4g~!4jP#h#i!4m~!4pP#c#d!4s~!4vP#f#g!4y~!5OO!S~~!5RP#X#Y!5U~!5XP#V#W!5[~!5_P#]#^!5b~!5eP#T#U!5h~!5kP#`#a!5n~!5sO!w~~!5vP#i#j!5y~!5|P#T#U!6P~!6SP#f#g!6V~!6YP#X#Y!6]~!6`P!d!e!6c~!6fP#f#g!6i~!6lP#T#U!6o~!6rP#V#W!6u~!6xP#_#`!6{~!7OP#X#Y!7R~!7UP#h#i!7X~!7^O!V~~!7aQ#T#U!7g#f#g!8[~!7jP#b#c!7m~!7pP#W#X!7s~!7vP#T#U!7y~!7|P#f#g!8P~!8SP#W#X!8V~!8[O!u~~!8_Q#]#^!8e#c#d!:Q~!8hQ#_#`!8n#b#c!9u~!8qP#X#Y!8t~!8wP#h#i!8z~!8}P#[#]!9Q~!9TP#f#g!9W~!9ZP#c#d!9^~!9aP#i#j!9d~!9gP#Z#[!9j~!9mP#[#]!9p~!9uO!i~~!9xP#Z#[!9{~!:QOa~~!:TP#b#c!:W~!:ZP#Z#[!:^~!:cO!f~~!:fQ#T#U!:l#m#n!;a~!:oP#Z#[!:r~!:uP!p!q!:x~!:{P#T#U!;O~!;RP#a#b!;U~!;XP#X#Y!;[~!;aOX~~!;dP#d#e!;g~!;jP#X#Y!;m~!;pQ!p!q!;v!q!r!<_~!;yP#T#U!;|~!<PP#a#b!<S~!<VP#X#Y!<Y~!<_OW~~!<bP#d#e!<e~!<hP#X#Y!<k~!<nP#f#g!<q~!<tP#T#U!<w~!<zP#h#i!<}~!=QP#c#d!=T~!=WP#f#g!=Z~!=`O!P~~!=cR#b#c!=l#d#e!=}#f#g!?n~!=oP#]#^!=r~!=uP#h#i!=x~!=}Oq~~!>QP#W#X!>T~!>WP#T#U!>Z~!>^P#h#i!>a~!>dP#X#Y!>g~!>jP!q!r!>m~!>pP#d#e!>s~!>vP#X#Y!>y~!>|P#f#g!?P~!?SP#T#U!?V~!?YP#h#i!?]~!?`P#c#d!?c~!?fP#f#g!?i~!?nO}~~!?qP#`#a!?t~!?yOl~~!?|P#T#U!@P~!@SP#f#g!@V~!@YP#]#^!@]~!@`P#T#U!@c~!@fP#U#V!@i~!@lP#`#a!@o~!@rP#X#Y!@u~!@xP!p!q!@{~!AOP#T#U!AR~!AUP#a#b!AX~!A[P#X#Y!A_~!AdOV~",
   tokenizers: [0],
   topRules: {"Program":[0,2]},
   tokenPrec: 0

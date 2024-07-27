@@ -3,16 +3,97 @@ title: Home
 layout: home
 nav_order: "1000"
 ---
+
+```rockstar
+Comment
+LineComment
+BlockComment
+DocComment
+Name
+VariableName
+TypeName
+TagName
+PropertyName
+AttributeName
+ClassName
+LabelName
+Namespace
+MacroName
+Literal
+String
+DocString
+Character
+AttributeValue
+Number
+Integer
+Float
+Bool
+Regexp
+Escape
+Color
+Url
+Keyword
+Self
+Null
+Atom
+Unit
+Modifier
+OperatorKeyword
+ControlKeyword
+DefinitionKeyword
+ModuleKeyword
+Operator
+DerefOperator
+ArithmeticOperator
+LogicOperator
+BitwiseOperator
+CompareOperator
+UpdateOperator
+DefinitionOperator
+TypeOperator
+ControlOperator
+Punctuation
+Separator
+Bracket
+AngleBracket
+SquareBracket
+Paren
+Brace
+Content
+Heading
+Heading1
+Heading2
+Heading3
+Heading4
+Heading5
+Heading6
+ContentSeparator
+List
+Quote
+Emphasis
+Strong
+Link
+Monospace
+Strikethrough
+Inserted
+Deleted
+Changed
+Invalid
+Meta
+DocumentMeta
+Annotation
+ProcessingInstruction
+Definition
+Constant
+Function
+Standard
+Local
+Special
+```
 Run some Rockstar:
 
 ```rockstar
-Shout "Hello, World!"
-
-
-
-
-
-
+{% include_relative examples/99-appendix/acid-test.rock %}
 ```
 
 Well... do you wanna get rocked?
@@ -36,7 +117,7 @@ Well... do you wanna get rocked?
 		* Proper
 		* Pronouns
 	* Assignment
-		* Is, are, was, were, 
+		* Is, are, was, were,
 		* Let, put
 * 03 Expressions
 	* Equality
@@ -54,4 +135,4 @@ Well... do you wanna get rocked?
 	* Rock, roll, split, join
 * 07 Built-functions
 	* Round, turn, cast, burn, split
-	*  
+	*

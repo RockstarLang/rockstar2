@@ -1,4 +1,4 @@
-import { EditorView, basicSetup, coolGlow, Rockstar, boysAndGirls } from './rockstar-editor.js';
+import { EditorView, basicSetup, Rockstar, coolGlow, cobalt, boysAndGirls } from './rockstar-editor.js';
 
 function handleMessageFromWorker(message) {
 	if (message.data.editorId) {
@@ -24,7 +24,7 @@ function executeProgram(program, editorId) {
 }
 
 function replaceElementWithEditor(element) {
-	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, boysAndGirls, Rockstar()] });
+	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, coolGlow, Rockstar()] });
 	element.parentNode.insertBefore(view.dom, element);
 	element.style.display = "none";
 	return view;

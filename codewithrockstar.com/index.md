@@ -4,7 +4,9 @@ layout: home
 nav_order: "1000"
 ---
 
-```rockstar
+The CodeMirror Syntax Highlighting Kitchen Sink:
+
+```kitchen-sink
 Comment
 LineComment
 BlockComment

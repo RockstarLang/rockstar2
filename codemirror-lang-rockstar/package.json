@@ -4,17 +4,13 @@
 	"description": "Rockstar language support for CodeMirror",
 	"watch": {
 		"prepare": {
-			"patterns": [
-				"src",
-				"test"
-			],
-			"extensions": "js,jsx,mjs,grammar,ts"
+			"patterns": "src",
+			"extensions": "js,jsx,mjs,grammar"
 		}
 	},
 	"scripts": {
-		"build" : "tsc",
-		"test": "mocha test/test.js",
-		"prepare": "rollup -c",
+		"build": "lezer-generator src/grammars/rockstar.grammar -o src/parsers/rockstar-parser.js && lezer-generator src/grammars/kitchen-sink.grammar -o src/parsers/kitchen-sink-parser.js && rollup -c",
+		"prepare": "npm run build",
 		"watch": "npm-watch"
 	},
 	"type": "module",

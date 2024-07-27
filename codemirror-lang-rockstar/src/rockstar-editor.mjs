@@ -1,6 +1,15 @@
 import { EditorView, basicSetup } from "codemirror"
-import { Rockstar } from "./codemirror-lang-rockstar.ts"
+import { RockstarLanguageSupport } from "./codemirror-lang-rockstar.js"
+import { KitchenSinkLanguageSupport } from "./codemirror-lang-kitchen-sink.js";
+import { kitchenSink } from "./themes/kitchen-sink.js";
 import { coolGlow, boysAndGirls, cobalt, tomorrow } from 'thememirror';
 import { blackSabbath } from "./themes/black-sabbath.js"
-// import { oneDark } from 'theme-one-dark';
-export { EditorView, basicSetup, Rockstar, coolGlow, boysAndGirls, cobalt, tomorrow, blackSabbath }; // , oneDark };
+
+export { EditorView, basicSetup,
+	// Languages
+	KitchenSinkLanguageSupport,
+	RockstarLanguageSupport,
+	// themes
+	kitchenSink,
+	coolGlow, boysAndGirls, cobalt, tomorrow, blackSabbath
+};

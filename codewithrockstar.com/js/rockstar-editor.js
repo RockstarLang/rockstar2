@@ -1,3 +1,5 @@
+import { parser as parser$1 } from 'parsers/kitchen-sink-parser.js';
+
 /**
 The data structure for documents. @nonabstract
 */
@@ -1609,7 +1611,7 @@ class Facet {
     Define a new facet.
     */
     static define(config = {}) {
-        return new Facet(config.combine || ((a) => a), config.compareInput || ((a, b) => a === b), config.compare || (!config.combine ? sameArray$1 : (a, b) => a === b), !!config.static, config.enables);
+        return new Facet(config.combine || ((a) => a), config.compareInput || ((a, b) => a === b), config.compare || (!config.combine ? sameArray$2 : (a, b) => a === b), !!config.static, config.enables);
     }
     /**
     Returns an extension that adds the given value to this facet.
@@ -1646,7 +1648,7 @@ class Facet {
         return this.compute([field], state => get(state.field(field)));
     }
 }
-function sameArray$1(a, b) {
+function sameArray$2(a, b) {
     return a == b || a.length == b.length && a.every((e, i) => e === b[i]);
 }
 class FacetProvider {
@@ -1758,7 +1760,7 @@ function dynamicFacetSlot(addresses, facet, providers) {
         reconfigure(state, oldState) {
             let depChanged = ensureAll(state, providerAddrs);
             let oldProviders = oldState.config.facets[facet.id], oldValue = oldState.facet(facet);
-            if (oldProviders && !depChanged && sameArray$1(providers, oldProviders)) {
+            if (oldProviders && !depChanged && sameArray$2(providers, oldProviders)) {
                 state.values[idx] = oldValue;
                 return 0;
             }
@@ -1972,7 +1974,7 @@ class Configuration {
             let oldProviders = oldFacets && oldFacets[id] || [];
             if (providers.every(p => p.type == 0 /* Provider.Static */)) {
                 address[facet.id] = (staticValues.length << 1) | 1;
-                if (sameArray$1(oldProviders, providers)) {
+                if (sameArray$2(oldProviders, providers)) {
                     staticValues.push(oldState.facet(facet));
                 }
                 else {
@@ -3054,7 +3056,7 @@ class RangeValue {
     /**
     Create a [range](https://codemirror.net/6/docs/ref/#state.Range) with this value.
     */
-    range(from, to = from) { return Range$1.create(from, to, this); }
+    range(from, to = from) { return Range$2.create(from, to, this); }
 }
 RangeValue.prototype.startSide = RangeValue.prototype.endSide = 0;
 RangeValue.prototype.point = false;
@@ -3062,7 +3064,7 @@ RangeValue.prototype.mapMode = MapMode.TrackDel;
 /**
 A range associates a value with a range of positions.
 */
-class Range$1 {
+class Range$2 {
     constructor(
     /**
     The range's start position.
@@ -3084,7 +3086,7 @@ class Range$1 {
     @internal
     */
     static create(from, to, value) {
-        return new Range$1(from, to, value);
+        return new Range$2(from, to, value);
     }
 }
 function cmpRange(a, b) {
@@ -3253,7 +3255,7 @@ class RangeSet {
             else {
                 if (!filter || filterFrom > cur.to || filterTo < cur.from || filter(cur.from, cur.to, cur.value)) {
                     if (!builder.addInner(cur.from, cur.to, cur.value))
-                        spill.push(Range$1.create(cur.from, cur.to, cur.value));
+                        spill.push(Range$2.create(cur.from, cur.to, cur.value));
                 }
                 cur.next();
             }
@@ -3417,7 +3419,7 @@ class RangeSet {
     */
     static of(ranges, sort = false) {
         let build = new RangeSetBuilder();
-        for (let range of ranges instanceof Range$1 ? [ranges] : sort ? lazySort(ranges) : ranges)
+        for (let range of ranges instanceof Range$2 ? [ranges] : sort ? lazySort(ranges) : ranges)
             build.add(range.from, range.to, range.value);
         return build.finish();
     }
@@ -15042,9 +15044,9 @@ function highlightActiveLineGutter() {
 /**
 The default maximum length of a `TreeBuffer` node.
 */
-const DefaultBufferLength = 1024;
-let nextPropID = 0;
-class Range {
+const DefaultBufferLength$1 = 1024;
+let nextPropID$1 = 0;
+class Range$1 {
     constructor(from, to) {
         this.from = from;
         this.to = to;
@@ -15055,12 +15057,12 @@ Each [node type](#common.NodeType) or [individual tree](#common.Tree)
 can have metadata associated with it in props. Instances of this
 class represent prop names.
 */
-class NodeProp {
+class NodeProp$1 {
     /**
     Create a new node prop type.
     */
     constructor(config = {}) {
-        this.id = nextPropID++;
+        this.id = nextPropID$1++;
         this.perNode = !!config.perNode;
         this.deserialize = config.deserialize || (() => {
             throw new Error("This node type doesn't define a deserialize function");
@@ -15079,7 +15081,7 @@ class NodeProp {
         if (this.perNode)
             throw new RangeError("Can't add per-node props to node types");
         if (typeof match != "function")
-            match = NodeType.match(match);
+            match = NodeType$1.match(match);
         return (type) => {
             let result = match(type);
             return result === undefined ? null : [this, result];
@@ -15092,19 +15094,19 @@ delimiters, this holds an array of node names (written as a
 space-separated string when declaring this prop in a grammar)
 for the node types of closing delimiters that match it.
 */
-NodeProp.closedBy = new NodeProp({ deserialize: str => str.split(" ") });
+NodeProp$1.closedBy = new NodeProp$1({ deserialize: str => str.split(" ") });
 /**
 The inverse of [`closedBy`](#common.NodeProp^closedBy). This is
 attached to closing delimiters, holding an array of node names
 of types of matching opening delimiters.
 */
-NodeProp.openedBy = new NodeProp({ deserialize: str => str.split(" ") });
+NodeProp$1.openedBy = new NodeProp$1({ deserialize: str => str.split(" ") });
 /**
 Used to assign node types to groups (for example, all node
 types that represent an expression could be tagged with an
 `"Expression"` group).
 */
-NodeProp.group = new NodeProp({ deserialize: str => str.split(" ") });
+NodeProp$1.group = new NodeProp$1({ deserialize: str => str.split(" ") });
 /**
 Attached to nodes to indicate these should be
 [displayed](https://codemirror.net/docs/ref/#language.syntaxTree)
@@ -15116,7 +15118,7 @@ nodes that appear _inside_ arbitrary text, like HTML tags. When
 not given a value, in a grammar declaration, defaults to
 `"auto"`.
 */
-NodeProp.isolate = new NodeProp({ deserialize: value => {
+NodeProp$1.isolate = new NodeProp$1({ deserialize: value => {
         if (value && value != "rtl" && value != "ltr" && value != "auto")
             throw new RangeError("Invalid value for isolate: " + value);
         return value || "auto";
@@ -15126,26 +15128,26 @@ The hash of the [context](#lr.ContextTracker.constructor)
 that the node was parsed in, if any. Used to limit reuse of
 contextual nodes.
 */
-NodeProp.contextHash = new NodeProp({ perNode: true });
+NodeProp$1.contextHash = new NodeProp$1({ perNode: true });
 /**
 The distance beyond the end of the node that the tokenizer
 looked ahead for any of the tokens inside the node. (The LR
 parser only stores this when it is larger than 25, for
 efficiency reasons.)
 */
-NodeProp.lookAhead = new NodeProp({ perNode: true });
+NodeProp$1.lookAhead = new NodeProp$1({ perNode: true });
 /**
 This per-node prop is used to replace a given node, or part of a
 node, with another tree. This is useful to include trees from
 different languages in mixed-language parsers.
 */
-NodeProp.mounted = new NodeProp({ perNode: true });
+NodeProp$1.mounted = new NodeProp$1({ perNode: true });
 /**
 A mounted tree, which can be [stored](#common.NodeProp^mounted) on
 a tree node to indicate that parts of its content are
 represented by another tree.
 */
-class MountedTree {
+class MountedTree$1 {
     constructor(
     /**
     The inner tree.
@@ -15173,14 +15175,14 @@ class MountedTree {
     @internal
     */
     static get(tree) {
-        return tree && tree.props && tree.props[NodeProp.mounted.id];
+        return tree && tree.props && tree.props[NodeProp$1.mounted.id];
     }
 }
-const noProps = Object.create(null);
+const noProps$1 = Object.create(null);
 /**
 Each node in a syntax tree has a node type associated with it.
 */
-class NodeType {
+class NodeType$1 {
     /**
     @internal
     */
@@ -15214,10 +15216,10 @@ class NodeType {
     Define a node type.
     */
     static define(spec) {
-        let props = spec.props && spec.props.length ? Object.create(null) : noProps;
+        let props = spec.props && spec.props.length ? Object.create(null) : noProps$1;
         let flags = (spec.top ? 1 /* NodeFlag.Top */ : 0) | (spec.skipped ? 2 /* NodeFlag.Skipped */ : 0) |
             (spec.error ? 4 /* NodeFlag.Error */ : 0) | (spec.name == null ? 8 /* NodeFlag.Anonymous */ : 0);
-        let type = new NodeType(spec.name || "", props, spec.id, flags);
+        let type = new NodeType$1(spec.name || "", props, spec.id, flags);
         if (spec.props)
             for (let src of spec.props) {
                 if (!Array.isArray(src))
@@ -15260,7 +15262,7 @@ class NodeType {
         if (typeof name == 'string') {
             if (this.name == name)
                 return true;
-            let group = this.prop(NodeProp.group);
+            let group = this.prop(NodeProp$1.group);
             return group ? group.indexOf(name) > -1 : false;
         }
         return this.id == name;
@@ -15279,7 +15281,7 @@ class NodeType {
             for (let name of prop.split(" "))
                 direct[name] = map[prop];
         return (node) => {
-            for (let groups = node.prop(NodeProp.group), i = -1; i < (groups ? groups.length : 0); i++) {
+            for (let groups = node.prop(NodeProp$1.group), i = -1; i < (groups ? groups.length : 0); i++) {
                 let found = direct[i < 0 ? node.name : groups[i]];
                 if (found)
                     return found;
@@ -15290,59 +15292,13 @@ class NodeType {
 /**
 An empty dummy node type to use when no actual type is available.
 */
-NodeType.none = new NodeType("", Object.create(null), 0, 8 /* NodeFlag.Anonymous */);
-/**
-A node set holds a collection of node types. It is used to
-compactly represent trees by storing their type ids, rather than a
-full pointer to the type object, in a numeric array. Each parser
-[has](#lr.LRParser.nodeSet) a node set, and [tree
-buffers](#common.TreeBuffer) can only store collections of nodes
-from the same set. A set can have a maximum of 2**16 (65536) node
-types in it, so that the ids fit into 16-bit typed array slots.
-*/
-class NodeSet {
-    /**
-    Create a set with the given types. The `id` property of each
-    type should correspond to its position within the array.
-    */
-    constructor(
-    /**
-    The node types in this set, by id.
-    */
-    types) {
-        this.types = types;
-        for (let i = 0; i < types.length; i++)
-            if (types[i].id != i)
-                throw new RangeError("Node type ids should correspond to array positions when creating a node set");
-    }
-    /**
-    Create a copy of this set with some node properties added. The
-    arguments to this method can be created with
-    [`NodeProp.add`](#common.NodeProp.add).
-    */
-    extend(...props) {
-        let newTypes = [];
-        for (let type of this.types) {
-            let newProps = null;
-            for (let source of props) {
-                let add = source(type);
-                if (add) {
-                    if (!newProps)
-                        newProps = Object.assign({}, type.props);
-                    newProps[add[0].id] = add[1];
-                }
-            }
-            newTypes.push(newProps ? new NodeType(type.name, newProps, type.id, type.flags) : type);
-        }
-        return new NodeSet(newTypes);
-    }
-}
-const CachedNode = new WeakMap(), CachedInnerNode = new WeakMap();
+NodeType$1.none = new NodeType$1("", Object.create(null), 0, 8 /* NodeFlag.Anonymous */);
+const CachedNode$1 = new WeakMap(), CachedInnerNode$1 = new WeakMap();
 /**
 Options that control iteration. Can be combined with the `|`
 operator to enable multiple ones.
 */
-var IterMode;
+var IterMode$1;
 (function (IterMode) {
     /**
     When enabled, iteration will only visit [`Tree`](#common.Tree)
@@ -15369,7 +15325,7 @@ var IterMode;
     position.
     */
     IterMode[IterMode["IgnoreOverlays"] = 8] = "IgnoreOverlays";
-})(IterMode || (IterMode = {}));
+})(IterMode$1 || (IterMode$1 = {}));
 /**
 A piece of syntax tree. There are two ways to approach these
 trees: the way they are actually stored in memory, and the
@@ -15386,7 +15342,7 @@ use the [`TreeCursor`](#common.TreeCursor) or
 a view on some part of this data structure, and can be used to
 move around to adjacent nodes.
 */
-class Tree {
+class Tree$1 {
     /**
     Construct a new tree. See also [`Tree.build`](#common.Tree^build).
     */
@@ -15430,7 +15386,7 @@ class Tree {
     @internal
     */
     toString() {
-        let mounted = MountedTree.get(this);
+        let mounted = MountedTree$1.get(this);
         if (mounted && !mounted.overlay)
             return mounted.tree.toString();
         let children = "";
@@ -15452,7 +15408,7 @@ class Tree {
     nodes the cursor visits.
     */
     cursor(mode = 0) {
-        return new TreeCursor(this.topNode, mode);
+        return new TreeCursor$1(this.topNode, mode);
     }
     /**
     Get a [tree cursor](#common.TreeCursor) pointing into this tree
@@ -15460,10 +15416,10 @@ class Tree {
     [`moveTo`](#common.TreeCursor.moveTo).
     */
     cursorAt(pos, side = 0, mode = 0) {
-        let scope = CachedNode.get(this) || this.topNode;
-        let cursor = new TreeCursor(scope);
+        let scope = CachedNode$1.get(this) || this.topNode;
+        let cursor = new TreeCursor$1(scope);
         cursor.moveTo(pos, side);
-        CachedNode.set(this, cursor._tree);
+        CachedNode$1.set(this, cursor._tree);
         return cursor;
     }
     /**
@@ -15471,7 +15427,7 @@ class Tree {
     tree.
     */
     get topNode() {
-        return new TreeNode(this, 0, 0, null);
+        return new TreeNode$1(this, 0, 0, null);
     }
     /**
     Get the [syntax node](#common.SyntaxNode) at the given position.
@@ -15485,8 +15441,8 @@ class Tree {
     [`resolveInner`](#common.Tree.resolveInner) instead.
     */
     resolve(pos, side = 0) {
-        let node = resolveNode(CachedNode.get(this) || this.topNode, pos, side, false);
-        CachedNode.set(this, node);
+        let node = resolveNode$1(CachedNode$1.get(this) || this.topNode, pos, side, false);
+        CachedNode$1.set(this, node);
         return node;
     }
     /**
@@ -15497,8 +15453,8 @@ class Tree {
     the host trees).
     */
     resolveInner(pos, side = 0) {
-        let node = resolveNode(CachedInnerNode.get(this) || this.topNode, pos, side, true);
-        CachedInnerNode.set(this, node);
+        let node = resolveNode$1(CachedInnerNode$1.get(this) || this.topNode, pos, side, true);
+        CachedInnerNode$1.set(this, node);
         return node;
     }
     /**
@@ -15509,7 +15465,7 @@ class Tree {
     position.
     */
     resolveStack(pos, side = 0) {
-        return stackIterator(this, pos, side);
+        return stackIterator$1(this, pos, side);
     }
     /**
     Iterate over the tree and its children, calling `enter` for any
@@ -15520,8 +15476,8 @@ class Tree {
     */
     iterate(spec) {
         let { enter, leave, from = 0, to = this.length } = spec;
-        let mode = spec.mode || 0, anon = (mode & IterMode.IncludeAnonymous) > 0;
-        for (let c = this.cursor(mode | IterMode.IncludeAnonymous);;) {
+        let mode = spec.mode || 0, anon = (mode & IterMode$1.IncludeAnonymous) > 0;
+        for (let c = this.cursor(mode | IterMode$1.IncludeAnonymous);;) {
             let entered = false;
             if (c.from <= to && c.to >= from && (!anon && c.type.isAnonymous || enter(c) !== false)) {
                 if (c.firstChild())
@@ -15565,19 +15521,19 @@ class Tree {
     */
     balance(config = {}) {
         return this.children.length <= 8 /* Balance.BranchFactor */ ? this :
-            balanceRange(NodeType.none, this.children, this.positions, 0, this.children.length, 0, this.length, (children, positions, length) => new Tree(this.type, children, positions, length, this.propValues), config.makeTree || ((children, positions, length) => new Tree(NodeType.none, children, positions, length)));
+            balanceRange$1(NodeType$1.none, this.children, this.positions, 0, this.children.length, 0, this.length, (children, positions, length) => new Tree$1(this.type, children, positions, length, this.propValues), config.makeTree || ((children, positions, length) => new Tree$1(NodeType$1.none, children, positions, length)));
     }
     /**
     Build a tree from a postfix-ordered buffer of node information,
     or a cursor over such a buffer.
     */
-    static build(data) { return buildTree(data); }
+    static build(data) { return buildTree$1(data); }
 }
 /**
 The empty tree
 */
-Tree.empty = new Tree(NodeType.none, [], [], 0);
-class FlatBufferCursor {
+Tree$1.empty = new Tree$1(NodeType$1.none, [], [], 0);
+class FlatBufferCursor$1 {
     constructor(buffer, index) {
         this.buffer = buffer;
         this.index = index;
@@ -15588,7 +15544,7 @@ class FlatBufferCursor {
     get size() { return this.buffer[this.index - 1]; }
     get pos() { return this.index; }
     next() { this.index -= 4; }
-    fork() { return new FlatBufferCursor(this.buffer, this.index); }
+    fork() { return new FlatBufferCursor$1(this.buffer, this.index); }
 }
 /**
 Tree buffers contain (type, start, end, endIndex) quads for each
@@ -15596,7 +15552,7 @@ node. In such a buffer, nodes are stored in prefix order (parents
 before children, with the endIndex of the parent indicating which
 children belong to it).
 */
-class TreeBuffer {
+class TreeBuffer$1 {
     /**
     Create a tree buffer.
     */
@@ -15620,7 +15576,7 @@ class TreeBuffer {
     /**
     @internal
     */
-    get type() { return NodeType.none; }
+    get type() { return NodeType$1.none; }
     /**
     @internal
     */
@@ -15656,7 +15612,7 @@ class TreeBuffer {
     findChild(startIndex, endIndex, dir, pos, side) {
         let { buffer } = this, pick = -1;
         for (let i = startIndex; i != endIndex; i = buffer[i + 3]) {
-            if (checkSide(side, pos, buffer[i + 1], buffer[i + 2])) {
+            if (checkSide$1(side, pos, buffer[i + 1], buffer[i + 2])) {
                 pick = i;
                 if (dir > 0)
                     break;
@@ -15677,10 +15633,10 @@ class TreeBuffer {
             copy[j++] = b[i++] - startI;
             len = Math.max(len, to);
         }
-        return new TreeBuffer(copy, len, this.set);
+        return new TreeBuffer$1(copy, len, this.set);
     }
 }
-function checkSide(side, pos, from, to) {
+function checkSide$1(side, pos, from, to) {
     switch (side) {
         case -2 /* Side.Before */: return from < pos;
         case -1 /* Side.AtOrBefore */: return to >= pos && from < pos;
@@ -15690,22 +15646,22 @@ function checkSide(side, pos, from, to) {
         case 4 /* Side.DontCare */: return true;
     }
 }
-function resolveNode(node, pos, side, overlays) {
+function resolveNode$1(node, pos, side, overlays) {
     var _a;
     // Move up to a node that actually holds the position, if possible
     while (node.from == node.to ||
         (side < 1 ? node.from >= pos : node.from > pos) ||
         (side > -1 ? node.to <= pos : node.to < pos)) {
-        let parent = !overlays && node instanceof TreeNode && node.index < 0 ? null : node.parent;
+        let parent = !overlays && node instanceof TreeNode$1 && node.index < 0 ? null : node.parent;
         if (!parent)
             return node;
         node = parent;
     }
-    let mode = overlays ? 0 : IterMode.IgnoreOverlays;
+    let mode = overlays ? 0 : IterMode$1.IgnoreOverlays;
     // Must go up out of overlays when those do not overlap with pos
     if (overlays)
         for (let scan = node, parent = scan.parent; parent; scan = parent, parent = scan.parent) {
-            if (scan instanceof TreeNode && scan.index < 0 && ((_a = parent.enter(pos, side, mode)) === null || _a === void 0 ? void 0 : _a.from) != scan.from)
+            if (scan instanceof TreeNode$1 && scan.index < 0 && ((_a = parent.enter(pos, side, mode)) === null || _a === void 0 ? void 0 : _a.from) != scan.from)
                 node = parent;
         }
     for (;;) {
@@ -15715,23 +15671,23 @@ function resolveNode(node, pos, side, overlays) {
         node = inner;
     }
 }
-class BaseNode {
-    cursor(mode = 0) { return new TreeCursor(this, mode); }
+class BaseNode$1 {
+    cursor(mode = 0) { return new TreeCursor$1(this, mode); }
     getChild(type, before = null, after = null) {
-        let r = getChildren(this, type, before, after);
+        let r = getChildren$1(this, type, before, after);
         return r.length ? r[0] : null;
     }
     getChildren(type, before = null, after = null) {
-        return getChildren(this, type, before, after);
+        return getChildren$1(this, type, before, after);
     }
     resolve(pos, side = 0) {
-        return resolveNode(this, pos, side, false);
+        return resolveNode$1(this, pos, side, false);
     }
     resolveInner(pos, side = 0) {
-        return resolveNode(this, pos, side, true);
+        return resolveNode$1(this, pos, side, true);
     }
     matchContext(context) {
-        return matchNodeContext(this, context);
+        return matchNodeContext$1(this, context);
     }
     enterUnfinishedNodesBefore(pos) {
         let scan = this.childBefore(pos), node = this;
@@ -15752,7 +15708,7 @@ class BaseNode {
     get node() { return this; }
     get next() { return this.parent; }
 }
-class TreeNode extends BaseNode {
+class TreeNode$1 extends BaseNode$1 {
     constructor(_tree, from, 
     // Index in parent node, set to -1 if the node is not a direct child of _parent.node (overlay)
     index, _parent) {
@@ -15769,25 +15725,25 @@ class TreeNode extends BaseNode {
         for (let parent = this;;) {
             for (let { children, positions } = parent._tree, e = dir > 0 ? children.length : -1; i != e; i += dir) {
                 let next = children[i], start = positions[i] + parent.from;
-                if (!checkSide(side, pos, start, start + next.length))
+                if (!checkSide$1(side, pos, start, start + next.length))
                     continue;
-                if (next instanceof TreeBuffer) {
-                    if (mode & IterMode.ExcludeBuffers)
+                if (next instanceof TreeBuffer$1) {
+                    if (mode & IterMode$1.ExcludeBuffers)
                         continue;
                     let index = next.findChild(0, next.buffer.length, dir, pos - start, side);
                     if (index > -1)
-                        return new BufferNode(new BufferContext(parent, next, i, start), null, index);
+                        return new BufferNode$1(new BufferContext$1(parent, next, i, start), null, index);
                 }
-                else if ((mode & IterMode.IncludeAnonymous) || (!next.type.isAnonymous || hasChild(next))) {
+                else if ((mode & IterMode$1.IncludeAnonymous) || (!next.type.isAnonymous || hasChild$1(next))) {
                     let mounted;
-                    if (!(mode & IterMode.IgnoreMounts) && (mounted = MountedTree.get(next)) && !mounted.overlay)
-                        return new TreeNode(mounted.tree, start, i, parent);
-                    let inner = new TreeNode(next, start, i, parent);
-                    return (mode & IterMode.IncludeAnonymous) || !inner.type.isAnonymous ? inner
+                    if (!(mode & IterMode$1.IgnoreMounts) && (mounted = MountedTree$1.get(next)) && !mounted.overlay)
+                        return new TreeNode$1(mounted.tree, start, i, parent);
+                    let inner = new TreeNode$1(next, start, i, parent);
+                    return (mode & IterMode$1.IncludeAnonymous) || !inner.type.isAnonymous ? inner
                         : inner.nextChild(dir < 0 ? next.children.length - 1 : 0, dir, pos, side);
                 }
             }
-            if ((mode & IterMode.IncludeAnonymous) || !parent.type.isAnonymous)
+            if ((mode & IterMode$1.IncludeAnonymous) || !parent.type.isAnonymous)
                 return null;
             if (parent.index >= 0)
                 i = parent.index + dir;
@@ -15804,12 +15760,12 @@ class TreeNode extends BaseNode {
     childBefore(pos) { return this.nextChild(this._tree.children.length - 1, -1, pos, -2 /* Side.Before */); }
     enter(pos, side, mode = 0) {
         let mounted;
-        if (!(mode & IterMode.IgnoreOverlays) && (mounted = MountedTree.get(this._tree)) && mounted.overlay) {
+        if (!(mode & IterMode$1.IgnoreOverlays) && (mounted = MountedTree$1.get(this._tree)) && mounted.overlay) {
             let rPos = pos - this.from;
             for (let { from, to } of mounted.overlay) {
                 if ((side > 0 ? from <= rPos : from < rPos) &&
                     (side < 0 ? to >= rPos : to > rPos))
-                    return new TreeNode(mounted.tree, mounted.overlay[0].from + this.from, -1, this);
+                    return new TreeNode$1(mounted.tree, mounted.overlay[0].from + this.from, -1, this);
             }
         }
         return this.nextChild(0, 1, pos, side, mode);
@@ -15836,7 +15792,7 @@ class TreeNode extends BaseNode {
     */
     toString() { return this._tree.toString(); }
 }
-function getChildren(node, type, before, after) {
+function getChildren$1(node, type, before, after) {
     let cur = node.cursor(), result = [];
     if (!cur.firstChild())
         return result;
@@ -15855,7 +15811,7 @@ function getChildren(node, type, before, after) {
             return after == null ? result : [];
     }
 }
-function matchNodeContext(node, context, i = context.length - 1) {
+function matchNodeContext$1(node, context, i = context.length - 1) {
     for (let p = node.parent; i >= 0; p = p.parent) {
         if (!p)
             return false;
@@ -15867,7 +15823,7 @@ function matchNodeContext(node, context, i = context.length - 1) {
     }
     return true;
 }
-class BufferContext {
+class BufferContext$1 {
     constructor(parent, buffer, index, start) {
         this.parent = parent;
         this.buffer = buffer;
@@ -15875,7 +15831,7 @@ class BufferContext {
         this.start = start;
     }
 }
-class BufferNode extends BaseNode {
+class BufferNode$1 extends BaseNode$1 {
     get name() { return this.type.name; }
     get from() { return this.context.start + this.context.buffer.buffer[this.index + 1]; }
     get to() { return this.context.start + this.context.buffer.buffer[this.index + 2]; }
@@ -15889,18 +15845,18 @@ class BufferNode extends BaseNode {
     child(dir, pos, side) {
         let { buffer } = this.context;
         let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], dir, pos - this.context.start, side);
-        return index < 0 ? null : new BufferNode(this.context, this, index);
+        return index < 0 ? null : new BufferNode$1(this.context, this, index);
     }
     get firstChild() { return this.child(1, 0, 4 /* Side.DontCare */); }
     get lastChild() { return this.child(-1, 0, 4 /* Side.DontCare */); }
     childAfter(pos) { return this.child(1, pos, 2 /* Side.After */); }
     childBefore(pos) { return this.child(-1, pos, -2 /* Side.Before */); }
     enter(pos, side, mode = 0) {
-        if (mode & IterMode.ExcludeBuffers)
+        if (mode & IterMode$1.ExcludeBuffers)
             return null;
         let { buffer } = this.context;
         let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], side > 0 ? 1 : -1, pos - this.context.start, side);
-        return index < 0 ? null : new BufferNode(this.context, this, index);
+        return index < 0 ? null : new BufferNode$1(this.context, this, index);
     }
     get parent() {
         return this._parent || this.context.parent.nextSignificantParent();
@@ -15912,7 +15868,7 @@ class BufferNode extends BaseNode {
         let { buffer } = this.context;
         let after = buffer.buffer[this.index + 3];
         if (after < (this._parent ? buffer.buffer[this._parent.index + 3] : buffer.buffer.length))
-            return new BufferNode(this.context, this._parent, after);
+            return new BufferNode$1(this.context, this._parent, after);
         return this.externalSibling(1);
     }
     get prevSibling() {
@@ -15920,7 +15876,7 @@ class BufferNode extends BaseNode {
         let parentStart = this._parent ? this._parent.index + 4 : 0;
         if (this.index == parentStart)
             return this.externalSibling(-1);
-        return new BufferNode(this.context, this._parent, buffer.findChild(parentStart, this.index, -1, 0, 4 /* Side.DontCare */));
+        return new BufferNode$1(this.context, this._parent, buffer.findChild(parentStart, this.index, -1, 0, 4 /* Side.DontCare */));
     }
     get tree() { return null; }
     toTree() {
@@ -15932,14 +15888,14 @@ class BufferNode extends BaseNode {
             children.push(buffer.slice(startI, endI, from));
             positions.push(0);
         }
-        return new Tree(this.type, children, positions, this.to - this.from);
+        return new Tree$1(this.type, children, positions, this.to - this.from);
     }
     /**
     @internal
     */
     toString() { return this.context.buffer.childString(this.index); }
 }
-function iterStack(heads) {
+function iterStack$1(heads) {
     if (!heads.length)
         return null;
     let pick = 0, picked = heads[0];
@@ -15950,45 +15906,45 @@ function iterStack(heads) {
             pick = i;
         }
     }
-    let next = picked instanceof TreeNode && picked.index < 0 ? null : picked.parent;
+    let next = picked instanceof TreeNode$1 && picked.index < 0 ? null : picked.parent;
     let newHeads = heads.slice();
     if (next)
         newHeads[pick] = next;
     else
         newHeads.splice(pick, 1);
-    return new StackIterator(newHeads, picked);
+    return new StackIterator$1(newHeads, picked);
 }
-class StackIterator {
+class StackIterator$1 {
     constructor(heads, node) {
         this.heads = heads;
         this.node = node;
     }
-    get next() { return iterStack(this.heads); }
+    get next() { return iterStack$1(this.heads); }
 }
-function stackIterator(tree, pos, side) {
+function stackIterator$1(tree, pos, side) {
     let inner = tree.resolveInner(pos, side), layers = null;
-    for (let scan = inner instanceof TreeNode ? inner : inner.context.parent; scan; scan = scan.parent) {
+    for (let scan = inner instanceof TreeNode$1 ? inner : inner.context.parent; scan; scan = scan.parent) {
         if (scan.index < 0) { // This is an overlay root
             let parent = scan.parent;
             (layers || (layers = [inner])).push(parent.resolve(pos, side));
             scan = parent;
         }
         else {
-            let mount = MountedTree.get(scan.tree);
+            let mount = MountedTree$1.get(scan.tree);
             // Relevant overlay branching off
             if (mount && mount.overlay && mount.overlay[0].from <= pos && mount.overlay[mount.overlay.length - 1].to >= pos) {
-                let root = new TreeNode(mount.tree, mount.overlay[0].from + scan.from, -1, scan);
-                (layers || (layers = [inner])).push(resolveNode(root, pos, side, false));
+                let root = new TreeNode$1(mount.tree, mount.overlay[0].from + scan.from, -1, scan);
+                (layers || (layers = [inner])).push(resolveNode$1(root, pos, side, false));
             }
         }
     }
-    return layers ? iterStack(layers) : inner;
+    return layers ? iterStack$1(layers) : inner;
 }
 /**
 A tree cursor object focuses on a given node in a syntax tree, and
 allows you to move to adjacent nodes.
 */
-class TreeCursor {
+class TreeCursor$1 {
     /**
     Shorthand for `.type.name`.
     */
@@ -16012,7 +15968,7 @@ class TreeCursor {
         */
         this.index = 0;
         this.bufferNode = null;
-        if (node instanceof TreeNode) {
+        if (node instanceof TreeNode$1) {
             this.yieldNode(node);
         }
         else {
@@ -16047,7 +16003,7 @@ class TreeCursor {
     yield(node) {
         if (!node)
             return false;
-        if (node instanceof TreeNode) {
+        if (node instanceof TreeNode$1) {
             this.buffer = null;
             return this.yieldNode(node);
         }
@@ -16100,17 +16056,17 @@ class TreeCursor {
     enter(pos, side, mode = this.mode) {
         if (!this.buffer)
             return this.yield(this._tree.enter(pos, side, mode));
-        return mode & IterMode.ExcludeBuffers ? false : this.enterChild(1, pos, side);
+        return mode & IterMode$1.ExcludeBuffers ? false : this.enterChild(1, pos, side);
     }
     /**
     Move to the node's parent node, if this isn't the top node.
     */
     parent() {
         if (!this.buffer)
-            return this.yieldNode((this.mode & IterMode.IncludeAnonymous) ? this._tree._parent : this._tree.parent);
+            return this.yieldNode((this.mode & IterMode$1.IncludeAnonymous) ? this._tree._parent : this._tree.parent);
         if (this.stack.length)
             return this.yieldBuf(this.stack.pop());
-        let parent = (this.mode & IterMode.IncludeAnonymous) ? this.buffer.parent : this.buffer.parent.nextSignificantParent();
+        let parent = (this.mode & IterMode$1.IncludeAnonymous) ? this.buffer.parent : this.buffer.parent.nextSignificantParent();
         this.buffer = null;
         return this.yieldNode(parent);
     }
@@ -16164,10 +16120,10 @@ class TreeCursor {
             if (index > -1)
                 for (let i = index + dir, e = dir < 0 ? -1 : parent._tree.children.length; i != e; i += dir) {
                     let child = parent._tree.children[i];
-                    if ((this.mode & IterMode.IncludeAnonymous) ||
-                        child instanceof TreeBuffer ||
+                    if ((this.mode & IterMode$1.IncludeAnonymous) ||
+                        child instanceof TreeBuffer$1 ||
                         !child.type.isAnonymous ||
-                        hasChild(child))
+                        hasChild$1(child))
                         return false;
                 }
         }
@@ -16236,8 +16192,8 @@ class TreeCursor {
             }
         }
         for (let i = depth; i < this.stack.length; i++)
-            result = new BufferNode(this.buffer, result, this.stack[i]);
-        return this.bufferNode = new BufferNode(this.buffer, result, this.index);
+            result = new BufferNode$1(this.buffer, result, this.stack[i]);
+        return this.bufferNode = new BufferNode$1(this.buffer, result, this.index);
     }
     /**
     Get the [tree](#common.Tree) that represents the current node, if
@@ -16285,11 +16241,11 @@ class TreeCursor {
     */
     matchContext(context) {
         if (!this.buffer)
-            return matchNodeContext(this.node, context);
+            return matchNodeContext$1(this.node, context);
         let { buffer } = this.buffer, { types } = buffer.set;
         for (let i = context.length - 1, d = this.stack.length - 1; i >= 0; d--) {
             if (d < 0)
-                return matchNodeContext(this.node, context, i);
+                return matchNodeContext$1(this.node, context, i);
             let type = types[buffer.buffer[this.stack[d]]];
             if (!type.isAnonymous) {
                 if (context[i] && context[i] != type.name)
@@ -16300,13 +16256,13 @@ class TreeCursor {
         return true;
     }
 }
-function hasChild(tree) {
-    return tree.children.some(ch => ch instanceof TreeBuffer || !ch.type.isAnonymous || hasChild(ch));
+function hasChild$1(tree) {
+    return tree.children.some(ch => ch instanceof TreeBuffer$1 || !ch.type.isAnonymous || hasChild$1(ch));
 }
-function buildTree(data) {
+function buildTree$1(data) {
     var _a;
-    let { buffer, nodeSet, maxBufferLength = DefaultBufferLength, reused = [], minRepeatType = nodeSet.types.length } = data;
-    let cursor = Array.isArray(buffer) ? new FlatBufferCursor(buffer, buffer.length) : buffer;
+    let { buffer, nodeSet, maxBufferLength = DefaultBufferLength$1, reused = [], minRepeatType = nodeSet.types.length } = data;
+    let cursor = Array.isArray(buffer) ? new FlatBufferCursor$1(buffer, buffer.length) : buffer;
     let types = nodeSet.types;
     let contextHash = 0, lookAhead = 0;
     function takeNode(parentStart, minPos, children, positions, inRepeat, depth) {
@@ -16340,7 +16296,7 @@ function buildTree(data) {
             let endPos = cursor.pos - buffer.size, index = data.length;
             while (cursor.pos > endPos)
                 index = copyToBuffer(buffer.start, data, index);
-            node = new TreeBuffer(data, end - buffer.start, nodeSet);
+            node = new TreeBuffer$1(data, end - buffer.start, nodeSet);
             startPos = buffer.start - parentStart;
         }
         else { // Make it a node
@@ -16371,7 +16327,7 @@ function buildTree(data) {
             localPositions.reverse();
             if (localInRepeat > -1 && lastGroup > 0) {
                 let make = makeBalanced(type);
-                node = balanceRange(type, localChildren, localPositions, 0, localChildren.length, 0, end - start, make, make);
+                node = balanceRange$1(type, localChildren, localPositions, 0, localChildren.length, 0, end - start, make, make);
             }
             else {
                 node = makeTree(type, localChildren, localPositions, end - start, lookAheadAtStart - end);
@@ -16408,17 +16364,17 @@ function buildTree(data) {
                 buffer[j++] = nodes[i + 2] - start;
                 buffer[j++] = j;
             }
-            children.push(new TreeBuffer(buffer, nodes[2] - start, nodeSet));
+            children.push(new TreeBuffer$1(buffer, nodes[2] - start, nodeSet));
             positions.push(start - parentStart);
         }
     }
     function makeBalanced(type) {
         return (children, positions, length) => {
             let lookAhead = 0, lastI = children.length - 1, last, lookAheadProp;
-            if (lastI >= 0 && (last = children[lastI]) instanceof Tree) {
+            if (lastI >= 0 && (last = children[lastI]) instanceof Tree$1) {
                 if (!lastI && last.type == type && last.length == length)
                     return last;
-                if (lookAheadProp = last.prop(NodeProp.lookAhead))
+                if (lookAheadProp = last.prop(NodeProp$1.lookAhead))
                     lookAhead = positions[lastI] + last.length + lookAheadProp;
             }
             return makeTree(type, children, positions, length, lookAhead);
@@ -16435,14 +16391,14 @@ function buildTree(data) {
     }
     function makeTree(type, children, positions, length, lookAhead = 0, props) {
         if (contextHash) {
-            let pair = [NodeProp.contextHash, contextHash];
+            let pair = [NodeProp$1.contextHash, contextHash];
             props = props ? [pair].concat(props) : [pair];
         }
         if (lookAhead > 25) {
-            let pair = [NodeProp.lookAhead, lookAhead];
+            let pair = [NodeProp$1.lookAhead, lookAhead];
             props = props ? [pair].concat(props) : [pair];
         }
-        return new Tree(type, children, positions, length, props);
+        return new Tree$1(type, children, positions, length, props);
     }
     function findBufferSize(maxSize, inRepeat) {
         // Scan through the buffer to find previous siblings that fit
@@ -16524,27 +16480,27 @@ function buildTree(data) {
     while (cursor.pos > 0)
         takeNode(data.start || 0, data.bufferStart || 0, children, positions, -1, 0);
     let length = (_a = data.length) !== null && _a !== void 0 ? _a : (children.length ? positions[0] + children[0].length : 0);
-    return new Tree(types[data.topID], children.reverse(), positions.reverse(), length);
+    return new Tree$1(types[data.topID], children.reverse(), positions.reverse(), length);
 }
-const nodeSizeCache = new WeakMap;
-function nodeSize(balanceType, node) {
-    if (!balanceType.isAnonymous || node instanceof TreeBuffer || node.type != balanceType)
+const nodeSizeCache$1 = new WeakMap;
+function nodeSize$1(balanceType, node) {
+    if (!balanceType.isAnonymous || node instanceof TreeBuffer$1 || node.type != balanceType)
         return 1;
-    let size = nodeSizeCache.get(node);
+    let size = nodeSizeCache$1.get(node);
     if (size == null) {
         size = 1;
         for (let child of node.children) {
-            if (child.type != balanceType || !(child instanceof Tree)) {
+            if (child.type != balanceType || !(child instanceof Tree$1)) {
                 size = 1;
                 break;
             }
-            size += nodeSize(balanceType, child);
+            size += nodeSize$1(balanceType, child);
         }
-        nodeSizeCache.set(node, size);
+        nodeSizeCache$1.set(node, size);
     }
     return size;
 }
-function balanceRange(
+function balanceRange$1(
 // The type the balanced tree's inner nodes.
 balanceType, 
 // The direct children and their positions
@@ -16561,15 +16517,15 @@ mkTop,
 mkTree) {
     let total = 0;
     for (let i = from; i < to; i++)
-        total += nodeSize(balanceType, children[i]);
+        total += nodeSize$1(balanceType, children[i]);
     let maxChild = Math.ceil((total * 1.5) / 8 /* Balance.BranchFactor */);
     let localChildren = [], localPositions = [];
     function divide(children, positions, from, to, offset) {
         for (let i = from; i < to;) {
-            let groupFrom = i, groupStart = positions[i], groupSize = nodeSize(balanceType, children[i]);
+            let groupFrom = i, groupStart = positions[i], groupSize = nodeSize$1(balanceType, children[i]);
             i++;
             for (; i < to; i++) {
-                let nextSize = nodeSize(balanceType, children[i]);
+                let nextSize = nodeSize$1(balanceType, children[i]);
                 if (groupSize + nextSize >= maxChild)
                     break;
                 groupSize += nextSize;
@@ -16584,7 +16540,7 @@ mkTree) {
             }
             else {
                 let length = positions[i - 1] + children[i - 1].length - groupStart;
-                localChildren.push(balanceRange(balanceType, children, positions, groupFrom, i, groupStart, length, null, mkTree));
+                localChildren.push(balanceRange$1(balanceType, children, positions, groupFrom, i, groupStart, length, null, mkTree));
             }
             localPositions.push(groupStart + offset - start);
         }
@@ -16701,7 +16657,7 @@ class TreeFragment {
 /**
 A superclass that parsers should extend.
 */
-class Parser {
+class Parser$1 {
     /**
     Start a parse, returning a [partial parse](#common.PartialParse)
     object. [`fragments`](#common.TreeFragment) can be passed in to
@@ -16714,8 +16670,8 @@ class Parser {
     */
     startParse(input, fragments, ranges) {
         if (typeof input == "string")
-            input = new StringInput(input);
-        ranges = !ranges ? [new Range(0, input.length)] : ranges.length ? ranges.map(r => new Range(r.from, r.to)) : [new Range(0, 0)];
+            input = new StringInput$1(input);
+        ranges = !ranges ? [new Range$1(0, input.length)] : ranges.length ? ranges.map(r => new Range$1(r.from, r.to)) : [new Range$1(0, 0)];
         return this.createParse(input, fragments || [], ranges);
     }
     /**
@@ -16730,7 +16686,7 @@ class Parser {
         }
     }
 }
-class StringInput {
+class StringInput$1 {
     constructor(string) {
         this.string = string;
     }
@@ -16739,9 +16695,9 @@ class StringInput {
     get lineChunks() { return false; }
     read(from, to) { return this.string.slice(from, to); }
 }
-new NodeProp({ perNode: true });
+new NodeProp$1({ perNode: true });
 
-let nextTagID = 0;
+let nextTagID$1 = 0;
 /**
 Highlighting tags are markers that denote a highlighting category.
 They are [associated](#highlight.styleTags) with parts of a syntax
@@ -16761,7 +16717,7 @@ the language package and the highlighter), but such tags will not
 be picked up by regular highlighters (though you can derive them
 from standard tags to allow highlighters to fall back to those).
 */
-class Tag {
+class Tag$1 {
     /**
     @internal
     */
@@ -16786,7 +16742,7 @@ class Tag {
         /**
         @internal
         */
-        this.id = nextTagID++;
+        this.id = nextTagID$1++;
     }
     /**
     Define a new tag. If `parent` is given, the tag is treated as a
@@ -16798,7 +16754,7 @@ class Tag {
     static define(parent) {
         if (parent === null || parent === void 0 ? void 0 : parent.base)
             throw new Error("Can not derive from a modified tag");
-        let tag = new Tag([], null, []);
+        let tag = new Tag$1([], null, []);
         tag.set.push(tag);
         if (parent)
             for (let t of parent.set)
@@ -16818,41 +16774,41 @@ class Tag {
     `m1(m3(t1)`, and so on.
     */
     static defineModifier() {
-        let mod = new Modifier;
+        let mod = new Modifier$1;
         return (tag) => {
             if (tag.modified.indexOf(mod) > -1)
                 return tag;
-            return Modifier.get(tag.base || tag, tag.modified.concat(mod).sort((a, b) => a.id - b.id));
+            return Modifier$1.get(tag.base || tag, tag.modified.concat(mod).sort((a, b) => a.id - b.id));
         };
     }
 }
-let nextModifierID = 0;
-class Modifier {
+let nextModifierID$1 = 0;
+class Modifier$1 {
     constructor() {
         this.instances = [];
-        this.id = nextModifierID++;
+        this.id = nextModifierID$1++;
     }
     static get(base, mods) {
         if (!mods.length)
             return base;
-        let exists = mods[0].instances.find(t => t.base == base && sameArray(mods, t.modified));
+        let exists = mods[0].instances.find(t => t.base == base && sameArray$1(mods, t.modified));
         if (exists)
             return exists;
-        let set = [], tag = new Tag(set, base, mods);
+        let set = [], tag = new Tag$1(set, base, mods);
         for (let m of mods)
             m.instances.push(tag);
-        let configs = powerSet(mods);
+        let configs = powerSet$1(mods);
         for (let parent of base.set)
             if (!parent.modified.length)
                 for (let config of configs)
-                    set.push(Modifier.get(parent, config));
+                    set.push(Modifier$1.get(parent, config));
         return tag;
     }
 }
-function sameArray(a, b) {
+function sameArray$1(a, b) {
     return a.length == b.length && a.every((x, i) => x == b[i]);
 }
-function powerSet(array) {
+function powerSet$1(array) {
     let sets = [[]];
     for (let i = 0; i < array.length; i++) {
         for (let j = 0, e = sets.length; j < e; j++) {
@@ -16912,7 +16868,7 @@ parser.withProps(
 )
 ```
 */
-function styleTags(spec) {
+function styleTags$1(spec) {
     let byName = Object.create(null);
     for (let prop in spec) {
         let tags = spec[prop];
@@ -16945,14 +16901,14 @@ function styleTags(spec) {
                 let last = pieces.length - 1, inner = pieces[last];
                 if (!inner)
                     throw new RangeError("Invalid path: " + part);
-                let rule = new Rule(tags, mode, last > 0 ? pieces.slice(0, last) : null);
+                let rule = new Rule$1(tags, mode, last > 0 ? pieces.slice(0, last) : null);
                 byName[inner] = rule.sort(byName[inner]);
             }
     }
-    return ruleNodeProp.add(byName);
+    return ruleNodeProp$1.add(byName);
 }
-const ruleNodeProp = new NodeProp();
-class Rule {
+const ruleNodeProp$1 = new NodeProp$1();
+class Rule$1 {
     constructor(tags, mode, context, next) {
         this.tags = tags;
         this.mode = mode;
@@ -16971,13 +16927,13 @@ class Rule {
     }
     get depth() { return this.context ? this.context.length : 0; }
 }
-Rule.empty = new Rule([], 2 /* Mode.Normal */, null);
+Rule$1.empty = new Rule$1([], 2 /* Mode.Normal */, null);
 /**
 Define a [highlighter](#highlight.Highlighter) from an array of
 tag/class pairs. Classes associated with more specific tags will
 take precedence.
 */
-function tagHighlighter(tags, options) {
+function tagHighlighter$1(tags, options) {
     let map = Object.create(null);
     for (let style of tags) {
         if (!Array.isArray(style.tag))
@@ -17064,7 +17020,7 @@ class HighlightBuilder {
         if (type.isTop)
             highlighters = this.highlighters.filter(h => !h.scope || h.scope(type));
         let cls = inheritedClass;
-        let rule = getStyleTags(cursor) || Rule.empty;
+        let rule = getStyleTags(cursor) || Rule$1.empty;
         let tagCls = highlightTags(highlighters, rule.tags);
         if (tagCls) {
             if (cls)
@@ -17076,7 +17032,7 @@ class HighlightBuilder {
         this.startSpan(Math.max(from, start), cls);
         if (rule.opaque)
             return;
-        let mounted = cursor.tree && cursor.tree.prop(NodeProp.mounted);
+        let mounted = cursor.tree && cursor.tree.prop(NodeProp$1.mounted);
         if (mounted && mounted.overlay) {
             let inner = cursor.node.enter(mounted.overlay[0].from + start, 1);
             let innerHighlighters = this.highlighters.filter(h => !h.scope || h.scope(mounted.tree.type));
@@ -17125,13 +17081,13 @@ there's a match, return its set of tags, and whether it is
 opaque (uses a `!`) or applies to all child nodes (`/...`).
 */
 function getStyleTags(node) {
-    let rule = node.type.prop(ruleNodeProp);
+    let rule = node.type.prop(ruleNodeProp$1);
     while (rule && rule.context && !node.matchContext(rule.context))
         rule = rule.next;
     return rule || null;
 }
-const t = Tag.define;
-const comment = t(), name = t(), typeName = t(name), propertyName = t(name), literal = t(), string = t(literal), number = t(literal), content = t(), heading = t(content), keyword = t(), operator = t(), punctuation = t(), bracket = t(punctuation), meta = t();
+const t$1 = Tag$1.define;
+const comment$1 = t$1(), name$1 = t$1(), typeName$1 = t$1(name$1), propertyName$1 = t$1(name$1), literal$1 = t$1(), string$1 = t$1(literal$1), number$1 = t$1(literal$1), content$1 = t$1(), heading$1 = t$1(content$1), keyword$1 = t$1(), operator$1 = t$1(), punctuation$1 = t$1(), bracket$1 = t$1(punctuation$1), meta$1 = t$1();
 /**
 The default set of highlighting [tags](#highlight.Tag).
 
@@ -17152,362 +17108,362 @@ it is okay to style it as its more general variant (a variable).
 For tags that extend some parent tag, the documentation links to
 the parent.
 */
-const tags = {
+const tags$1 = {
     /**
     A comment.
     */
-    comment,
+    comment: comment$1,
     /**
     A line [comment](#highlight.tags.comment).
     */
-    lineComment: t(comment),
+    lineComment: t$1(comment$1),
     /**
     A block [comment](#highlight.tags.comment).
     */
-    blockComment: t(comment),
+    blockComment: t$1(comment$1),
     /**
     A documentation [comment](#highlight.tags.comment).
     */
-    docComment: t(comment),
+    docComment: t$1(comment$1),
     /**
     Any kind of identifier.
     */
-    name,
+    name: name$1,
     /**
     The [name](#highlight.tags.name) of a variable.
     */
-    variableName: t(name),
+    variableName: t$1(name$1),
     /**
     A type [name](#highlight.tags.name).
     */
-    typeName: typeName,
+    typeName: typeName$1,
     /**
     A tag name (subtag of [`typeName`](#highlight.tags.typeName)).
     */
-    tagName: t(typeName),
+    tagName: t$1(typeName$1),
     /**
     A property or field [name](#highlight.tags.name).
     */
-    propertyName: propertyName,
+    propertyName: propertyName$1,
     /**
     An attribute name (subtag of [`propertyName`](#highlight.tags.propertyName)).
     */
-    attributeName: t(propertyName),
+    attributeName: t$1(propertyName$1),
     /**
     The [name](#highlight.tags.name) of a class.
     */
-    className: t(name),
+    className: t$1(name$1),
     /**
     A label [name](#highlight.tags.name).
     */
-    labelName: t(name),
+    labelName: t$1(name$1),
     /**
     A namespace [name](#highlight.tags.name).
     */
-    namespace: t(name),
+    namespace: t$1(name$1),
     /**
     The [name](#highlight.tags.name) of a macro.
     */
-    macroName: t(name),
+    macroName: t$1(name$1),
     /**
     A literal value.
     */
-    literal,
+    literal: literal$1,
     /**
     A string [literal](#highlight.tags.literal).
     */
-    string,
+    string: string$1,
     /**
     A documentation [string](#highlight.tags.string).
     */
-    docString: t(string),
+    docString: t$1(string$1),
     /**
     A character literal (subtag of [string](#highlight.tags.string)).
     */
-    character: t(string),
+    character: t$1(string$1),
     /**
     An attribute value (subtag of [string](#highlight.tags.string)).
     */
-    attributeValue: t(string),
+    attributeValue: t$1(string$1),
     /**
     A number [literal](#highlight.tags.literal).
     */
-    number,
+    number: number$1,
     /**
     An integer [number](#highlight.tags.number) literal.
     */
-    integer: t(number),
+    integer: t$1(number$1),
     /**
     A floating-point [number](#highlight.tags.number) literal.
     */
-    float: t(number),
+    float: t$1(number$1),
     /**
     A boolean [literal](#highlight.tags.literal).
     */
-    bool: t(literal),
+    bool: t$1(literal$1),
     /**
     Regular expression [literal](#highlight.tags.literal).
     */
-    regexp: t(literal),
+    regexp: t$1(literal$1),
     /**
     An escape [literal](#highlight.tags.literal), for example a
     backslash escape in a string.
     */
-    escape: t(literal),
+    escape: t$1(literal$1),
     /**
     A color [literal](#highlight.tags.literal).
     */
-    color: t(literal),
+    color: t$1(literal$1),
     /**
     A URL [literal](#highlight.tags.literal).
     */
-    url: t(literal),
+    url: t$1(literal$1),
     /**
     A language keyword.
     */
-    keyword,
+    keyword: keyword$1,
     /**
     The [keyword](#highlight.tags.keyword) for the self or this
     object.
     */
-    self: t(keyword),
+    self: t$1(keyword$1),
     /**
     The [keyword](#highlight.tags.keyword) for null.
     */
-    null: t(keyword),
+    null: t$1(keyword$1),
     /**
     A [keyword](#highlight.tags.keyword) denoting some atomic value.
     */
-    atom: t(keyword),
+    atom: t$1(keyword$1),
     /**
     A [keyword](#highlight.tags.keyword) that represents a unit.
     */
-    unit: t(keyword),
+    unit: t$1(keyword$1),
     /**
     A modifier [keyword](#highlight.tags.keyword).
     */
-    modifier: t(keyword),
+    modifier: t$1(keyword$1),
     /**
     A [keyword](#highlight.tags.keyword) that acts as an operator.
     */
-    operatorKeyword: t(keyword),
+    operatorKeyword: t$1(keyword$1),
     /**
     A control-flow related [keyword](#highlight.tags.keyword).
     */
-    controlKeyword: t(keyword),
+    controlKeyword: t$1(keyword$1),
     /**
     A [keyword](#highlight.tags.keyword) that defines something.
     */
-    definitionKeyword: t(keyword),
+    definitionKeyword: t$1(keyword$1),
     /**
     A [keyword](#highlight.tags.keyword) related to defining or
     interfacing with modules.
     */
-    moduleKeyword: t(keyword),
+    moduleKeyword: t$1(keyword$1),
     /**
     An operator.
     */
-    operator,
+    operator: operator$1,
     /**
     An [operator](#highlight.tags.operator) that dereferences something.
     */
-    derefOperator: t(operator),
+    derefOperator: t$1(operator$1),
     /**
     Arithmetic-related [operator](#highlight.tags.operator).
     */
-    arithmeticOperator: t(operator),
+    arithmeticOperator: t$1(operator$1),
     /**
     Logical [operator](#highlight.tags.operator).
     */
-    logicOperator: t(operator),
+    logicOperator: t$1(operator$1),
     /**
     Bit [operator](#highlight.tags.operator).
     */
-    bitwiseOperator: t(operator),
+    bitwiseOperator: t$1(operator$1),
     /**
     Comparison [operator](#highlight.tags.operator).
     */
-    compareOperator: t(operator),
+    compareOperator: t$1(operator$1),
     /**
     [Operator](#highlight.tags.operator) that updates its operand.
     */
-    updateOperator: t(operator),
+    updateOperator: t$1(operator$1),
     /**
     [Operator](#highlight.tags.operator) that defines something.
     */
-    definitionOperator: t(operator),
+    definitionOperator: t$1(operator$1),
     /**
     Type-related [operator](#highlight.tags.operator).
     */
-    typeOperator: t(operator),
+    typeOperator: t$1(operator$1),
     /**
     Control-flow [operator](#highlight.tags.operator).
     */
-    controlOperator: t(operator),
+    controlOperator: t$1(operator$1),
     /**
     Program or markup punctuation.
     */
-    punctuation,
+    punctuation: punctuation$1,
     /**
     [Punctuation](#highlight.tags.punctuation) that separates
     things.
     */
-    separator: t(punctuation),
+    separator: t$1(punctuation$1),
     /**
     Bracket-style [punctuation](#highlight.tags.punctuation).
     */
-    bracket,
+    bracket: bracket$1,
     /**
     Angle [brackets](#highlight.tags.bracket) (usually `<` and `>`
     tokens).
     */
-    angleBracket: t(bracket),
+    angleBracket: t$1(bracket$1),
     /**
     Square [brackets](#highlight.tags.bracket) (usually `[` and `]`
     tokens).
     */
-    squareBracket: t(bracket),
+    squareBracket: t$1(bracket$1),
     /**
     Parentheses (usually `(` and `)` tokens). Subtag of
     [bracket](#highlight.tags.bracket).
     */
-    paren: t(bracket),
+    paren: t$1(bracket$1),
     /**
     Braces (usually `{` and `}` tokens). Subtag of
     [bracket](#highlight.tags.bracket).
     */
-    brace: t(bracket),
+    brace: t$1(bracket$1),
     /**
     Content, for example plain text in XML or markup documents.
     */
-    content,
+    content: content$1,
     /**
     [Content](#highlight.tags.content) that represents a heading.
     */
-    heading,
+    heading: heading$1,
     /**
     A level 1 [heading](#highlight.tags.heading).
     */
-    heading1: t(heading),
+    heading1: t$1(heading$1),
     /**
     A level 2 [heading](#highlight.tags.heading).
     */
-    heading2: t(heading),
+    heading2: t$1(heading$1),
     /**
     A level 3 [heading](#highlight.tags.heading).
     */
-    heading3: t(heading),
+    heading3: t$1(heading$1),
     /**
     A level 4 [heading](#highlight.tags.heading).
     */
-    heading4: t(heading),
+    heading4: t$1(heading$1),
     /**
     A level 5 [heading](#highlight.tags.heading).
     */
-    heading5: t(heading),
+    heading5: t$1(heading$1),
     /**
     A level 6 [heading](#highlight.tags.heading).
     */
-    heading6: t(heading),
+    heading6: t$1(heading$1),
     /**
     A prose separator (such as a horizontal rule).
     */
-    contentSeparator: t(content),
+    contentSeparator: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that represents a list.
     */
-    list: t(content),
+    list: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that represents a quote.
     */
-    quote: t(content),
+    quote: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that is emphasized.
     */
-    emphasis: t(content),
+    emphasis: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that is styled strong.
     */
-    strong: t(content),
+    strong: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that is part of a link.
     */
-    link: t(content),
+    link: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that is styled as code or
     monospace.
     */
-    monospace: t(content),
+    monospace: t$1(content$1),
     /**
     [Content](#highlight.tags.content) that has a strike-through
     style.
     */
-    strikethrough: t(content),
+    strikethrough: t$1(content$1),
     /**
     Inserted text in a change-tracking format.
     */
-    inserted: t(),
+    inserted: t$1(),
     /**
     Deleted text.
     */
-    deleted: t(),
+    deleted: t$1(),
     /**
     Changed text.
     */
-    changed: t(),
+    changed: t$1(),
     /**
     An invalid or unsyntactic element.
     */
-    invalid: t(),
+    invalid: t$1(),
     /**
     Metadata or meta-instruction.
     */
-    meta,
+    meta: meta$1,
     /**
     [Metadata](#highlight.tags.meta) that applies to the entire
     document.
     */
-    documentMeta: t(meta),
+    documentMeta: t$1(meta$1),
     /**
     [Metadata](#highlight.tags.meta) that annotates or adds
     attributes to a given syntactic element.
     */
-    annotation: t(meta),
+    annotation: t$1(meta$1),
     /**
     Processing instruction or preprocessor directive. Subtag of
     [meta](#highlight.tags.meta).
     */
-    processingInstruction: t(meta),
+    processingInstruction: t$1(meta$1),
     /**
     [Modifier](#highlight.Tag^defineModifier) that indicates that a
     given element is being defined. Expected to be used with the
     various [name](#highlight.tags.name) tags.
     */
-    definition: Tag.defineModifier(),
+    definition: Tag$1.defineModifier(),
     /**
     [Modifier](#highlight.Tag^defineModifier) that indicates that
     something is constant. Mostly expected to be used with
     [variable names](#highlight.tags.variableName).
     */
-    constant: Tag.defineModifier(),
+    constant: Tag$1.defineModifier(),
     /**
     [Modifier](#highlight.Tag^defineModifier) used to indicate that
     a [variable](#highlight.tags.variableName) or [property
     name](#highlight.tags.propertyName) is being called or defined
     as a function.
     */
-    function: Tag.defineModifier(),
+    function: Tag$1.defineModifier(),
     /**
     [Modifier](#highlight.Tag^defineModifier) that can be applied to
     [names](#highlight.tags.name) to indicate that they belong to
     the language's standard environment.
     */
-    standard: Tag.defineModifier(),
+    standard: Tag$1.defineModifier(),
     /**
     [Modifier](#highlight.Tag^defineModifier) that indicates a given
     [names](#highlight.tags.name) is local to some scope.
     */
-    local: Tag.defineModifier(),
+    local: Tag$1.defineModifier(),
     /**
     A generic variant [modifier](#highlight.Tag^defineModifier) that
     can be used to tag language-specific alternative variants of
@@ -17516,7 +17472,7 @@ const tags = {
     [variable name](#highlight.tags.variableName) tags, since those
     come up a lot.
     */
-    special: Tag.defineModifier()
+    special: Tag$1.defineModifier()
 };
 /**
 This is a highlighter that adds stable, predictable classes to
@@ -17566,37 +17522,37 @@ In addition, these mappings are provided:
 * [`definition`](#highlight.tags.definition)[`(propertyName)`](#highlight.tags.propertyName)
   to `"tok-propertyName tok-definition"`
 */
-tagHighlighter([
-    { tag: tags.link, class: "tok-link" },
-    { tag: tags.heading, class: "tok-heading" },
-    { tag: tags.emphasis, class: "tok-emphasis" },
-    { tag: tags.strong, class: "tok-strong" },
-    { tag: tags.keyword, class: "tok-keyword" },
-    { tag: tags.atom, class: "tok-atom" },
-    { tag: tags.bool, class: "tok-bool" },
-    { tag: tags.url, class: "tok-url" },
-    { tag: tags.labelName, class: "tok-labelName" },
-    { tag: tags.inserted, class: "tok-inserted" },
-    { tag: tags.deleted, class: "tok-deleted" },
-    { tag: tags.literal, class: "tok-literal" },
-    { tag: tags.string, class: "tok-string" },
-    { tag: tags.number, class: "tok-number" },
-    { tag: [tags.regexp, tags.escape, tags.special(tags.string)], class: "tok-string2" },
-    { tag: tags.variableName, class: "tok-variableName" },
-    { tag: tags.local(tags.variableName), class: "tok-variableName tok-local" },
-    { tag: tags.definition(tags.variableName), class: "tok-variableName tok-definition" },
-    { tag: tags.special(tags.variableName), class: "tok-variableName2" },
-    { tag: tags.definition(tags.propertyName), class: "tok-propertyName tok-definition" },
-    { tag: tags.typeName, class: "tok-typeName" },
-    { tag: tags.namespace, class: "tok-namespace" },
-    { tag: tags.className, class: "tok-className" },
-    { tag: tags.macroName, class: "tok-macroName" },
-    { tag: tags.propertyName, class: "tok-propertyName" },
-    { tag: tags.operator, class: "tok-operator" },
-    { tag: tags.comment, class: "tok-comment" },
-    { tag: tags.meta, class: "tok-meta" },
-    { tag: tags.invalid, class: "tok-invalid" },
-    { tag: tags.punctuation, class: "tok-punctuation" }
+tagHighlighter$1([
+    { tag: tags$1.link, class: "tok-link" },
+    { tag: tags$1.heading, class: "tok-heading" },
+    { tag: tags$1.emphasis, class: "tok-emphasis" },
+    { tag: tags$1.strong, class: "tok-strong" },
+    { tag: tags$1.keyword, class: "tok-keyword" },
+    { tag: tags$1.atom, class: "tok-atom" },
+    { tag: tags$1.bool, class: "tok-bool" },
+    { tag: tags$1.url, class: "tok-url" },
+    { tag: tags$1.labelName, class: "tok-labelName" },
+    { tag: tags$1.inserted, class: "tok-inserted" },
+    { tag: tags$1.deleted, class: "tok-deleted" },
+    { tag: tags$1.literal, class: "tok-literal" },
+    { tag: tags$1.string, class: "tok-string" },
+    { tag: tags$1.number, class: "tok-number" },
+    { tag: [tags$1.regexp, tags$1.escape, tags$1.special(tags$1.string)], class: "tok-string2" },
+    { tag: tags$1.variableName, class: "tok-variableName" },
+    { tag: tags$1.local(tags$1.variableName), class: "tok-variableName tok-local" },
+    { tag: tags$1.definition(tags$1.variableName), class: "tok-variableName tok-definition" },
+    { tag: tags$1.special(tags$1.variableName), class: "tok-variableName2" },
+    { tag: tags$1.definition(tags$1.propertyName), class: "tok-propertyName tok-definition" },
+    { tag: tags$1.typeName, class: "tok-typeName" },
+    { tag: tags$1.namespace, class: "tok-namespace" },
+    { tag: tags$1.className, class: "tok-className" },
+    { tag: tags$1.macroName, class: "tok-macroName" },
+    { tag: tags$1.propertyName, class: "tok-propertyName" },
+    { tag: tags$1.operator, class: "tok-operator" },
+    { tag: tags$1.comment, class: "tok-comment" },
+    { tag: tags$1.meta, class: "tok-meta" },
+    { tag: tags$1.invalid, class: "tok-invalid" },
+    { tag: tags$1.punctuation, class: "tok-punctuation" }
 ]);
 
 var _a;
@@ -17604,7 +17560,7 @@ var _a;
 Node prop stored in a parser's top syntax node to provide the
 facet that stores language-specific data for that language.
 */
-const languageDataProp = /*@__PURE__*/new NodeProp();
+const languageDataProp = /*@__PURE__*/new NodeProp$1();
 /**
 Helper function to define a facet (to be added to the top syntax
 node(s) for a language via
@@ -17622,7 +17578,7 @@ function defineLanguageFacet(baseData) {
 Syntax node prop used to register sublanguages. Should be added to
 the top level node type for the language.
 */
-const sublanguageProp = /*@__PURE__*/new NodeProp();
+const sublanguageProp = /*@__PURE__*/new NodeProp$1();
 /**
 A language object manages parsing and per-language
 [metadata](https://codemirror.net/6/docs/ref/#state.EditorState.languageDataAt). Parse data is
@@ -17700,7 +17656,7 @@ class Language {
                 result.push({ from, to: from + tree.length });
                 return;
             }
-            let mount = tree.prop(NodeProp.mounted);
+            let mount = tree.prop(NodeProp$1.mounted);
             if (mount) {
                 if (mount.tree.prop(languageDataProp) == this.data) {
                     if (mount.overlay)
@@ -17719,7 +17675,7 @@ class Language {
             }
             for (let i = 0; i < tree.children.length; i++) {
                 let ch = tree.children[i];
-                if (ch instanceof Tree)
+                if (ch instanceof Tree$1)
                     explore(ch, tree.positions[i] + from);
             }
         };
@@ -17739,7 +17695,7 @@ Language.setState = /*@__PURE__*/StateEffect.define();
 function topNodeAt(state, pos, side) {
     let topLang = state.facet(language), tree = syntaxTree(state).topNode;
     if (!topLang || topLang.allowsNesting) {
-        for (let node = tree; node; node = node.enter(pos, side, IterMode.ExcludeBuffers))
+        for (let node = tree; node; node = node.enter(pos, side, IterMode$1.ExcludeBuffers))
             if (node.type.isTop)
                 tree = node;
     }
@@ -17781,7 +17737,7 @@ language available.
 */
 function syntaxTree(state) {
     let field = state.field(Language.state, false);
-    return field ? field.tree : Tree.empty;
+    return field ? field.tree : Tree$1.empty;
 }
 /**
 Lezer-style
@@ -17876,7 +17832,7 @@ class ParseContext {
     @internal
     */
     static create(parser, state, viewport) {
-        return new ParseContext(parser, state, [], Tree.empty, 0, viewport, [], null);
+        return new ParseContext(parser, state, [], Tree$1.empty, 0, viewport, [], null);
     }
     startParse() {
         return this.parser.startParse(new DocInput(this.state.doc), this.fragments);
@@ -17887,7 +17843,7 @@ class ParseContext {
     work(until, upto) {
         if (upto != null && upto >= this.state.doc.length)
             upto = undefined;
-        if (this.tree != Tree.empty && this.isDone(upto !== null && upto !== void 0 ? upto : this.state.doc.length)) {
+        if (this.tree != Tree$1.empty && this.isDone(upto !== null && upto !== void 0 ? upto : this.state.doc.length)) {
             this.takeTree();
             return true;
         }
@@ -17959,7 +17915,7 @@ class ParseContext {
             let ranges = [];
             changes.iterChangedRanges((fromA, toA, fromB, toB) => ranges.push({ fromA, toA, fromB, toB }));
             fragments = TreeFragment.applyChanges(fragments, ranges);
-            tree = Tree.empty;
+            tree = Tree$1.empty;
             treeLen = 0;
             viewport = { from: changes.mapPos(viewport.from, -1), to: changes.mapPos(viewport.to, 1) };
             if (this.skipped.length) {
@@ -18020,7 +17976,7 @@ class ParseContext {
     promise resolves.
     */
     static getSkippingParser(until) {
-        return new class extends Parser {
+        return new class extends Parser$1 {
             createParse(input, fragments, ranges) {
                 let from = ranges[0].from, to = ranges[ranges.length - 1].to;
                 let parser = {
@@ -18034,7 +17990,7 @@ class ParseContext {
                                 cx.scheduleOn = cx.scheduleOn ? Promise.all([cx.scheduleOn, until]) : until;
                         }
                         this.parsedPos = to;
-                        return new Tree(NodeType.none, [], [], to - from);
+                        return new Tree$1(NodeType$1.none, [], [], to - from);
                     },
                     stoppedAt: null,
                     stopAt() { }
@@ -18410,7 +18366,7 @@ context to a column number (see also
 [`indentString`](https://codemirror.net/6/docs/ref/#language.indentString)) or null, where null
 indicates that no definitive indentation can be determined.
 */
-const indentNodeProp = /*@__PURE__*/new NodeProp();
+const indentNodeProp = /*@__PURE__*/new NodeProp$1();
 // Compute the indentation for a given position from the syntax tree.
 function syntaxIndentation(cx, ast, pos) {
     let stack = ast.resolveStack(pos);
@@ -18440,7 +18396,7 @@ function indentStrategy(tree) {
     if (strategy)
         return strategy;
     let first = tree.firstChild, close;
-    if (first && (close = first.type.prop(NodeProp.closedBy))) {
+    if (first && (close = first.type.prop(NodeProp$1.closedBy))) {
         let last = tree.lastChild, closed = last && close.indexOf(last.name) > -1;
         return cx => delimitedStrategy(cx, true, 1, undefined, closed && !ignoreClosed(cx) ? last.from : undefined);
     }
@@ -18625,7 +18581,7 @@ syntax node types. Given a syntax node, it should check whether
 that tree is foldable and return the range that can be collapsed
 when it is.
 */
-const foldNodeProp = /*@__PURE__*/new NodeProp();
+const foldNodeProp = /*@__PURE__*/new NodeProp$1();
 /**
 [Fold](https://codemirror.net/6/docs/ref/#language.foldNodeProp) function that folds everything but
 the first and the last child of a syntax node. Useful for nodes
@@ -19024,7 +18980,7 @@ class HighlightStyle {
         const scopeOpt = options.scope;
         this.scope = scopeOpt instanceof Language ? (type) => type.prop(languageDataProp) == scopeOpt.data
             : scopeOpt ? (type) => type == scopeOpt : undefined;
-        this.style = tagHighlighter(specs.map(style => ({
+        this.style = tagHighlighter$1(specs.map(style => ({
             tag: style.tag,
             class: style.class || def(Object.assign({}, style, { tag: null }))
         })), {
@@ -19124,44 +19080,44 @@ const treeHighlighter = /*@__PURE__*/Prec.high(/*@__PURE__*/ViewPlugin.fromClass
 A default highlight style (works well with light themes).
 */
 const defaultHighlightStyle = /*@__PURE__*/HighlightStyle.define([
-    { tag: tags.meta,
+    { tag: tags$1.meta,
         color: "#404740" },
-    { tag: tags.link,
+    { tag: tags$1.link,
         textDecoration: "underline" },
-    { tag: tags.heading,
+    { tag: tags$1.heading,
         textDecoration: "underline",
         fontWeight: "bold" },
-    { tag: tags.emphasis,
+    { tag: tags$1.emphasis,
         fontStyle: "italic" },
-    { tag: tags.strong,
+    { tag: tags$1.strong,
         fontWeight: "bold" },
-    { tag: tags.strikethrough,
+    { tag: tags$1.strikethrough,
         textDecoration: "line-through" },
-    { tag: tags.keyword,
+    { tag: tags$1.keyword,
         color: "#708" },
-    { tag: [tags.atom, tags.bool, tags.url, tags.contentSeparator, tags.labelName],
+    { tag: [tags$1.atom, tags$1.bool, tags$1.url, tags$1.contentSeparator, tags$1.labelName],
         color: "#219" },
-    { tag: [tags.literal, tags.inserted],
+    { tag: [tags$1.literal, tags$1.inserted],
         color: "#164" },
-    { tag: [tags.string, tags.deleted],
+    { tag: [tags$1.string, tags$1.deleted],
         color: "#a11" },
-    { tag: [tags.regexp, tags.escape, /*@__PURE__*/tags.special(tags.string)],
+    { tag: [tags$1.regexp, tags$1.escape, /*@__PURE__*/tags$1.special(tags$1.string)],
         color: "#e40" },
-    { tag: /*@__PURE__*/tags.definition(tags.variableName),
+    { tag: /*@__PURE__*/tags$1.definition(tags$1.variableName),
         color: "#00f" },
-    { tag: /*@__PURE__*/tags.local(tags.variableName),
+    { tag: /*@__PURE__*/tags$1.local(tags$1.variableName),
         color: "#30a" },
-    { tag: [tags.typeName, tags.namespace],
+    { tag: [tags$1.typeName, tags$1.namespace],
         color: "#085" },
-    { tag: tags.className,
+    { tag: tags$1.className,
         color: "#167" },
-    { tag: [/*@__PURE__*/tags.special(tags.variableName), tags.macroName],
+    { tag: [/*@__PURE__*/tags$1.special(tags$1.variableName), tags$1.macroName],
         color: "#256" },
-    { tag: /*@__PURE__*/tags.definition(tags.propertyName),
+    { tag: /*@__PURE__*/tags$1.definition(tags$1.propertyName),
         color: "#00c" },
-    { tag: tags.comment,
+    { tag: tags$1.comment,
         color: "#940" },
-    { tag: tags.invalid,
+    { tag: tags$1.invalid,
         color: "#f00" }
 ]);
 
@@ -19232,9 +19188,9 @@ a node, a ‘handle’—the part of the node that is highlighted, and
 that the cursor must be on to activate highlighting in the first
 place.
 */
-const bracketMatchingHandle = /*@__PURE__*/new NodeProp();
+const bracketMatchingHandle = /*@__PURE__*/new NodeProp$1();
 function matchingNodes(node, dir, brackets) {
-    let byProp = node.prop(dir < 0 ? NodeProp.openedBy : NodeProp.closedBy);
+    let byProp = node.prop(dir < 0 ? NodeProp$1.openedBy : NodeProp$1.closedBy);
     if (byProp)
         return byProp;
     if (node.name.length == 1) {
@@ -19327,7 +19283,7 @@ function matchPlainBrackets(state, pos, dir, tree, tokenType, maxScanDistance, b
     return iter.done ? { start: startToken, matched: false } : null;
 }
 const noTokens = /*@__PURE__*/Object.create(null);
-const typeArray = [NodeType.none];
+const typeArray = [NodeType$1.none];
 const warned = [];
 // Cache of node types by name and tags
 const byTag = /*@__PURE__*/Object.create(null);
@@ -19354,11 +19310,11 @@ function warnForPart(part, msg) {
     console.warn(msg);
 }
 function createTokenType(extra, tagStr) {
-    let tags$1 = [];
+    let tags$1$1 = [];
     for (let name of tagStr.split(" ")) {
         let found = [];
         for (let part of name.split(".")) {
-            let value = (extra[part] || tags[part]);
+            let value = (extra[part] || tags$1[part]);
             if (!value) {
                 warnForPart(part, `Unknown highlighting tag ${part}`);
             }
@@ -19376,18 +19332,18 @@ function createTokenType(extra, tagStr) {
             }
         }
         for (let tag of found)
-            tags$1.push(tag);
+            tags$1$1.push(tag);
     }
-    if (!tags$1.length)
+    if (!tags$1$1.length)
         return 0;
-    let name = tagStr.replace(/ /g, "_"), key = name + " " + tags$1.map(t => t.id);
+    let name = tagStr.replace(/ /g, "_"), key = name + " " + tags$1$1.map(t => t.id);
     let known = byTag[key];
     if (known)
         return known.id;
-    let type = byTag[key] = NodeType.define({
+    let type = byTag[key] = NodeType$1.define({
         id: typeArray.length,
         name,
-        props: [styleTags({ [name]: tags$1 })]
+        props: [styleTags$1({ [name]: tags$1$1 })]
     });
     typeArray.push(type);
     return type.id;
@@ -19957,7 +19913,7 @@ function interestingNode(state, node, bracketProp) {
 }
 function moveBySyntax(state, start, forward) {
     let pos = syntaxTree(state).resolveInner(start.head);
-    let bracketProp = forward ? NodeProp.closedBy : NodeProp.openedBy;
+    let bracketProp = forward ? NodeProp$1.closedBy : NodeProp$1.openedBy;
     // Scan forward through child nodes to see if there's an interesting
     // node ahead.
     for (let at = start.head;;) {
@@ -20545,7 +20501,7 @@ function isBetweenBrackets(state, pos) {
     let context = syntaxTree(state).resolveInner(pos);
     let before = context.childBefore(pos), after = context.childAfter(pos), closedBy;
     if (before && after && before.to <= pos && after.from >= pos &&
-        (closedBy = before.type.prop(NodeProp.closedBy)) && closedBy.indexOf(after.name) > -1 &&
+        (closedBy = before.type.prop(NodeProp$1.closedBy)) && closedBy.indexOf(after.name) > -1 &&
         state.doc.lineAt(before.to).from == state.doc.lineAt(after.from).from &&
         !/\S/.test(state.sliceDoc(before.to, after.from)))
         return { from: before.to, to: after.from };
@@ -24245,6 +24201,1602 @@ const basicSetup = /*@__PURE__*/(() => [
 ])();
 
 /**
+The default maximum length of a `TreeBuffer` node.
+*/
+const DefaultBufferLength = 1024;
+let nextPropID = 0;
+class Range {
+    constructor(from, to) {
+        this.from = from;
+        this.to = to;
+    }
+}
+/**
+Each [node type](#common.NodeType) or [individual tree](#common.Tree)
+can have metadata associated with it in props. Instances of this
+class represent prop names.
+*/
+class NodeProp {
+    /**
+    Create a new node prop type.
+    */
+    constructor(config = {}) {
+        this.id = nextPropID++;
+        this.perNode = !!config.perNode;
+        this.deserialize = config.deserialize || (() => {
+            throw new Error("This node type doesn't define a deserialize function");
+        });
+    }
+    /**
+    This is meant to be used with
+    [`NodeSet.extend`](#common.NodeSet.extend) or
+    [`LRParser.configure`](#lr.ParserConfig.props) to compute
+    prop values for each node type in the set. Takes a [match
+    object](#common.NodeType^match) or function that returns undefined
+    if the node type doesn't get this prop, and the prop's value if
+    it does.
+    */
+    add(match) {
+        if (this.perNode)
+            throw new RangeError("Can't add per-node props to node types");
+        if (typeof match != "function")
+            match = NodeType.match(match);
+        return (type) => {
+            let result = match(type);
+            return result === undefined ? null : [this, result];
+        };
+    }
+}
+/**
+Prop that is used to describe matching delimiters. For opening
+delimiters, this holds an array of node names (written as a
+space-separated string when declaring this prop in a grammar)
+for the node types of closing delimiters that match it.
+*/
+NodeProp.closedBy = new NodeProp({ deserialize: str => str.split(" ") });
+/**
+The inverse of [`closedBy`](#common.NodeProp^closedBy). This is
+attached to closing delimiters, holding an array of node names
+of types of matching opening delimiters.
+*/
+NodeProp.openedBy = new NodeProp({ deserialize: str => str.split(" ") });
+/**
+Used to assign node types to groups (for example, all node
+types that represent an expression could be tagged with an
+`"Expression"` group).
+*/
+NodeProp.group = new NodeProp({ deserialize: str => str.split(" ") });
+/**
+Attached to nodes to indicate these should be
+[displayed](https://codemirror.net/docs/ref/#language.syntaxTree)
+in a bidirectional text isolate, so that direction-neutral
+characters on their sides don't incorrectly get associated with
+surrounding text. You'll generally want to set this for nodes
+that contain arbitrary text, like strings and comments, and for
+nodes that appear _inside_ arbitrary text, like HTML tags. When
+not given a value, in a grammar declaration, defaults to
+`"auto"`.
+*/
+NodeProp.isolate = new NodeProp({ deserialize: value => {
+        if (value && value != "rtl" && value != "ltr" && value != "auto")
+            throw new RangeError("Invalid value for isolate: " + value);
+        return value || "auto";
+    } });
+/**
+The hash of the [context](#lr.ContextTracker.constructor)
+that the node was parsed in, if any. Used to limit reuse of
+contextual nodes.
+*/
+NodeProp.contextHash = new NodeProp({ perNode: true });
+/**
+The distance beyond the end of the node that the tokenizer
+looked ahead for any of the tokens inside the node. (The LR
+parser only stores this when it is larger than 25, for
+efficiency reasons.)
+*/
+NodeProp.lookAhead = new NodeProp({ perNode: true });
+/**
+This per-node prop is used to replace a given node, or part of a
+node, with another tree. This is useful to include trees from
+different languages in mixed-language parsers.
+*/
+NodeProp.mounted = new NodeProp({ perNode: true });
+/**
+A mounted tree, which can be [stored](#common.NodeProp^mounted) on
+a tree node to indicate that parts of its content are
+represented by another tree.
+*/
+class MountedTree {
+    constructor(
+    /**
+    The inner tree.
+    */
+    tree, 
+    /**
+    If this is null, this tree replaces the entire node (it will
+    be included in the regular iteration instead of its host
+    node). If not, only the given ranges are considered to be
+    covered by this tree. This is used for trees that are mixed in
+    a way that isn't strictly hierarchical. Such mounted trees are
+    only entered by [`resolveInner`](#common.Tree.resolveInner)
+    and [`enter`](#common.SyntaxNode.enter).
+    */
+    overlay, 
+    /**
+    The parser used to create this subtree.
+    */
+    parser) {
+        this.tree = tree;
+        this.overlay = overlay;
+        this.parser = parser;
+    }
+    /**
+    @internal
+    */
+    static get(tree) {
+        return tree && tree.props && tree.props[NodeProp.mounted.id];
+    }
+}
+const noProps = Object.create(null);
+/**
+Each node in a syntax tree has a node type associated with it.
+*/
+class NodeType {
+    /**
+    @internal
+    */
+    constructor(
+    /**
+    The name of the node type. Not necessarily unique, but if the
+    grammar was written properly, different node types with the
+    same name within a node set should play the same semantic
+    role.
+    */
+    name, 
+    /**
+    @internal
+    */
+    props, 
+    /**
+    The id of this node in its set. Corresponds to the term ids
+    used in the parser.
+    */
+    id, 
+    /**
+    @internal
+    */
+    flags = 0) {
+        this.name = name;
+        this.props = props;
+        this.id = id;
+        this.flags = flags;
+    }
+    /**
+    Define a node type.
+    */
+    static define(spec) {
+        let props = spec.props && spec.props.length ? Object.create(null) : noProps;
+        let flags = (spec.top ? 1 /* NodeFlag.Top */ : 0) | (spec.skipped ? 2 /* NodeFlag.Skipped */ : 0) |
+            (spec.error ? 4 /* NodeFlag.Error */ : 0) | (spec.name == null ? 8 /* NodeFlag.Anonymous */ : 0);
+        let type = new NodeType(spec.name || "", props, spec.id, flags);
+        if (spec.props)
+            for (let src of spec.props) {
+                if (!Array.isArray(src))
+                    src = src(type);
+                if (src) {
+                    if (src[0].perNode)
+                        throw new RangeError("Can't store a per-node prop on a node type");
+                    props[src[0].id] = src[1];
+                }
+            }
+        return type;
+    }
+    /**
+    Retrieves a node prop for this type. Will return `undefined` if
+    the prop isn't present on this node.
+    */
+    prop(prop) { return this.props[prop.id]; }
+    /**
+    True when this is the top node of a grammar.
+    */
+    get isTop() { return (this.flags & 1 /* NodeFlag.Top */) > 0; }
+    /**
+    True when this node is produced by a skip rule.
+    */
+    get isSkipped() { return (this.flags & 2 /* NodeFlag.Skipped */) > 0; }
+    /**
+    Indicates whether this is an error node.
+    */
+    get isError() { return (this.flags & 4 /* NodeFlag.Error */) > 0; }
+    /**
+    When true, this node type doesn't correspond to a user-declared
+    named node, for example because it is used to cache repetition.
+    */
+    get isAnonymous() { return (this.flags & 8 /* NodeFlag.Anonymous */) > 0; }
+    /**
+    Returns true when this node's name or one of its
+    [groups](#common.NodeProp^group) matches the given string.
+    */
+    is(name) {
+        if (typeof name == 'string') {
+            if (this.name == name)
+                return true;
+            let group = this.prop(NodeProp.group);
+            return group ? group.indexOf(name) > -1 : false;
+        }
+        return this.id == name;
+    }
+    /**
+    Create a function from node types to arbitrary values by
+    specifying an object whose property names are node or
+    [group](#common.NodeProp^group) names. Often useful with
+    [`NodeProp.add`](#common.NodeProp.add). You can put multiple
+    names, separated by spaces, in a single property name to map
+    multiple node names to a single value.
+    */
+    static match(map) {
+        let direct = Object.create(null);
+        for (let prop in map)
+            for (let name of prop.split(" "))
+                direct[name] = map[prop];
+        return (node) => {
+            for (let groups = node.prop(NodeProp.group), i = -1; i < (groups ? groups.length : 0); i++) {
+                let found = direct[i < 0 ? node.name : groups[i]];
+                if (found)
+                    return found;
+            }
+        };
+    }
+}
+/**
+An empty dummy node type to use when no actual type is available.
+*/
+NodeType.none = new NodeType("", Object.create(null), 0, 8 /* NodeFlag.Anonymous */);
+/**
+A node set holds a collection of node types. It is used to
+compactly represent trees by storing their type ids, rather than a
+full pointer to the type object, in a numeric array. Each parser
+[has](#lr.LRParser.nodeSet) a node set, and [tree
+buffers](#common.TreeBuffer) can only store collections of nodes
+from the same set. A set can have a maximum of 2**16 (65536) node
+types in it, so that the ids fit into 16-bit typed array slots.
+*/
+class NodeSet {
+    /**
+    Create a set with the given types. The `id` property of each
+    type should correspond to its position within the array.
+    */
+    constructor(
+    /**
+    The node types in this set, by id.
+    */
+    types) {
+        this.types = types;
+        for (let i = 0; i < types.length; i++)
+            if (types[i].id != i)
+                throw new RangeError("Node type ids should correspond to array positions when creating a node set");
+    }
+    /**
+    Create a copy of this set with some node properties added. The
+    arguments to this method can be created with
+    [`NodeProp.add`](#common.NodeProp.add).
+    */
+    extend(...props) {
+        let newTypes = [];
+        for (let type of this.types) {
+            let newProps = null;
+            for (let source of props) {
+                let add = source(type);
+                if (add) {
+                    if (!newProps)
+                        newProps = Object.assign({}, type.props);
+                    newProps[add[0].id] = add[1];
+                }
+            }
+            newTypes.push(newProps ? new NodeType(type.name, newProps, type.id, type.flags) : type);
+        }
+        return new NodeSet(newTypes);
+    }
+}
+const CachedNode = new WeakMap(), CachedInnerNode = new WeakMap();
+/**
+Options that control iteration. Can be combined with the `|`
+operator to enable multiple ones.
+*/
+var IterMode;
+(function (IterMode) {
+    /**
+    When enabled, iteration will only visit [`Tree`](#common.Tree)
+    objects, not nodes packed into
+    [`TreeBuffer`](#common.TreeBuffer)s.
+    */
+    IterMode[IterMode["ExcludeBuffers"] = 1] = "ExcludeBuffers";
+    /**
+    Enable this to make iteration include anonymous nodes (such as
+    the nodes that wrap repeated grammar constructs into a balanced
+    tree).
+    */
+    IterMode[IterMode["IncludeAnonymous"] = 2] = "IncludeAnonymous";
+    /**
+    By default, regular [mounted](#common.NodeProp^mounted) nodes
+    replace their base node in iteration. Enable this to ignore them
+    instead.
+    */
+    IterMode[IterMode["IgnoreMounts"] = 4] = "IgnoreMounts";
+    /**
+    This option only applies in
+    [`enter`](#common.SyntaxNode.enter)-style methods. It tells the
+    library to not enter mounted overlays if one covers the given
+    position.
+    */
+    IterMode[IterMode["IgnoreOverlays"] = 8] = "IgnoreOverlays";
+})(IterMode || (IterMode = {}));
+/**
+A piece of syntax tree. There are two ways to approach these
+trees: the way they are actually stored in memory, and the
+convenient way.
+
+Syntax trees are stored as a tree of `Tree` and `TreeBuffer`
+objects. By packing detail information into `TreeBuffer` leaf
+nodes, the representation is made a lot more memory-efficient.
+
+However, when you want to actually work with tree nodes, this
+representation is very awkward, so most client code will want to
+use the [`TreeCursor`](#common.TreeCursor) or
+[`SyntaxNode`](#common.SyntaxNode) interface instead, which provides
+a view on some part of this data structure, and can be used to
+move around to adjacent nodes.
+*/
+class Tree {
+    /**
+    Construct a new tree. See also [`Tree.build`](#common.Tree^build).
+    */
+    constructor(
+    /**
+    The type of the top node.
+    */
+    type, 
+    /**
+    This node's child nodes.
+    */
+    children, 
+    /**
+    The positions (offsets relative to the start of this tree) of
+    the children.
+    */
+    positions, 
+    /**
+    The total length of this tree
+    */
+    length, 
+    /**
+    Per-node [node props](#common.NodeProp) to associate with this node.
+    */
+    props) {
+        this.type = type;
+        this.children = children;
+        this.positions = positions;
+        this.length = length;
+        /**
+        @internal
+        */
+        this.props = null;
+        if (props && props.length) {
+            this.props = Object.create(null);
+            for (let [prop, value] of props)
+                this.props[typeof prop == "number" ? prop : prop.id] = value;
+        }
+    }
+    /**
+    @internal
+    */
+    toString() {
+        let mounted = MountedTree.get(this);
+        if (mounted && !mounted.overlay)
+            return mounted.tree.toString();
+        let children = "";
+        for (let ch of this.children) {
+            let str = ch.toString();
+            if (str) {
+                if (children)
+                    children += ",";
+                children += str;
+            }
+        }
+        return !this.type.name ? children :
+            (/\W/.test(this.type.name) && !this.type.isError ? JSON.stringify(this.type.name) : this.type.name) +
+                (children.length ? "(" + children + ")" : "");
+    }
+    /**
+    Get a [tree cursor](#common.TreeCursor) positioned at the top of
+    the tree. Mode can be used to [control](#common.IterMode) which
+    nodes the cursor visits.
+    */
+    cursor(mode = 0) {
+        return new TreeCursor(this.topNode, mode);
+    }
+    /**
+    Get a [tree cursor](#common.TreeCursor) pointing into this tree
+    at the given position and side (see
+    [`moveTo`](#common.TreeCursor.moveTo).
+    */
+    cursorAt(pos, side = 0, mode = 0) {
+        let scope = CachedNode.get(this) || this.topNode;
+        let cursor = new TreeCursor(scope);
+        cursor.moveTo(pos, side);
+        CachedNode.set(this, cursor._tree);
+        return cursor;
+    }
+    /**
+    Get a [syntax node](#common.SyntaxNode) object for the top of the
+    tree.
+    */
+    get topNode() {
+        return new TreeNode(this, 0, 0, null);
+    }
+    /**
+    Get the [syntax node](#common.SyntaxNode) at the given position.
+    If `side` is -1, this will move into nodes that end at the
+    position. If 1, it'll move into nodes that start at the
+    position. With 0, it'll only enter nodes that cover the position
+    from both sides.
+    
+    Note that this will not enter
+    [overlays](#common.MountedTree.overlay), and you often want
+    [`resolveInner`](#common.Tree.resolveInner) instead.
+    */
+    resolve(pos, side = 0) {
+        let node = resolveNode(CachedNode.get(this) || this.topNode, pos, side, false);
+        CachedNode.set(this, node);
+        return node;
+    }
+    /**
+    Like [`resolve`](#common.Tree.resolve), but will enter
+    [overlaid](#common.MountedTree.overlay) nodes, producing a syntax node
+    pointing into the innermost overlaid tree at the given position
+    (with parent links going through all parent structure, including
+    the host trees).
+    */
+    resolveInner(pos, side = 0) {
+        let node = resolveNode(CachedInnerNode.get(this) || this.topNode, pos, side, true);
+        CachedInnerNode.set(this, node);
+        return node;
+    }
+    /**
+    In some situations, it can be useful to iterate through all
+    nodes around a position, including those in overlays that don't
+    directly cover the position. This method gives you an iterator
+    that will produce all nodes, from small to big, around the given
+    position.
+    */
+    resolveStack(pos, side = 0) {
+        return stackIterator(this, pos, side);
+    }
+    /**
+    Iterate over the tree and its children, calling `enter` for any
+    node that touches the `from`/`to` region (if given) before
+    running over such a node's children, and `leave` (if given) when
+    leaving the node. When `enter` returns `false`, that node will
+    not have its children iterated over (or `leave` called).
+    */
+    iterate(spec) {
+        let { enter, leave, from = 0, to = this.length } = spec;
+        let mode = spec.mode || 0, anon = (mode & IterMode.IncludeAnonymous) > 0;
+        for (let c = this.cursor(mode | IterMode.IncludeAnonymous);;) {
+            let entered = false;
+            if (c.from <= to && c.to >= from && (!anon && c.type.isAnonymous || enter(c) !== false)) {
+                if (c.firstChild())
+                    continue;
+                entered = true;
+            }
+            for (;;) {
+                if (entered && leave && (anon || !c.type.isAnonymous))
+                    leave(c);
+                if (c.nextSibling())
+                    break;
+                if (!c.parent())
+                    return;
+                entered = true;
+            }
+        }
+    }
+    /**
+    Get the value of the given [node prop](#common.NodeProp) for this
+    node. Works with both per-node and per-type props.
+    */
+    prop(prop) {
+        return !prop.perNode ? this.type.prop(prop) : this.props ? this.props[prop.id] : undefined;
+    }
+    /**
+    Returns the node's [per-node props](#common.NodeProp.perNode) in a
+    format that can be passed to the [`Tree`](#common.Tree)
+    constructor.
+    */
+    get propValues() {
+        let result = [];
+        if (this.props)
+            for (let id in this.props)
+                result.push([+id, this.props[id]]);
+        return result;
+    }
+    /**
+    Balance the direct children of this tree, producing a copy of
+    which may have children grouped into subtrees with type
+    [`NodeType.none`](#common.NodeType^none).
+    */
+    balance(config = {}) {
+        return this.children.length <= 8 /* Balance.BranchFactor */ ? this :
+            balanceRange(NodeType.none, this.children, this.positions, 0, this.children.length, 0, this.length, (children, positions, length) => new Tree(this.type, children, positions, length, this.propValues), config.makeTree || ((children, positions, length) => new Tree(NodeType.none, children, positions, length)));
+    }
+    /**
+    Build a tree from a postfix-ordered buffer of node information,
+    or a cursor over such a buffer.
+    */
+    static build(data) { return buildTree(data); }
+}
+/**
+The empty tree
+*/
+Tree.empty = new Tree(NodeType.none, [], [], 0);
+class FlatBufferCursor {
+    constructor(buffer, index) {
+        this.buffer = buffer;
+        this.index = index;
+    }
+    get id() { return this.buffer[this.index - 4]; }
+    get start() { return this.buffer[this.index - 3]; }
+    get end() { return this.buffer[this.index - 2]; }
+    get size() { return this.buffer[this.index - 1]; }
+    get pos() { return this.index; }
+    next() { this.index -= 4; }
+    fork() { return new FlatBufferCursor(this.buffer, this.index); }
+}
+/**
+Tree buffers contain (type, start, end, endIndex) quads for each
+node. In such a buffer, nodes are stored in prefix order (parents
+before children, with the endIndex of the parent indicating which
+children belong to it).
+*/
+class TreeBuffer {
+    /**
+    Create a tree buffer.
+    */
+    constructor(
+    /**
+    The buffer's content.
+    */
+    buffer, 
+    /**
+    The total length of the group of nodes in the buffer.
+    */
+    length, 
+    /**
+    The node set used in this buffer.
+    */
+    set) {
+        this.buffer = buffer;
+        this.length = length;
+        this.set = set;
+    }
+    /**
+    @internal
+    */
+    get type() { return NodeType.none; }
+    /**
+    @internal
+    */
+    toString() {
+        let result = [];
+        for (let index = 0; index < this.buffer.length;) {
+            result.push(this.childString(index));
+            index = this.buffer[index + 3];
+        }
+        return result.join(",");
+    }
+    /**
+    @internal
+    */
+    childString(index) {
+        let id = this.buffer[index], endIndex = this.buffer[index + 3];
+        let type = this.set.types[id], result = type.name;
+        if (/\W/.test(result) && !type.isError)
+            result = JSON.stringify(result);
+        index += 4;
+        if (endIndex == index)
+            return result;
+        let children = [];
+        while (index < endIndex) {
+            children.push(this.childString(index));
+            index = this.buffer[index + 3];
+        }
+        return result + "(" + children.join(",") + ")";
+    }
+    /**
+    @internal
+    */
+    findChild(startIndex, endIndex, dir, pos, side) {
+        let { buffer } = this, pick = -1;
+        for (let i = startIndex; i != endIndex; i = buffer[i + 3]) {
+            if (checkSide(side, pos, buffer[i + 1], buffer[i + 2])) {
+                pick = i;
+                if (dir > 0)
+                    break;
+            }
+        }
+        return pick;
+    }
+    /**
+    @internal
+    */
+    slice(startI, endI, from) {
+        let b = this.buffer;
+        let copy = new Uint16Array(endI - startI), len = 0;
+        for (let i = startI, j = 0; i < endI;) {
+            copy[j++] = b[i++];
+            copy[j++] = b[i++] - from;
+            let to = copy[j++] = b[i++] - from;
+            copy[j++] = b[i++] - startI;
+            len = Math.max(len, to);
+        }
+        return new TreeBuffer(copy, len, this.set);
+    }
+}
+function checkSide(side, pos, from, to) {
+    switch (side) {
+        case -2 /* Side.Before */: return from < pos;
+        case -1 /* Side.AtOrBefore */: return to >= pos && from < pos;
+        case 0 /* Side.Around */: return from < pos && to > pos;
+        case 1 /* Side.AtOrAfter */: return from <= pos && to > pos;
+        case 2 /* Side.After */: return to > pos;
+        case 4 /* Side.DontCare */: return true;
+    }
+}
+function resolveNode(node, pos, side, overlays) {
+    var _a;
+    // Move up to a node that actually holds the position, if possible
+    while (node.from == node.to ||
+        (side < 1 ? node.from >= pos : node.from > pos) ||
+        (side > -1 ? node.to <= pos : node.to < pos)) {
+        let parent = !overlays && node instanceof TreeNode && node.index < 0 ? null : node.parent;
+        if (!parent)
+            return node;
+        node = parent;
+    }
+    let mode = overlays ? 0 : IterMode.IgnoreOverlays;
+    // Must go up out of overlays when those do not overlap with pos
+    if (overlays)
+        for (let scan = node, parent = scan.parent; parent; scan = parent, parent = scan.parent) {
+            if (scan instanceof TreeNode && scan.index < 0 && ((_a = parent.enter(pos, side, mode)) === null || _a === void 0 ? void 0 : _a.from) != scan.from)
+                node = parent;
+        }
+    for (;;) {
+        let inner = node.enter(pos, side, mode);
+        if (!inner)
+            return node;
+        node = inner;
+    }
+}
+class BaseNode {
+    cursor(mode = 0) { return new TreeCursor(this, mode); }
+    getChild(type, before = null, after = null) {
+        let r = getChildren(this, type, before, after);
+        return r.length ? r[0] : null;
+    }
+    getChildren(type, before = null, after = null) {
+        return getChildren(this, type, before, after);
+    }
+    resolve(pos, side = 0) {
+        return resolveNode(this, pos, side, false);
+    }
+    resolveInner(pos, side = 0) {
+        return resolveNode(this, pos, side, true);
+    }
+    matchContext(context) {
+        return matchNodeContext(this, context);
+    }
+    enterUnfinishedNodesBefore(pos) {
+        let scan = this.childBefore(pos), node = this;
+        while (scan) {
+            let last = scan.lastChild;
+            if (!last || last.to != scan.to)
+                break;
+            if (last.type.isError && last.from == last.to) {
+                node = scan;
+                scan = last.prevSibling;
+            }
+            else {
+                scan = last;
+            }
+        }
+        return node;
+    }
+    get node() { return this; }
+    get next() { return this.parent; }
+}
+class TreeNode extends BaseNode {
+    constructor(_tree, from, 
+    // Index in parent node, set to -1 if the node is not a direct child of _parent.node (overlay)
+    index, _parent) {
+        super();
+        this._tree = _tree;
+        this.from = from;
+        this.index = index;
+        this._parent = _parent;
+    }
+    get type() { return this._tree.type; }
+    get name() { return this._tree.type.name; }
+    get to() { return this.from + this._tree.length; }
+    nextChild(i, dir, pos, side, mode = 0) {
+        for (let parent = this;;) {
+            for (let { children, positions } = parent._tree, e = dir > 0 ? children.length : -1; i != e; i += dir) {
+                let next = children[i], start = positions[i] + parent.from;
+                if (!checkSide(side, pos, start, start + next.length))
+                    continue;
+                if (next instanceof TreeBuffer) {
+                    if (mode & IterMode.ExcludeBuffers)
+                        continue;
+                    let index = next.findChild(0, next.buffer.length, dir, pos - start, side);
+                    if (index > -1)
+                        return new BufferNode(new BufferContext(parent, next, i, start), null, index);
+                }
+                else if ((mode & IterMode.IncludeAnonymous) || (!next.type.isAnonymous || hasChild(next))) {
+                    let mounted;
+                    if (!(mode & IterMode.IgnoreMounts) && (mounted = MountedTree.get(next)) && !mounted.overlay)
+                        return new TreeNode(mounted.tree, start, i, parent);
+                    let inner = new TreeNode(next, start, i, parent);
+                    return (mode & IterMode.IncludeAnonymous) || !inner.type.isAnonymous ? inner
+                        : inner.nextChild(dir < 0 ? next.children.length - 1 : 0, dir, pos, side);
+                }
+            }
+            if ((mode & IterMode.IncludeAnonymous) || !parent.type.isAnonymous)
+                return null;
+            if (parent.index >= 0)
+                i = parent.index + dir;
+            else
+                i = dir < 0 ? -1 : parent._parent._tree.children.length;
+            parent = parent._parent;
+            if (!parent)
+                return null;
+        }
+    }
+    get firstChild() { return this.nextChild(0, 1, 0, 4 /* Side.DontCare */); }
+    get lastChild() { return this.nextChild(this._tree.children.length - 1, -1, 0, 4 /* Side.DontCare */); }
+    childAfter(pos) { return this.nextChild(0, 1, pos, 2 /* Side.After */); }
+    childBefore(pos) { return this.nextChild(this._tree.children.length - 1, -1, pos, -2 /* Side.Before */); }
+    enter(pos, side, mode = 0) {
+        let mounted;
+        if (!(mode & IterMode.IgnoreOverlays) && (mounted = MountedTree.get(this._tree)) && mounted.overlay) {
+            let rPos = pos - this.from;
+            for (let { from, to } of mounted.overlay) {
+                if ((side > 0 ? from <= rPos : from < rPos) &&
+                    (side < 0 ? to >= rPos : to > rPos))
+                    return new TreeNode(mounted.tree, mounted.overlay[0].from + this.from, -1, this);
+            }
+        }
+        return this.nextChild(0, 1, pos, side, mode);
+    }
+    nextSignificantParent() {
+        let val = this;
+        while (val.type.isAnonymous && val._parent)
+            val = val._parent;
+        return val;
+    }
+    get parent() {
+        return this._parent ? this._parent.nextSignificantParent() : null;
+    }
+    get nextSibling() {
+        return this._parent && this.index >= 0 ? this._parent.nextChild(this.index + 1, 1, 0, 4 /* Side.DontCare */) : null;
+    }
+    get prevSibling() {
+        return this._parent && this.index >= 0 ? this._parent.nextChild(this.index - 1, -1, 0, 4 /* Side.DontCare */) : null;
+    }
+    get tree() { return this._tree; }
+    toTree() { return this._tree; }
+    /**
+    @internal
+    */
+    toString() { return this._tree.toString(); }
+}
+function getChildren(node, type, before, after) {
+    let cur = node.cursor(), result = [];
+    if (!cur.firstChild())
+        return result;
+    if (before != null)
+        for (let found = false; !found;) {
+            found = cur.type.is(before);
+            if (!cur.nextSibling())
+                return result;
+        }
+    for (;;) {
+        if (after != null && cur.type.is(after))
+            return result;
+        if (cur.type.is(type))
+            result.push(cur.node);
+        if (!cur.nextSibling())
+            return after == null ? result : [];
+    }
+}
+function matchNodeContext(node, context, i = context.length - 1) {
+    for (let p = node.parent; i >= 0; p = p.parent) {
+        if (!p)
+            return false;
+        if (!p.type.isAnonymous) {
+            if (context[i] && context[i] != p.name)
+                return false;
+            i--;
+        }
+    }
+    return true;
+}
+class BufferContext {
+    constructor(parent, buffer, index, start) {
+        this.parent = parent;
+        this.buffer = buffer;
+        this.index = index;
+        this.start = start;
+    }
+}
+class BufferNode extends BaseNode {
+    get name() { return this.type.name; }
+    get from() { return this.context.start + this.context.buffer.buffer[this.index + 1]; }
+    get to() { return this.context.start + this.context.buffer.buffer[this.index + 2]; }
+    constructor(context, _parent, index) {
+        super();
+        this.context = context;
+        this._parent = _parent;
+        this.index = index;
+        this.type = context.buffer.set.types[context.buffer.buffer[index]];
+    }
+    child(dir, pos, side) {
+        let { buffer } = this.context;
+        let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], dir, pos - this.context.start, side);
+        return index < 0 ? null : new BufferNode(this.context, this, index);
+    }
+    get firstChild() { return this.child(1, 0, 4 /* Side.DontCare */); }
+    get lastChild() { return this.child(-1, 0, 4 /* Side.DontCare */); }
+    childAfter(pos) { return this.child(1, pos, 2 /* Side.After */); }
+    childBefore(pos) { return this.child(-1, pos, -2 /* Side.Before */); }
+    enter(pos, side, mode = 0) {
+        if (mode & IterMode.ExcludeBuffers)
+            return null;
+        let { buffer } = this.context;
+        let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], side > 0 ? 1 : -1, pos - this.context.start, side);
+        return index < 0 ? null : new BufferNode(this.context, this, index);
+    }
+    get parent() {
+        return this._parent || this.context.parent.nextSignificantParent();
+    }
+    externalSibling(dir) {
+        return this._parent ? null : this.context.parent.nextChild(this.context.index + dir, dir, 0, 4 /* Side.DontCare */);
+    }
+    get nextSibling() {
+        let { buffer } = this.context;
+        let after = buffer.buffer[this.index + 3];
+        if (after < (this._parent ? buffer.buffer[this._parent.index + 3] : buffer.buffer.length))
+            return new BufferNode(this.context, this._parent, after);
+        return this.externalSibling(1);
+    }
+    get prevSibling() {
+        let { buffer } = this.context;
+        let parentStart = this._parent ? this._parent.index + 4 : 0;
+        if (this.index == parentStart)
+            return this.externalSibling(-1);
+        return new BufferNode(this.context, this._parent, buffer.findChild(parentStart, this.index, -1, 0, 4 /* Side.DontCare */));
+    }
+    get tree() { return null; }
+    toTree() {
+        let children = [], positions = [];
+        let { buffer } = this.context;
+        let startI = this.index + 4, endI = buffer.buffer[this.index + 3];
+        if (endI > startI) {
+            let from = buffer.buffer[this.index + 1];
+            children.push(buffer.slice(startI, endI, from));
+            positions.push(0);
+        }
+        return new Tree(this.type, children, positions, this.to - this.from);
+    }
+    /**
+    @internal
+    */
+    toString() { return this.context.buffer.childString(this.index); }
+}
+function iterStack(heads) {
+    if (!heads.length)
+        return null;
+    let pick = 0, picked = heads[0];
+    for (let i = 1; i < heads.length; i++) {
+        let node = heads[i];
+        if (node.from > picked.from || node.to < picked.to) {
+            picked = node;
+            pick = i;
+        }
+    }
+    let next = picked instanceof TreeNode && picked.index < 0 ? null : picked.parent;
+    let newHeads = heads.slice();
+    if (next)
+        newHeads[pick] = next;
+    else
+        newHeads.splice(pick, 1);
+    return new StackIterator(newHeads, picked);
+}
+class StackIterator {
+    constructor(heads, node) {
+        this.heads = heads;
+        this.node = node;
+    }
+    get next() { return iterStack(this.heads); }
+}
+function stackIterator(tree, pos, side) {
+    let inner = tree.resolveInner(pos, side), layers = null;
+    for (let scan = inner instanceof TreeNode ? inner : inner.context.parent; scan; scan = scan.parent) {
+        if (scan.index < 0) { // This is an overlay root
+            let parent = scan.parent;
+            (layers || (layers = [inner])).push(parent.resolve(pos, side));
+            scan = parent;
+        }
+        else {
+            let mount = MountedTree.get(scan.tree);
+            // Relevant overlay branching off
+            if (mount && mount.overlay && mount.overlay[0].from <= pos && mount.overlay[mount.overlay.length - 1].to >= pos) {
+                let root = new TreeNode(mount.tree, mount.overlay[0].from + scan.from, -1, scan);
+                (layers || (layers = [inner])).push(resolveNode(root, pos, side, false));
+            }
+        }
+    }
+    return layers ? iterStack(layers) : inner;
+}
+/**
+A tree cursor object focuses on a given node in a syntax tree, and
+allows you to move to adjacent nodes.
+*/
+class TreeCursor {
+    /**
+    Shorthand for `.type.name`.
+    */
+    get name() { return this.type.name; }
+    /**
+    @internal
+    */
+    constructor(node, 
+    /**
+    @internal
+    */
+    mode = 0) {
+        this.mode = mode;
+        /**
+        @internal
+        */
+        this.buffer = null;
+        this.stack = [];
+        /**
+        @internal
+        */
+        this.index = 0;
+        this.bufferNode = null;
+        if (node instanceof TreeNode) {
+            this.yieldNode(node);
+        }
+        else {
+            this._tree = node.context.parent;
+            this.buffer = node.context;
+            for (let n = node._parent; n; n = n._parent)
+                this.stack.unshift(n.index);
+            this.bufferNode = node;
+            this.yieldBuf(node.index);
+        }
+    }
+    yieldNode(node) {
+        if (!node)
+            return false;
+        this._tree = node;
+        this.type = node.type;
+        this.from = node.from;
+        this.to = node.to;
+        return true;
+    }
+    yieldBuf(index, type) {
+        this.index = index;
+        let { start, buffer } = this.buffer;
+        this.type = type || buffer.set.types[buffer.buffer[index]];
+        this.from = start + buffer.buffer[index + 1];
+        this.to = start + buffer.buffer[index + 2];
+        return true;
+    }
+    /**
+    @internal
+    */
+    yield(node) {
+        if (!node)
+            return false;
+        if (node instanceof TreeNode) {
+            this.buffer = null;
+            return this.yieldNode(node);
+        }
+        this.buffer = node.context;
+        return this.yieldBuf(node.index, node.type);
+    }
+    /**
+    @internal
+    */
+    toString() {
+        return this.buffer ? this.buffer.buffer.childString(this.index) : this._tree.toString();
+    }
+    /**
+    @internal
+    */
+    enterChild(dir, pos, side) {
+        if (!this.buffer)
+            return this.yield(this._tree.nextChild(dir < 0 ? this._tree._tree.children.length - 1 : 0, dir, pos, side, this.mode));
+        let { buffer } = this.buffer;
+        let index = buffer.findChild(this.index + 4, buffer.buffer[this.index + 3], dir, pos - this.buffer.start, side);
+        if (index < 0)
+            return false;
+        this.stack.push(this.index);
+        return this.yieldBuf(index);
+    }
+    /**
+    Move the cursor to this node's first child. When this returns
+    false, the node has no child, and the cursor has not been moved.
+    */
+    firstChild() { return this.enterChild(1, 0, 4 /* Side.DontCare */); }
+    /**
+    Move the cursor to this node's last child.
+    */
+    lastChild() { return this.enterChild(-1, 0, 4 /* Side.DontCare */); }
+    /**
+    Move the cursor to the first child that ends after `pos`.
+    */
+    childAfter(pos) { return this.enterChild(1, pos, 2 /* Side.After */); }
+    /**
+    Move to the last child that starts before `pos`.
+    */
+    childBefore(pos) { return this.enterChild(-1, pos, -2 /* Side.Before */); }
+    /**
+    Move the cursor to the child around `pos`. If side is -1 the
+    child may end at that position, when 1 it may start there. This
+    will also enter [overlaid](#common.MountedTree.overlay)
+    [mounted](#common.NodeProp^mounted) trees unless `overlays` is
+    set to false.
+    */
+    enter(pos, side, mode = this.mode) {
+        if (!this.buffer)
+            return this.yield(this._tree.enter(pos, side, mode));
+        return mode & IterMode.ExcludeBuffers ? false : this.enterChild(1, pos, side);
+    }
+    /**
+    Move to the node's parent node, if this isn't the top node.
+    */
+    parent() {
+        if (!this.buffer)
+            return this.yieldNode((this.mode & IterMode.IncludeAnonymous) ? this._tree._parent : this._tree.parent);
+        if (this.stack.length)
+            return this.yieldBuf(this.stack.pop());
+        let parent = (this.mode & IterMode.IncludeAnonymous) ? this.buffer.parent : this.buffer.parent.nextSignificantParent();
+        this.buffer = null;
+        return this.yieldNode(parent);
+    }
+    /**
+    @internal
+    */
+    sibling(dir) {
+        if (!this.buffer)
+            return !this._tree._parent ? false
+                : this.yield(this._tree.index < 0 ? null
+                    : this._tree._parent.nextChild(this._tree.index + dir, dir, 0, 4 /* Side.DontCare */, this.mode));
+        let { buffer } = this.buffer, d = this.stack.length - 1;
+        if (dir < 0) {
+            let parentStart = d < 0 ? 0 : this.stack[d] + 4;
+            if (this.index != parentStart)
+                return this.yieldBuf(buffer.findChild(parentStart, this.index, -1, 0, 4 /* Side.DontCare */));
+        }
+        else {
+            let after = buffer.buffer[this.index + 3];
+            if (after < (d < 0 ? buffer.buffer.length : buffer.buffer[this.stack[d] + 3]))
+                return this.yieldBuf(after);
+        }
+        return d < 0 ? this.yield(this.buffer.parent.nextChild(this.buffer.index + dir, dir, 0, 4 /* Side.DontCare */, this.mode)) : false;
+    }
+    /**
+    Move to this node's next sibling, if any.
+    */
+    nextSibling() { return this.sibling(1); }
+    /**
+    Move to this node's previous sibling, if any.
+    */
+    prevSibling() { return this.sibling(-1); }
+    atLastNode(dir) {
+        let index, parent, { buffer } = this;
+        if (buffer) {
+            if (dir > 0) {
+                if (this.index < buffer.buffer.buffer.length)
+                    return false;
+            }
+            else {
+                for (let i = 0; i < this.index; i++)
+                    if (buffer.buffer.buffer[i + 3] < this.index)
+                        return false;
+            }
+            ({ index, parent } = buffer);
+        }
+        else {
+            ({ index, _parent: parent } = this._tree);
+        }
+        for (; parent; { index, _parent: parent } = parent) {
+            if (index > -1)
+                for (let i = index + dir, e = dir < 0 ? -1 : parent._tree.children.length; i != e; i += dir) {
+                    let child = parent._tree.children[i];
+                    if ((this.mode & IterMode.IncludeAnonymous) ||
+                        child instanceof TreeBuffer ||
+                        !child.type.isAnonymous ||
+                        hasChild(child))
+                        return false;
+                }
+        }
+        return true;
+    }
+    move(dir, enter) {
+        if (enter && this.enterChild(dir, 0, 4 /* Side.DontCare */))
+            return true;
+        for (;;) {
+            if (this.sibling(dir))
+                return true;
+            if (this.atLastNode(dir) || !this.parent())
+                return false;
+        }
+    }
+    /**
+    Move to the next node in a
+    [pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR)
+    traversal, going from a node to its first child or, if the
+    current node is empty or `enter` is false, its next sibling or
+    the next sibling of the first parent node that has one.
+    */
+    next(enter = true) { return this.move(1, enter); }
+    /**
+    Move to the next node in a last-to-first pre-order traveral. A
+    node is followed by its last child or, if it has none, its
+    previous sibling or the previous sibling of the first parent
+    node that has one.
+    */
+    prev(enter = true) { return this.move(-1, enter); }
+    /**
+    Move the cursor to the innermost node that covers `pos`. If
+    `side` is -1, it will enter nodes that end at `pos`. If it is 1,
+    it will enter nodes that start at `pos`.
+    */
+    moveTo(pos, side = 0) {
+        // Move up to a node that actually holds the position, if possible
+        while (this.from == this.to ||
+            (side < 1 ? this.from >= pos : this.from > pos) ||
+            (side > -1 ? this.to <= pos : this.to < pos))
+            if (!this.parent())
+                break;
+        // Then scan down into child nodes as far as possible
+        while (this.enterChild(1, pos, side)) { }
+        return this;
+    }
+    /**
+    Get a [syntax node](#common.SyntaxNode) at the cursor's current
+    position.
+    */
+    get node() {
+        if (!this.buffer)
+            return this._tree;
+        let cache = this.bufferNode, result = null, depth = 0;
+        if (cache && cache.context == this.buffer) {
+            scan: for (let index = this.index, d = this.stack.length; d >= 0;) {
+                for (let c = cache; c; c = c._parent)
+                    if (c.index == index) {
+                        if (index == this.index)
+                            return c;
+                        result = c;
+                        depth = d + 1;
+                        break scan;
+                    }
+                index = this.stack[--d];
+            }
+        }
+        for (let i = depth; i < this.stack.length; i++)
+            result = new BufferNode(this.buffer, result, this.stack[i]);
+        return this.bufferNode = new BufferNode(this.buffer, result, this.index);
+    }
+    /**
+    Get the [tree](#common.Tree) that represents the current node, if
+    any. Will return null when the node is in a [tree
+    buffer](#common.TreeBuffer).
+    */
+    get tree() {
+        return this.buffer ? null : this._tree._tree;
+    }
+    /**
+    Iterate over the current node and all its descendants, calling
+    `enter` when entering a node and `leave`, if given, when leaving
+    one. When `enter` returns `false`, any children of that node are
+    skipped, and `leave` isn't called for it.
+    */
+    iterate(enter, leave) {
+        for (let depth = 0;;) {
+            let mustLeave = false;
+            if (this.type.isAnonymous || enter(this) !== false) {
+                if (this.firstChild()) {
+                    depth++;
+                    continue;
+                }
+                if (!this.type.isAnonymous)
+                    mustLeave = true;
+            }
+            for (;;) {
+                if (mustLeave && leave)
+                    leave(this);
+                mustLeave = this.type.isAnonymous;
+                if (this.nextSibling())
+                    break;
+                if (!depth)
+                    return;
+                this.parent();
+                depth--;
+                mustLeave = true;
+            }
+        }
+    }
+    /**
+    Test whether the current node matches a given context—a sequence
+    of direct parent node names. Empty strings in the context array
+    are treated as wildcards.
+    */
+    matchContext(context) {
+        if (!this.buffer)
+            return matchNodeContext(this.node, context);
+        let { buffer } = this.buffer, { types } = buffer.set;
+        for (let i = context.length - 1, d = this.stack.length - 1; i >= 0; d--) {
+            if (d < 0)
+                return matchNodeContext(this.node, context, i);
+            let type = types[buffer.buffer[this.stack[d]]];
+            if (!type.isAnonymous) {
+                if (context[i] && context[i] != type.name)
+                    return false;
+                i--;
+            }
+        }
+        return true;
+    }
+}
+function hasChild(tree) {
+    return tree.children.some(ch => ch instanceof TreeBuffer || !ch.type.isAnonymous || hasChild(ch));
+}
+function buildTree(data) {
+    var _a;
+    let { buffer, nodeSet, maxBufferLength = DefaultBufferLength, reused = [], minRepeatType = nodeSet.types.length } = data;
+    let cursor = Array.isArray(buffer) ? new FlatBufferCursor(buffer, buffer.length) : buffer;
+    let types = nodeSet.types;
+    let contextHash = 0, lookAhead = 0;
+    function takeNode(parentStart, minPos, children, positions, inRepeat, depth) {
+        let { id, start, end, size } = cursor;
+        let lookAheadAtStart = lookAhead;
+        while (size < 0) {
+            cursor.next();
+            if (size == -1 /* SpecialRecord.Reuse */) {
+                let node = reused[id];
+                children.push(node);
+                positions.push(start - parentStart);
+                return;
+            }
+            else if (size == -3 /* SpecialRecord.ContextChange */) { // Context change
+                contextHash = id;
+                return;
+            }
+            else if (size == -4 /* SpecialRecord.LookAhead */) {
+                lookAhead = id;
+                return;
+            }
+            else {
+                throw new RangeError(`Unrecognized record size: ${size}`);
+            }
+        }
+        let type = types[id], node, buffer;
+        let startPos = start - parentStart;
+        if (end - start <= maxBufferLength && (buffer = findBufferSize(cursor.pos - minPos, inRepeat))) {
+            // Small enough for a buffer, and no reused nodes inside
+            let data = new Uint16Array(buffer.size - buffer.skip);
+            let endPos = cursor.pos - buffer.size, index = data.length;
+            while (cursor.pos > endPos)
+                index = copyToBuffer(buffer.start, data, index);
+            node = new TreeBuffer(data, end - buffer.start, nodeSet);
+            startPos = buffer.start - parentStart;
+        }
+        else { // Make it a node
+            let endPos = cursor.pos - size;
+            cursor.next();
+            let localChildren = [], localPositions = [];
+            let localInRepeat = id >= minRepeatType ? id : -1;
+            let lastGroup = 0, lastEnd = end;
+            while (cursor.pos > endPos) {
+                if (localInRepeat >= 0 && cursor.id == localInRepeat && cursor.size >= 0) {
+                    if (cursor.end <= lastEnd - maxBufferLength) {
+                        makeRepeatLeaf(localChildren, localPositions, start, lastGroup, cursor.end, lastEnd, localInRepeat, lookAheadAtStart);
+                        lastGroup = localChildren.length;
+                        lastEnd = cursor.end;
+                    }
+                    cursor.next();
+                }
+                else if (depth > 2500 /* CutOff.Depth */) {
+                    takeFlatNode(start, endPos, localChildren, localPositions);
+                }
+                else {
+                    takeNode(start, endPos, localChildren, localPositions, localInRepeat, depth + 1);
+                }
+            }
+            if (localInRepeat >= 0 && lastGroup > 0 && lastGroup < localChildren.length)
+                makeRepeatLeaf(localChildren, localPositions, start, lastGroup, start, lastEnd, localInRepeat, lookAheadAtStart);
+            localChildren.reverse();
+            localPositions.reverse();
+            if (localInRepeat > -1 && lastGroup > 0) {
+                let make = makeBalanced(type);
+                node = balanceRange(type, localChildren, localPositions, 0, localChildren.length, 0, end - start, make, make);
+            }
+            else {
+                node = makeTree(type, localChildren, localPositions, end - start, lookAheadAtStart - end);
+            }
+        }
+        children.push(node);
+        positions.push(startPos);
+    }
+    function takeFlatNode(parentStart, minPos, children, positions) {
+        let nodes = []; // Temporary, inverted array of leaf nodes found, with absolute positions
+        let nodeCount = 0, stopAt = -1;
+        while (cursor.pos > minPos) {
+            let { id, start, end, size } = cursor;
+            if (size > 4) { // Not a leaf
+                cursor.next();
+            }
+            else if (stopAt > -1 && start < stopAt) {
+                break;
+            }
+            else {
+                if (stopAt < 0)
+                    stopAt = end - maxBufferLength;
+                nodes.push(id, start, end);
+                nodeCount++;
+                cursor.next();
+            }
+        }
+        if (nodeCount) {
+            let buffer = new Uint16Array(nodeCount * 4);
+            let start = nodes[nodes.length - 2];
+            for (let i = nodes.length - 3, j = 0; i >= 0; i -= 3) {
+                buffer[j++] = nodes[i];
+                buffer[j++] = nodes[i + 1] - start;
+                buffer[j++] = nodes[i + 2] - start;
+                buffer[j++] = j;
+            }
+            children.push(new TreeBuffer(buffer, nodes[2] - start, nodeSet));
+            positions.push(start - parentStart);
+        }
+    }
+    function makeBalanced(type) {
+        return (children, positions, length) => {
+            let lookAhead = 0, lastI = children.length - 1, last, lookAheadProp;
+            if (lastI >= 0 && (last = children[lastI]) instanceof Tree) {
+                if (!lastI && last.type == type && last.length == length)
+                    return last;
+                if (lookAheadProp = last.prop(NodeProp.lookAhead))
+                    lookAhead = positions[lastI] + last.length + lookAheadProp;
+            }
+            return makeTree(type, children, positions, length, lookAhead);
+        };
+    }
+    function makeRepeatLeaf(children, positions, base, i, from, to, type, lookAhead) {
+        let localChildren = [], localPositions = [];
+        while (children.length > i) {
+            localChildren.push(children.pop());
+            localPositions.push(positions.pop() + base - from);
+        }
+        children.push(makeTree(nodeSet.types[type], localChildren, localPositions, to - from, lookAhead - to));
+        positions.push(from - base);
+    }
+    function makeTree(type, children, positions, length, lookAhead = 0, props) {
+        if (contextHash) {
+            let pair = [NodeProp.contextHash, contextHash];
+            props = props ? [pair].concat(props) : [pair];
+        }
+        if (lookAhead > 25) {
+            let pair = [NodeProp.lookAhead, lookAhead];
+            props = props ? [pair].concat(props) : [pair];
+        }
+        return new Tree(type, children, positions, length, props);
+    }
+    function findBufferSize(maxSize, inRepeat) {
+        // Scan through the buffer to find previous siblings that fit
+        // together in a TreeBuffer, and don't contain any reused nodes
+        // (which can't be stored in a buffer).
+        // If `inRepeat` is > -1, ignore node boundaries of that type for
+        // nesting, but make sure the end falls either at the start
+        // (`maxSize`) or before such a node.
+        let fork = cursor.fork();
+        let size = 0, start = 0, skip = 0, minStart = fork.end - maxBufferLength;
+        let result = { size: 0, start: 0, skip: 0 };
+        scan: for (let minPos = fork.pos - maxSize; fork.pos > minPos;) {
+            let nodeSize = fork.size;
+            // Pretend nested repeat nodes of the same type don't exist
+            if (fork.id == inRepeat && nodeSize >= 0) {
+                // Except that we store the current state as a valid return
+                // value.
+                result.size = size;
+                result.start = start;
+                result.skip = skip;
+                skip += 4;
+                size += 4;
+                fork.next();
+                continue;
+            }
+            let startPos = fork.pos - nodeSize;
+            if (nodeSize < 0 || startPos < minPos || fork.start < minStart)
+                break;
+            let localSkipped = fork.id >= minRepeatType ? 4 : 0;
+            let nodeStart = fork.start;
+            fork.next();
+            while (fork.pos > startPos) {
+                if (fork.size < 0) {
+                    if (fork.size == -3 /* SpecialRecord.ContextChange */)
+                        localSkipped += 4;
+                    else
+                        break scan;
+                }
+                else if (fork.id >= minRepeatType) {
+                    localSkipped += 4;
+                }
+                fork.next();
+            }
+            start = nodeStart;
+            size += nodeSize;
+            skip += localSkipped;
+        }
+        if (inRepeat < 0 || size == maxSize) {
+            result.size = size;
+            result.start = start;
+            result.skip = skip;
+        }
+        return result.size > 4 ? result : undefined;
+    }
+    function copyToBuffer(bufferStart, buffer, index) {
+        let { id, start, end, size } = cursor;
+        cursor.next();
+        if (size >= 0 && id < minRepeatType) {
+            let startIndex = index;
+            if (size > 4) {
+                let endPos = cursor.pos - (size - 4);
+                while (cursor.pos > endPos)
+                    index = copyToBuffer(bufferStart, buffer, index);
+            }
+            buffer[--index] = startIndex;
+            buffer[--index] = end - bufferStart;
+            buffer[--index] = start - bufferStart;
+            buffer[--index] = id;
+        }
+        else if (size == -3 /* SpecialRecord.ContextChange */) {
+            contextHash = id;
+        }
+        else if (size == -4 /* SpecialRecord.LookAhead */) {
+            lookAhead = id;
+        }
+        return index;
+    }
+    let children = [], positions = [];
+    while (cursor.pos > 0)
+        takeNode(data.start || 0, data.bufferStart || 0, children, positions, -1, 0);
+    let length = (_a = data.length) !== null && _a !== void 0 ? _a : (children.length ? positions[0] + children[0].length : 0);
+    return new Tree(types[data.topID], children.reverse(), positions.reverse(), length);
+}
+const nodeSizeCache = new WeakMap;
+function nodeSize(balanceType, node) {
+    if (!balanceType.isAnonymous || node instanceof TreeBuffer || node.type != balanceType)
+        return 1;
+    let size = nodeSizeCache.get(node);
+    if (size == null) {
+        size = 1;
+        for (let child of node.children) {
+            if (child.type != balanceType || !(child instanceof Tree)) {
+                size = 1;
+                break;
+            }
+            size += nodeSize(balanceType, child);
+        }
+        nodeSizeCache.set(node, size);
+    }
+    return size;
+}
+function balanceRange(
+// The type the balanced tree's inner nodes.
+balanceType, 
+// The direct children and their positions
+children, positions, 
+// The index range in children/positions to use
+from, to, 
+// The start position of the nodes, relative to their parent.
+start, 
+// Length of the outer node
+length, 
+// Function to build the top node of the balanced tree
+mkTop, 
+// Function to build internal nodes for the balanced tree
+mkTree) {
+    let total = 0;
+    for (let i = from; i < to; i++)
+        total += nodeSize(balanceType, children[i]);
+    let maxChild = Math.ceil((total * 1.5) / 8 /* Balance.BranchFactor */);
+    let localChildren = [], localPositions = [];
+    function divide(children, positions, from, to, offset) {
+        for (let i = from; i < to;) {
+            let groupFrom = i, groupStart = positions[i], groupSize = nodeSize(balanceType, children[i]);
+            i++;
+            for (; i < to; i++) {
+                let nextSize = nodeSize(balanceType, children[i]);
+                if (groupSize + nextSize >= maxChild)
+                    break;
+                groupSize += nextSize;
+            }
+            if (i == groupFrom + 1) {
+                if (groupSize > maxChild) {
+                    let only = children[groupFrom]; // Only trees can have a size > 1
+                    divide(only.children, only.positions, 0, only.children.length, positions[groupFrom] + offset);
+                    continue;
+                }
+                localChildren.push(children[groupFrom]);
+            }
+            else {
+                let length = positions[i - 1] + children[i - 1].length - groupStart;
+                localChildren.push(balanceRange(balanceType, children, positions, groupFrom, i, groupStart, length, null, mkTree));
+            }
+            localPositions.push(groupStart + offset - start);
+        }
+    }
+    divide(children, positions, from, to, 0);
+    return (mkTop || mkTree)(localChildren, localPositions, length);
+}
+/**
+A superclass that parsers should extend.
+*/
+class Parser {
+    /**
+    Start a parse, returning a [partial parse](#common.PartialParse)
+    object. [`fragments`](#common.TreeFragment) can be passed in to
+    make the parse incremental.
+    
+    By default, the entire input is parsed. You can pass `ranges`,
+    which should be a sorted array of non-empty, non-overlapping
+    ranges, to parse only those ranges. The tree returned in that
+    case will start at `ranges[0].from`.
+    */
+    startParse(input, fragments, ranges) {
+        if (typeof input == "string")
+            input = new StringInput(input);
+        ranges = !ranges ? [new Range(0, input.length)] : ranges.length ? ranges.map(r => new Range(r.from, r.to)) : [new Range(0, 0)];
+        return this.createParse(input, fragments || [], ranges);
+    }
+    /**
+    Run a full parse, returning the resulting tree.
+    */
+    parse(input, fragments, ranges) {
+        let parse = this.startParse(input, fragments, ranges);
+        for (;;) {
+            let done = parse.advance();
+            if (done)
+                return done;
+        }
+    }
+}
+class StringInput {
+    constructor(string) {
+        this.string = string;
+    }
+    get length() { return this.string.length; }
+    chunk(from) { return this.string.slice(from); }
+    get lineChunks() { return false; }
+    read(from, to) { return this.string.slice(from, to); }
+}
+new NodeProp({ perNode: true });
+
+/**
 A parse stack. These are used internally by the parser to track
 parsing progress. They also provide some properties and methods
 that external code such as a tokenizer can use to get information
@@ -26045,6 +27597,738 @@ function getSpecializer(spec) {
     return spec.get;
 }
 
+let nextTagID = 0;
+/**
+Highlighting tags are markers that denote a highlighting category.
+They are [associated](#highlight.styleTags) with parts of a syntax
+tree by a language mode, and then mapped to an actual CSS style by
+a [highlighter](#highlight.Highlighter).
+
+Because syntax tree node types and highlight styles have to be
+able to talk the same language, CodeMirror uses a mostly _closed_
+[vocabulary](#highlight.tags) of syntax tags (as opposed to
+traditional open string-based systems, which make it hard for
+highlighting themes to cover all the tokens produced by the
+various languages).
+
+It _is_ possible to [define](#highlight.Tag^define) your own
+highlighting tags for system-internal use (where you control both
+the language package and the highlighter), but such tags will not
+be picked up by regular highlighters (though you can derive them
+from standard tags to allow highlighters to fall back to those).
+*/
+class Tag {
+    /**
+    @internal
+    */
+    constructor(
+    /**
+    The set of this tag and all its parent tags, starting with
+    this one itself and sorted in order of decreasing specificity.
+    */
+    set, 
+    /**
+    The base unmodified tag that this one is based on, if it's
+    modified @internal
+    */
+    base, 
+    /**
+    The modifiers applied to this.base @internal
+    */
+    modified) {
+        this.set = set;
+        this.base = base;
+        this.modified = modified;
+        /**
+        @internal
+        */
+        this.id = nextTagID++;
+    }
+    /**
+    Define a new tag. If `parent` is given, the tag is treated as a
+    sub-tag of that parent, and
+    [highlighters](#highlight.tagHighlighter) that don't mention
+    this tag will try to fall back to the parent tag (or grandparent
+    tag, etc).
+    */
+    static define(parent) {
+        if (parent === null || parent === void 0 ? void 0 : parent.base)
+            throw new Error("Can not derive from a modified tag");
+        let tag = new Tag([], null, []);
+        tag.set.push(tag);
+        if (parent)
+            for (let t of parent.set)
+                tag.set.push(t);
+        return tag;
+    }
+    /**
+    Define a tag _modifier_, which is a function that, given a tag,
+    will return a tag that is a subtag of the original. Applying the
+    same modifier to a twice tag will return the same value (`m1(t1)
+    == m1(t1)`) and applying multiple modifiers will, regardless or
+    order, produce the same tag (`m1(m2(t1)) == m2(m1(t1))`).
+    
+    When multiple modifiers are applied to a given base tag, each
+    smaller set of modifiers is registered as a parent, so that for
+    example `m1(m2(m3(t1)))` is a subtype of `m1(m2(t1))`,
+    `m1(m3(t1)`, and so on.
+    */
+    static defineModifier() {
+        let mod = new Modifier;
+        return (tag) => {
+            if (tag.modified.indexOf(mod) > -1)
+                return tag;
+            return Modifier.get(tag.base || tag, tag.modified.concat(mod).sort((a, b) => a.id - b.id));
+        };
+    }
+}
+let nextModifierID = 0;
+class Modifier {
+    constructor() {
+        this.instances = [];
+        this.id = nextModifierID++;
+    }
+    static get(base, mods) {
+        if (!mods.length)
+            return base;
+        let exists = mods[0].instances.find(t => t.base == base && sameArray(mods, t.modified));
+        if (exists)
+            return exists;
+        let set = [], tag = new Tag(set, base, mods);
+        for (let m of mods)
+            m.instances.push(tag);
+        let configs = powerSet(mods);
+        for (let parent of base.set)
+            if (!parent.modified.length)
+                for (let config of configs)
+                    set.push(Modifier.get(parent, config));
+        return tag;
+    }
+}
+function sameArray(a, b) {
+    return a.length == b.length && a.every((x, i) => x == b[i]);
+}
+function powerSet(array) {
+    let sets = [[]];
+    for (let i = 0; i < array.length; i++) {
+        for (let j = 0, e = sets.length; j < e; j++) {
+            sets.push(sets[j].concat(array[i]));
+        }
+    }
+    return sets.sort((a, b) => b.length - a.length);
+}
+/**
+This function is used to add a set of tags to a language syntax
+via [`NodeSet.extend`](#common.NodeSet.extend) or
+[`LRParser.configure`](#lr.LRParser.configure).
+
+The argument object maps node selectors to [highlighting
+tags](#highlight.Tag) or arrays of tags.
+
+Node selectors may hold one or more (space-separated) node paths.
+Such a path can be a [node name](#common.NodeType.name), or
+multiple node names (or `*` wildcards) separated by slash
+characters, as in `"Block/Declaration/VariableName"`. Such a path
+matches the final node but only if its direct parent nodes are the
+other nodes mentioned. A `*` in such a path matches any parent,
+but only a single level—wildcards that match multiple parents
+aren't supported, both for efficiency reasons and because Lezer
+trees make it rather hard to reason about what they would match.)
+
+A path can be ended with `/...` to indicate that the tag assigned
+to the node should also apply to all child nodes, even if they
+match their own style (by default, only the innermost style is
+used).
+
+When a path ends in `!`, as in `Attribute!`, no further matching
+happens for the node's child nodes, and the entire node gets the
+given style.
+
+In this notation, node names that contain `/`, `!`, `*`, or `...`
+must be quoted as JSON strings.
+
+For example:
+
+```javascript
+parser.withProps(
+  styleTags({
+    // Style Number and BigNumber nodes
+    "Number BigNumber": tags.number,
+    // Style Escape nodes whose parent is String
+    "String/Escape": tags.escape,
+    // Style anything inside Attributes nodes
+    "Attributes!": tags.meta,
+    // Add a style to all content inside Italic nodes
+    "Italic/...": tags.emphasis,
+    // Style InvalidString nodes as both `string` and `invalid`
+    "InvalidString": [tags.string, tags.invalid],
+    // Style the node named "/" as punctuation
+    '"/"': tags.punctuation
+  })
+)
+```
+*/
+function styleTags(spec) {
+    let byName = Object.create(null);
+    for (let prop in spec) {
+        let tags = spec[prop];
+        if (!Array.isArray(tags))
+            tags = [tags];
+        for (let part of prop.split(" "))
+            if (part) {
+                let pieces = [], mode = 2 /* Mode.Normal */, rest = part;
+                for (let pos = 0;;) {
+                    if (rest == "..." && pos > 0 && pos + 3 == part.length) {
+                        mode = 1 /* Mode.Inherit */;
+                        break;
+                    }
+                    let m = /^"(?:[^"\\]|\\.)*?"|[^\/!]+/.exec(rest);
+                    if (!m)
+                        throw new RangeError("Invalid path: " + part);
+                    pieces.push(m[0] == "*" ? "" : m[0][0] == '"' ? JSON.parse(m[0]) : m[0]);
+                    pos += m[0].length;
+                    if (pos == part.length)
+                        break;
+                    let next = part[pos++];
+                    if (pos == part.length && next == "!") {
+                        mode = 0 /* Mode.Opaque */;
+                        break;
+                    }
+                    if (next != "/")
+                        throw new RangeError("Invalid path: " + part);
+                    rest = part.slice(pos);
+                }
+                let last = pieces.length - 1, inner = pieces[last];
+                if (!inner)
+                    throw new RangeError("Invalid path: " + part);
+                let rule = new Rule(tags, mode, last > 0 ? pieces.slice(0, last) : null);
+                byName[inner] = rule.sort(byName[inner]);
+            }
+    }
+    return ruleNodeProp.add(byName);
+}
+const ruleNodeProp = new NodeProp();
+class Rule {
+    constructor(tags, mode, context, next) {
+        this.tags = tags;
+        this.mode = mode;
+        this.context = context;
+        this.next = next;
+    }
+    get opaque() { return this.mode == 0 /* Mode.Opaque */; }
+    get inherit() { return this.mode == 1 /* Mode.Inherit */; }
+    sort(other) {
+        if (!other || other.depth < this.depth) {
+            this.next = other;
+            return this;
+        }
+        other.next = this.sort(other.next);
+        return other;
+    }
+    get depth() { return this.context ? this.context.length : 0; }
+}
+Rule.empty = new Rule([], 2 /* Mode.Normal */, null);
+/**
+Define a [highlighter](#highlight.Highlighter) from an array of
+tag/class pairs. Classes associated with more specific tags will
+take precedence.
+*/
+function tagHighlighter(tags, options) {
+    let map = Object.create(null);
+    for (let style of tags) {
+        if (!Array.isArray(style.tag))
+            map[style.tag.id] = style.class;
+        else
+            for (let tag of style.tag)
+                map[tag.id] = style.class;
+    }
+    let { scope, all = null } = options || {};
+    return {
+        style: (tags) => {
+            let cls = all;
+            for (let tag of tags) {
+                for (let sub of tag.set) {
+                    let tagClass = map[sub.id];
+                    if (tagClass) {
+                        cls = cls ? cls + " " + tagClass : tagClass;
+                        break;
+                    }
+                }
+            }
+            return cls;
+        },
+        scope
+    };
+}
+const t = Tag.define;
+const comment = t(), name = t(), typeName = t(name), propertyName = t(name), literal = t(), string = t(literal), number = t(literal), content = t(), heading = t(content), keyword = t(), operator = t(), punctuation = t(), bracket = t(punctuation), meta = t();
+/**
+The default set of highlighting [tags](#highlight.Tag).
+
+This collection is heavily biased towards programming languages,
+and necessarily incomplete. A full ontology of syntactic
+constructs would fill a stack of books, and be impractical to
+write themes for. So try to make do with this set. If all else
+fails, [open an
+issue](https://github.com/codemirror/codemirror.next) to propose a
+new tag, or [define](#highlight.Tag^define) a local custom tag for
+your use case.
+
+Note that it is not obligatory to always attach the most specific
+tag possible to an element—if your grammar can't easily
+distinguish a certain type of element (such as a local variable),
+it is okay to style it as its more general variant (a variable).
+
+For tags that extend some parent tag, the documentation links to
+the parent.
+*/
+const tags = {
+    /**
+    A comment.
+    */
+    comment,
+    /**
+    A line [comment](#highlight.tags.comment).
+    */
+    lineComment: t(comment),
+    /**
+    A block [comment](#highlight.tags.comment).
+    */
+    blockComment: t(comment),
+    /**
+    A documentation [comment](#highlight.tags.comment).
+    */
+    docComment: t(comment),
+    /**
+    Any kind of identifier.
+    */
+    name,
+    /**
+    The [name](#highlight.tags.name) of a variable.
+    */
+    variableName: t(name),
+    /**
+    A type [name](#highlight.tags.name).
+    */
+    typeName: typeName,
+    /**
+    A tag name (subtag of [`typeName`](#highlight.tags.typeName)).
+    */
+    tagName: t(typeName),
+    /**
+    A property or field [name](#highlight.tags.name).
+    */
+    propertyName: propertyName,
+    /**
+    An attribute name (subtag of [`propertyName`](#highlight.tags.propertyName)).
+    */
+    attributeName: t(propertyName),
+    /**
+    The [name](#highlight.tags.name) of a class.
+    */
+    className: t(name),
+    /**
+    A label [name](#highlight.tags.name).
+    */
+    labelName: t(name),
+    /**
+    A namespace [name](#highlight.tags.name).
+    */
+    namespace: t(name),
+    /**
+    The [name](#highlight.tags.name) of a macro.
+    */
+    macroName: t(name),
+    /**
+    A literal value.
+    */
+    literal,
+    /**
+    A string [literal](#highlight.tags.literal).
+    */
+    string,
+    /**
+    A documentation [string](#highlight.tags.string).
+    */
+    docString: t(string),
+    /**
+    A character literal (subtag of [string](#highlight.tags.string)).
+    */
+    character: t(string),
+    /**
+    An attribute value (subtag of [string](#highlight.tags.string)).
+    */
+    attributeValue: t(string),
+    /**
+    A number [literal](#highlight.tags.literal).
+    */
+    number,
+    /**
+    An integer [number](#highlight.tags.number) literal.
+    */
+    integer: t(number),
+    /**
+    A floating-point [number](#highlight.tags.number) literal.
+    */
+    float: t(number),
+    /**
+    A boolean [literal](#highlight.tags.literal).
+    */
+    bool: t(literal),
+    /**
+    Regular expression [literal](#highlight.tags.literal).
+    */
+    regexp: t(literal),
+    /**
+    An escape [literal](#highlight.tags.literal), for example a
+    backslash escape in a string.
+    */
+    escape: t(literal),
+    /**
+    A color [literal](#highlight.tags.literal).
+    */
+    color: t(literal),
+    /**
+    A URL [literal](#highlight.tags.literal).
+    */
+    url: t(literal),
+    /**
+    A language keyword.
+    */
+    keyword,
+    /**
+    The [keyword](#highlight.tags.keyword) for the self or this
+    object.
+    */
+    self: t(keyword),
+    /**
+    The [keyword](#highlight.tags.keyword) for null.
+    */
+    null: t(keyword),
+    /**
+    A [keyword](#highlight.tags.keyword) denoting some atomic value.
+    */
+    atom: t(keyword),
+    /**
+    A [keyword](#highlight.tags.keyword) that represents a unit.
+    */
+    unit: t(keyword),
+    /**
+    A modifier [keyword](#highlight.tags.keyword).
+    */
+    modifier: t(keyword),
+    /**
+    A [keyword](#highlight.tags.keyword) that acts as an operator.
+    */
+    operatorKeyword: t(keyword),
+    /**
+    A control-flow related [keyword](#highlight.tags.keyword).
+    */
+    controlKeyword: t(keyword),
+    /**
+    A [keyword](#highlight.tags.keyword) that defines something.
+    */
+    definitionKeyword: t(keyword),
+    /**
+    A [keyword](#highlight.tags.keyword) related to defining or
+    interfacing with modules.
+    */
+    moduleKeyword: t(keyword),
+    /**
+    An operator.
+    */
+    operator,
+    /**
+    An [operator](#highlight.tags.operator) that dereferences something.
+    */
+    derefOperator: t(operator),
+    /**
+    Arithmetic-related [operator](#highlight.tags.operator).
+    */
+    arithmeticOperator: t(operator),
+    /**
+    Logical [operator](#highlight.tags.operator).
+    */
+    logicOperator: t(operator),
+    /**
+    Bit [operator](#highlight.tags.operator).
+    */
+    bitwiseOperator: t(operator),
+    /**
+    Comparison [operator](#highlight.tags.operator).
+    */
+    compareOperator: t(operator),
+    /**
+    [Operator](#highlight.tags.operator) that updates its operand.
+    */
+    updateOperator: t(operator),
+    /**
+    [Operator](#highlight.tags.operator) that defines something.
+    */
+    definitionOperator: t(operator),
+    /**
+    Type-related [operator](#highlight.tags.operator).
+    */
+    typeOperator: t(operator),
+    /**
+    Control-flow [operator](#highlight.tags.operator).
+    */
+    controlOperator: t(operator),
+    /**
+    Program or markup punctuation.
+    */
+    punctuation,
+    /**
+    [Punctuation](#highlight.tags.punctuation) that separates
+    things.
+    */
+    separator: t(punctuation),
+    /**
+    Bracket-style [punctuation](#highlight.tags.punctuation).
+    */
+    bracket,
+    /**
+    Angle [brackets](#highlight.tags.bracket) (usually `<` and `>`
+    tokens).
+    */
+    angleBracket: t(bracket),
+    /**
+    Square [brackets](#highlight.tags.bracket) (usually `[` and `]`
+    tokens).
+    */
+    squareBracket: t(bracket),
+    /**
+    Parentheses (usually `(` and `)` tokens). Subtag of
+    [bracket](#highlight.tags.bracket).
+    */
+    paren: t(bracket),
+    /**
+    Braces (usually `{` and `}` tokens). Subtag of
+    [bracket](#highlight.tags.bracket).
+    */
+    brace: t(bracket),
+    /**
+    Content, for example plain text in XML or markup documents.
+    */
+    content,
+    /**
+    [Content](#highlight.tags.content) that represents a heading.
+    */
+    heading,
+    /**
+    A level 1 [heading](#highlight.tags.heading).
+    */
+    heading1: t(heading),
+    /**
+    A level 2 [heading](#highlight.tags.heading).
+    */
+    heading2: t(heading),
+    /**
+    A level 3 [heading](#highlight.tags.heading).
+    */
+    heading3: t(heading),
+    /**
+    A level 4 [heading](#highlight.tags.heading).
+    */
+    heading4: t(heading),
+    /**
+    A level 5 [heading](#highlight.tags.heading).
+    */
+    heading5: t(heading),
+    /**
+    A level 6 [heading](#highlight.tags.heading).
+    */
+    heading6: t(heading),
+    /**
+    A prose separator (such as a horizontal rule).
+    */
+    contentSeparator: t(content),
+    /**
+    [Content](#highlight.tags.content) that represents a list.
+    */
+    list: t(content),
+    /**
+    [Content](#highlight.tags.content) that represents a quote.
+    */
+    quote: t(content),
+    /**
+    [Content](#highlight.tags.content) that is emphasized.
+    */
+    emphasis: t(content),
+    /**
+    [Content](#highlight.tags.content) that is styled strong.
+    */
+    strong: t(content),
+    /**
+    [Content](#highlight.tags.content) that is part of a link.
+    */
+    link: t(content),
+    /**
+    [Content](#highlight.tags.content) that is styled as code or
+    monospace.
+    */
+    monospace: t(content),
+    /**
+    [Content](#highlight.tags.content) that has a strike-through
+    style.
+    */
+    strikethrough: t(content),
+    /**
+    Inserted text in a change-tracking format.
+    */
+    inserted: t(),
+    /**
+    Deleted text.
+    */
+    deleted: t(),
+    /**
+    Changed text.
+    */
+    changed: t(),
+    /**
+    An invalid or unsyntactic element.
+    */
+    invalid: t(),
+    /**
+    Metadata or meta-instruction.
+    */
+    meta,
+    /**
+    [Metadata](#highlight.tags.meta) that applies to the entire
+    document.
+    */
+    documentMeta: t(meta),
+    /**
+    [Metadata](#highlight.tags.meta) that annotates or adds
+    attributes to a given syntactic element.
+    */
+    annotation: t(meta),
+    /**
+    Processing instruction or preprocessor directive. Subtag of
+    [meta](#highlight.tags.meta).
+    */
+    processingInstruction: t(meta),
+    /**
+    [Modifier](#highlight.Tag^defineModifier) that indicates that a
+    given element is being defined. Expected to be used with the
+    various [name](#highlight.tags.name) tags.
+    */
+    definition: Tag.defineModifier(),
+    /**
+    [Modifier](#highlight.Tag^defineModifier) that indicates that
+    something is constant. Mostly expected to be used with
+    [variable names](#highlight.tags.variableName).
+    */
+    constant: Tag.defineModifier(),
+    /**
+    [Modifier](#highlight.Tag^defineModifier) used to indicate that
+    a [variable](#highlight.tags.variableName) or [property
+    name](#highlight.tags.propertyName) is being called or defined
+    as a function.
+    */
+    function: Tag.defineModifier(),
+    /**
+    [Modifier](#highlight.Tag^defineModifier) that can be applied to
+    [names](#highlight.tags.name) to indicate that they belong to
+    the language's standard environment.
+    */
+    standard: Tag.defineModifier(),
+    /**
+    [Modifier](#highlight.Tag^defineModifier) that indicates a given
+    [names](#highlight.tags.name) is local to some scope.
+    */
+    local: Tag.defineModifier(),
+    /**
+    A generic variant [modifier](#highlight.Tag^defineModifier) that
+    can be used to tag language-specific alternative variants of
+    some common tag. It is recommended for themes to define special
+    forms of at least the [string](#highlight.tags.string) and
+    [variable name](#highlight.tags.variableName) tags, since those
+    come up a lot.
+    */
+    special: Tag.defineModifier()
+};
+/**
+This is a highlighter that adds stable, predictable classes to
+tokens, for styling with external CSS.
+
+The following tags are mapped to their name prefixed with `"tok-"`
+(for example `"tok-comment"`):
+
+* [`link`](#highlight.tags.link)
+* [`heading`](#highlight.tags.heading)
+* [`emphasis`](#highlight.tags.emphasis)
+* [`strong`](#highlight.tags.strong)
+* [`keyword`](#highlight.tags.keyword)
+* [`atom`](#highlight.tags.atom)
+* [`bool`](#highlight.tags.bool)
+* [`url`](#highlight.tags.url)
+* [`labelName`](#highlight.tags.labelName)
+* [`inserted`](#highlight.tags.inserted)
+* [`deleted`](#highlight.tags.deleted)
+* [`literal`](#highlight.tags.literal)
+* [`string`](#highlight.tags.string)
+* [`number`](#highlight.tags.number)
+* [`variableName`](#highlight.tags.variableName)
+* [`typeName`](#highlight.tags.typeName)
+* [`namespace`](#highlight.tags.namespace)
+* [`className`](#highlight.tags.className)
+* [`macroName`](#highlight.tags.macroName)
+* [`propertyName`](#highlight.tags.propertyName)
+* [`operator`](#highlight.tags.operator)
+* [`comment`](#highlight.tags.comment)
+* [`meta`](#highlight.tags.meta)
+* [`punctuation`](#highlight.tags.punctuation)
+* [`invalid`](#highlight.tags.invalid)
+
+In addition, these mappings are provided:
+
+* [`regexp`](#highlight.tags.regexp),
+  [`escape`](#highlight.tags.escape), and
+  [`special`](#highlight.tags.special)[`(string)`](#highlight.tags.string)
+  are mapped to `"tok-string2"`
+* [`special`](#highlight.tags.special)[`(variableName)`](#highlight.tags.variableName)
+  to `"tok-variableName2"`
+* [`local`](#highlight.tags.local)[`(variableName)`](#highlight.tags.variableName)
+  to `"tok-variableName tok-local"`
+* [`definition`](#highlight.tags.definition)[`(variableName)`](#highlight.tags.variableName)
+  to `"tok-variableName tok-definition"`
+* [`definition`](#highlight.tags.definition)[`(propertyName)`](#highlight.tags.propertyName)
+  to `"tok-propertyName tok-definition"`
+*/
+tagHighlighter([
+    { tag: tags.link, class: "tok-link" },
+    { tag: tags.heading, class: "tok-heading" },
+    { tag: tags.emphasis, class: "tok-emphasis" },
+    { tag: tags.strong, class: "tok-strong" },
+    { tag: tags.keyword, class: "tok-keyword" },
+    { tag: tags.atom, class: "tok-atom" },
+    { tag: tags.bool, class: "tok-bool" },
+    { tag: tags.url, class: "tok-url" },
+    { tag: tags.labelName, class: "tok-labelName" },
+    { tag: tags.inserted, class: "tok-inserted" },
+    { tag: tags.deleted, class: "tok-deleted" },
+    { tag: tags.literal, class: "tok-literal" },
+    { tag: tags.string, class: "tok-string" },
+    { tag: tags.number, class: "tok-number" },
+    { tag: [tags.regexp, tags.escape, tags.special(tags.string)], class: "tok-string2" },
+    { tag: tags.variableName, class: "tok-variableName" },
+    { tag: tags.local(tags.variableName), class: "tok-variableName tok-local" },
+    { tag: tags.definition(tags.variableName), class: "tok-variableName tok-definition" },
+    { tag: tags.special(tags.variableName), class: "tok-variableName2" },
+    { tag: tags.definition(tags.propertyName), class: "tok-propertyName tok-definition" },
+    { tag: tags.typeName, class: "tok-typeName" },
+    { tag: tags.namespace, class: "tok-namespace" },
+    { tag: tags.className, class: "tok-className" },
+    { tag: tags.macroName, class: "tok-macroName" },
+    { tag: tags.propertyName, class: "tok-propertyName" },
+    { tag: tags.operator, class: "tok-operator" },
+    { tag: tags.comment, class: "tok-comment" },
+    { tag: tags.meta, class: "tok-meta" },
+    { tag: tags.invalid, class: "tok-invalid" },
+    { tag: tags.punctuation, class: "tok-punctuation" }
+]);
+
 const highlighting = styleTags({
 	Comment: tags.comment,
 	LineComment: tags.lineComment,
@@ -26125,14 +28409,14 @@ const highlighting = styleTags({
 	Annotation: tags.annotation,
 	ProcessingInstruction: tags.processingInstruction,
 
-	// Tags from here on down are modifier and crash the editor.
+	// Tags from here on down are modifiers and must wrap another tag
 	// https://lezer.codemirror.net/docs/ref/#highlight.tags.definition
-	// Definition: tags.definition,
-	// Constant: tags.constant,
-	// Function: tags.function,
-	// Standard: tags.standard,
-	// Local: tags.local,
-	// Special: tags.special
+	Definition: tags.definition(tags.name),
+	Constant: tags.constant(tags.name),
+	Function: tags.function(tags.name),
+	Standard: tags.standard(tags.name),
+	Local: tags.local(tags.name),
+	Special: tags.specia(tags.name)
 });
 
 // This file was generated by lezer-generator. You probably shouldn't edit it.
@@ -26151,6 +28435,8 @@ const parser = LRParser.deserialize({
   topRules: {"Program":[0,2]},
   tokenPrec: 0
 });
+
+// This SHOULD be able to just import the grammar, but... doesn't work :(
 
 const RockstarLanguage = LRLanguage.define({
   parser: parser.configure({
@@ -26175,21 +28461,37 @@ const RockstarLanguage = LRLanguage.define({
   }
 });
 
-const RockstarAutocomplete = RockstarLanguage.data.of({
-	autocomplete: completeFromList([
-		{ label: "defun", type: "keyword" },
-		{ label: "defvar", type: "keyword" },
-		{ label: "let", type: "keyword" },
-		{ label: "cons", type: "function" },
-		{ label: "car", type: "function" },
-		{ label: "cdr", type: "function" }
-	])
-});
-function Rockstar() {
-  return new LanguageSupport(RockstarLanguage, [ RockstarAutocomplete ])
+// const RockstarAutocomplete = RockstarLanguage.data.of({
+// 	autocomplete: completeFromList([
+// 		{ label: "defun", type: "keyword" },
+// 		{ label: "defvar", type: "keyword" },
+// 		{ label: "let", type: "keyword" },
+// 		{ label: "cons", type: "function" },
+// 		{ label: "car", type: "function" },
+// 		{ label: "cdr", type: "function" }
+// 	])
+// });
+function RockstarLanguageSupport() {
+  return new LanguageSupport(RockstarLanguage, [ ])
 }
 
-const createTheme$2 = ({ variant, settings, styles }) => {
+const KitchenSinkLanguage = LRLanguage.define({
+	parser: parser$1.configure({
+		props: [
+			indentNodeProp.add({ Application: delimitedIndent({ closing: ")", align: false }) }),
+			foldNodeProp.add({ Application: foldInside }),
+		]
+	}),
+	//   languageData: {
+	//     commentTokens: {line: ";"}
+	//   }
+});
+
+function KitchenSinkLanguageSupport() {
+	return new LanguageSupport(KitchenSinkLanguage, [])
+}
+
+const createTheme$1 = ({ variant, settings, styles }) => {
     const theme = EditorView.theme({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         '&': {
@@ -26222,988 +28524,62 @@ const createTheme$2 = ({ variant, settings, styles }) => {
     const extension = [theme, syntaxHighlighting(highlightStyle)];
     return extension;
 };
+var createTheme$2 = createTheme$1;
 
-// Author: William D. Neumann
-createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#200020',
-        foreground: '#D0D0FF',
-        caret: '#7070FF',
-        selection: '#80000080',
-        gutterBackground: '#200020',
-        gutterForeground: '#C080C0',
-        lineHighlight: '#80000040',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#404080',
-        },
-        {
-            tag: [tags.string, tags.regexp],
-            color: '#999999',
-        },
-        {
-            tag: tags.number,
-            color: '#7090B0',
-        },
-        {
-            tag: [tags.bool, tags.null],
-            color: '#8080A0',
-        },
-        {
-            tag: [tags.punctuation, tags.derefOperator],
-            color: '#805080',
-        },
-        {
-            tag: tags.keyword,
-            color: '#60B0FF',
-        },
-        {
-            tag: tags.definitionKeyword,
-            color: '#B0FFF0',
-        },
-        {
-            tag: tags.moduleKeyword,
-            color: '#60B0FF',
-        },
-        {
-            tag: tags.operator,
-            color: '#A0A0FF',
-        },
-        {
-            tag: [tags.variableName, tags.self],
-            color: '#008080',
-        },
-        {
-            tag: tags.operatorKeyword,
-            color: '#A0A0FF',
-        },
-        {
-            tag: tags.controlKeyword,
-            color: '#80A0FF',
-        },
-        {
-            tag: tags.className,
-            color: '#70E080',
-        },
-        {
-            tag: [tags.function(tags.propertyName), tags.propertyName],
-            color: '#50A0A0',
-        },
-        {
-            tag: tags.tagName,
-            color: '#009090',
-        },
-        {
-            tag: tags.modifier,
-            color: '#B0FFF0',
-        },
-        {
-            tag: [tags.squareBracket, tags.attributeName],
-            color: '#D0D0FF',
-        },
-    ],
+const kitchenSink = createTheme$2({
+	variant: 'dark',
+	settings: {
+		background: '#000000',
+		foreground: '#ffffff',
+		caret: '#ff00ff',
+		selection: '#0000ff',
+		gutterBackground: '#006666',
+		gutterForeground: 'rgb(50, 90, 150)',
+		lineHighlight: '#ffff00',
+	},
+	styles: makeStyles$1()
 });
 
-// Author: Konstantin Pschera
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#fcfcfc',
-        foreground: '#5c6166',
-        caret: '#ffaa33',
-        selection: '#036dd626',
-        gutterBackground: '#fcfcfc',
-        gutterForeground: '#8a919966',
-        lineHighlight: '#8a91991a',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#787b8099',
-        },
-        {
-            tag: tags.string,
-            color: '#86b300',
-        },
-        {
-            tag: tags.regexp,
-            color: '#4cbf99',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null],
-            color: '#ffaa33',
-        },
-        {
-            tag: tags.variableName,
-            color: '#5c6166',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#fa8d3e',
-        },
-        {
-            tag: [tags.keyword, tags.special(tags.brace)],
-            color: '#fa8d3e',
-        },
-        {
-            tag: tags.operator,
-            color: '#ed9366',
-        },
-        {
-            tag: tags.separator,
-            color: '#5c6166b3',
-        },
-        {
-            tag: tags.punctuation,
-            color: '#5c6166',
-        },
-        {
-            tag: [tags.definition(tags.propertyName), tags.function(tags.variableName)],
-            color: '#f2ae49',
-        },
-        {
-            tag: [tags.className, tags.definition(tags.typeName)],
-            color: '#22a4e6',
-        },
-        {
-            tag: [tags.tagName, tags.typeName, tags.self, tags.labelName],
-            color: '#55b4d4',
-        },
-        {
-            tag: tags.angleBracket,
-            color: '#55b4d480',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#f2ae49',
-        },
-    ],
-});
-
-// Author: unknown
-createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#15191EFA',
-        foreground: '#EEF2F7',
-        caret: '#C4C4C4',
-        selection: '#90B2D557',
-        gutterBackground: '#15191EFA',
-        gutterForeground: '#aaaaaa95',
-        lineHighlight: '#57575712',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#6E6E6E',
-        },
-        {
-            tag: [tags.string, tags.regexp, tags.special(tags.brace)],
-            color: '#5C81B3',
-        },
-        {
-            tag: tags.number,
-            color: '#C1E1B8',
-        },
-        {
-            tag: tags.bool,
-            color: '#53667D',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier, tags.function(tags.propertyName)],
-            color: '#A3D295',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.keyword, tags.moduleKeyword, tags.operatorKeyword, tags.operator],
-            color: '#697A8E',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.variableName, tags.attributeName],
-            color: '#708E67',
-        },
-        {
-            tag: [
-                tags.function(tags.variableName),
-                tags.definition(tags.propertyName),
-                tags.derefOperator,
-            ],
-            color: '#fff',
-        },
-        {
-            tag: tags.tagName,
-            color: '#A3D295',
-        },
-    ],
-});
-
-// Author: Michael Diolosa
-createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#2e241d',
-        foreground: '#BAAE9E',
-        caret: '#A7A7A7',
-        selection: '#DDF0FF33',
-        gutterBackground: '#28211C',
-        gutterForeground: '#BAAE9E90',
-        lineHighlight: '#FFFFFF08',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#666666',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace)],
-            color: '#54BE0D',
-        },
-        {
-            tag: tags.regexp,
-            color: '#E9C062',
-        },
-        {
-            tag: tags.number,
-            color: '#CF6A4C',
-        },
-        {
-            tag: [tags.keyword, tags.operator],
-            color: '#5EA6EA',
-        },
-        {
-            tag: tags.variableName,
-            color: '#7587A6',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#F9EE98',
-        },
-        {
-            tag: [tags.propertyName, tags.function(tags.variableName)],
-            color: '#937121',
-        },
-        {
-            tag: [tags.typeName, tags.angleBracket, tags.tagName],
-            color: '#9B859D',
-        },
-    ],
-});
-
-// Author: Joe Bergantine
-createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#3b2627',
-        foreground: '#E6E1C4',
-        caret: '#E6E1C4',
-        selection: '#16120E',
-        gutterBackground: '#3b2627',
-        gutterForeground: '#E6E1C490',
-        lineHighlight: '#1F1611',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#6B4E32',
-        },
-        {
-            tag: [tags.keyword, tags.operator, tags.derefOperator],
-            color: '#EF5D32',
-        },
-        {
-            tag: tags.className,
-            color: '#EFAC32',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [
-                tags.typeName,
-                tags.propertyName,
-                tags.function(tags.variableName),
-                tags.definition(tags.variableName),
-            ],
-            color: '#EFAC32',
-        },
-        {
-            tag: tags.definition(tags.typeName),
-            color: '#EFAC32',
-            fontWeight: 'bold',
-        },
-        {
-            tag: tags.labelName,
-            color: '#EFAC32',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.number, tags.bool],
-            color: '#6C99BB',
-        },
-        {
-            tag: [tags.variableName, tags.self],
-            color: '#7DAF9C',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace), tags.regexp],
-            color: '#D9D762',
-        },
-        {
-            tag: [tags.angleBracket, tags.tagName, tags.attributeName],
-            color: '#EFCB43',
-        },
-    ],
-});
-
-// Author: unknown
-const boysAndGirls = createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#000205',
-        foreground: '#FFFFFF',
-        caret: '#E60065',
-        selection: '#E60C6559',
-        gutterBackground: '#000205',
-        gutterForeground: '#ffffff90',
-        lineHighlight: '#4DD7FC1A',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#404040',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace), tags.regexp],
-            color: '#00D8FF',
-        },
-        {
-            tag: tags.number,
-            color: '#E62286',
-        },
-        {
-            tag: [tags.variableName, tags.attributeName, tags.self],
-            color: '#E62286',
-            fontWeight: 'bold',
-        },
-        {
-            tag: tags.function(tags.variableName),
-            color: '#fff',
-            fontWeight: 'bold',
-        },
-    ],
-});
-
-// Author: Fred LeBlanc
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#fff',
-        foreground: '#000',
-        caret: '#000',
-        selection: '#BDD5FC',
-        gutterBackground: '#fff',
-        gutterForeground: '#00000070',
-        lineHighlight: '#FFFBD1',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#BCC8BA',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace), tags.regexp],
-            color: '#5D90CD',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null],
-            color: '#46A609',
-        },
-        {
-            tag: tags.keyword,
-            color: '#AF956F',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#C52727',
-        },
-        {
-            tag: [tags.angleBracket, tags.tagName, tags.attributeName],
-            color: '#606060',
-        },
-        {
-            tag: tags.self,
-            color: '#000',
-        },
-    ],
-});
-
-// Author: Jacob Rus
-const cobalt = createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#00254b',
-        foreground: '#FFFFFF',
-        caret: '#FFFFFF',
-        selection: '#B36539BF',
-        gutterBackground: '#00254b',
-        gutterForeground: '#FFFFFF70',
-        lineHighlight: '#00000059',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#0088FF',
-        },
-        {
-            tag: tags.string,
-            color: '#3AD900',
-        },
-        {
-            tag: tags.regexp,
-            color: '#80FFC2',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null],
-            color: '#FF628C',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#FFEE80',
-        },
-        {
-            tag: tags.variableName,
-            color: '#CCCCCC',
-        },
-        {
-            tag: tags.self,
-            color: '#FF80E1',
-        },
-        {
-            tag: [
-                tags.className,
-                tags.definition(tags.propertyName),
-                tags.function(tags.variableName),
-                tags.definition(tags.typeName),
-                tags.labelName,
-            ],
-            color: '#FFDD00',
-        },
-        {
-            tag: [tags.keyword, tags.operator],
-            color: '#FF9D00',
-        },
-        {
-            tag: [tags.propertyName, tags.typeName],
-            color: '#80FFBB',
-        },
-        {
-            tag: tags.special(tags.brace),
-            color: '#EDEF7D',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#9EFFFF',
-        },
-        {
-            tag: tags.derefOperator,
-            color: '#fff',
-        },
-    ],
-});
-
-// Author: unknown
-const coolGlow = createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#060521',
-        foreground: '#E0E0E0',
-        caret: '#FFFFFFA6',
-        selection: '#122BBB',
-        gutterBackground: '#060521',
-        gutterForeground: '#E0E0E090',
-        lineHighlight: '#FFFFFF0F',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#AEAEAE',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace), tags.regexp],
-            color: '#8DFF8E',
-        },
-        {
-            tag: [
-                tags.className,
-                tags.definition(tags.propertyName),
-                tags.function(tags.variableName),
-                tags.function(tags.definition(tags.variableName)),
-                tags.definition(tags.typeName),
-            ],
-            color: '#A3EBFF',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null],
-            color: '#62E9BD',
-        },
-        {
-            tag: [tags.keyword, tags.operator],
-            color: '#2BF1DC',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#F8FBB1',
-        },
-        {
-            tag: [tags.variableName, tags.self],
-            color: '#B683CA',
-        },
-        {
-            tag: [tags.angleBracket, tags.tagName, tags.typeName, tags.propertyName],
-            color: '#60A4F1',
-        },
-        {
-            tag: tags.derefOperator,
-            color: '#E0E0E0',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#7BACCA',
-        },
-    ],
-});
-
-// Author: Zeno Rocha
-createTheme$2({
-    variant: 'dark',
-    settings: {
-        background: '#2d2f3f',
-        foreground: '#f8f8f2',
-        caret: '#f8f8f0',
-        selection: '#44475a',
-        gutterBackground: '#282a36',
-        gutterForeground: 'rgb(144, 145, 148)',
-        lineHighlight: '#44475a',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#6272a4',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace)],
-            color: '#f1fa8c',
-        },
-        {
-            tag: [tags.number, tags.self, tags.bool, tags.null],
-            color: '#bd93f9',
-        },
-        {
-            tag: [tags.keyword, tags.operator],
-            color: '#ff79c6',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.typeName],
-            color: '#8be9fd',
-        },
-        {
-            tag: tags.definition(tags.typeName),
-            color: '#f8f8f2',
-        },
-        {
-            tag: [
-                tags.className,
-                tags.definition(tags.propertyName),
-                tags.function(tags.variableName),
-                tags.attributeName,
-            ],
-            color: '#50fa7b',
-        },
-    ],
-});
-
-// Author: TextMate
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#FFFFFF',
-        foreground: '#000000',
-        caret: '#000000',
-        selection: '#80C7FF',
-        gutterBackground: '#FFFFFF',
-        gutterForeground: '#00000070',
-        lineHighlight: '#C1E2F8',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#AAAAAA',
-        },
-        {
-            tag: [tags.keyword, tags.operator, tags.typeName, tags.tagName, tags.propertyName],
-            color: '#2F6F9F',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.attributeName, tags.definition(tags.propertyName)],
-            color: '#4F9FD0',
-        },
-        {
-            tag: [tags.className, tags.string, tags.special(tags.brace)],
-            color: '#CF4F5F',
-        },
-        {
-            tag: tags.number,
-            color: '#CF4F5F',
-            fontWeight: 'bold',
-        },
-        {
-            tag: tags.variableName,
-            fontWeight: 'bold',
-        },
-    ],
-});
-
-// Author: Liviu Schera
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#f2f1f8',
-        foreground: '#0c006b',
-        caret: '#5c49e9',
-        selection: '#d5d1f2',
-        gutterBackground: '#f2f1f8',
-        gutterForeground: '#0c006b70',
-        lineHighlight: '#e1def3',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#9995b7',
-        },
-        {
-            tag: tags.keyword,
-            color: '#ff5792',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#ff5792',
-        },
-        {
-            tag: [tags.className, tags.tagName, tags.definition(tags.typeName)],
-            color: '#0094f0',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null, tags.special(tags.brace)],
-            color: '#5842ff',
-        },
-        {
-            tag: [tags.definition(tags.propertyName), tags.function(tags.variableName)],
-            color: '#0095a8',
-        },
-        {
-            tag: tags.typeName,
-            color: '#b3694d',
-        },
-        {
-            tag: [tags.propertyName, tags.variableName],
-            color: '#fa8900',
-        },
-        {
-            tag: tags.operator,
-            color: '#ff5792',
-        },
-        {
-            tag: tags.self,
-            color: '#e64100',
-        },
-        {
-            tag: [tags.string, tags.regexp],
-            color: '#00b368',
-        },
-        {
-            tag: [tags.paren, tags.bracket],
-            color: '#0431fa',
-        },
-        {
-            tag: tags.labelName,
-            color: '#00bdd6',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#e64100',
-        },
-        {
-            tag: tags.angleBracket,
-            color: '#9995b7',
-        },
-    ],
-});
-
-// Author: Rosé Pine
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#faf4ed',
-        foreground: '#575279',
-        caret: '#575279',
-        selection: '#6e6a8614',
-        gutterBackground: '#faf4ed',
-        gutterForeground: '#57527970',
-        lineHighlight: '#6e6a860d',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#9893a5',
-        },
-        {
-            tag: [tags.bool, tags.null],
-            color: '#286983',
-        },
-        {
-            tag: tags.number,
-            color: '#d7827e',
-        },
-        {
-            tag: tags.className,
-            color: '#d7827e',
-        },
-        {
-            tag: [tags.angleBracket, tags.tagName, tags.typeName],
-            color: '#56949f',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#907aa9',
-        },
-        {
-            tag: tags.punctuation,
-            color: '#797593',
-        },
-        {
-            tag: [tags.keyword, tags.modifier],
-            color: '#286983',
-        },
-        {
-            tag: [tags.string, tags.regexp],
-            color: '#ea9d34',
-        },
-        {
-            tag: tags.variableName,
-            color: '#d7827e',
-        },
-    ],
-});
-
-// Author: Kenneth Reitz
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#FFFFFF',
-        foreground: '#000000',
-        caret: '#000000',
-        selection: '#FFFD0054',
-        gutterBackground: '#FFFFFF',
-        gutterForeground: '#00000070',
-        lineHighlight: '#00000008',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#CFCFCF',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null],
-            color: '#E66C29',
-        },
-        {
-            tag: [
-                tags.className,
-                tags.definition(tags.propertyName),
-                tags.function(tags.variableName),
-                tags.labelName,
-                tags.definition(tags.typeName),
-            ],
-            color: '#2EB43B',
-        },
-        {
-            tag: tags.keyword,
-            color: '#D8B229',
-        },
-        {
-            tag: tags.operator,
-            color: '#4EA44E',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#925A47',
-        },
-        {
-            tag: tags.string,
-            color: '#704D3D',
-        },
-        {
-            tag: tags.typeName,
-            color: '#2F8996',
-        },
-        {
-            tag: [tags.variableName, tags.propertyName],
-            color: '#77ACB0',
-        },
-        {
-            tag: tags.self,
-            color: '#77ACB0',
-            fontWeight: 'bold',
-        },
-        {
-            tag: tags.regexp,
-            color: '#E3965E',
-        },
-        {
-            tag: [tags.tagName, tags.angleBracket],
-            color: '#BAA827',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#B06520',
-        },
-        {
-            tag: tags.derefOperator,
-            color: '#000',
-        },
-    ],
-});
-
-// Author: Ethan Schoonover
-createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#fef7e5',
-        foreground: '#586E75',
-        caret: '#000000',
-        selection: '#073642',
-        gutterBackground: '#fef7e5',
-        gutterForeground: '#586E7580',
-        lineHighlight: '#EEE8D5',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#93A1A1',
-        },
-        {
-            tag: tags.string,
-            color: '#2AA198',
-        },
-        {
-            tag: tags.regexp,
-            color: '#D30102',
-        },
-        {
-            tag: tags.number,
-            color: '#D33682',
-        },
-        {
-            tag: tags.variableName,
-            color: '#268BD2',
-        },
-        {
-            tag: [tags.keyword, tags.operator, tags.punctuation],
-            color: '#859900',
-        },
-        {
-            tag: [tags.definitionKeyword, tags.modifier],
-            color: '#073642',
-            fontWeight: 'bold',
-        },
-        {
-            tag: [tags.className, tags.self, tags.definition(tags.propertyName)],
-            color: '#268BD2',
-        },
-        {
-            tag: tags.function(tags.variableName),
-            color: '#268BD2',
-        },
-        {
-            tag: [tags.bool, tags.null],
-            color: '#B58900',
-        },
-        {
-            tag: tags.tagName,
-            color: '#268BD2',
-            fontWeight: 'bold',
-        },
-        {
-            tag: tags.angleBracket,
-            color: '#93A1A1',
-        },
-        {
-            tag: tags.attributeName,
-            color: '#93A1A1',
-        },
-        {
-            tag: tags.typeName,
-            color: '#859900',
-        },
-    ],
-});
-
-// Author: Chris Kempson
-const tomorrow = createTheme$2({
-    variant: 'light',
-    settings: {
-        background: '#FFFFFF',
-        foreground: '#4D4D4C',
-        caret: '#AEAFAD',
-        selection: '#D6D6D6',
-        gutterBackground: '#FFFFFF',
-        gutterForeground: '#4D4D4C80',
-        lineHighlight: '#EFEFEF',
-    },
-    styles: [
-        {
-            tag: tags.comment,
-            color: '#8E908C',
-        },
-        {
-            tag: [tags.variableName, tags.self, tags.propertyName, tags.attributeName, tags.regexp],
-            color: '#C82829',
-        },
-        {
-            tag: [tags.number, tags.bool, tags.null],
-            color: '#F5871F',
-        },
-        {
-            tag: [tags.className, tags.typeName, tags.definition(tags.typeName)],
-            color: '#C99E00',
-        },
-        {
-            tag: [tags.string, tags.special(tags.brace)],
-            color: '#718C00',
-        },
-        {
-            tag: tags.operator,
-            color: '#3E999F',
-        },
-        {
-            tag: [tags.definition(tags.propertyName), tags.function(tags.variableName)],
-            color: '#4271AE',
-        },
-        {
-            tag: tags.keyword,
-            color: '#8959A8',
-        },
-        {
-            tag: tags.derefOperator,
-            color: '#4D4D4C',
-        },
-    ],
-});
+function makeStyles$1() {
+	// Every tag listed at https://lezer.codemirror.net/docs/ref/#highlight.tags
+	var tags = [tags$1.comment, tags$1.lineComment, tags$1.blockComment, tags$1.docComment, tags$1.name, tags$1.variableName, tags$1.typeName, tags$1.tagName, tags$1.propertyName,
+	tags$1.attributeName, tags$1.className, tags$1.labelName, tags$1.namespace, tags$1.macroName, tags$1.literal, tags$1.string, tags$1.docString, tags$1.character, tags$1.attributeValue,
+	tags$1.number, tags$1.integer, tags$1.float, tags$1.bool, tags$1.regexp, tags$1.escape, tags$1.color, tags$1.url, tags$1.keyword, tags$1.self, tags$1.null, tags$1.atom, tags$1.unit, tags$1.modifier,
+	tags$1.operatorKeyword, tags$1.controlKeyword, tags$1.definitionKeyword, tags$1.moduleKeyword, tags$1.operator, tags$1.derefOperator, tags$1.arithmeticOperator,
+	tags$1.logicOperator, tags$1.bitwiseOperator, tags$1.compareOperator, tags$1.updateOperator, tags$1.definitionOperator, tags$1.typeOperator, tags$1.controlOperator,
+	tags$1.punctuation, tags$1.separator, tags$1.bracket, tags$1.angleBracket, tags$1.squareBracket, tags$1.paren, tags$1.brace, tags$1.content, tags$1.heading,
+	tags$1.heading1, tags$1.heading2, tags$1.heading3, tags$1.heading4, tags$1.heading5, tags$1.heading6, tags$1.contentSeparator, tags$1.list, tags$1.quote, tags$1.emphasis, tags$1.strong,
+	tags$1.link, tags$1.monospace, tags$1.strikethrough, tags$1.inserted, tags$1.deleted, tags$1.changed, tags$1.invalid, tags$1.meta, tags$1.documentMeta, tags$1.annotation, tags$1.processingInstruction,
+	tags$1.definition(tags$1.name), tags$1.constant(tags$1.name), tags$1.function(tags$1.name), tags$1.standard(tags$1.name), tags$1.local(tags$1.name), tags$1.special(tags$1.name)
+	];
+	const ZERO = 121;
+	const BUMP = 17;
+	var red = ZERO;
+	var green = ZERO;
+	var blue = ZERO;
+	var result = [];
+	for (var i = 0; i < tags.length; i++) {
+		var random = (red <= blue && green <= blue ? 0 : green <= red && green <= blue ? 1 : 2); // Math.floor(Math.random() * 3);
+		var rgb =
+			(random == 0 ? "00" : (red + 256).toString(16).substring(1, 3))
+			+
+			(random == 1 ? "00" : (green + 256).toString(16).substring(1, 3))
+			+
+			(random == 2 ? "00" : (blue + 256).toString(16).substring(1, 3));
+		result.push({ tag: tags[i], color: `#${rgb}` });
+		red += BUMP;
+		if (red > 255) {
+			red = ZERO;
+			green += BUMP;
+			if (green > 255) {
+				green = ZERO;
+				blue += BUMP;
+				if (blue > 255) blue = ZERO;
+			}
+		}
+	}
+	return result;
+}
 
 const createTheme = ({ variant, settings, styles }) => {
     const theme = EditorView.theme({
@@ -27238,9 +28614,990 @@ const createTheme = ({ variant, settings, styles }) => {
     const extension = [theme, syntaxHighlighting(highlightStyle)];
     return extension;
 };
-var createTheme$1 = createTheme;
 
-const blackSabbath = createTheme$1({
+// Author: William D. Neumann
+createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#200020',
+        foreground: '#D0D0FF',
+        caret: '#7070FF',
+        selection: '#80000080',
+        gutterBackground: '#200020',
+        gutterForeground: '#C080C0',
+        lineHighlight: '#80000040',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#404080',
+        },
+        {
+            tag: [tags$1.string, tags$1.regexp],
+            color: '#999999',
+        },
+        {
+            tag: tags$1.number,
+            color: '#7090B0',
+        },
+        {
+            tag: [tags$1.bool, tags$1.null],
+            color: '#8080A0',
+        },
+        {
+            tag: [tags$1.punctuation, tags$1.derefOperator],
+            color: '#805080',
+        },
+        {
+            tag: tags$1.keyword,
+            color: '#60B0FF',
+        },
+        {
+            tag: tags$1.definitionKeyword,
+            color: '#B0FFF0',
+        },
+        {
+            tag: tags$1.moduleKeyword,
+            color: '#60B0FF',
+        },
+        {
+            tag: tags$1.operator,
+            color: '#A0A0FF',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.self],
+            color: '#008080',
+        },
+        {
+            tag: tags$1.operatorKeyword,
+            color: '#A0A0FF',
+        },
+        {
+            tag: tags$1.controlKeyword,
+            color: '#80A0FF',
+        },
+        {
+            tag: tags$1.className,
+            color: '#70E080',
+        },
+        {
+            tag: [tags$1.function(tags$1.propertyName), tags$1.propertyName],
+            color: '#50A0A0',
+        },
+        {
+            tag: tags$1.tagName,
+            color: '#009090',
+        },
+        {
+            tag: tags$1.modifier,
+            color: '#B0FFF0',
+        },
+        {
+            tag: [tags$1.squareBracket, tags$1.attributeName],
+            color: '#D0D0FF',
+        },
+    ],
+});
+
+// Author: Konstantin Pschera
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#fcfcfc',
+        foreground: '#5c6166',
+        caret: '#ffaa33',
+        selection: '#036dd626',
+        gutterBackground: '#fcfcfc',
+        gutterForeground: '#8a919966',
+        lineHighlight: '#8a91991a',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#787b8099',
+        },
+        {
+            tag: tags$1.string,
+            color: '#86b300',
+        },
+        {
+            tag: tags$1.regexp,
+            color: '#4cbf99',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null],
+            color: '#ffaa33',
+        },
+        {
+            tag: tags$1.variableName,
+            color: '#5c6166',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#fa8d3e',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.special(tags$1.brace)],
+            color: '#fa8d3e',
+        },
+        {
+            tag: tags$1.operator,
+            color: '#ed9366',
+        },
+        {
+            tag: tags$1.separator,
+            color: '#5c6166b3',
+        },
+        {
+            tag: tags$1.punctuation,
+            color: '#5c6166',
+        },
+        {
+            tag: [tags$1.definition(tags$1.propertyName), tags$1.function(tags$1.variableName)],
+            color: '#f2ae49',
+        },
+        {
+            tag: [tags$1.className, tags$1.definition(tags$1.typeName)],
+            color: '#22a4e6',
+        },
+        {
+            tag: [tags$1.tagName, tags$1.typeName, tags$1.self, tags$1.labelName],
+            color: '#55b4d4',
+        },
+        {
+            tag: tags$1.angleBracket,
+            color: '#55b4d480',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#f2ae49',
+        },
+    ],
+});
+
+// Author: unknown
+createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#15191EFA',
+        foreground: '#EEF2F7',
+        caret: '#C4C4C4',
+        selection: '#90B2D557',
+        gutterBackground: '#15191EFA',
+        gutterForeground: '#aaaaaa95',
+        lineHighlight: '#57575712',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#6E6E6E',
+        },
+        {
+            tag: [tags$1.string, tags$1.regexp, tags$1.special(tags$1.brace)],
+            color: '#5C81B3',
+        },
+        {
+            tag: tags$1.number,
+            color: '#C1E1B8',
+        },
+        {
+            tag: tags$1.bool,
+            color: '#53667D',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier, tags$1.function(tags$1.propertyName)],
+            color: '#A3D295',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.moduleKeyword, tags$1.operatorKeyword, tags$1.operator],
+            color: '#697A8E',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.attributeName],
+            color: '#708E67',
+        },
+        {
+            tag: [
+                tags$1.function(tags$1.variableName),
+                tags$1.definition(tags$1.propertyName),
+                tags$1.derefOperator,
+            ],
+            color: '#fff',
+        },
+        {
+            tag: tags$1.tagName,
+            color: '#A3D295',
+        },
+    ],
+});
+
+// Author: Michael Diolosa
+createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#2e241d',
+        foreground: '#BAAE9E',
+        caret: '#A7A7A7',
+        selection: '#DDF0FF33',
+        gutterBackground: '#28211C',
+        gutterForeground: '#BAAE9E90',
+        lineHighlight: '#FFFFFF08',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#666666',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace)],
+            color: '#54BE0D',
+        },
+        {
+            tag: tags$1.regexp,
+            color: '#E9C062',
+        },
+        {
+            tag: tags$1.number,
+            color: '#CF6A4C',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator],
+            color: '#5EA6EA',
+        },
+        {
+            tag: tags$1.variableName,
+            color: '#7587A6',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#F9EE98',
+        },
+        {
+            tag: [tags$1.propertyName, tags$1.function(tags$1.variableName)],
+            color: '#937121',
+        },
+        {
+            tag: [tags$1.typeName, tags$1.angleBracket, tags$1.tagName],
+            color: '#9B859D',
+        },
+    ],
+});
+
+// Author: Joe Bergantine
+createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#3b2627',
+        foreground: '#E6E1C4',
+        caret: '#E6E1C4',
+        selection: '#16120E',
+        gutterBackground: '#3b2627',
+        gutterForeground: '#E6E1C490',
+        lineHighlight: '#1F1611',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#6B4E32',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator, tags$1.derefOperator],
+            color: '#EF5D32',
+        },
+        {
+            tag: tags$1.className,
+            color: '#EFAC32',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [
+                tags$1.typeName,
+                tags$1.propertyName,
+                tags$1.function(tags$1.variableName),
+                tags$1.definition(tags$1.variableName),
+            ],
+            color: '#EFAC32',
+        },
+        {
+            tag: tags$1.definition(tags$1.typeName),
+            color: '#EFAC32',
+            fontWeight: 'bold',
+        },
+        {
+            tag: tags$1.labelName,
+            color: '#EFAC32',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool],
+            color: '#6C99BB',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.self],
+            color: '#7DAF9C',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace), tags$1.regexp],
+            color: '#D9D762',
+        },
+        {
+            tag: [tags$1.angleBracket, tags$1.tagName, tags$1.attributeName],
+            color: '#EFCB43',
+        },
+    ],
+});
+
+// Author: unknown
+const boysAndGirls = createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#000205',
+        foreground: '#FFFFFF',
+        caret: '#E60065',
+        selection: '#E60C6559',
+        gutterBackground: '#000205',
+        gutterForeground: '#ffffff90',
+        lineHighlight: '#4DD7FC1A',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#404040',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace), tags$1.regexp],
+            color: '#00D8FF',
+        },
+        {
+            tag: tags$1.number,
+            color: '#E62286',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.attributeName, tags$1.self],
+            color: '#E62286',
+            fontWeight: 'bold',
+        },
+        {
+            tag: tags$1.function(tags$1.variableName),
+            color: '#fff',
+            fontWeight: 'bold',
+        },
+    ],
+});
+
+// Author: Fred LeBlanc
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#fff',
+        foreground: '#000',
+        caret: '#000',
+        selection: '#BDD5FC',
+        gutterBackground: '#fff',
+        gutterForeground: '#00000070',
+        lineHighlight: '#FFFBD1',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#BCC8BA',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace), tags$1.regexp],
+            color: '#5D90CD',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null],
+            color: '#46A609',
+        },
+        {
+            tag: tags$1.keyword,
+            color: '#AF956F',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#C52727',
+        },
+        {
+            tag: [tags$1.angleBracket, tags$1.tagName, tags$1.attributeName],
+            color: '#606060',
+        },
+        {
+            tag: tags$1.self,
+            color: '#000',
+        },
+    ],
+});
+
+// Author: Jacob Rus
+const cobalt = createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#00254b',
+        foreground: '#FFFFFF',
+        caret: '#FFFFFF',
+        selection: '#B36539BF',
+        gutterBackground: '#00254b',
+        gutterForeground: '#FFFFFF70',
+        lineHighlight: '#00000059',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#0088FF',
+        },
+        {
+            tag: tags$1.string,
+            color: '#3AD900',
+        },
+        {
+            tag: tags$1.regexp,
+            color: '#80FFC2',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null],
+            color: '#FF628C',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#FFEE80',
+        },
+        {
+            tag: tags$1.variableName,
+            color: '#CCCCCC',
+        },
+        {
+            tag: tags$1.self,
+            color: '#FF80E1',
+        },
+        {
+            tag: [
+                tags$1.className,
+                tags$1.definition(tags$1.propertyName),
+                tags$1.function(tags$1.variableName),
+                tags$1.definition(tags$1.typeName),
+                tags$1.labelName,
+            ],
+            color: '#FFDD00',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator],
+            color: '#FF9D00',
+        },
+        {
+            tag: [tags$1.propertyName, tags$1.typeName],
+            color: '#80FFBB',
+        },
+        {
+            tag: tags$1.special(tags$1.brace),
+            color: '#EDEF7D',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#9EFFFF',
+        },
+        {
+            tag: tags$1.derefOperator,
+            color: '#fff',
+        },
+    ],
+});
+
+// Author: unknown
+const coolGlow = createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#060521',
+        foreground: '#E0E0E0',
+        caret: '#FFFFFFA6',
+        selection: '#122BBB',
+        gutterBackground: '#060521',
+        gutterForeground: '#E0E0E090',
+        lineHighlight: '#FFFFFF0F',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#AEAEAE',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace), tags$1.regexp],
+            color: '#8DFF8E',
+        },
+        {
+            tag: [
+                tags$1.className,
+                tags$1.definition(tags$1.propertyName),
+                tags$1.function(tags$1.variableName),
+                tags$1.function(tags$1.definition(tags$1.variableName)),
+                tags$1.definition(tags$1.typeName),
+            ],
+            color: '#A3EBFF',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null],
+            color: '#62E9BD',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator],
+            color: '#2BF1DC',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#F8FBB1',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.self],
+            color: '#B683CA',
+        },
+        {
+            tag: [tags$1.angleBracket, tags$1.tagName, tags$1.typeName, tags$1.propertyName],
+            color: '#60A4F1',
+        },
+        {
+            tag: tags$1.derefOperator,
+            color: '#E0E0E0',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#7BACCA',
+        },
+    ],
+});
+
+// Author: Zeno Rocha
+createTheme({
+    variant: 'dark',
+    settings: {
+        background: '#2d2f3f',
+        foreground: '#f8f8f2',
+        caret: '#f8f8f0',
+        selection: '#44475a',
+        gutterBackground: '#282a36',
+        gutterForeground: 'rgb(144, 145, 148)',
+        lineHighlight: '#44475a',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#6272a4',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace)],
+            color: '#f1fa8c',
+        },
+        {
+            tag: [tags$1.number, tags$1.self, tags$1.bool, tags$1.null],
+            color: '#bd93f9',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator],
+            color: '#ff79c6',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.typeName],
+            color: '#8be9fd',
+        },
+        {
+            tag: tags$1.definition(tags$1.typeName),
+            color: '#f8f8f2',
+        },
+        {
+            tag: [
+                tags$1.className,
+                tags$1.definition(tags$1.propertyName),
+                tags$1.function(tags$1.variableName),
+                tags$1.attributeName,
+            ],
+            color: '#50fa7b',
+        },
+    ],
+});
+
+// Author: TextMate
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#FFFFFF',
+        foreground: '#000000',
+        caret: '#000000',
+        selection: '#80C7FF',
+        gutterBackground: '#FFFFFF',
+        gutterForeground: '#00000070',
+        lineHighlight: '#C1E2F8',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#AAAAAA',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator, tags$1.typeName, tags$1.tagName, tags$1.propertyName],
+            color: '#2F6F9F',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.attributeName, tags$1.definition(tags$1.propertyName)],
+            color: '#4F9FD0',
+        },
+        {
+            tag: [tags$1.className, tags$1.string, tags$1.special(tags$1.brace)],
+            color: '#CF4F5F',
+        },
+        {
+            tag: tags$1.number,
+            color: '#CF4F5F',
+            fontWeight: 'bold',
+        },
+        {
+            tag: tags$1.variableName,
+            fontWeight: 'bold',
+        },
+    ],
+});
+
+// Author: Liviu Schera
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#f2f1f8',
+        foreground: '#0c006b',
+        caret: '#5c49e9',
+        selection: '#d5d1f2',
+        gutterBackground: '#f2f1f8',
+        gutterForeground: '#0c006b70',
+        lineHighlight: '#e1def3',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#9995b7',
+        },
+        {
+            tag: tags$1.keyword,
+            color: '#ff5792',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#ff5792',
+        },
+        {
+            tag: [tags$1.className, tags$1.tagName, tags$1.definition(tags$1.typeName)],
+            color: '#0094f0',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null, tags$1.special(tags$1.brace)],
+            color: '#5842ff',
+        },
+        {
+            tag: [tags$1.definition(tags$1.propertyName), tags$1.function(tags$1.variableName)],
+            color: '#0095a8',
+        },
+        {
+            tag: tags$1.typeName,
+            color: '#b3694d',
+        },
+        {
+            tag: [tags$1.propertyName, tags$1.variableName],
+            color: '#fa8900',
+        },
+        {
+            tag: tags$1.operator,
+            color: '#ff5792',
+        },
+        {
+            tag: tags$1.self,
+            color: '#e64100',
+        },
+        {
+            tag: [tags$1.string, tags$1.regexp],
+            color: '#00b368',
+        },
+        {
+            tag: [tags$1.paren, tags$1.bracket],
+            color: '#0431fa',
+        },
+        {
+            tag: tags$1.labelName,
+            color: '#00bdd6',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#e64100',
+        },
+        {
+            tag: tags$1.angleBracket,
+            color: '#9995b7',
+        },
+    ],
+});
+
+// Author: Rosé Pine
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#faf4ed',
+        foreground: '#575279',
+        caret: '#575279',
+        selection: '#6e6a8614',
+        gutterBackground: '#faf4ed',
+        gutterForeground: '#57527970',
+        lineHighlight: '#6e6a860d',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#9893a5',
+        },
+        {
+            tag: [tags$1.bool, tags$1.null],
+            color: '#286983',
+        },
+        {
+            tag: tags$1.number,
+            color: '#d7827e',
+        },
+        {
+            tag: tags$1.className,
+            color: '#d7827e',
+        },
+        {
+            tag: [tags$1.angleBracket, tags$1.tagName, tags$1.typeName],
+            color: '#56949f',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#907aa9',
+        },
+        {
+            tag: tags$1.punctuation,
+            color: '#797593',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.modifier],
+            color: '#286983',
+        },
+        {
+            tag: [tags$1.string, tags$1.regexp],
+            color: '#ea9d34',
+        },
+        {
+            tag: tags$1.variableName,
+            color: '#d7827e',
+        },
+    ],
+});
+
+// Author: Kenneth Reitz
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#FFFFFF',
+        foreground: '#000000',
+        caret: '#000000',
+        selection: '#FFFD0054',
+        gutterBackground: '#FFFFFF',
+        gutterForeground: '#00000070',
+        lineHighlight: '#00000008',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#CFCFCF',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null],
+            color: '#E66C29',
+        },
+        {
+            tag: [
+                tags$1.className,
+                tags$1.definition(tags$1.propertyName),
+                tags$1.function(tags$1.variableName),
+                tags$1.labelName,
+                tags$1.definition(tags$1.typeName),
+            ],
+            color: '#2EB43B',
+        },
+        {
+            tag: tags$1.keyword,
+            color: '#D8B229',
+        },
+        {
+            tag: tags$1.operator,
+            color: '#4EA44E',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#925A47',
+        },
+        {
+            tag: tags$1.string,
+            color: '#704D3D',
+        },
+        {
+            tag: tags$1.typeName,
+            color: '#2F8996',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.propertyName],
+            color: '#77ACB0',
+        },
+        {
+            tag: tags$1.self,
+            color: '#77ACB0',
+            fontWeight: 'bold',
+        },
+        {
+            tag: tags$1.regexp,
+            color: '#E3965E',
+        },
+        {
+            tag: [tags$1.tagName, tags$1.angleBracket],
+            color: '#BAA827',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#B06520',
+        },
+        {
+            tag: tags$1.derefOperator,
+            color: '#000',
+        },
+    ],
+});
+
+// Author: Ethan Schoonover
+createTheme({
+    variant: 'light',
+    settings: {
+        background: '#fef7e5',
+        foreground: '#586E75',
+        caret: '#000000',
+        selection: '#073642',
+        gutterBackground: '#fef7e5',
+        gutterForeground: '#586E7580',
+        lineHighlight: '#EEE8D5',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#93A1A1',
+        },
+        {
+            tag: tags$1.string,
+            color: '#2AA198',
+        },
+        {
+            tag: tags$1.regexp,
+            color: '#D30102',
+        },
+        {
+            tag: tags$1.number,
+            color: '#D33682',
+        },
+        {
+            tag: tags$1.variableName,
+            color: '#268BD2',
+        },
+        {
+            tag: [tags$1.keyword, tags$1.operator, tags$1.punctuation],
+            color: '#859900',
+        },
+        {
+            tag: [tags$1.definitionKeyword, tags$1.modifier],
+            color: '#073642',
+            fontWeight: 'bold',
+        },
+        {
+            tag: [tags$1.className, tags$1.self, tags$1.definition(tags$1.propertyName)],
+            color: '#268BD2',
+        },
+        {
+            tag: tags$1.function(tags$1.variableName),
+            color: '#268BD2',
+        },
+        {
+            tag: [tags$1.bool, tags$1.null],
+            color: '#B58900',
+        },
+        {
+            tag: tags$1.tagName,
+            color: '#268BD2',
+            fontWeight: 'bold',
+        },
+        {
+            tag: tags$1.angleBracket,
+            color: '#93A1A1',
+        },
+        {
+            tag: tags$1.attributeName,
+            color: '#93A1A1',
+        },
+        {
+            tag: tags$1.typeName,
+            color: '#859900',
+        },
+    ],
+});
+
+// Author: Chris Kempson
+const tomorrow = createTheme({
+    variant: 'light',
+    settings: {
+        background: '#FFFFFF',
+        foreground: '#4D4D4C',
+        caret: '#AEAFAD',
+        selection: '#D6D6D6',
+        gutterBackground: '#FFFFFF',
+        gutterForeground: '#4D4D4C80',
+        lineHighlight: '#EFEFEF',
+    },
+    styles: [
+        {
+            tag: tags$1.comment,
+            color: '#8E908C',
+        },
+        {
+            tag: [tags$1.variableName, tags$1.self, tags$1.propertyName, tags$1.attributeName, tags$1.regexp],
+            color: '#C82829',
+        },
+        {
+            tag: [tags$1.number, tags$1.bool, tags$1.null],
+            color: '#F5871F',
+        },
+        {
+            tag: [tags$1.className, tags$1.typeName, tags$1.definition(tags$1.typeName)],
+            color: '#C99E00',
+        },
+        {
+            tag: [tags$1.string, tags$1.special(tags$1.brace)],
+            color: '#718C00',
+        },
+        {
+            tag: tags$1.operator,
+            color: '#3E999F',
+        },
+        {
+            tag: [tags$1.definition(tags$1.propertyName), tags$1.function(tags$1.variableName)],
+            color: '#4271AE',
+        },
+        {
+            tag: tags$1.keyword,
+            color: '#8959A8',
+        },
+        {
+            tag: tags$1.derefOperator,
+            color: '#4D4D4C',
+        },
+    ],
+});
+
+const blackSabbath = createTheme$2({
 	variant: 'dark',
 	settings: {
 		background: '#000000',
@@ -27259,14 +29616,14 @@ const blackSabbath = createTheme$1({
 
 function makeStyles() {
 
-	var tags$1 = [tags.comment, tags.lineComment, tags.blockComment, tags.docComment, tags.name, tags.variableName, tags.typeName, tags.tagName, tags.propertyName,
-	tags.attributeName, tags.className, tags.labelName, tags.namespace, tags.macroName, tags.literal, tags.string, tags.docString, tags.character, tags.attributeValue,
-	tags.number, tags.integer, tags.float, tags.bool, tags.regexp, tags.escape, tags.color, tags.url, tags.keyword, tags.self, tags.null, tags.atom, tags.unit, tags.modifier,
-	tags.operatorKeyword, tags.controlKeyword, tags.definitionKeyword, tags.moduleKeyword, tags.operator, tags.derefOperator, tags.arithmeticOperator,
-	tags.logicOperator, tags.bitwiseOperator, tags.compareOperator, tags.updateOperator, tags.definitionOperator, tags.typeOperator, tags.controlOperator,
-	tags.punctuation, tags.separator, tags.bracket, tags.angleBracket, tags.squareBracket, tags.paren, tags.brace, tags.content, tags.heading,
-	tags.heading1, tags.heading2, tags.heading3, tags.heading4, tags.heading5, tags.heading6, tags.contentSeparator, tags.list, tags.quote, tags.emphasis, tags.strong,
-	tags.link, tags.monospace, tags.strikethrough, tags.inserted, tags.deleted, tags.changed, tags.invalid, tags.meta, tags.documentMeta, tags.annotation, tags.processingInstruction];
+	var tags = [tags$1.comment, tags$1.lineComment, tags$1.blockComment, tags$1.docComment, tags$1.name, tags$1.variableName, tags$1.typeName, tags$1.tagName, tags$1.propertyName,
+	tags$1.attributeName, tags$1.className, tags$1.labelName, tags$1.namespace, tags$1.macroName, tags$1.literal, tags$1.string, tags$1.docString, tags$1.character, tags$1.attributeValue,
+	tags$1.number, tags$1.integer, tags$1.float, tags$1.bool, tags$1.regexp, tags$1.escape, tags$1.color, tags$1.url, tags$1.keyword, tags$1.self, tags$1.null, tags$1.atom, tags$1.unit, tags$1.modifier,
+	tags$1.operatorKeyword, tags$1.controlKeyword, tags$1.definitionKeyword, tags$1.moduleKeyword, tags$1.operator, tags$1.derefOperator, tags$1.arithmeticOperator,
+	tags$1.logicOperator, tags$1.bitwiseOperator, tags$1.compareOperator, tags$1.updateOperator, tags$1.definitionOperator, tags$1.typeOperator, tags$1.controlOperator,
+	tags$1.punctuation, tags$1.separator, tags$1.bracket, tags$1.angleBracket, tags$1.squareBracket, tags$1.paren, tags$1.brace, tags$1.content, tags$1.heading,
+	tags$1.heading1, tags$1.heading2, tags$1.heading3, tags$1.heading4, tags$1.heading5, tags$1.heading6, tags$1.contentSeparator, tags$1.list, tags$1.quote, tags$1.emphasis, tags$1.strong,
+	tags$1.link, tags$1.monospace, tags$1.strikethrough, tags$1.inserted, tags$1.deleted, tags$1.changed, tags$1.invalid, tags$1.meta, tags$1.documentMeta, tags$1.annotation, tags$1.processingInstruction];
 
 	const ZERO = 121;
 	const BUMP = 17;
@@ -27274,7 +29631,7 @@ function makeStyles() {
 	var green = ZERO;
 	var blue = ZERO;
 	var result = [];
-	for (var i = 0; i < tags$1.length; i++) {
+	for (var i = 0; i < tags.length; i++) {
 		var random = (red <= blue && green <= blue ? 0 : green <= red && green <= blue ? 1 : 2); // Math.floor(Math.random() * 3);
 		var rgb =
 			(random == 0 ? "00" : (red + 256).toString(16).substring(1, 3))
@@ -27282,7 +29639,7 @@ function makeStyles() {
 			(random == 1 ? "00" : (green + 256).toString(16).substring(1, 3))
 			+
 			(random == 2 ? "00" : (blue + 256).toString(16).substring(1, 3));
-		result.push({ tag: tags$1[i], color: `#${rgb}` });
+		result.push({ tag: tags[i], color: `#${rgb}` });
 		red += BUMP;
 		if (red > 255) {
 			red = ZERO;
@@ -27297,4 +29654,4 @@ function makeStyles() {
 	return result;
 }
 
-export { EditorView, Rockstar, basicSetup, blackSabbath, boysAndGirls, cobalt, coolGlow, tomorrow };
+export { EditorView, KitchenSinkLanguageSupport, RockstarLanguageSupport, basicSetup, blackSabbath, boysAndGirls, cobalt, coolGlow, kitchenSink, tomorrow };

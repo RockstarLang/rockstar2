@@ -1,5 +1,5 @@
 import { tags as t } from '@lezer/highlight';
-import createTheme from '../create-theme.js';
+import createTheme from './create-theme.js';
 export const blackSabbath = createTheme({
 	variant: 'dark',
 	settings: {

@@ -1,4 +1,4 @@
-import { EditorView, basicSetup, Rockstar, cobalt, blackSabbath  } from './rockstar-editor.js';
+import { EditorView, basicSetup, Rockstar, cobalt, blackSabbath, RockstarLanguageSupport, KitchenSinkLanguageSupport, kitchenSink  } from './rockstar-editor.js';
 
 function handleMessageFromWorker(message) {
 	if (message.data.editorId) {
@@ -23,14 +23,14 @@ function executeProgram(program, editorId) {
 	worker.postMessage({ program: program, editorId: editorId });
 }
 
-function replaceElementWithEditor(element) {
-	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, blackSabbath, Rockstar()] });
+function replaceElementWithEditor(element, languageSupport, theme) {
+	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, languageSupport(), theme] });
 	element.parentNode.insertBefore(view.dom, element);
 	element.style.display = "none";
 	return view;
 }
 
-var editorId = 90125;
+var editorId = 1;
 document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	editorId++;
 	let output = document.createElement("pre");
@@ -40,7 +40,7 @@ document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	button.id = `rockstar-button-${editorId}`;
 	output.id = `rockstar-output-${editorId}`;
 	button.innerText = "Rock";
-	var editor = replaceElementWithEditor(el);
+	var editor = replaceElementWithEditor(el, RockstarLanguageSupport, blackSabbath);
 	el.parentNode.insertBefore(button, el);
 	el.parentNode.insertBefore(output, el);
 	button.onclick = () => {
@@ -56,4 +56,9 @@ document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	};
 
 });
+
+document.querySelectorAll(('code.language-kitchen-sink')).forEach((el) => {
+	replaceElementWithEditor(el, KitchenSinkLanguageSupport, kitchenSink);
+});
+
 

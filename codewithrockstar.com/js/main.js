@@ -1,4 +1,10 @@
-import { EditorView, basicSetup, Rockstar, cobalt, blackSabbath, RockstarLanguageSupport, KitchenSinkLanguageSupport, kitchenSink  } from './rockstar-editor.js';
+import {
+	EditorView, basicSetup,
+	// Language definitions
+	Rockstar, KitchenSink,
+	// themes
+	kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight
+} from './codemirror/editor.js';
 
 function handleMessageFromWorker(message) {
 	if (message.data.editorId) {
@@ -40,7 +46,7 @@ document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	button.id = `rockstar-button-${editorId}`;
 	output.id = `rockstar-output-${editorId}`;
 	button.innerText = "Rock";
-	var editor = replaceElementWithEditor(el, RockstarLanguageSupport, blackSabbath);
+	var editor = replaceElementWithEditor(el, Rockstar, blackSabbath);
 	el.parentNode.insertBefore(button, el);
 	el.parentNode.insertBefore(output, el);
 	button.onclick = () => {
@@ -58,7 +64,7 @@ document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 });
 
 document.querySelectorAll(('code.language-kitchen-sink')).forEach((el) => {
-	replaceElementWithEditor(el, KitchenSinkLanguageSupport, kitchenSink);
+	replaceElementWithEditor(el, KitchenSink, kitchenSink);
 });
 
 

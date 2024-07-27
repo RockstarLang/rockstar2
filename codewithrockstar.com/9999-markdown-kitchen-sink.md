@@ -1,6 +1,6 @@
 ---
 title: Markdown kitchen sink
-nav_order: Tests Markdown
+nav_order: "9999"
 layout: home
 # nav_exclude: true
 ---

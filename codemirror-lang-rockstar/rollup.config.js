@@ -1,12 +1,15 @@
 import typescript from "rollup-plugin-ts"
-import {lezer} from "@lezer/generator/rollup"
+import { nodeResolve } from "@rollup/plugin-node-resolve"
+import { lezer } from "@lezer/generator/rollup"
 
-export default {
-  input: "src/index.ts",
-  external: id => id != "tslib" && !/^(\.?\/|\w:)/.test(id),
-  output: [
-    {file: "dist/index.cjs", format: "cjs"},
-    {dir: "./dist", format: "es"}
-  ],
-  plugins: [lezer(), typescript()]
-}
+export default [
+	{
+		input: "src/editor.mjs",
+		//external: id => id != "tslib" && !/^(\.?\/|\w:)/.test(id),
+		output: [
+			// { file: "dist/editor.cjs", format: "cjs" },
+			{ dir: "../codewithrockstar.com/js/codemirror", format: "es" }
+		],
+		plugins: [lezer(), nodeResolve(), typescript()]
+	}
+]

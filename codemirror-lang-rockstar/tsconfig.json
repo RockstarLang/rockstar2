@@ -7,5 +7,5 @@
     "declaration": true,
     "moduleResolution": "node"
   },
-  "include": ["src/*.ts", "src/grammars/syntax.grammar.d.ts"]
+  "include": ["src/*.ts", "src/grammars/rockstar.grammar.d.ts"]
 }

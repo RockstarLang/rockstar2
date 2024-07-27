@@ -1,5 +1,5 @@
 import { tags as t } from '@lezer/highlight';
-import createTheme from './create-theme.js';
+import createTheme from '../create-theme';
 export const kitchenSink = createTheme({
 	variant: 'dark',
 	settings: {
@@ -26,20 +26,20 @@ function makeStyles() {
 	t.link, t.monospace, t.strikethrough, t.inserted, t.deleted, t.changed, t.invalid, t.meta, t.documentMeta, t.annotation, t.processingInstruction,
 	t.definition(t.name), t.constant(t.name), t.function(t.name), t.standard(t.name), t.local(t.name), t.special(t.name)
 	];
-	const ZERO = 121;
-	const BUMP = 17;
+	const ZERO = 0x33;
+	const BUMP = 0x66;
 	var red = ZERO;
 	var green = ZERO;
 	var blue = ZERO;
 	var result = [];
 	for (var i = 0; i < tags.length; i++) {
-		var random = (red <= blue && green <= blue ? 0 : green <= red && green <= blue ? 1 : 2); // Math.floor(Math.random() * 3);
+		// var random = (red <= blue && green <= blue ? 0 : green <= red && green <= blue ? 1 : 2); // Math.floor(Math.random() * 3);
 		var rgb =
-			(random == 0 ? "00" : (red + 256).toString(16).substring(1, 3))
+			(red + 256).toString(16).substring(1, 3)
 			+
-			(random == 1 ? "00" : (green + 256).toString(16).substring(1, 3))
+			(green + 256).toString(16).substring(1, 3)
 			+
-			(random == 2 ? "00" : (blue + 256).toString(16).substring(1, 3));
+			(blue + 256).toString(16).substring(1, 3);
 		result.push({ tag: tags[i], color: `#${rgb}` })
 		red += BUMP;
 		if (red > 255) {

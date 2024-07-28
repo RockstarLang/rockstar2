@@ -4,8 +4,15 @@
 	"description": "Rockstar language support for CodeMirror",
 	"watch": {
 		"prepare": {
-			"patterns": "src",
-			"extensions": "grammar,ts"
+			"patterns": [ "src" ],
+
+			"ignore": [
+				"src/grammars/kitchen-sink.js",
+				"src/grammars/kitchen-sink.terms.js",
+				"src/grammars/rockstar.js",
+				"src/grammars/rockstar.terms.js"
+			],
+			"extensions": "js,grammar,ts"
 		}
 	},
 	"scripts": {

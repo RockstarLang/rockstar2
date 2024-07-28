@@ -6,6 +6,11 @@ nav_order: "1000"
 
 Run some Rockstar:
 
+```rockstar
+say "hello world"
+Johnny B. Goode met JRR Tolkein.
+```
+
 Well... do you wanna get rocked?
 
 * 01 Getting Started

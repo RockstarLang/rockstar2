@@ -15,6 +15,12 @@ Say it (prints: 1767.32443244)
 The variable says string literals can contain comments [see?]
 Say it (prints: string literals can contain comments [see?])
 
+Simple is "simple". Print it (prints: simple)
+Johnny B. Goode is a rock'n'roll pioneer.
+Print it. (prints: 197)
+He is dead now.
+Print it. (prints: 43)
+
 The number is 12345
 The variable is the number
 Say it (prints: 36)

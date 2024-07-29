@@ -279,7 +279,8 @@ _isnt <Operator> -memoize
 		{ Operator.NotEquals }
 
 variable <Variable>
-	= i:pronoun { new Pronoun(i) }
+	= i:(his _ !keyword identifier) { new CommonVariable(i) }
+	/ i:pronoun { new Pronoun(i) }
 	/ i:proper_variable { new ProperVariable(i) }
 	/ i:(the _ identifier) { new CommonVariable(i) }
 	/ !keyword i:identifier { new SimpleVariable(i) }
@@ -540,7 +541,8 @@ return = 'return' !letter / 'giving' !letter / 'give' !letter / 'send' !letter
 takes = 'takes' !letter / 'wants' !letter
 says = 'say' !letter / 'says' !letter / 'said' !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter / 'you' !letter / 'me' !letter / 'i' !letter
-the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter
+his = 'his' !letter / 'her' !letter
+the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter / 'their' !letter
 more = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
 less = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
 as_great = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter

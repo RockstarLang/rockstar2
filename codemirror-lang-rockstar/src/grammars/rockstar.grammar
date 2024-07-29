@@ -1,10 +1,11 @@
 @external propSource highlighting from "./highlight.js"
 
-// @top Program {
-// 	block*
-// }
+ @top Program {
+ 	block* |
+	EOF+ EOF
+}
 
-@top block {
+block {
  	(statement EOS)+ statement
 	| statement
 }
@@ -42,7 +43,7 @@ VariableName { Pronoun | variable }
 	Keyword { output | debug | print | listen | to | 'Let' }
 	EOS { $[\r\n] }
 	//EOL { _* $[\r\n]+ }
-	//EOF { @eof }
+	EOF { @eof }
 }
 
 @external tokens Constant from "./tokens" { Constant }

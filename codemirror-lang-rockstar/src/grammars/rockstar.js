@@ -4,16 +4,16 @@ import {Constant, Pronoun, output, listen, to} from "./tokens"
 import {highlighting} from "./highlight.js"
 export const parser = LRParser.deserialize({
   version: 14,
-  states: "#SOYQ!ZOOOnQ!cO'#CmOyQTO'#CoOOQO'#Cd'#CdO!UQPO'#CsOOQO'#Cl'#ClQ!ZQPO'#CfOYQ!ZOOO!`QPO,59XOOQO'#Cr'#CrOOQO,59Z,59ZO!eQUO,59_OOQ!Y,59Q,59QOOQ!Y-E6d-E6dOOQO1G.s1G.sOOQO1G.y1G.y",
-  stateData: "!{~OROSSOS~OQRO[QO]PObROdQOeQO~O^WOXaXZaX~OPXOUXOVXO~OhZO~OX[O~Ob^O~OPXOUXOVXOi_O~OUViRSXR~",
-  goto: "!RhPPPPPPPPiPmPPPPPswPwPP{wTSOVQVOR]VTUOVTTOVQYQR_Z",
-  nodeNames: "⚠ Constant Pronoun LineComment BlockComment block Number String VariableName EOS",
-  maxTerm: 25,
+  states: "$UQnQ!ZOOOuQ#mO'#CqO!dQTO'#CsOOQO'#Cd'#CdO!oQPO'#CwOOQ!Y'#Cp'#CpO!tQ!ZO'#CoOYQ!ZO'#CoOOQ!Y'#Cg'#CgQYQ!ZOOQOQO'#Ci'#CiO#`QPOOO#eQPO,59]OOQ!Y'#Cv'#CvOOQ!Y,59_,59_O#jQUO,59cOOQ!Y,59S,59SO#xQ!ZO,59ZOOQ!Y-E6f-E6fOOQ!Y-E6e-E6eOOQO-E6g-E6gOOQ!Y1G.w1G.wOOQ!Y1G.}1G.}P$dQPO'#Ch",
+  stateData: "$q~OROSSOS~OQRO_QO`POfROhQOiQO~OYYO~PYOa[OQeXXeX^eX_eX`eXfeXheXieX~OP]OU]OV]O~Ol_O~OX`OQcX^cX_cX`cXfcXhcXicX~OYYO~OfeO~OP]OU]OV]OmfO~OX`OQca^ca_ca`cafcahcaica~OX`O~OUVmRSXR~",
+  goto: "!mlPPPPPPPPmPPrx!PPPPPP!V!Z!bP!bPP!g!bVSOVXQXORcXSVOXRbVQZORdZTWOXSUOXRaVVTOVXQ^QRf_",
+  nodeNames: "⚠ Constant Pronoun LineComment BlockComment Program Number String VariableName EOS EOF",
+  maxTerm: 29,
   propSources: [highlighting],
   skippedNodes: [0,3,4],
-  repeatNodeCount: 1,
-  tokenData: "4a~RjOY!sYZ#bZ]!s]^#i^r!srs#}st&Utx!sxy&py!Q!s!Q![(w![!}!s!}#O)c#O#W!s#W#X+P#X#]!s#]#^-i#^#k!s#k#l.g#l#m2_#m#n2_#n#o!s#o#p2s#p;'S!s;'S;=`#[<%lO!sQ!vTOY!sYZ#VZ;'S!s;'S;=`#[<%lO!sQ#[OiQQ#_P;=`<%l!s~#iOiQX~~#nTX~OY!sYZ#VZ;'S!s;'S;=`#[<%lO!s~$QVOY#}YZ$gZr#}rs%js;'S#};'S;=`&O<%lO#}~$lTiQOr${rs%_s;'S${;'S;=`%d<%lO${~%OTOr${rs%_s;'S${;'S;=`%d<%lO${~%dOV~~%gP;=`<%l${~%oTV~OY!sYZ#VZ;'S!s;'S;=`#[<%lO!s~&RP;=`<%l#}~&ZTR~OY&UYZ#VZ;'S&U;'S;=`&j<%lO&U~&mP;=`<%l&U~&sVOY&pYZ'YZy&pyz(]z;'S&p;'S;=`(q<%lO&p~'_TiQOy'nyz(Qz;'S'n;'S;=`(V<%lO'n~'qTOy'nyz(Qz;'S'n;'S;=`(V<%lO'n~(VOS~~(YP;=`<%l'n~(bTS~OY!sYZ#VZ;'S!s;'S;=`#[<%lO!s~(tP;=`<%l&p~(|VU~OY!sYZ#VZ!Q!s!Q![(w![;'S!s;'S;=`#[<%lO!s~)fVOY)cYZ){Z#P)c#P#Q(]#Q;'S)c;'S;=`*y<%lO)c~*QTiQO#P*a#P#Q(Q#Q;'S*a;'S;=`*s<%lO*a~*dTO#P*a#P#Q(Q#Q;'S*a;'S;=`*s<%lO*a~*vP;=`<%l*a~*|P;=`<%l)cR+SVOY!sYZ#VZ#X!s#X#Y+i#Y;'S!s;'S;=`#[<%lO!sR+lVOY!sYZ#VZ#U!s#U#V,R#V;'S!s;'S;=`#[<%lO!sR,UVOY!sYZ#VZ#i!s#i#j,k#j;'S!s;'S;=`#[<%lO!sR,nVOY!sYZ#VZ#Z!s#Z#[-T#[;'S!s;'S;=`#[<%lO!sR-YTdPOY!sYZ#VZ;'S!s;'S;=`#[<%lO!sR-lVOY!sYZ#VZ#g!s#g#h.R#h;'S!s;'S;=`#[<%lO!sR.WThPOY!sYZ#VZ;'S!s;'S;=`#[<%lO!sR.jZOY!sYZ#VZ#T!s#T#U-i#U#X!s#X#Y/]#Y#f!s#f#g0_#g;'S!s;'S;=`#[<%lO!sR/`VOY!sYZ#VZ#f!s#f#g/u#g;'S!s;'S;=`#[<%lO!sR/xVOY!sYZ#VZ#X!s#X#Y.R#Y;'S!s;'S;=`#[<%lO!sR0bVOY!sYZ#VZ#]!s#]#^0w#^;'S!s;'S;=`#[<%lO!sR0zVOY!sYZ#VZ#h!s#h#i1a#i;'S!s;'S;=`#[<%lO!sR1dVOY!sYZ#VZ#X!s#X#Y1y#Y;'S!s;'S;=`#[<%lO!sR2OTePOY!sYZ#VZ;'S!s;'S;=`#[<%lO!sR2dTbPOY!sYZ#VZ;'S!s;'S;=`#[<%lO!s~2vVOY2sYZ3]Z#q2s#q#r(]#r;'S2s;'S;=`4Z<%lO2s~3bTiQO#q3q#q#r(Q#r;'S3q;'S;=`4T<%lO3q~3tTO#q3q#q#r(Q#r;'S3q;'S;=`4T<%lO3q~4WP;=`<%l3q~4^P;=`<%l2s",
+  repeatNodeCount: 3,
+  tokenData: "4l~RlOY!yYZ#hZ]!y]^#o^r!yrs$Tst&[tx!yxy&vy!Q!y!Q![(}![!}!y!}#O)i#O#W!y#W#X+V#X#]!y#]#^-o#^#k!y#k#l.m#l#m2e#m#n2e#n#o!y#o#p2y#p;'S!y;'S;=`#b<%l~!y~O!y~~4gQ!|TOY!yYZ#]Z;'S!y;'S;=`#b<%lO!yQ#bOmQQ#eP;=`<%l!y~#oOmQX~~#tTX~OY!yYZ#]Z;'S!y;'S;=`#b<%lO!y~$WVOY$TYZ$mZr$Trs%ps;'S$T;'S;=`&U<%lO$T~$rTmQOr%Rrs%es;'S%R;'S;=`%j<%lO%R~%UTOr%Rrs%es;'S%R;'S;=`%j<%lO%R~%jOV~~%mP;=`<%l%R~%uTV~OY!yYZ#]Z;'S!y;'S;=`#b<%lO!y~&XP;=`<%l$T~&aTR~OY&[YZ#]Z;'S&[;'S;=`&p<%lO&[~&sP;=`<%l&[~&yVOY&vYZ'`Zy&vyz(cz;'S&v;'S;=`(w<%lO&v~'eTmQOy'tyz(Wz;'S't;'S;=`(]<%lO't~'wTOy'tyz(Wz;'S't;'S;=`(]<%lO't~(]OS~~(`P;=`<%l't~(hTS~OY!yYZ#]Z;'S!y;'S;=`#b<%lO!y~(zP;=`<%l&v~)SVU~OY!yYZ#]Z!Q!y!Q![(}![;'S!y;'S;=`#b<%lO!y~)lVOY)iYZ*RZ#P)i#P#Q(c#Q;'S)i;'S;=`+P<%lO)i~*WTmQO#P*g#P#Q(W#Q;'S*g;'S;=`*y<%lO*g~*jTO#P*g#P#Q(W#Q;'S*g;'S;=`*y<%lO*g~*|P;=`<%l*g~+SP;=`<%l)iR+YVOY!yYZ#]Z#X!y#X#Y+o#Y;'S!y;'S;=`#b<%lO!yR+rVOY!yYZ#]Z#U!y#U#V,X#V;'S!y;'S;=`#b<%lO!yR,[VOY!yYZ#]Z#i!y#i#j,q#j;'S!y;'S;=`#b<%lO!yR,tVOY!yYZ#]Z#Z!y#Z#[-Z#[;'S!y;'S;=`#b<%lO!yR-`ThPOY!yYZ#]Z;'S!y;'S;=`#b<%lO!yR-rVOY!yYZ#]Z#g!y#g#h.X#h;'S!y;'S;=`#b<%lO!yR.^TlPOY!yYZ#]Z;'S!y;'S;=`#b<%lO!yR.pZOY!yYZ#]Z#T!y#T#U-o#U#X!y#X#Y/c#Y#f!y#f#g0e#g;'S!y;'S;=`#b<%lO!yR/fVOY!yYZ#]Z#f!y#f#g/{#g;'S!y;'S;=`#b<%lO!yR0OVOY!yYZ#]Z#X!y#X#Y.X#Y;'S!y;'S;=`#b<%lO!yR0hVOY!yYZ#]Z#]!y#]#^0}#^;'S!y;'S;=`#b<%lO!yR1QVOY!yYZ#]Z#h!y#h#i1g#i;'S!y;'S;=`#b<%lO!yR1jVOY!yYZ#]Z#X!y#X#Y2P#Y;'S!y;'S;=`#b<%lO!yR2UTiPOY!yYZ#]Z;'S!y;'S;=`#b<%lO!yR2jTfPOY!yYZ#]Z;'S!y;'S;=`#b<%lO!y~2|VOY2yYZ3cZ#q2y#q#r(c#r;'S2y;'S;=`4a<%lO2y~3hTmQO#q3w#q#r(W#r;'S3w;'S;=`4Z<%lO3w~3zTO#q3w#q#r(W#r;'S3w;'S;=`4Z<%lO3w~4^P;=`<%l3w~4dP;=`<%l2y~4lOY~",
   tokenizers: [0, 1, Constant, Pronoun, output, listen, to],
-  topRules: {"block":[0,5]},
-  tokenPrec: 81
+  topRules: {"Program":[0,5]},
+  tokenPrec: 163
 })

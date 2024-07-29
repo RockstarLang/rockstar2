@@ -2,13 +2,14 @@
 export const
   Constant = 1,
   Pronoun = 2,
-  output = 12,
-  listen = 13,
-  to = 14,
+  output = 15,
+  listen = 16,
+  to = 17,
   LineComment = 3,
   BlockComment = 4,
-  block = 5,
+  Program = 5,
   Number = 6,
   String = 7,
   VariableName = 8,
-  EOS = 9
+  EOS = 9,
+  EOF = 10

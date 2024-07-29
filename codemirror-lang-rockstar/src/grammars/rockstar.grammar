@@ -1,51 +1,958 @@
 @external propSource highlighting from "./highlight.js"
 
- @top Program {
- 	block* |
-	EOF+ EOF
+@top Program {
+     EOS* block program
+  |  EOS* EOF
 }
 
-block {	statement (EOS+ statement)+ }
+block {
+     statement EOS block
+  |  statement
+}
 
-statement { listen_stmt | output_stmt | assignment }
+statement {
+     listen_stmt
+  |  output_stmt
+  |  function
+  |  function_call
+  |  call_stmt
+  |  return_stmt
+  |  break_stmt
+  |  continue_stmt
+  |  loop
+  |  conditional
+  |  declaration
+  |  assignment
+  |  enlistment
+  |  increment
+  |  decrement
+  |  mutation
+  |  rounding
+  |  expression //LOOKAHEAD &EOS
+}
 
-listen_stmt { listen to variable | listen }
+enlistment {
+     push _ expression _ into _ variable
+  |  push _ variable (_ with)? _ expression_list
+  |  push _ variable
+  |  delist _ into _ assignable
+  |  delist
+}
 
-output_stmt { (debug  | write | output) expression }
+delist {
+     pop _ variable
+}
 
-assignment { VariableName is expression | VariableName is poetic_number }
+listen_stmt {
+     listen _ to _ variable |  listen
+}
 
-expression { Number | String | Constant }
+return_stmt {
+     return (_ back)? _ expression (_ back)?
+}
 
-VariableName { Pronoun | variable }
+function {
+     variable _ takes _ null consequent
+  |  variable _ takes _ variable_list consequent
+}
 
-// Constant { 'true' | 'false' | 'lies' | 'gone' }
+variable_list {
+     variable _VLS_ variable_list
+  |  variable
+}
 
-@skip { LineComment | BlockComment }
+primary_list {
+     primary _XLS_ primary_list
+  |  primary _XLS_ primary
+}
+
+molecule_list {
+     molecule _ALS_ argument_list
+  |  molecule
+}
+
+argument_list {
+     primary _ALS_ argument_list
+  |  primary
+}
+
+argument {
+     molecule
+}
+
+molecule {
+     molecular_boolean
+  |  primary
+}
+
+molecular_boolean {
+     molecular_binary_or
+}
+
+molecular_binary_or {
+     molecular_binary_nor _ or _ molecular_binary_or
+  |  molecular_binary_nor
+}
+
+molecular_binary_nor {
+     molecular_binary_and _ nor _ molecular_binary_nor
+  |  molecular_binary_and
+}
+
+molecular_binary_and {
+     molecular_equality _ and _ molecular_binary_and
+  |  molecular_equality
+}
+
+molecular_equality {
+     molecular_unary (_is
+  |  _isnt) _ molecular_equality
+  |  molecular_unary
+}
+
+molecular_unary {
+     not_ molecular_unary
+  |  molecular_comparison
+}
+
+molecular_comparison {
+     molecular_addition comparator molecular_comparison
+  |  molecular_addition
+}
+
+molecular_addition {
+     molecular_addition (_plus_|_minus_) molecular_product
+  |  molecular_product
+}
+
+molecular_product {
+     molecular_product (_divide_|_times_) primary
+  |  primary
+}
+
+expression_list {
+     expression _ALS_ expression_list
+  |  expression
+}
+
+oxford_comma {
+     "," _ and
+}
+
+_nacton {
+     (_ "n'"
+  |  _? "'n'")
+}
+
+_VLS_ {
+     _ and _
+  |  _ALS_
+}
+
+_ALS_ {
+     oxford_comma _
+  |  _XLS_
+}
+
+_XLS_ {
+     ("," _? ("&" _?)?)
+  |  _nacton _?
+  |  _? "&" _?
+  |  _? "," _?
+}
+
+break_stmt {
+     break wildcard
+}
+
+continue_stmt {
+     continue wildcard
+}
+
+wildcard {
+     (letter | _)* // LOOKAHEAD &EOS
+}
+
+EOB {
+     EOL _? EOL //LOOKAHEAD &EOL
+  |  EOL _  //LOOKAHEAD&EOL
+  |  (_  |  $[,?!.;])* EOL  //LOOKAHEAD &((_  |  [,?!.;])? EOL)
+  |  EOS* //LOOKAHEAD &(_? else)
+  |  EOS* ","? _? end (_
+  |  $[,?!.;])*
+  |  EOS* ","? _? end (_
+  |  $[,?!.;])*
+  |  EOS* ","? _? "o" //LOOKEAHAD &("o"+ "h")
+  |  EOF
+}
+
+consequent {
+     EOS+ block EOB
+  |  _ statement
+}
+
+if_test {
+     if _ expression (_ then)?
+}
+
+conditional {
+     if_test consequent _? else consequent
+  |  if_test consequent EOS+ else consequent
+  |  if_test _ else consequent
+  |  if_test EOS+ else consequent
+  |  if_test (_ then)? consequent
+}
+
+loop {
+     while _ expression consequent
+  |  until _ expression consequent
+}
+
+output_stmt {
+     debug _ expression
+  |  write _ expression
+  |  print _ expression
+}
+
+binary_rhs {
+     primary_list
+  |  expression
+}
+
+index {
+     _ at _ numeric_expression
+}
+
+indexes {
+     index indexes
+  |  index
+}
+
+assignable {
+     variable indexes
+  |  variable
+}
+
+declaration {
+     let _ assignable _ be _operator_ expression_list
+  |  let _ assignable _ be _ expression
+  |  let _ assignable
+}
+
+assignment {
+     put _ expression _ into _ assignable
+  |  assignable _ says_ poetic_string
+  |  assignable _is _operator_ expression_list
+  |  assignable _is _ now _ expression
+  |  assignable (_? "=" _?
+  |  _is _) v1_poetic_number
+  |  assignable (_? "=" _?
+  |  _is _) expression
+}
+
+_operator_ {
+     _plus_
+  |  _minus_
+  |  _times_
+  |  _divide_
+}
+
+says_ {
+     says ( " "? )
+}
+
+poetic_string {
+     ("" $[^\r\n]+)
+}
+
+_is {
+     _is _ exactly
+  |  ("'s"
+  |  "'re"
+  |  _ is)
+}
+
+_isnt {
+     _isnt _ exactly
+  |  (_is _ not
+  |  _ isnt)
+}
+
+variable {
+     (his _ !keyword identifier)
+  |  pronoun
+  |  proper_variable
+  |  (the _ identifier)
+  |  !keyword identifier
+}
+
+proper_variable {
+     proper_noun (_ proper_noun)+
+}
+
+proper_noun {
+     "Proper"
+}
+
+identifier {
+     letter (letter | $[0-9_])*
+}
+
+letter {
+     @asciiLetter
+}
+
+uppercase_letter {
+	@asciiUppercase
+}
+
+lowercase_letter {
+	@asciiLowercase
+}
+
+expression {
+     boolean
+  |  primary
+}
+
+boolean {
+     binary_or
+}
+
+binary_or {
+     binary_nor _ or _ binary_or
+  |  binary_nor
+}
+
+binary_nor {
+     binary_and _ nor _ binary_nor
+  |  binary_and
+}
+
+binary_and {
+     equality _ and _ binary_and
+  |  equality
+}
+
+equality {
+     unary (_is
+  |  _isnt) _ equality
+  |  unary
+}
+
+unary {
+     not_ unary
+  |  comparison
+}
+
+not_ {
+     (not _
+  |  non _
+  |  non "-" )
+}
+
+comparison {
+     addition comparator comparison
+  |  addition
+}
+
+comparator {
+     (_? ">=" _?
+  |  _is _ as _ as_great _ as _)
+  |  (_? "<=" _?
+  |  _is _ as _ as_small _ as _)
+  |  (_? ">" _?
+  |  _is _ (above
+  |  more _ than) _)
+  |  (_? "<" _?
+  |  _is _ (under
+  |  less _ than) _)
+}
+
+numeric_expression {
+     addition
+}
+
+addition {
+     addition (_plus_|_minus_) primary_list
+  |  addition (_plus_|_minus_) product
+  |  product
+}
+
+product {
+     product (_divide_|_times_) primary_list
+  |  product (_divide_|_times_) primary
+  |  primary
+}
+
+_plus_ {
+     (_? "+" _?
+  |  _ plus _ )
+}
+
+_minus_ {
+     (_? "-" _?
+  |  _ minus _ )
+}
+
+_times_ {
+     (_? "*" _?
+  |  _ times _ )
+}
+
+_divide_ {
+     (_? "|" _?
+  |  _ divided_by _ )
+}
+
+primary {
+     function_call
+  |  delist
+  |  constant
+  |  string
+  |  number
+  |  lookup
+}
+
+call_stmt {
+     call _ variable _ with _ argument_list _ into _ assignable
+  |  call _ variable _ with _ argument_list
+  |  call _ variable _ into _ assignable
+  |  call _ variable
+}
+
+function_call {
+     variable _ taking _ argument_list
+}
+
+lookup {
+     variable indexes
+  |  variable
+}
+
+increment {
+     build _ variable ((_? ",")? _? up)+
+}
+
+decrement {
+     knock _ variable ((_? ",")? _? down)+
+}
+
+mutator {
+     split
+  |  cast
+  |  join
+}
+
+mutation {
+     mutator _ expression _ into _ assignable _ using _ expression
+  |  mutator _ expression _ using _ expression _ into _ assignable
+  |  mutator _ expression _ into _ assignable
+  |  mutator _ assignable _ using _ expression
+  |  mutator _ assignable
+}
+
+rounding {
+     floor
+  |  ceil
+  |  math_round
+}
+
+floor {
+     turn _ variable _ down
+  |  turn _ down _ variable
+}
+
+ceil {
+     turn _ variable _ up
+  |  turn _ up _ variable
+}
+
+math_round {
+     turn _ variable _ around
+  |  turn _ around _ variable
+}
+
+constant {
+     null
+  |  true
+  |  false
+  |  empty
+  |  mysterious
+}
+
+number {
+     like _ poetic_number
+  |  digits
+}
+
+digits {
+     ("" (("-" |"+")? $[0-9]+ ("." $[0-9]+)?)
+  |  (("-" |"+")? "." $[0-9]+))
+}
+
+poetic_number {
+     poetic_digits _? ("..." |  "…") _ poetic_digits
+  |  poetic_digits
+}
+
+v1_digit_filter {
+     "a lovestruck ladykiller" // &letter !keywords_which_can_begin_an_expression
+}
+
+v1_poetic_number {
+     _? poetic_digits _? (".") _ poetic_digits
+  |  _? poetic_digits
+}
+
+PDS {
+     ("" _ |  $[0-9\",;:?!+_|] )
+}
+
+poetic_digits {
+     PDS* poetic_digit PDS+ poetic_digits PDS*
+  |  poetic_digit
+}
+
+poetic_digit {
+     ("" (letter | $[\-"])+)
+}
+
+string {
+     quoted_string+
+}
+
+quoted_string {
+     "\"" (!["]*) "\""
+}
+
+keywords_which_can_begin_an_expression {
+     plus
+  |  minus
+  |  times
+  |  divided_by
+  |  like
+  |  and
+  |  or
+  |  nor
+  |  not
+  |  non
+  |  null
+  |  true
+  |  false
+  |  empty
+  |  mysterious
+}
+
+keyword {
+     keywords_which_can_begin_an_expression
+  |  as
+  |  as_great
+  |  as_small
+  |  back
+  |  be
+  |  build
+  |  cast
+  |  down
+  |  else
+  |  end
+  |  false
+  |  if
+  |  into
+  |  is
+  |  isnt
+  |  join
+  |  knock
+  |  less
+  |  let
+  |  listen
+  |  more
+  |  non
+  |  not
+  |  null
+  |  or
+  |  over
+  |  print
+  |  pronoun
+  |  put
+  |  return
+  |  says
+  |  split
+  |  takes
+  |  taking
+  |  than
+  |  the
+  |  to
+  |  until
+  |  up
+  |  while
+}
+
+_ {	"" (whitespace |  comment)+ }
+
+whitespace {
+	$[ \t]
+}
 
 @tokens {
-	@precedence {
-		Number, String, Constant, poetic_number, LineComment, BlockComment, EOS
-	}
-	LineComment { "#" ![\n]* }
-	BlockComment { "(" ![)]* ")" | "[" ![\]]* "]" | "{" ![}]* "}"	}
-	_ { $[ \t]+ }
-	is { 'is' | 'was' | 'were' }
-	debug { 'debug' }
-	write { 'write' }
-	variable { 'x' | 'y' }
-	poetic_number { ![\n]* '\n' }
-	Number { @digit+ }
-	String { "\"" ![\"]* "\"" }
-	Keyword { output | debug | print | listen | to | 'Let' }
-	EOS { $[\r\n] }
-	//EOL { _* $[\r\n]+ }
-	EOF { @eof }
+
+comment {
+     "#" $[^\n]* "\n"
+	 | "(" ![\)]* ")"
+	 | "{" ![\}]* "}"
+     | "[" ![\]]* "]"
 }
 
-@external tokens Constant from "./tokens" { Constant }
-@external tokens Pronoun from "./tokens" { Pronoun }
-@external tokens output from "./tokens" { output }
-@external tokens listen from "./tokens" { listen }
-@external tokens to from "./tokens" { to }
-@detectDelim
+EOS {
+     $[,.?!;: \t]* EOL
+  |  _? $[,.?!;:]
+}
+
+EOL {
+     _? "\r"? "\n"
+}
+
+EOF {
+     EOS* _? @eof
+}
+
+above {
+     "above"
+  |  over
+}
+
+and {
+     "and"
+}
+
+around {
+     "around"
+  |  "round"
+}
+
+as {
+     "as"
+}
+
+as_great {
+     "great" | "high" | "big" | "strong"
+}
+
+as_small {
+     "less" | "low" | "small" | "weak"
+}
+
+at {
+     "at"
+}
+
+back {
+     "back"
+}
+
+be {
+     "be"
+}
+
+break {
+     "break"
+}
+
+build {
+     "build"
+}
+
+call {
+     "call"
+}
+
+cast {
+     "cast"
+  |  "burn"
+}
+
+continue {
+     "continue"
+  |  "take"
+}
+
+debug {
+     "debug"
+}
+
+divided_by {
+     "divided" _ "by"
+  |  "between"
+  |  over
+}
+
+down {
+     "down"
+}
+
+else {
+     "else"
+  |  "otherwise"
+}
+
+empty {
+     "empty"
+  |  "silent"
+  |  "silence"
+}
+
+end {
+     "end"
+  |  "yeah"
+  |  "baby"
+  |  "oh"
+}
+
+exactly {
+     "exactly"
+  |  "totally"
+  |  "really"
+}
+
+false {
+     "false" | "lies" | "no" | "wrong"
+}
+
+his {
+     "his"
+  |  "her"
+}
+
+if {
+     "if"
+  |  "when"
+}
+
+into {
+     "into"
+  |  "in"
+}
+
+is {
+     "is"
+  |  "was"
+  |  "are"
+  |  "were"
+  |  "am"
+}
+
+isnt {
+     "isnt"
+  |  "isn't"
+  |  "aint"
+  |  "ain't"
+  |  "wasn't"
+  |  "wasnt"
+  |  "aren't"
+  |  "arent"
+  |  "weren't"
+  |  "werent"
+}
+
+join {
+     "join"
+  |  "unite"
+}
+
+knock {
+     "knock"
+}
+
+less {
+     "less" | "lower"
+  |  "smaller" | "weaker"
+}
+
+let {
+     "let"
+}
+
+like {
+     "like"
+  |  "so"
+}
+
+listen {
+     "listen"
+}
+
+minus {
+     "minus"
+  |  "without"
+}
+
+more {
+     "greater" | "higher"
+  |  "bigger"
+  |  "stronger"  | "more"
+}
+
+mysterious {
+     "mysterious"
+}
+
+non {
+     "non"
+}
+
+nor {
+     "nor"
+}
+
+not {
+     "not"
+}
+
+now {
+     "now"
+}
+
+null {
+     "null" | "nothing" | "nowhere" | "nobody" | "gone"
+}
+
+or {
+     "or"
+}
+
+over {
+     "over"
+}
+
+plus {
+     "plus"
+  |  "with"
+}
+
+pop {
+     "roll"
+  |  "pop"
+}
+
+print {
+     "print"
+  |  "shout"
+  |  "say"
+  |  "scream"
+  |  "whisper"
+}
+
+pronoun {
+     "they"
+  |  "them"
+  |  "she"
+  |  "him"
+  |  "her"
+  |  "hir" | "zie" | "zir" | "xem" | "ver"
+  |  "ze" | "ve" | "xe" | "it" | "he"
+  |  "you"
+  |  "me"
+  |  "i"
+}
+
+push {
+     "rock"
+  |  "push"
+}
+
+put {
+     "put"
+}
+
+return {
+     "return"
+  |  "giving"
+  |  "give"
+  |  "send"
+}
+
+says {
+     "say"
+  |  "says"
+  |  "said"
+}
+
+split {
+     "cut"
+  |  "split"
+  |  "shatter"
+}
+
+takes {
+     "takes"
+  |  "wants"
+}
+
+taking {
+     "taking"
+}
+
+than {
+     "than"
+}
+
+the {
+     "an" | "a"
+  |  "the"
+  |  "my"
+  |  "your"
+  |  "our"
+  |  "their"
+}
+
+then {
+     "then"
+}
+
+times {
+     "times"
+  |  "of"
+}
+
+to {
+     "to"
+}
+
+true {
+     "true" | "yes" | "ok" | "right"
+}
+
+turn {
+     "turn"
+}
+
+under {
+     "under"
+  |  "below"
+}
+
+until {
+     "until"
+}
+
+up {
+     "up"
+}
+
+using {
+     "using"
+  |  "with"
+}
+
+while {
+     "while"
+}
+
+with {
+     "with"
+}
+
+write {
+     "write"
+}
+}

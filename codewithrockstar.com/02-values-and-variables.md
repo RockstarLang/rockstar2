@@ -117,8 +117,29 @@ The pronoun subject is updated when:
 {% include_relative {{ page.examples }}pronouns.rock %}
 ```
 
-
 > (Please don’t file issues pointing out that 80s rockers were a bunch of misogynists and gender-inclusive pronouns aren’t really idiomatic. You’re right, we know, and we’ve all learned a lot since then. Besides, [_Look What The Cat Dragged In_](https://en.wikipedia.org/wiki/Look_What_the_Cat_Dragged_In) was recorded by four cishet guys who spent more money on lipgloss and hairspray than they did on studio time, and it’s an absolute classic.)
+
+### The Thing About "Her"
+
+`her` is where Rockstar runs smack into one of the English language's most delightful idiosyncrasies, because the feminine third person pronoun and the feminine possessive are the **same word.**
+
+> Give him his guitar.
+> Give them their horns.
+> Give her her bass
+
+There is therefore a very specific restriction in the Rockstar grammar: you can't use `her` as a common variable prefix if the second part of the variable is a keyword.
+
+You can have variables called `the times`, `your lies`, `my right`, even though `times`, `lies` and `right` are language keywords, but you can't have `her times` or `her lies` because they'd create ambiguous expressions:
+
+```
+A girl is 123
+Her times are trying
+Say her
+Say her times 456
+
+```
+
+
 
 ## Poetic Literals
 

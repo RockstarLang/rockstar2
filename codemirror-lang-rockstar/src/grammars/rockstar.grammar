@@ -8,7 +8,7 @@ statement {
 	VariableName
 }
 
-VariableName { properVariable }
+VariableName { properVariable | commonVariable }
 
 @tokens {
 	LineComment { "#" ![\n]* }
@@ -22,6 +22,6 @@ VariableName { properVariable }
 	_ { $[ \t] }
 }
 
-@external tokens matchProperVariable from "./tokens" { properVariable }
+@external tokens variable from "./tokens" { properVariable, commonVariable }
 
 @detectDelim

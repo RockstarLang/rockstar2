@@ -1,11 +1,10 @@
 import { ExternalTokenizer } from "@lezer/lr"
-import {
-	properVariable
-} from "./rockstar.terms.js"
+import * as tokens from "./rockstar.terms.js"
+
 
 const FULL_STOP = 46;
 
-export const matchProperVariable = new ExternalTokenizer((input, stack) => {
+export const variable = new ExternalTokenizer((input, stack) => {
 	var tokenTo = -1;
 	let codes = [];
 	while (input.next > 0) {
@@ -16,36 +15,39 @@ export const matchProperVariable = new ExternalTokenizer((input, stack) => {
 		if (isKeyword(codes)) break;
 		tokenTo = input.pos;
 		if (FULL_STOP == input.next) input.advance();
-		while(spaceCodes.includes(input.advance()));
+		while (spaceCodes.includes(input.advance()));
 	}
-	if (tokenTo >= 0) return input.acceptTokenTo(properVariable, tokenTo);
+	if (tokenTo >= 0) return input.acceptTokenTo(tokens.properVariable, tokenTo);
 });
 
 // var codes = [];
-// 	while(input.advance() >= 0) codes.push(input.next);
-// 	console.log(String.fromCodePoint(...codes));
-// 	input.acceptToken(properVariable);
+// while (input.advance() >= 0) codes.push(input.next);
+// console.log(String.fromCodePoint(...codes));
+// input.acceptToken(properVariable);
 
-	// while(true) {
-	// 	var word = readNextWord(input);
-	// 	if (word != "") console.log(word);
-	// };
+	// while (true) {
+	// var word = readNextWord(input);
+	// if (word != "") console.log(word);
+	//
+//};
 
 // while (true) {
-// 	var codes = [];
-// 	if (upperCodes.includes(input.next)) {
-// 		codes.push(input.next);
-// 		while (alphaCodes.includes(input.advance())) codes.push(input.next);
-// 		if (isKeyword(codes)) return;
-// 		while (spaceCodes.includes(input.advance())) codes.push(input.next);
-// 	}
-// 	input.acceptToken(properVariable);
-// });
+// var codes = [];
+// if (upperCodes.includes(input.next)) {
+// codes.push(input.next);
+// while (alphaCodes.includes(input.advance())) codes.push(input.next);
+// if (isKeyword(codes)) return;
+// while (spaceCodes.includes(input.advance())) codes.push(input.next);
+//
+	//}
+// input.acceptToken(properVariable);
+//
+//});
 
 // function readNextWord(input) {
-// 	var codes = [];
-// 	while (alphaCodes.includes(input.advance())) codes.push(input.next);
-// 	return String.fromCodePoint(...codes);
+// var codes = [];
+// while (alphaCodes.includes(input.advance())) codes.push(input.next);
+// return String.fromCodePoint(...codes);
 // }
 
 const whitespace = " \t";
@@ -68,166 +70,74 @@ function isKeyword(codes) {
 	return keywords.includes(token.toLowerCase());
 }
 
-const keywords = [
-	"a",
-	"above",
-	"ain't",
-	"aint",
-	"am",
-	"an",
-	"and",
-	"are",
-	"aren't",
-	"arent",
-	"around",
-	"as",
-	"at",
-	"baby",
-	"back",
-	"be",
-	"below",
-	"between",
-	"big",
-	"bigger",
-	"break",
-	"build",
-	"burn",
-	"by",
-	"call",
-	"cast",
-	"continue",
-	"cut",
-	"debug",
-	"divided",
-	"down",
-	"else",
-	"empty",
-	"end",
-	"exactly",
-	"false",
-	"give",
-	"giving",
-	"gone",
-	"great",
-	"greater",
-	"he",
-	"her",
-	"high",
-	"higher",
-	"him",
-	"hir",
-	"i",
-	"if",
-	"in",
-	"into",
-	"is",
-	"isn't",
-	"isnt",
-	"it",
-	"join",
-	"knock",
-	"less",
-	"less",
-	"let",
-	"lies",
-	"like",
-	"listen",
-	"low",
-	"lower",
-	"me",
-	"minus",
-	"more",
-	"my",
-	"mysterious",
-	"no",
-	"nobody",
-	"non",
-	"nor",
-	"not",
-	"nothing",
-	"now",
-	"nowhere",
-	"null",
-	"of",
-	"oh",
-	"ok",
-	"or",
-	"otherwise",
-	"our",
-	"over",
-	"plus",
-	"pop",
-	"print",
-	"push",
-	"put",
-	"really",
-	"return",
-	"right",
-	"rock",
-	"roll",
-	"round",
-	"said",
-	"say",
-	"say",
-	"says",
-	"scream",
-	"send",
-	"shatter",
-	"she",
-	"shout",
-	"silence",
-	"silent",
-	"small",
-	"smaller",
-	"so",
-	"split",
-	"strong",
-	"stronger",
-	"take",
-	"takes",
-	"taking",
-	"than",
-	"the",
-	"them",
-	"then",
-	"they",
-	"times",
-	"to",
-	"totally",
-	"true",
-	"turn",
-	"under",
-	"unite",
-	"until",
-	"up",
-	"using",
-	"ve",
-	"ver",
-	"wants",
-	"was",
-	"wasn't",
-	"wasnt",
-	"weak",
-	"weaker",
-	"were",
-	"weren't",
-	"werent",
-	"when",
-	"while",
-	"whisper",
-	"with",
-	"with",
-	"with",
-	"without",
-	"write",
-	"wrong",
-	"xe",
-	"xem",
-	"yeah",
-	"yes",
-	"you",
-	"your",
-	"ze",
-	"zie",
-	"zir"
-];
+const aliases = {
+	above: ['above', 'over'],
+	and: ['and'],
+	around: ['around', 'round'],
+	as_great: ['great', 'high', 'big', 'strong'],
+	as_small: ['less', 'low', 'small', 'weak'],
+	as: ['as'],
+	at: ['at'],
+	back: ['back'],
+	be: ['be'],
+	break: ['break'],
+	build: ['build'],
+	call: ['call'],
+	cast: ['cast', 'burn'],
+	continue: ['continue', 'take'],
+	debug: ['debug'],
+	divided_by: ['divided', 'between', 'over'],
+	down: ['down'],
+	else: ['else', 'otherwise'],
+	empty: ['empty', 'silent', 'silence'],
+	end: ['end', 'yeah', 'baby', 'oh'],
+	exactly: ['exactly', 'totally', 'really'],
+	false: ["false", "lies", "no", "wrong"],
+	if: ['if', 'when'],
+	into: ['into', 'in'],
+	is: ['is', 'was', 'are', 'were', 'am'],
+	isnt: ["isnt", "isn't", 'aint', "ain't", "wasn't", "wasnt", "aren't", "arent", "weren't", "werent"],
+	join: ['join', 'unite'],
+	knock: ['knock'],
+	less: ['less', 'lower', 'smaller', 'weaker'],
+	let: ['let'],
+	like: ['like', 'so'],
+	listen: ['listen'],
+	minus: ['minus', 'without'],
+	more: ['greater', 'higher', 'bigger', 'stronger', 'more'],
+	mysterious: ['mysterious'],
+	non: ['non'],
+	nor: ['nor'],
+	not: ['not'],
+	now: ['now'],
+	null: ['null', 'nothing', 'nowhere', 'nobody', 'gone'],
+	or: ['or'],
+	over: ['over'],
+	plus: ['plus', 'with'],
+	pop: ['roll', 'pop'],
+	print: ["print", "shout", "say", "scream", "whisper"],
+	pronoun: ['they', 'them', 'she', 'him', 'her', 'hir', 'zie', 'zir', 'xem', 'ver', 'ze', 've', 'xe', 'it', 'he', 'you', 'me', 'i'],
+	push: ['rock', 'push'],
+	put: ['put'],
+	return: ['return', 'giving', 'give', 'send'],
+	says: ['say', 'says', 'said'],
+	split: ['cut', 'split', 'shatter'],
+	takes: ['takes', 'wants'],
+	taking: ['taking'],
+	than: ['than'],
+	the: ['an', 'a', 'the', 'my', 'your', 'our'],
+	then: ['then'],
+	times: ['times', 'of'],
+	to: ['to'],
+	true: ["true", "yes", "ok", "right"],
+	turn: ['turn'],
+	under: ['under', 'below'],
+	until: ['until'],
+	up: ['up'],
+	using: ['using', 'with'],
+	while: ['while'],
+	with: ['with'],
+	write: ['write']
+};
+
+const keywords = Object.values(aliases).flat();

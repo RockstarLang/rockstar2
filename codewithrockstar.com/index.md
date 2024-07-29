@@ -7,8 +7,16 @@ nav_order: "1000"
 Run some Rockstar:
 
 ```rockstar
-say "hello world"
-Johnny B. Goode met JRR Tolkein.
+# let's get rocked!
+say "hello world" (yeah!)
+Johnny B. Goode is 123
+JRR Tolkein is 456
+Let my heroes [Am] be Johnny B. Goode with [Dmaj7] JRR Tolkein
+A girl is laughing
+A boy is without a girl
+A function takes a boy and a girl
+Give back a boy with a girl
+
 ```
 
 Well... do you wanna get rocked?

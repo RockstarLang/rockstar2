@@ -1,27 +1,45 @@
 @external propSource highlighting from "./highlight.js"
 
-@top Program { statement* }
+// @top Program {
+// 	block*
+// }
+
+@top block {
+ 	statement*
+}
+
+statement { output_stmt | assignment }
+
+output_stmt { (debug  | write  | print) }
+
+assignment { VariableName is expression }
+
+expression { Number | String | Constant | poetic_literal }
+VariableName { variable }
 
 @skip { LineComment | BlockComment }
 
-statement {
-	VariableName
-}
-
-VariableName { properVariable | commonVariable }
-
 @tokens {
-	LineComment { "#" ![\n]* }
-	BlockComment {
-		"(" ![)]* ")"
-		|
-		"[" ![\]]* "]"
-		|
-		"{" ![}]* "}"
+	@precedence {
+		Number, String, Constant, poetic_literal, LineComment, BlockComment
 	}
-	_ { $[ \t] }
+	LineComment { "#" ![\n]* }
+	BlockComment { "(" ![)]* ")" | "[" ![\]]* "]" | "{" ![}]* "}"	}
+	_ { $[ \t]+ }
+	is { 'is' | 'was' | 'were' }
+	debug { 'debug' }
+	write { 'write' }
+	print { 'print' }
+	variable { 'x' | 'y' }
+	poetic_literal { ![\n]* '\n' }
+	Number { @digit+ }
+	String { "\"" ![\"]* "\"" }
+	Constant { 'true' | 'false' | 'lies' | 'gone' }
+	EOS { EOL }
+	EOL { _* '\n' }
+	EOF { @eof }
 }
 
-@external tokens variable from "./tokens" { properVariable, commonVariable }
+// @external tokens variable from "./tokens" { properVariable, commonVariable }
 
 @detectDelim

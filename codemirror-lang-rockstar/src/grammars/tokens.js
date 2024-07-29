@@ -1,24 +1,65 @@
 import { ExternalTokenizer } from "@lezer/lr"
 import * as tokens from "./rockstar.terms.js"
 
-
 const FULL_STOP = 46;
 
 export const variable = new ExternalTokenizer((input, stack) => {
+	var tokenTo = properVariable(input);
+	if (tokenTo > 1) return input.acceptTokenTo(tokens.properVariable, tokenTo);
+	//tokenTo = commonVariable(input);
+	//if (tokenTo > 1) return input.acceptTokenTo(tokens.commonVariable, tokenTo);
+});
+
+function commonVariable(input) {
+	return -1;
+	// var nextWord = peekNextWord(input);
+	// if (prefixCodes.includes(nextWord)) return 5;
+	// {
+	// 	input.advance(nextWord.length);
+	// 	input.advance(peekNextWord(input).length);
+	// 	return input.pos;
+	// }
+	// return -1;
+}
+
+function properVariable(input) {
 	var tokenTo = -1;
 	let codes = [];
-	while (input.next > 0) {
+	var i = 0;
+	while (input.peek(i) > 0) {
 		codes = [];
-		if (!upperCodes.includes(input.next)) break;
-		codes.push(input.next);
-		while (alphaCodes.includes(input.advance())) codes.push(input.next);
+		if (!upperCodes.includes(input.peek(i))) break;
+		codes.push(input.peek(i));
+		while (alphaCodes.includes(input.peek(++i))) codes.push(input.peek(i));
 		if (isKeyword(codes)) break;
-		tokenTo = input.pos;
-		if (FULL_STOP == input.next) input.advance();
-		while (spaceCodes.includes(input.advance()));
+		console.log(String.fromCodePoint(...codes));
+		tokenTo = i;
+		if (FULL_STOP == input.peek(i)) i++;
+		while (spaceCodes.includes(input.peek(++i)));
 	}
-	if (tokenTo >= 0) return input.acceptTokenTo(tokens.properVariable, tokenTo);
-});
+	return tokenTo;
+}
+
+const prefixes = [ "a", "an", "the", "my", "your", "his", "her", "their" ];
+const prefixCodes =  prefixes.map(s => stringToCharCodeArray(s));
+
+function peekNextWord(input) {
+	var i = 0;
+	var codes = [];
+	var code = -1;
+	while(true) {
+		code = input.peek(i);
+		console.log(code);
+		if (code < 0 || spaceCodes.includes(code)) {
+			console.log(String.fromCodePoint(...codes));
+			return codes;
+		}
+		codes.push(code);
+		i++;
+	}
+}
+
+
 
 // var codes = [];
 // while (input.advance() >= 0) codes.push(input.next);

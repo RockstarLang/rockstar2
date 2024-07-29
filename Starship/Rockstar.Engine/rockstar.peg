@@ -19,7 +19,6 @@ whitespace.
 
 */
 
-
 @ignorecase true
 
 program <Program>

@@ -5,23 +5,29 @@
 // }
 
 @top block {
- 	statement*
+ 	(statement EOS)+ statement
+	| statement
 }
 
-statement { output_stmt | assignment }
+statement { listen_stmt | output_stmt | assignment }
 
-output_stmt { (debug  | write  | print) }
+listen_stmt { listen to variable | listen }
 
-assignment { VariableName is expression }
+output_stmt { (debug  | write | output) expression }
 
-expression { Number | String | Constant | poetic_literal }
-VariableName { variable }
+assignment { VariableName is expression | VariableName is poetic_number }
+
+expression { Number | String | Constant }
+
+VariableName { Pronoun | variable }
+
+// Constant { 'true' | 'false' | 'lies' | 'gone' }
 
 @skip { LineComment | BlockComment }
 
 @tokens {
 	@precedence {
-		Number, String, Constant, poetic_literal, LineComment, BlockComment
+		Number, String, Constant, poetic_number, LineComment, BlockComment, EOS
 	}
 	LineComment { "#" ![\n]* }
 	BlockComment { "(" ![)]* ")" | "[" ![\]]* "]" | "{" ![}]* "}"	}
@@ -29,17 +35,19 @@ VariableName { variable }
 	is { 'is' | 'was' | 'were' }
 	debug { 'debug' }
 	write { 'write' }
-	print { 'print' }
 	variable { 'x' | 'y' }
-	poetic_literal { ![\n]* '\n' }
+	poetic_number { ![\n]* '\n' }
 	Number { @digit+ }
 	String { "\"" ![\"]* "\"" }
-	Constant { 'true' | 'false' | 'lies' | 'gone' }
-	EOS { EOL }
-	EOL { _* '\n' }
-	EOF { @eof }
+	Keyword { output | debug | print | listen | to | 'Let' }
+	EOS { $[\r\n] }
+	//EOL { _* $[\r\n]+ }
+	//EOF { @eof }
 }
 
-// @external tokens variable from "./tokens" { properVariable, commonVariable }
-
+@external tokens Constant from "./tokens" { Constant }
+@external tokens Pronoun from "./tokens" { Pronoun }
+@external tokens output from "./tokens" { output }
+@external tokens listen from "./tokens" { listen }
+@external tokens to from "./tokens" { to }
 @detectDelim

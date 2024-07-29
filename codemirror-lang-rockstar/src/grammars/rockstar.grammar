@@ -5,10 +5,7 @@
 	EOF+ EOF
 }
 
-block {
- 	(statement EOS)+ statement
-	| statement
-}
+block {	statement (EOS+ statement)+ }
 
 statement { listen_stmt | output_stmt | assignment }
 

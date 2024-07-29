@@ -2,9 +2,9 @@
 export const
   Constant = 1,
   Pronoun = 2,
-  output = 15,
-  listen = 16,
-  to = 17,
+  output = 16,
+  listen = 17,
+  to = 18,
   LineComment = 3,
   BlockComment = 4,
   Program = 5,

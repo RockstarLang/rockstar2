@@ -1,13 +1,11 @@
 @external propSource highlighting from "./highlight.js"
 
-@top Program {
-     EOS* block program
-  |  EOS* EOF
+@top program {
+	block
 }
 
 block {
-     statement EOS block
-  |  statement
+     statement (EOS statement)*
 }
 
 statement {
@@ -32,32 +30,32 @@ statement {
 }
 
 enlistment {
-     push _ expression _ into _ variable
-  |  push _ variable (_ with)? _ expression_list
-  |  push _ variable
-  |  delist _ into _ assignable
+     push expression into variable
+  |  push variable with? expression_list
+  |  push variable
+  |  delist into assignable
   |  delist
 }
 
 delist {
-     pop _ variable
+     pop variable
 }
 
 listen_stmt {
-     listen _ to _ variable |  listen
+     listen to variable |  listen
 }
 
 return_stmt {
-     return (_ back)? _ expression (_ back)?
+     return back? expression back?
 }
 
 function {
-     variable _ takes _ null consequent
-  |  variable _ takes _ variable_list consequent
+     variable takes null consequent
+  |  variable takes variable_list consequent
 }
 
 variable_list {
-     variable _VLS_ variable_list
+	variable _VLS_ variable_list
   |  variable
 }
 
@@ -90,23 +88,23 @@ molecular_boolean {
 }
 
 molecular_binary_or {
-     molecular_binary_nor _ or _ molecular_binary_or
+     molecular_binary_nor or molecular_binary_or
   |  molecular_binary_nor
 }
 
 molecular_binary_nor {
-     molecular_binary_and _ nor _ molecular_binary_nor
+     molecular_binary_and nor molecular_binary_nor
   |  molecular_binary_and
 }
 
 molecular_binary_and {
-     molecular_equality _ and _ molecular_binary_and
+     molecular_equality and molecular_binary_and
   |  molecular_equality
 }
 
 molecular_equality {
      molecular_unary (_is
-  |  _isnt) _ molecular_equality
+  |  _isnt) molecular_equality
   |  molecular_unary
 }
 
@@ -136,29 +134,26 @@ expression_list {
 }
 
 oxford_comma {
-     "," _ and
+     "," and
 }
 
 _nacton {
-     (_ "n'"
-  |  _? "'n'")
+     "n'" | "'n'"
 }
 
 _VLS_ {
-     _ and _
-  |  _ALS_
+     and   |  _ALS_
 }
 
 _ALS_ {
-     oxford_comma _
-  |  _XLS_
+     oxford_comma |  _XLS_
 }
 
 _XLS_ {
-     ("," _? ("&" _?)?)
-  |  _nacton _?
-  |  _? "&" _?
-  |  _? "," _?
+     (","   ("&"  )?)
+  |  _nacton
+  |    "&"
+  |    ","
 }
 
 break_stmt {
@@ -170,48 +165,36 @@ continue_stmt {
 }
 
 wildcard {
-     (letter | _)* // LOOKAHEAD &EOS
+     letter* // LOOKAHEAD &EOS
 }
 
-EOB {
-     EOL _? EOL //LOOKAHEAD &EOL
-  |  EOL _  //LOOKAHEAD&EOL
-  |  (_  |  $[,?!.;])* EOL  //LOOKAHEAD &((_  |  [,?!.;])? EOL)
-  |  EOS* //LOOKAHEAD &(_? else)
-  |  EOS* ","? _? end (_
-  |  $[,?!.;])*
-  |  EOS* ","? _? end (_
-  |  $[,?!.;])*
-  |  EOS* ","? _? "o" //LOOKEAHAD &("o"+ "h")
-  |  EOF
-}
 
 consequent {
      EOS+ block EOB
-  |  _ statement
+  |  statement
 }
 
 if_test {
-     if _ expression (_ then)?
+     if expression then?
 }
 
 conditional {
-     if_test consequent _? else consequent
+     if_test consequent   else consequent
   |  if_test consequent EOS+ else consequent
-  |  if_test _ else consequent
+  |  if_test else consequent
   |  if_test EOS+ else consequent
-  |  if_test (_ then)? consequent
+  |  if_test  then? consequent
 }
 
 loop {
-     while _ expression consequent
-  |  until _ expression consequent
+     while expression consequent
+  |  until expression consequent
 }
 
 output_stmt {
-     debug _ expression
-  |  write _ expression
-  |  print _ expression
+     debug expression
+  |  write expression
+  |  print expression
 }
 
 binary_rhs {
@@ -220,7 +203,7 @@ binary_rhs {
 }
 
 index {
-     _ at _ numeric_expression
+     at numeric_expression
 }
 
 indexes {
@@ -234,20 +217,20 @@ assignable {
 }
 
 declaration {
-     let _ assignable _ be _operator_ expression_list
-  |  let _ assignable _ be _ expression
-  |  let _ assignable
+     let assignable be _operator_ expression_list
+  |  let assignable be expression
+  |  let assignable
 }
 
 assignment {
-     put _ expression _ into _ assignable
-  |  assignable _ says_ poetic_string
+     put expression into assignable
+  |  assignable says_ poetic_string
   |  assignable _is _operator_ expression_list
-  |  assignable _is _ now _ expression
-  |  assignable (_? "=" _?
-  |  _is _) v1_poetic_number
-  |  assignable (_? "=" _?
-  |  _is _) expression
+  |  assignable _is now expression
+  |  assignable (  "="
+  |  _is ) v1_poetic_number
+  |  assignable (  "="
+  |  _is ) expression
 }
 
 _operator_ {
@@ -261,53 +244,33 @@ says_ {
      says ( " "? )
 }
 
-poetic_string {
-     ("" $[^\r\n]+)
-}
-
 _is {
-     _is _ exactly
+     _is exactly
   |  ("'s"
   |  "'re"
-  |  _ is)
+  |  is)
 }
 
 _isnt {
-     _isnt _ exactly
-  |  (_is _ not
-  |  _ isnt)
+     _isnt exactly
+  |  (_is not
+  |  isnt)
 }
 
 variable {
-     (his _ !keyword identifier)
+     (his  identifier)
   |  pronoun
   |  proper_variable
-  |  (the _ identifier)
-  |  !keyword identifier
+  |  (the identifier)
+  |   identifier
 }
 
 proper_variable {
-     proper_noun (_ proper_noun)+
+     proper_noun proper_noun+
 }
 
 proper_noun {
      "Proper"
-}
-
-identifier {
-     letter (letter | $[0-9_])*
-}
-
-letter {
-     @asciiLetter
-}
-
-uppercase_letter {
-	@asciiUppercase
-}
-
-lowercase_letter {
-	@asciiLowercase
 }
 
 expression {
@@ -320,23 +283,23 @@ boolean {
 }
 
 binary_or {
-     binary_nor _ or _ binary_or
+     binary_nor or binary_or
   |  binary_nor
 }
 
 binary_nor {
-     binary_and _ nor _ binary_nor
+     binary_and nor binary_nor
   |  binary_and
 }
 
 binary_and {
-     equality _ and _ binary_and
+     equality and binary_and
   |  equality
 }
 
 equality {
      unary (_is
-  |  _isnt) _ equality
+  |  _isnt) equality
   |  unary
 }
 
@@ -346,9 +309,7 @@ unary {
 }
 
 not_ {
-     (not _
-  |  non _
-  |  non "-" )
+     (not | non | non "-" )
 }
 
 comparison {
@@ -357,16 +318,10 @@ comparison {
 }
 
 comparator {
-     (_? ">=" _?
-  |  _is _ as _ as_great _ as _)
-  |  (_? "<=" _?
-  |  _is _ as _ as_small _ as _)
-  |  (_? ">" _?
-  |  _is _ (above
-  |  more _ than) _)
-  |  (_? "<" _?
-  |  _is _ (under
-  |  less _ than) _)
+     (  ">="    |  _is as as_great as )
+  |  (  "<="    |  _is as as_small as )
+  |  (  ">"    |  _is (above | more than) )
+  |  (  "<"   | _is (under | less than) )
 }
 
 numeric_expression {
@@ -386,23 +341,23 @@ product {
 }
 
 _plus_ {
-     (_? "+" _?
-  |  _ plus _ )
+     (  "+"
+  |  plus )
 }
 
 _minus_ {
-     (_? "-" _?
-  |  _ minus _ )
+     (  "-"
+  |  minus )
 }
 
 _times_ {
-     (_? "*" _?
-  |  _ times _ )
+     (  "*"
+  |  times )
 }
 
 _divide_ {
-     (_? "|" _?
-  |  _ divided_by _ )
+     (  "|"
+  |  divided_by )
 }
 
 primary {
@@ -415,14 +370,14 @@ primary {
 }
 
 call_stmt {
-     call _ variable _ with _ argument_list _ into _ assignable
-  |  call _ variable _ with _ argument_list
-  |  call _ variable _ into _ assignable
-  |  call _ variable
+     call variable with argument_list into assignable
+  |  call variable with argument_list
+  |  call variable into assignable
+  |  call variable
 }
 
 function_call {
-     variable _ taking _ argument_list
+     variable taking argument_list
 }
 
 lookup {
@@ -431,11 +386,11 @@ lookup {
 }
 
 increment {
-     build _ variable ((_? ",")? _? up)+
+     build variable ((  ",")?   up)+
 }
 
 decrement {
-     knock _ variable ((_? ",")? _? down)+
+     knock variable ((  ",")?   down)+
 }
 
 mutator {
@@ -445,11 +400,11 @@ mutator {
 }
 
 mutation {
-     mutator _ expression _ into _ assignable _ using _ expression
-  |  mutator _ expression _ using _ expression _ into _ assignable
-  |  mutator _ expression _ into _ assignable
-  |  mutator _ assignable _ using _ expression
-  |  mutator _ assignable
+     mutator expression into assignable using expression
+  |  mutator expression using expression into assignable
+  |  mutator expression into assignable
+  |  mutator assignable using expression
+  |  mutator assignable
 }
 
 rounding {
@@ -459,18 +414,18 @@ rounding {
 }
 
 floor {
-     turn _ variable _ down
-  |  turn _ down _ variable
+     turn variable down
+  |  turn down variable
 }
 
 ceil {
-     turn _ variable _ up
-  |  turn _ up _ variable
+     turn variable up
+  |  turn up variable
 }
 
 math_round {
-     turn _ variable _ around
-  |  turn _ around _ variable
+     turn variable around
+  |  turn around variable
 }
 
 constant {
@@ -482,17 +437,12 @@ constant {
 }
 
 number {
-     like _ poetic_number
+     like poetic_number
   |  digits
 }
 
-digits {
-     ("" (("-" |"+")? $[0-9]+ ("." $[0-9]+)?)
-  |  (("-" |"+")? "." $[0-9]+))
-}
-
 poetic_number {
-     poetic_digits _? ("..." |  "…") _ poetic_digits
+     poetic_digits   ("..." |  "…") poetic_digits
   |  poetic_digits
 }
 
@@ -501,12 +451,8 @@ v1_digit_filter {
 }
 
 v1_poetic_number {
-     _? poetic_digits _? (".") _ poetic_digits
-  |  _? poetic_digits
-}
-
-PDS {
-     ("" _ |  $[0-9\",;:?!+_|] )
+       poetic_digits   (".") poetic_digits
+  |    poetic_digits
 }
 
 poetic_digits {
@@ -514,17 +460,10 @@ poetic_digits {
   |  poetic_digit
 }
 
-poetic_digit {
-     ("" (letter | $[\-"])+)
-}
-
 string {
      quoted_string+
 }
 
-quoted_string {
-     "\"" (!["]*) "\""
-}
 
 keywords_which_can_begin_an_expression {
      plus
@@ -587,14 +526,68 @@ keyword {
   |  up
   |  while
 }
-
-_ {	"" (whitespace |  comment)+ }
+_ {	(whitespace |  comment)+ }
 
 whitespace {
 	$[ \t]
 }
 
 @tokens {
+
+	@precedence { _nacton, primary_list, statement, function_call }
+
+	poetic_string {
+		("" $[^\r\n]+)
+   }
+
+
+	EOB {
+		EOL   EOL //LOOKAHEAD &EOL
+	 |  EOL  //LOOKAHEAD&EOL
+	 |  $[,?!.;]* EOL  //LOOKAHEAD &(  |  [,?!.;])? EOL)
+	 |  EOS* //LOOKAHEAD &(  else)
+	 |  EOS* ","?   end    |  $[,?!.;]*
+	 |  EOS* ","?   end    |  $[,?!.;]*
+	 |  EOS* ","?   "o" //LOOKEAHAD &("o"+ "h")
+	 |  EOF
+   }
+
+
+	digits {
+		("" (("-" |"+")? $[0-9]+ ("." $[0-9]+)?)
+	 |  (("-" |"+")? "." $[0-9]+))
+   }
+
+
+	poetic_digit {
+		("" (letter | $[\-"])+)
+   }
+
+	PDS {
+		("" |  $[0-9\",;:?! ] )
+   }
+
+	quoted_string {
+		"\"" (!["]*) "\""
+   }
+
+
+	identifier {
+		letter (letter | $[0-9_])*
+   }
+
+	letter {
+		@asciiLetter
+   }
+
+   uppercase_letter {
+	   @asciiUppercase
+   }
+
+   lowercase_letter {
+	   @asciiLowercase
+   }
+
 
 comment {
      "#" $[^\n]* "\n"
@@ -605,15 +598,15 @@ comment {
 
 EOS {
      $[,.?!;: \t]* EOL
-  |  _? $[,.?!;:]
+  |    $[,.?!;:]
 }
 
 EOL {
-     _? "\r"? "\n"
+       "\r"? "\n"
 }
 
 EOF {
-     EOS* _? @eof
+     EOS*   @eof
 }
 
 above {
@@ -681,7 +674,7 @@ debug {
 }
 
 divided_by {
-     "divided" _ "by"
+     "divided" "by"
   |  "between"
   |  over
 }

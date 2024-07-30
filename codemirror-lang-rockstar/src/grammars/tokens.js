@@ -1,35 +1,50 @@
-// import { ExternalTokenizer } from "@lezer/lr"
-// import * as tokens from "./rockstar.terms.js"
+import { ExternalTokenizer } from "@lezer/lr"
+import * as tokens from "./rockstar.terms.js"
+
 // import { Keywords } from "./keywords.js"
 
 // const FULL_STOP = 46;
 
-// function CreateTokenizer(token, tokens) {
-// 	tokens = (typeof(tokens) == "string" ? tokens : Object.values(tokens).flat());
-// 	return new ExternalTokenizer((input, stack) => {
-// 		var codes = readNextWord(input);
-// 		var token = String.fromCodePoint(...codes);
-// 		if (tokens.includes(token.toLowerCase())) return input.acceptToken(token);
-// 	});
-// }
+function CreateTokenizer(token, lexemes) {
+	lexemes = (typeof(lexemes) == "string" ? lexemes : Object.values(lexemes).flat());
+	return new ExternalTokenizer((input, stack) => {
+		var codes = readNextWord(input);
+		var lexeme = String.fromCodePoint(...codes);
+		if (lexemes.includes(lexeme.toLowerCase())) {
+			console.log('"' + lexeme + '" looks like a ' + token);
+			return input.acceptToken(token);
+		}
+	});
+}
+
+export const Output = CreateTokenizer(tokens.Output, [ "print", "say", "shout", "scream", "whisper" ]);
+
 // export const Constant = CreateTokenizer(tokens.Constant, Keywords.Constants);
 // // export const ArithmeticOperator = CreateTokenizer(tokens.ArithmeticOperator, Keywords.ArithmeticOperators)
 // export const Pronoun = CreateTokenizer(tokens.Pronoun, Keywords.Pronouns);
 
-// export const output = CreateTokenizer(tokens.listen, [ "say", "shout", "scream", "whisper" ]);
 // export const listen = CreateTokenizer(tokens.listen, "listen");
 // export const to = CreateTokenizer(tokens.listen, "to");
 
-// function readNextWord(input) {
-// 	var codes = [];
-// 	var code = -1;
-// 	while(input.next >= 0) {
-// 		if (code < 0 || spaceCodes.includes(code)) break;
-// 		codes.push(code);
-// 		input.advance()
-// 	}
-// 	return codes;
-// }
+const whitespace = " \t";
+const spaceCodes = stringToCharCodeArray(whitespace);
+
+function readNextWord(input) {
+	var codes = [];
+	while(input.next >= 0) {
+		if (input.next < 0 || spaceCodes.includes(input.next)) break;
+		codes.push(input.next);
+		input.advance()
+	}
+	return codes;
+}
+
+function stringToCharCodeArray(s) {
+	var result = [];
+	for (var i = 0; i < s.length; i++) result.push(s.charCodeAt(i));
+	return result;
+}
+
 
 // // export const variable = new ExternalTokenizer((input, stack) => {
 // // 	var tokenTo = properVariable(input);
@@ -119,20 +134,12 @@
 // // // return String.fromCodePoint(...codes);
 // // // }
 
-// const whitespace = " \t";
-// const spaceCodes = stringToCharCodeArray(whitespace);
 
 // const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ";
 // const lowers = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįi̇ĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß";
 // const upperCodes = stringToCharCodeArray(uppers);
 // const lowerCodes = stringToCharCodeArray(lowers);
 // const alphaCodes = upperCodes.concat(lowerCodes);
-
-// function stringToCharCodeArray(s) {
-// 	var result = [];
-// 	for (var i = 0; i < s.length; i++) result.push(s.charCodeAt(i));
-// 	return result;
-// }
 
 // function isKeyword(codes) {
 // 	var token = String.fromCodePoint(...codes);

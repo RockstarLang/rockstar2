@@ -26066,23 +26066,29 @@ function getSpecializer(spec) {
 const OutputToken = 1;
 
 // import { Keywords } from "./keywords.js"
-
 // const FULL_STOP = 46;
 
 function CreateTokenizer(token, lexemes) {
 	lexemes = (typeof(lexemes) == "string" ? lexemes : Object.values(lexemes).flat());
-	return new ExternalTokenizer((input, stack) => {
+	return (input, stack) => {
 		var codes = readNextWord(input);
 		var lexeme = String.fromCodePoint(...codes);
 		if (lexemes.includes(lexeme.toLowerCase())) {
-			console.log('"' + lexeme + '" looks like a ' + token);
+			console.log('"' + lexeme + '" looks like a token! ' + token);
 			return input.acceptToken(token);
 		}
-	});
+	};
 }
 
-const OutputFinder = CreateTokenizer(OutputToken, [ "print", "say", "shout", "scream", "whisper" ]);
+const OutputTokenizer = CreateTokenizer(OutputToken, [ "print", "say", "shout", "scream", "whisper" ]);
 
+const OutputFinder = new ExternalTokenizer(OutputTokenizer);
+
+// export const ProperVariableFinder = new ExternalTokenizer((input, stack) => {
+
+// })
+
+// export const CommonVariableFinder
 // export const Constant = CreateTokenizer(tokens.Constant, Keywords.Constants);
 // // export const ArithmeticOperator = CreateTokenizer(tokens.ArithmeticOperator, Keywords.ArithmeticOperators)
 // export const Pronoun = CreateTokenizer(tokens.Pronoun, Keywords.Pronouns);
@@ -26109,6 +26115,10 @@ function stringToCharCodeArray(s) {
 	return result;
 }
 
+const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ";
+const lowers = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįi̇ĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß";
+stringToCharCodeArray(uppers);
+stringToCharCodeArray(lowers);
 
 // // export const variable = new ExternalTokenizer((input, stack) => {
 // // 	var tokenTo = properVariable(input);
@@ -26129,23 +26139,6 @@ function stringToCharCodeArray(s) {
 // // 	// return -1;
 // // }
 
-// // function properVariable(input) {
-// // 	var tokenTo = -1;
-// // 	let codes = [];
-// // 	var i = 0;
-// // 	while (input.peek(i) > 0) {
-// // 		codes = [];
-// // 		if (!upperCodes.includes(input.peek(i))) break;
-// // 		codes.push(input.peek(i));
-// // 		while (alphaCodes.includes(input.peek(++i))) codes.push(input.peek(i));
-// // 		if (isKeyword(codes)) break;
-// // 		console.log(String.fromCodePoint(...codes));
-// // 		tokenTo = i;
-// // 		if (FULL_STOP == input.peek(i)) i++;
-// // 		while (spaceCodes.includes(input.peek(++i)));
-// // 	}
-// // 	return tokenTo;
-// // }
 
 // // const prefixes = [ "a", "an", "the", "my", "your", "his", "her", "their" ];
 // // const prefixCodes =  prefixes.map(s => stringToCharCodeArray(s));
@@ -26199,11 +26192,6 @@ function stringToCharCodeArray(s) {
 // // // }
 
 
-// const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ";
-// const lowers = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįi̇ĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß";
-// const upperCodes = stringToCharCodeArray(uppers);
-// const lowerCodes = stringToCharCodeArray(lowers);
-// const alphaCodes = upperCodes.concat(lowerCodes);
 
 // function isKeyword(codes) {
 // 	var token = String.fromCodePoint(...codes);

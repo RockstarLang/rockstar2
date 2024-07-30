@@ -30,30 +30,5 @@ function makeStyles() {
 	for (var i = 0; i < tags.length; i++) {
 		result.push({ tag: tags[i], color: `hsl(${i * 19} 100 50)`});
 	}
-	// const ZERO = 0x99;
-	// const BUMP = 0x33;
-	// var red = ZERO;
-	// var green = ZERO;
-	// var blue = ZERO;
-	// for (var i = 0; i < tags.length; i++) {
-	// 	// var random = (red <= blue && green <= blue ? 0 : green <= red && green <= blue ? 1 : 2); // Math.floor(Math.random() * 3);
-	// 	var rgb =
-	// 		(red + 256).toString(16).substring(1, 3)
-	// 		+
-	// 		(green + 256).toString(16).substring(1, 3)
-	// 		+
-	// 		(blue + 256).toString(16).substring(1, 3);
-	// 	result.push({ tag: tags[i], color: `#${rgb}` })
-	// 	red += BUMP;
-	// 	if (red > 255) {
-	// 		red = ZERO;
-	// 		green += BUMP;
-	// 		if (green > 255) {
-	// 			green = ZERO;
-	// 			blue += BUMP;
-	// 			if (blue > 255) blue = ZERO;
-	// 		}
-	// 	}
-	// }
 	return result;
 }

@@ -17,7 +17,7 @@ function CreateTokenizer(token, lexemes) {
 	});
 }
 
-export const Output = CreateTokenizer(tokens.Output, [ "print", "say", "shout", "scream", "whisper" ]);
+export const OutputFinder = CreateTokenizer(tokens.OutputToken, [ "print", "say", "shout", "scream", "whisper" ]);
 
 // export const Constant = CreateTokenizer(tokens.Constant, Keywords.Constants);
 // // export const ArithmeticOperator = CreateTokenizer(tokens.ArithmeticOperator, Keywords.ArithmeticOperators)

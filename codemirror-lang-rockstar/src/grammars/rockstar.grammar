@@ -16,9 +16,9 @@ statement {
 
 listen_stmt { Listen To VariableName }
 
-output_stmt { Output VariableName }
+output_stmt { OutputToken VariableName }
 
-@external tokens Output from "./tokens" { Output }
+@external tokens OutputFinder from "./tokens" { OutputToken }
 
 @tokens {
 	Listen { "Listen" }

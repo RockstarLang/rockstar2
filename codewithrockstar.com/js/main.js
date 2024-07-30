@@ -30,7 +30,9 @@ function executeProgram(program, editorId) {
 }
 
 function replaceElementWithEditor(element, languageSupport, theme) {
-	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, languageSupport(), theme] });
+	var language = languageSupport();
+	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, language, theme] });
+	console.log(language.language.parser.parse(element.innerText).toString());
 	element.parentNode.insertBefore(view.dom, element);
 	element.style.display = "none";
 	return view;

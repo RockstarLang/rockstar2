@@ -4,19 +4,26 @@ layout: home
 nav_order: "1000"
 ---
 
-Run some Rockstar:
+Run some Rockstar at {{ site.time }}:
 
 ```rockstar
-# let's get rocked!
-say "hello world" (yeah!)
+
+# a line comment
+(block comment)
+Listen to the sound
+A variable is true
+Proper Variable is false
 Johnny B. Goode is 123
-JRR Tolkein is 456
-Let my heroes [Am] be Johnny B. Goode with [Dmaj7] JRR Tolkein
+Shout the sound, shout my dreams, shout Johnny B. Goode
+say "hello world" (yeah!)
+JRR Tolkien is 456
+Let my heroes [Am] be Johnny B. Goode with [Dmaj7] JRR Tolkien
 A girl is laughing
 A boy is without a girl
 A function takes a boy and a girl
-Give back a boy with a girl
-
+Give back a boy with a girl, yeah
+Cast a boy into the fire
+Turn up the radio
 ```
 
 Well... do you wanna get rocked?

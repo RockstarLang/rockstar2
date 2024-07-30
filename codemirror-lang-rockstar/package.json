@@ -12,7 +12,7 @@
 				"src/grammars/rockstar.js",
 				"src/grammars/rockstar.terms.js"
 			],
-			"extensions": "js,grammar,ts"
+			"extensions": "js,grammar,ts,mjs"
 		}
 	},
 	"scripts": {

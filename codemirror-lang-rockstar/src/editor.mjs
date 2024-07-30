@@ -1,12 +1,13 @@
 import { EditorView, basicSetup } from "codemirror"
 import { Rockstar } from "./rockstar"
-import { KitchenSink } from"./kitchen-sink"
+import { KitchenSink } from "./kitchen-sink"
 
 import { kitchenSink, blackSabbath, cobalt, dracula, espresso, solarizedLight } from "./themes";
 
-export { EditorView, basicSetup,
+export {
+	EditorView, basicSetup,
 	// Languages
-	 KitchenSink,
+	KitchenSink,
 	Rockstar,
 	// themes
 	kitchenSink,

@@ -2,6 +2,8 @@ import { styleTags, tags } from "@lezer/highlight"
 
 export const highlighting = styleTags({
 	Listen: tags.keyword,
+	to: tags.keyword,
+	Keyword: tags.keyword,
 	OutputToken: tags.keyword,
 	To: tags.keyword,
 	VariableName: tags.variableName,

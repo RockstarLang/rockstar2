@@ -20,14 +20,14 @@ export const KeywordTokenizer = new ExternalTokenizer((input, stack) => {
 	var codes = readNextWord(input);
 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
 	switch(lexeme) {
-		case "listen": input.acceptToken(tokens.Listen);
-		case "burn": input.acceptToken(tokens.Burn);
-		case "to": input.acceptToken(tokens.To);
-		case "the": input.acceptToken(tokens.The);
+		case "listen": return input.acceptToken(tokens.Listen);
+		case "burn": return input.acceptToken(tokens.burn);
+		case "to": return input.acceptToken(tokens.to);
+		case "the": return input.acceptToken(tokens.the);
 	}
 });
 
-export const OutputTokenizer = CreateTokenizer(tokens.OutputToken, [ "print", "say", "shout", "scream", "whisper" ])
+export const OutputTokenizer = CreateTokenizer(tokens.output, [ "print", "say", "shout", "scream", "whisper" ])
 
 export const OutputFinder = new ExternalTokenizer(OutputTokenizer);
 

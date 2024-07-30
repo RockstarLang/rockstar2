@@ -10,13 +10,13 @@ block { statement (EOS statement)* }
 comment { LineComment | BlockComment }
 
 statement {
-	listen_stmt
-	| output_stmt
+	ListenStatement
+	| OutputStatement
 }
 
-listen_stmt { Listen To VariableName }
+ListenStatement { Listen to VariableName }
 
-output_stmt { OutputToken VariableName }
+OutputStatement { output VariableName }
 
 // OutputToken { KeywordToken }
 // DonkeyToken { KeywordToken }
@@ -26,9 +26,10 @@ output_stmt { OutputToken VariableName }
 // The { KeywordToken }
 
 // @external tokens OutputFinder from "./rockstar-tokenizer" { OutputToken }
-@external tokens KeywordTokenizer from "./rockstar-tokenizer" { Listen, To, Burn, The, OutputToken }
+@external tokens KeywordTokenizer from "./rockstar-tokenizer" { Listen, to, burn, the, output }
 
 @tokens {
+	// Keyword { listen | to | burn | the | output }
 	VariableName { "the sound" }
 	@precedence { EOS EOB }
 	EOB { EOS EOS+ }

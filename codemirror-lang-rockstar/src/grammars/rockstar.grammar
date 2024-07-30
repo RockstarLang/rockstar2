@@ -18,11 +18,17 @@ listen_stmt { Listen To VariableName }
 
 output_stmt { OutputToken VariableName }
 
-@external tokens OutputFinder from "./rockstar-tokenizer" { OutputToken }
+// OutputToken { KeywordToken }
+// DonkeyToken { KeywordToken }
+// Listen { KeywordToken }
+// To { KeywordToken }
+// Burn { KeywordToken }
+// The { KeywordToken }
+
+// @external tokens OutputFinder from "./rockstar-tokenizer" { OutputToken }
+@external tokens KeywordTokenizer from "./rockstar-tokenizer" { Listen, To, Burn, The, OutputToken }
 
 @tokens {
-	Listen { "Listen" }
-	To { "to" }
 	VariableName { "the sound" }
 	@precedence { EOS EOB }
 	EOB { EOS EOS+ }

@@ -16,6 +16,17 @@ function CreateTokenizer(token, lexemes) {
 	};
 }
 
+export const KeywordTokenizer = new ExternalTokenizer((input, stack) => {
+	var codes = readNextWord(input);
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	switch(lexeme) {
+		case "listen": input.acceptToken(tokens.Listen);
+		case "burn": input.acceptToken(tokens.Burn);
+		case "to": input.acceptToken(tokens.To);
+		case "the": input.acceptToken(tokens.The);
+	}
+});
+
 export const OutputTokenizer = CreateTokenizer(tokens.OutputToken, [ "print", "say", "shout", "scream", "whisper" ])
 
 export const OutputFinder = new ExternalTokenizer(OutputTokenizer);

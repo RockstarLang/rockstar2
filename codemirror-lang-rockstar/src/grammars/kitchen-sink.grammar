@@ -1,4 +1,4 @@
-@external propSource highlighting from "./highlight.js"
+@external propSource highlighting from "./kitchen-sink-highlight.js"
 
 //!top
 

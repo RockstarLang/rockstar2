@@ -1,27 +1,36 @@
-@external propSource highlighting from "./highlight.js"
+@external propSource highlighting from "./rockstar-highlight.js"
 
-@top Program { expression* }
+@top Program { EOS* block (EOB block)*
+	| EOS* block EOF }
+
+block { statement (EOS statement)* }
 
 @skip { space | comment }
 
 comment { LineComment | BlockComment }
 
-expression {
-//  Identifier |
-  String
-//  Boolean
-  // Application { "(" expression* ")" }
+statement {
+	listen_stmt
+	| output_stmt
 }
 
+listen_stmt { Listen To VariableName }
+output_stmt { Output expression }
+expression { VariableName | }
+
 @tokens {
-//	@precedence { LineComment Boolean Identifier }
+	Listen { "Listen" }
+	To { "to" }
+	VariableName { "the sound" }
+	@precedence { EOS EOB }
+	EOB { EOS EOS+ }
+	EOS { "\r"? "\n" }
 	LineComment { "#" ![\n]* "\n" }
-//	Literal { "Listen to the sound" }
-//	Identifier { $[a-zA-Z_\-0-9]+ }
 	String { '"' (!["\\] | "\\" _)* '"' }
 	Boolean { "true" | "false" }
 	BlockComment { "(" ![\)]* ")" | "{" ![\}]* "}" | "[" ![\]]* "]" }
-	space { $[ \t\n\r]+ }
+	space { $[ \t]+ }
+	EOF { @eof }
 }
 
 @detectDelim

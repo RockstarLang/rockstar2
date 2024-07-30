@@ -3,19 +3,20 @@ import { LRLanguage, LanguageSupport, indentNodeProp, foldNodeProp, foldInside, 
 import { styleTags, tags as t } from "@lezer/highlight"
 
 export const RockstarLanguage = LRLanguage.define({
-	parser: parser.configure({
-		props: [
-			indentNodeProp.add({
-				Application: delimitedIndent({ closing: ")", align: false })
-			}),
-			foldNodeProp.add({
-				Application: foldInside
-			}),
-		]
-	}),
-	languageData: {
-		commentTokens: { line: ";" }
-	}
+	parser: parser.configure({})
+	// {
+	// 	props: [
+	// 		indentNodeProp.add({
+	// 			Application: delimitedIndent({ closing: ")", align: false })
+	// 		}),
+	// 		foldNodeProp.add({
+	// 			Application: foldInside
+	// 		}),
+	// 	]
+	// }),
+	// languageData: {
+	// 	commentTokens: { line: ";" }
+	// }
 })
 
 export function Rockstar() {

@@ -26,8 +26,8 @@ function makeStyles() {
 	t.link, t.monospace, t.strikethrough, t.inserted, t.deleted, t.changed, t.invalid, t.meta, t.documentMeta, t.annotation, t.processingInstruction,
 	t.definition(t.name), t.constant(t.name), t.function(t.name), t.standard(t.name), t.local(t.name), t.special(t.name)
 	];
-	const ZERO = 0x33;
-	const BUMP = 0x66;
+	const ZERO = 0x99;
+	const BUMP = 0x33;
 	var red = ZERO;
 	var green = ZERO;
 	var blue = ZERO;

@@ -29,9 +29,22 @@ function executeProgram(program, editorId) {
 	worker.postMessage({ program: program, editorId: editorId });
 }
 
+function makeParseTreeLogger(parser) {
+	return function logParseTree(viewUpdate) {
+		if (viewUpdate.docChanged) {
+			var source = viewUpdate.state.doc.toString();
+			console.log(parser.parse(source).toString());
+		}
+	};
+}
 function replaceElementWithEditor(element, languageSupport, theme) {
 	var language = languageSupport();
-	let view = new EditorView({ doc: element.innerText, extensions: [basicSetup, language, theme] });
+	var logger = makeParseTreeLogger(language.language.parser);
+	let view = new EditorView({
+		doc: element.innerText, extensions: [
+			basicSetup, language, theme,
+			EditorView.updateListener.of(logger.bind(this))
+		] });
 	console.log(language.language.parser.parse(element.innerText).toString());
 	element.parentNode.insertBefore(view.dom, element);
 	element.style.display = "none";

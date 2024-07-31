@@ -30,13 +30,36 @@ function executeProgram(program, editorId) {
 }
 
 function makeParseTreeLogger(parser) {
+	var textarea = document.getElementById('parseTreeTextarea');
 	return function logParseTree(viewUpdate) {
 		if (viewUpdate.docChanged) {
 			var source = viewUpdate.state.doc.toString();
-			console.log(parser.parse(source).toString());
+			logTree(parser.parse(source), textarea);
 		}
 	};
 }
+function logTree(tree, targetElement) {
+	tree = tree.toString();
+	var output = [];
+	var indent = "";
+	for(var i = 0; i < tree.length; i++) {
+		if (tree[i] == '(') {
+			indent += "  ";
+			output.push('\n' + indent);
+		} else if (tree[i] == ')') {
+			indent = indent.substring(2);
+			output.push('\n');
+			while(tree[i+1] == ')') {
+				indent = indent.substring(2);
+				i++;
+			}
+		} else {
+			output.push(tree[i]);
+		}
+	}
+	targetElement.value = output.join('');
+}
+
 function replaceElementWithEditor(element, languageSupport, theme) {
 	var language = languageSupport();
 	var logger = makeParseTreeLogger(language.language.parser);
@@ -45,7 +68,7 @@ function replaceElementWithEditor(element, languageSupport, theme) {
 			basicSetup, language, theme,
 			EditorView.updateListener.of(logger.bind(this))
 		] });
-	console.log(language.language.parser.parse(element.innerText).toString());
+	logTree(language.language.parser.parse(element.innerText), document.getElementById('parseTreeTextarea'));
 	element.parentNode.insertBefore(view.dom, element);
 	element.style.display = "none";
 	return view;

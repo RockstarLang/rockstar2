@@ -1,6 +1,6 @@
 import * as tokens from "../grammars/rockstar.terms.js"
 
-const aliases = new Map();
+
 const ASCII = {
 	FullStop: 46
 };
@@ -13,55 +13,73 @@ export function tokenizeKeyword(input) {
 	}
 }
 
-export function tokenizePronoun(input) {
+export function tokenizeVariable(input) {
 	var codes = readNextWord(input);
-	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-	if (aliases.get(tokens.Pronoun).includes(lexeme)) return input.acceptToken(tokens.Pronoun);
-}
-
-export function tokenizeSimpleVariable(input) {
-	var codes = readNextWord(input);
-	if (! isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
-}
-
-export function tokenizeCommonVariable(input) {
-	var codes = readNextWord(input);
-	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-	if (aliases.get(tokens.The).includes(lexeme)) {
-		input.advance();
-		codes = readNextWord(input);
+	if (! codes.length) return;
+	var lexeme = String.fromCodePoint(...codes);
+	if (aliases.get(tokens.The).includes(lexeme.toLowerCase())) {
+		readNextWord(input);
 		return input.acceptToken(tokens.CommonVariable);
 	}
-	if (aliases.get(tokens.His).includes(lexeme)) {
-		input.advance();
+	if (aliases.get(tokens.His).includes(lexeme.toLowerCase())) {
 		codes = readNextWord(input);
-		console.log(codes);
-		if (! isKeyword(codes)) return input.acceptToken(tokens.CommonVariable);
+		if (codes.length == 0 || isKeyword(codes)) return input.acceptToken(tokens.Pronoun);
+		return input.acceptToken(tokens.CommonVariable);
 	}
-}
-export function tokenizeProperVariable(input) {
+	if (aliases.get(tokens.Pronoun).includes(lexeme.toLowerCase())) return input.acceptToken(tokens.Pronoun);
+	if (isKeyword(codes)) return;
 	var tokenTo = -1;
-	let codes = [];
-	var i = 0;
-	while (input.next > 0) {
-		codes = [];
-		if (!upperCodes.includes(input.next)) break;
-		codes.push(input.peek(i));
-		while (alphaCodes.includes(input.advance())) codes.push(input.next);
-		if (isKeyword(codes)) break;
-		tokenTo = i;
-		if (ASCII.FullStop == input.peek(i)) i++;
-		while (whitespaceCodes.includes(input.peek(++i)));
+	while (codes.length) {
+		if (upperCodes.includes(codes[0])) {
+			if (isKeyword(codes)) break;
+			while (input.next == ASCII.FullStop) input.advance();
+			while (whitespaceCodes.includes(input.next)) input.advance();
+			tokenTo = input.pos;
+		}
+		codes = readNextWord(input);
 	}
-	if (tokenTo >= 0) input.acceptTokenTo(tokens.ProperVariable, tokenTo);
+	if (tokenTo >= 0) return input.acceptTokenTo(tokens.ProperVariable, tokenTo);
+	if (!isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
 }
+
+// export function tokenizePronoun(input) {
+// 	var codes = readNextWord(input);
+// 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+
+// }
+
+// export function tokenizeSimpleVariable(input) {
+// 	var codes = readNextWord(input);
+// 	if (! isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
+// }
+
+// export function tokenizeCommonVariable(input) {
+// 	var codes = readNextWord(input);
+// 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+
+
+// }
+// export function tokenizeProperVariable(input) {
+// 	var tokenTo = -1;
+// 	let codes = [];
+// 	var i = 0;
+// 	while (input.next > 0) {
+// 		codes = [];
+// 		if (!upperCodes.includes(input.next)) break;
+// 		codes.push(input.peek(i));
+// 		while (alphaCodes.includes(input.advance())) codes.push(input.next);
+// 		if (isKeyword(codes)) break;
+// 		tokenTo = i;
+// 		console.log(String.fromCodePoint(...codes));
+// 		if (ASCII.FullStop == input.peek(i)) i++;
+// 		while (whitespaceCodes.includes(input.peek(++i)));
+// 	}
+// 	if (tokenTo >= 0) input.acceptTokenTo(tokens.ProperVariable, tokenTo);
+// }
 
 function isKeyword(codes) {
 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-	for (const [key, value] of aliases) {
-		if (value.includes(lexeme)) return true;
-	}
-	return false;
+	return keywords.includes(lexeme);
 }
 
 const whitespace = " \t";
@@ -69,10 +87,10 @@ const whitespaceCodes = stringToCharCodeArray(whitespace);
 
 function readNextWord(input) {
 	let codes = [];
-	while (input.next >= 0) {
-		if (whitespaceCodes.includes(input.next)) break;
+	while (whitespaceCodes.includes(input.next)) input.advance();
+	while(alphaCodes.includes(input.next)) {
 		codes.push(input.next);
-		input.advance()
+		input.advance();
 	}
 	return codes;
 }
@@ -89,6 +107,7 @@ const upperCodes = stringToCharCodeArray(uppers);
 const lowerCodes = stringToCharCodeArray(lowers);
 const alphaCodes = upperCodes.concat(lowerCodes);
 
+const aliases = new Map();
 aliases.set(tokens.Above, ['above', 'over']);
 aliases.set(tokens.And, ['and']);
 aliases.set(tokens.Around, ['around', 'round']);
@@ -158,166 +177,4 @@ aliases.set(tokens.While, ['while']);
 aliases.set(tokens.With, ['with']);
 aliases.set(tokens.Write, ['write']);
 
-// export const OutputTokenizer = CreateTokenizer(tokens.output, [ "print", "say", "shout", "scream", "whisper" ])
-
-// export const OutputFinder = new ExternalTokenizer(OutputTokenizer);
-
-// export const ProperVariableFinder = new ExternalTokenizer((input, stack) => {
-
-// })
-// function CreateTokenizer(token, lexemes) {
-// 	lexemes = (typeof(lexemes) == "string" ? lexemes : Object.values(lexemes).flat());
-// 	return (input, stack) => {
-// 		var codes = readNextWord(input);
-// 		var lexeme = String.fromCodePoint(...codes);
-// 		if (lexemes.includes(lexeme.toLowerCase())) {
-// 			console.log('"' + lexeme + '" looks like a token! ' + token);
-// 			return input.acceptToken(token);
-// 		}
-// 	};
-// }
-
-
-// export const CommonVariableFinder
-// export const Constant = CreateTokenizer(tokens.Constant, Keywords.Constants);
-// // export const ArithmeticOperator = CreateTokenizer(tokens.ArithmeticOperator, Keywords.ArithmeticOperators)
-// export const Pronoun = CreateTokenizer(tokens.Pronoun, Keywords.Pronouns);
-
-// export const listen = CreateTokenizer(tokens.listen, "listen");
-// export const to = CreateTokenizer(tokens.listen, "to");
-
-
-// // export const variable = new ExternalTokenizer((input, stack) => {
-// // 	var tokenTo = properVariable(input);
-// // 	if (tokenTo > 1) return input.acceptTokenTo(tokens.properVariable, tokenTo);
-// // 	//tokenTo = commonVariable(input);
-// // 	//if (tokenTo > 1) return input.acceptTokenTo(tokens.commonVariable, tokenTo);
-// // });
-
-// // function commonVariable(input) {
-// // 	return -1;
-// // 	// var nextWord = peekNextWord(input);
-// // 	// if (prefixCodes.includes(nextWord)) return 5;
-// // 	// {
-// // 	// 	input.advance(nextWord.length);
-// // 	// 	input.advance(peekNextWord(input).length);
-// // 	// 	return input.pos;
-// // 	// }
-// // 	// return -1;
-// // }
-
-
-// // const prefixes = [ "a", "an", "the", "my", "your", "his", "her", "their" ];
-// // const prefixCodes =  prefixes.map(s => stringToCharCodeArray(s));
-
-// // function peekNextWord(input) {
-// // 	var i = 0;
-// // 	var codes = [];
-// // 	var code = -1;
-// // 	while(true) {
-// // 		code = input.peek(i);
-// // 		console.log(code);
-// // 		if (code < 0 || spaceCodes.includes(code)) {
-// // 			console.log(String.fromCodePoint(...codes));
-// // 			return codes;
-// // 		}
-// // 		codes.push(code);
-// // 		i++;
-// // 	}
-// // }
-
-
-
-// // // var codes = [];
-// // // while (input.advance() >= 0) codes.push(input.next);
-// // // console.log(String.fromCodePoint(...codes));
-// // // input.acceptToken(properVariable);
-
-// // 	// while (true) {
-// // 	// var word = readNextWord(input);
-// // 	// if (word != "") console.log(word);
-// // 	//
-// // //};
-
-// // // while (true) {
-// // // var codes = [];
-// // // if (upperCodes.includes(input.next)) {
-// // // codes.push(input.next);
-// // // while (alphaCodes.includes(input.advance())) codes.push(input.next);
-// // // if (isKeyword(codes)) return;
-// // // while (spaceCodes.includes(input.advance())) codes.push(input.next);
-// // //
-// // 	//}
-// // // input.acceptToken(properVariable);
-// // //
-// // //});
-
-// // // function readNextWord(input) {
-// // // var codes = [];
-// // // while (alphaCodes.includes(input.advance())) codes.push(input.next);
-// // // return String.fromCodePoint(...codes);
-// // // }
-
-
-
-// function isKeyword(codes) {
-// 	var token = String.fromCodePoint(...codes);
-// 	return keywords.includes(token.toLowerCase());
-// }
-
-// const aliases = {
-// 	above: ['above', 'over'],
-// 	and: ['and'],
-// 	around: ['around', 'round'],
-// 	as: ['as'],
-// 	at: ['at'],
-// 	back: ['back'],
-// 	be: ['be'],
-// 	break: ['break'],
-// 	build: ['build'],
-// 	call: ['call'],
-// 	cast: ['cast', 'burn'],
-// 	continue: ['continue', 'take'],
-// 	debug: ['debug'],
-// 	down: ['down'],
-// 	else: ['else', 'otherwise'],
-// 	end: ['end', 'yeah', 'baby', 'oh'],
-// 	if: ['if', 'when'],
-// 	into: ['into', 'in'],
-// 	join: ['join', 'unite'],
-// 	knock: ['knock'],
-// 	let: ['let'],
-// 	like: ['like', 'so'],
-// 	listen: ['listen'],
-// 	mysterious: ['mysterious'],
-// 	non: ['non'],
-// 	nor: ['nor'],
-// 	not: ['not'],
-// 	now: ['now'],
-// 	null: ['null', 'nothing', 'nowhere', 'nobody', 'gone'],
-// 	or: ['or'],
-// 	over: ['over'],
-// 	pop: ['roll', 'pop'],
-// 	print: ["print", "shout", "say", "scream", "whisper"],
-// 	push: ['rock', 'push'],
-// 	put: ['put'],
-// 	return: ['return', 'giving', 'give', 'send'],
-// 	says: ['say', 'says', 'said'],
-// 	split: ['cut', 'split', 'shatter'],
-// 	takes: ['takes', 'wants'],
-// 	taking: ['taking'],
-// 	than: ['than'],
-// 	the: ['an', 'a', 'the', 'my', 'your', 'our'],
-// 	then: ['then'],
-// 	to: ['to'],
-// 	turn: ['turn'],
-// 	under: ['under', 'below'],
-// 	until: ['until'],
-// 	up: ['up'],
-// 	using: ['using', 'with'],
-// 	while: ['while'],
-// 	with: ['with'],
-// 	write: ['write']
-// };
-
-// const keywords = Object.values(aliases).flat();
+const keywords = Array.from(aliases.values()).flat();

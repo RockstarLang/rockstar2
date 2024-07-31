@@ -79,6 +79,8 @@ export const
   Variable = 77,
   OutputStatement = 78,
   Expression = 79,
-  Boolean = 80,
-  EOB = 81,
-  EOF = 82
+  String = 80,
+  Boolean = 81,
+  Number = 82,
+  EOB = 83,
+  EOF = 84

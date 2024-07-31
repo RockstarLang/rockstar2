@@ -4,6 +4,9 @@ layout: home
 nav_order: "1000"
 ---
 
+<textarea id="parseTreeTextarea" style="position: fixed; bottom: 0; height: 40%; left: 20px; right: 20px; font-family: Fira Code; font-size: 10px;
+background-color: #000; z-index: 999;">parse tree</textarea>
+
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar

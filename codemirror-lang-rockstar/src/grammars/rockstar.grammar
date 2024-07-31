@@ -16,16 +16,13 @@ statement {
 
 ListenStatement { Listen To Variable }
 OutputStatement { Print Expression }
-Expression { Variable | Boolean }
+Expression { String | Variable | Boolean | Number }
 Boolean { True | False }
 
 @precedence { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 
-@external tokens ProperVariable from "../tokenizers/rockstar-tokenizer" { ProperVariable }
-@external tokens CommonVariable from "../tokenizers/rockstar-tokenizer" { CommonVariable }
-@external tokens SimpleVariable from "../tokenizers/rockstar-tokenizer" { SimpleVariable }
-@external tokens Pronoun from "../tokenizers/rockstar-tokenizer" { Pronoun }
+@external tokens Variables from "../tokenizers/rockstar-tokenizer" { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 
 @external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
 	Above, And, Around, As, AsGreat, AsSmall, At, Back, Be, Break, Build,
@@ -43,6 +40,7 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	EOS { "\r"? "\n" }
 	LineComment { "#" ![\n]* "\n" }
 	String { '"' (!["\\] | "\\" _)* '"' }
+	Number { $[+-]? (@digit+ "." | ".") @digit+ }
 	BlockComment { "(" ![\)]* ")" | "{" ![\}]* "}" | "[" ![\]]* "]" }
 	space { $[ \t]+ }
 	EOF { @eof }

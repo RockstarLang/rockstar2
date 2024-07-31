@@ -10,6 +10,14 @@ background-color: #000; z-index: 999;">parse tree</textarea>
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar
+Midnight takes your heart, time and a word
+Shout time
+Give back your heart
+
+Call midnight with 1, 2, 'n' 3
+Call midnight
+Midnight taking 1, 2, & 3
+
 A man was lying in the street.
 A boy was 2 + 4
 A girl says she was there the whole time

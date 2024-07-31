@@ -9,11 +9,30 @@ Block { statement (EOS statement)* }
 
 comment { LineComment | BlockComment }
 
-statement {	ListenStatement	| OutputStatement | AssignStmt }
+statement {
+	ListenStatement
+	| OutputStatement
+	// | Function
+	// | FunctionCall
+	// | CallStatement
+	// | ReturnStatement
+	// | ContinueStatement
+	// | BreakStatement
+	// | LoopStatement
+	// | ConditionalStatement
+	// | DeclarationStatement
+	| Assignment
+	// | Enlistment
+	// | Increment
+	// | Decrement
+	// | Mutation
+	// | Rounding
+	// | Expression
+}
 
 @precedence { PoeticNumber, Expression }
 
-AssignStmt {
+Assignment {
 	Put Expression Into Variable |
 	Variable Says PoeticString |
 	Variable Is Operator Expression |

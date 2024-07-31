@@ -92,6 +92,6 @@ export const
   Lookup = 90,
   Constant = 91,
   Operator = 92,
-  AssignStmt = 93,
+  Assignment = 93,
   EOB = 94,
   EOF = 95

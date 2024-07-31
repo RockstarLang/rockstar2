@@ -92,6 +92,10 @@ export const
   Lookup = 90,
   Constant = 91,
   Operator = 92,
-  Assignment = 93,
-  EOB = 94,
-  EOF = 95
+  Function = 93,
+  Consequent = 94,
+  EOB = 95,
+  VLS = 96,
+  XLS = 97,
+  Assignment = 98,
+  EOF = 99

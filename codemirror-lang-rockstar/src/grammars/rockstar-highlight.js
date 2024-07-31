@@ -6,8 +6,8 @@ export const highlighting = styleTags({
 	SimpleVariable: tags.variableName,
 	Pronoun: tags.variableName,
 	Number: tags.number,
-	PoeticString: tags.docString,
-	PoeticNumber: tags.literal,
+	PoeticString: tags.string,
+	PoeticNumber: tags.number,
 	String: tags.string,
 	Comment: tags.comment,
 	LineComment: tags.lineComment,
@@ -15,7 +15,9 @@ export const highlighting = styleTags({
 	ArithmeticOperator: tags.arithmeticOperator,
 	LogicOperator: tags.logicOperator,
 	CompareOperator: tags.compareOperator,
-
+	VLS: tags.separator,
+	XLS: tags.separator,
+	ALS: tags.separator,
 
 Above: tags.compareOperator,
 And: tags.logicOperator,

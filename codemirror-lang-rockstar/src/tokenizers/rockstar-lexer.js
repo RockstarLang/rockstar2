@@ -6,21 +6,21 @@ const arithmeticOperators = ["+", "/", "*", "-"];
 
 export function tokenizePoeticNumber(input) {
 	let codes = [];
-	while(whitespaceCodes.includes(input.next)) input.advance();
+	while (whitespaceCodes.includes(input.next)) input.advance();
 	// poetic numbers always start with a letter
-	if (! (alphaCodes.concat( [ ASCII.Apostrophe, ASCII.Hyphen ]).includes(input.next))) return;
-	while(input.next >= 0 && ! whitespaceCodes.includes(input.next)) {
+	if (!(alphaCodes.concat([ASCII.Apostrophe, ASCII.Hyphen]).includes(input.next))) return;
+	while (input.next >= 0 && !whitespaceCodes.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();
 	}
 	let lexeme = String.fromCodePoint(...codes).toLowerCase();
 	if (isArithmeticOperator(lexeme)) return;
-	while(input.next >= 0 && input.next != ASCII.LF) input.advance();
+	while (input.next >= 0 && input.next != ASCII.LF) input.advance();
 	return input.acceptToken(tokens.PoeticNumber);
 }
 
 export function tokenizePoeticString(input) {
-	while(input.next >= 0 && input.next != ASCII.LF) input.advance();
+	while (input.next >= 0 && input.next != ASCII.LF) input.advance();
 	input.acceptToken(tokens.PoeticString);
 }
 
@@ -88,37 +88,51 @@ export function tokenizeKeyword(input) {
 	}
 }
 
+const MAXIMUM_PARTS_IN_A_PROPER_VARIABLE = 99;
+
 export function tokenizeVariable(input) {
 	var codes = readNextWord(input);
 	if (!codes.length) return;
 	var lexeme = String.fromCodePoint(...codes);
+
 	if (aliases.get(tokens.The).includes(lexeme.toLowerCase())) {
 		readNextWord(input);
 		return input.acceptToken(tokens.CommonVariable);
 	}
+
 	if (aliases.get(tokens.His).includes(lexeme.toLowerCase())) {
 		codes = readNextWord(input);
+		lexeme += " " + String.fromCodePoint(...codes);
 		if (codes.length == 0 || isKeyword(codes)) return input.acceptToken(tokens.Pronoun);
 		return input.acceptToken(tokens.CommonVariable);
 	}
+
 	if (aliases.get(tokens.Pronoun).includes(lexeme.toLowerCase())) return input.acceptToken(tokens.Pronoun);
 	if (isKeyword(codes)) return;
-	var tokenTo = -1;
-	while (codes.length) {
-		if (upperCodes.includes(codes[0])) {
-			if (isKeyword(codes)) break;
-			while (input.next == ASCII.FullStop) input.advance();
-			while (whitespaceCodes.includes(input.next)) input.advance();
-			tokenTo = input.pos;
-		}
-		codes = readNextWord(input);
+
+	while (input.next == ASCII.FullStop) {
+		codes.push(input.next);
+		input.advance();
 	}
-	if (tokenTo >= 0) return input.acceptTokenTo(tokens.ProperVariable, tokenTo);
-	if (!isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
+	var properNouns = [];
+	var index = 0;
+	var tokenTo = input.pos;
+
+	for(var i = 0; i < MAXIMUM_PARTS_IN_A_PROPER_VARIABLE; i++) {
+		if (isKeyword(codes)) break;
+		if (upperCodes.includes(codes[0])) {
+			properNouns.push(String.fromCodePoint(...codes));
+			input.advance(index);
+			tokenTo += index;
+		}
+		[codes, index] = peekNextWord(input);
+	}
+	if (properNouns.length > 0) return input.acceptTokenTo(tokens.ProperVariable, tokenTo);
+	return input.acceptToken(tokens.SimpleVariable);
 }
 
 function isKeyword(codes) {
-	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	var lexeme = (typeof (codes) == "string" ? codes.toLowerCase() : (String.fromCodePoint(...codes).toLowerCase()));
 	return keywords.includes(lexeme);
 }
 
@@ -130,6 +144,15 @@ const readNextWordIncludingApostrophes = (input) => readWhileContains(input, [AS
 
 const readNextWord = (input) => readWhileContains(input, alphaCodes);
 
+const peekNextWord = (input) => {
+	let codes = [];
+	let index = 0;
+	while (whitespaceCodes.includes(input.peek(index))) index++;
+	if (input.peek(index) <= 0) return [codes, index];
+	while (alphaCodes.includes(input.peek(index))) codes.push(input.peek(index++));
+	while(input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
+	return [codes, index];
+}
 
 function readWhileContains(input, accept) {
 	let codes = [];
@@ -140,7 +163,6 @@ function readWhileContains(input, accept) {
 	}
 	return codes;
 }
-
 
 function stringToCharCodeArray(s) {
 	var result = [];

@@ -88,7 +88,7 @@ test.each(simpleVariables)("%p is a simple variable", (lexeme) => {
 	expect(input.token).toBe(tokens.SimpleVariable);
 });
 
-const notSimpleVariables = ["say", "times", "Big Daddy", "my leg" ];
+const notSimpleVariables = ["say", "times", "Big Daddy", "my leg", "lying in the street" ];
 test.each(notSimpleVariables)("%p is NOT a simple variable", (lexeme) => {
 	var input = new parserInput(lexeme);
 	rockstar.tokenizeVariable(input);
@@ -124,9 +124,9 @@ class parserInput {
 	get token() { return this.#token; }
 	get next() { return this.#i >= this.#s.length ? -1 : this.#s.charCodeAt(this.#i); }
 	get pos() { return this.#i; }
-	peek = (i) => this.#s.charCodeAt(i);
-	advance = () => {
-		this.#i++;
+	peek = (offset = 0) => this.#s.charCodeAt(this.#i + offset);
+	advance = (offset = 1) => {
+		this.#i += offset;
 		return this.next;
 	}
 	acceptToken = (token) => this.#token = token;

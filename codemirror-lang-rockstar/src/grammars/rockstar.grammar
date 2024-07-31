@@ -12,7 +12,7 @@ comment { LineComment | BlockComment }
 statement {
 	ListenStatement
 	| OutputStatement
-	// | Function
+	| Function
 	// | FunctionCall
 	// | CallStatement
 	// | ReturnStatement
@@ -31,6 +31,15 @@ statement {
 }
 
 @precedence { PoeticNumber, Expression }
+
+Function {
+	Variable Takes Null Consequent
+	| Variable Takes variableList Consequent
+}
+
+variableList { Variable VLS variableList | Variable }
+
+Consequent { EOS+ Block EOB | statement }
 
 Assignment {
 	Put Expression Into Variable |
@@ -77,12 +86,13 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	Using, While,With,	Write
 }
 
+oxford_comma { ", " And }
+VLS { And | XLS }
+
 @tokens {
-	oxford_comma { ", " And }
 	nacton { "n'" | "'n'" }
-	xls { "," ("&")? | nacton | "&" | "," }
-	vls { And | xls }
-	als { oxford_comma | als }
+	XLS { "," ("&")? | nacton | "&" | "," }
+	ALX { oxford_comma | als }
 	PoeticLiteral { ![\n]* "\n" }
 	@precedence { EOB EOS space }
 	EOS { $[,.?!;: \t]* EOL }

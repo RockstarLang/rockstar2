@@ -1,21 +1,75 @@
 import * as tokens from "../grammars/rockstar.terms.js"
 
 const aliases = new Map();
+const ASCII = {
+	FullStop: 46
+};
 
 export function tokenizeKeyword(input) {
 	var codes = readNextWord(input);
 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-	aliases.keys().forEach(token => {
-		if (aliases.get(token).includes(lexeme)) return input.acceptToken(token);
-	});
+	for (const [key, value] of aliases) {
+		if (value.includes(lexeme)) return input.acceptToken(key);
+	}
+}
+
+export function tokenizePronoun(input) {
+	var codes = readNextWord(input);
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	if (aliases.get(tokens.Pronoun).includes(lexeme)) return input.acceptToken(tokens.Pronoun);
+}
+
+export function tokenizeSimpleVariable(input) {
+	var codes = readNextWord(input);
+	if (! isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
+}
+
+export function tokenizeCommonVariable(input) {
+	var codes = readNextWord(input);
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	if (aliases.get(tokens.The).includes(lexeme)) {
+		input.advance();
+		codes = readNextWord(input);
+		return input.acceptToken(tokens.CommonVariable);
+	}
+	if (aliases.get(tokens.His).includes(lexeme)) {
+		input.advance();
+		codes = readNextWord(input);
+		console.log(codes);
+		if (! isKeyword(codes)) return input.acceptToken(tokens.CommonVariable);
+	}
+}
+export function tokenizeProperVariable(input) {
+	var tokenTo = -1;
+	let codes = [];
+	var i = 0;
+	while (input.next > 0) {
+		codes = [];
+		if (!upperCodes.includes(input.next)) break;
+		codes.push(input.peek(i));
+		while (alphaCodes.includes(input.advance())) codes.push(input.next);
+		if (isKeyword(codes)) break;
+		tokenTo = i;
+		if (ASCII.FullStop == input.peek(i)) i++;
+		while (whitespaceCodes.includes(input.peek(++i)));
+	}
+	if (tokenTo >= 0) input.acceptTokenTo(tokens.ProperVariable, tokenTo);
+}
+
+function isKeyword(codes) {
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	for (const [key, value] of aliases) {
+		if (value.includes(lexeme)) return true;
+	}
+	return false;
 }
 
 const whitespace = " \t";
 const whitespaceCodes = stringToCharCodeArray(whitespace);
 
 function readNextWord(input) {
-	var codes = [];
-	while(input.next >= 0) {
+	let codes = [];
+	while (input.next >= 0) {
 		if (whitespaceCodes.includes(input.next)) break;
 		codes.push(input.next);
 		input.advance()
@@ -27,23 +81,6 @@ function stringToCharCodeArray(s) {
 	var result = [];
 	for (var i = 0; i < s.length; i++) result.push(s.charCodeAt(i));
 	return result;
-}
-
-function properVariable(input) {
-	var tokenTo = -1;
-	let codes = [];
-	var i = 0;
-	while (input.next > 0) {
-		codes = [];
-		if (!upperCodes.includes(input.next)) break;
-		codes.push(input.peek(i));
-		while (alphaCodes.includes(input.advance())) codes.push(input.next);
-		if (isKeyword(codes)) break;
-		tokenTo = i;
-		if (FULL_STOP == input.peek(i)) i++;
-		while (whitespaceCodes.includes(input.peek(++i)));
-	}
-	return tokenTo;
 }
 
 const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ";
@@ -98,7 +135,7 @@ aliases.set(tokens.Over, ['over']);
 aliases.set(tokens.Plus, ['plus', 'with']);
 aliases.set(tokens.Pop, ['roll', 'pop']);
 aliases.set(tokens.Print, ["print", "shout", "say", "scream", "whisper"]);
-aliases.set(tokens.Pronoun,	['they', 'them', 'she', 'him', 'her', 'hir', 'zie', 'zir', 'xem', 'ver', 'ze', 've', 'xe', 'it', 'he', 'you', 'me', 'i']);
+aliases.set(tokens.Pronoun, ['they', 'them', 'she', 'him', 'her', 'hir', 'zie', 'zir', 'xem', 'ver', 'ze', 've', 'xe', 'it', 'he', 'you', 'me', 'i']);
 aliases.set(tokens.Push, ['rock', 'push']);
 aliases.set(tokens.Put, ['put']);
 aliases.set(tokens.Return, ['return', 'giving', 'give', 'send']);
@@ -120,7 +157,6 @@ aliases.set(tokens.Using, ['using', 'with']);
 aliases.set(tokens.While, ['while']);
 aliases.set(tokens.With, ['with']);
 aliases.set(tokens.Write, ['write']);
-
 
 // export const OutputTokenizer = CreateTokenizer(tokens.output, [ "print", "say", "shout", "scream", "whisper" ])
 

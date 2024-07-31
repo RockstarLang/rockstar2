@@ -16,17 +16,16 @@ statement {
 
 ListenStatement { Listen To Variable }
 OutputStatement { Print Expression }
-Expression { True | False }
+Expression { Variable | Boolean }
+Boolean { True | False }
 
+@precedence { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 
-@external tokens PoeticLiterals from "../tokenizers/rockstar-tokenizer" {
-	PoeticString, PoeticNumber
-}
-
-@external tokens Variables from "../tokenizers/rockstar-tokenizer" {
-	ProperVariable, CommonVariable, SimpleVariable, Pronoun
-}
+@external tokens ProperVariable from "../tokenizers/rockstar-tokenizer" { ProperVariable }
+@external tokens CommonVariable from "../tokenizers/rockstar-tokenizer" { CommonVariable }
+@external tokens SimpleVariable from "../tokenizers/rockstar-tokenizer" { SimpleVariable }
+@external tokens Pronoun from "../tokenizers/rockstar-tokenizer" { Pronoun }
 
 @external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
 	Above, And, Around, As, AsGreat, AsSmall, At, Back, Be, Break, Build,
@@ -38,6 +37,7 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 }
 
 @tokens {
+	PoeticLiteral { ![\n]* "\n" }
 	@precedence { EOS EOB }
 	EOB { EOS EOS+ }
 	EOS { "\r"? "\n" }

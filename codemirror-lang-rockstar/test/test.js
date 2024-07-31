@@ -1,23 +1,68 @@
 import * as rockstar from "../src/tokenizers/rockstar.js"
+import * as tokens from "../src/grammars/rockstar.terms";
 
-describe("it", () => {
-	test("matches keywords", () => {
-		var token = rockstar.tokenizeKeyword(new parserInput("SHOUT")).token;
-		expect(token).toBe(tokens.Print);
+const cases = [
+	[["shout", "Print", "ScreAM"], tokens.Print]
+];
+
+describe("tokenizer", () => {
+	describe.each(cases)("%p all match", (lexemes, token) => {
+		test.each(lexemes)("%p", (lexeme) => {
+			var input = new parserInput(lexeme);
+			rockstar.tokenizeKeyword(input);
+			expect(input.token).toBe(token);
+		});
 	});
-	it("finds proper variables", () => {
-		var input = new parserInput("print hello world");
-		rockstar.tokenizeKeyword(input);
-	});
-	it("works", () => {
-		var input = new parserInput("hello");
-		var codes = [];
-		while (input.next > 0) {
-			codes.push(input.next);
-			input.advance();
-		}
-		console.log(String.fromCodePoint(...codes));
-	});
+});
+
+const notCommonVariables = ["his right", "her times"];
+test.each(notCommonVariables)("%p is NOT a proper variable", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizeCommonVariable(input);
+	expect(input.token).toBe(undefined);
+});
+
+const commonVariables = ["the night", "a girl", "A BOY", "My Lies", "your love", "his word", "her hair", "an orange", "AN HONOUR",
+	"Their guitars", "OUR FLAG" ];
+test.each(commonVariables)("%p is a proper variable", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizeCommonVariable(input);
+	expect(input.token).toBe(tokens.CommonVariable);
+});
+
+const simpleVariables = ["x", "y", "foo", "bar", "myVariable" ];
+test.each(simpleVariables)("%p is a simple variable", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizeSimpleVariable(input);
+	expect(input.token).toBe(tokens.SimpleVariable);
+});
+
+const notSimpleVariables = ["say", "times", "Big Daddy", "my leg" ];
+test.each(notSimpleVariables)("%p is NOT a simple variable", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizeSimpleVariable(input);
+	expect(input.token).not.toBe(tokens.SimpleVariable);
+});
+
+const notProperVariables = ["My Dad", "Your Lies", "Scream II" ];
+test.each(notProperVariables)("%p is NOT a proper variable", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizeProperVariable(input);
+	expect(input.token).toBe(undefined);
+});
+
+const properVariables = ["Johnny B. Goode", "Dr. Feelgood", "Black Betty", "Billie Jean", "JRR Tolkien" ];
+test.each(properVariables)("%p is a proper variable", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizeProperVariable(input);
+	expect(input.token).toBe(tokens.ProperVariable);
+});
+
+const pronouns = ['they', 'them', 'she', 'him', 'her', 'hir', 'zie', 'zir', 'xem', 'ver', 'ze', 've', 'xe', 'it', 'he', 'you', 'me', 'i'];
+test.each(pronouns)("%p is a pronoun", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizePronoun(input);
+	expect(input.token).toBe(tokens.Pronoun);
 });
 
 class parserInput {
@@ -27,9 +72,11 @@ class parserInput {
 	constructor(s) { this.#s = s; }
 	get token() { return this.#token; }
 	get next() { return this.#i >= this.#s.length ? -1 : this.#s.charCodeAt(this.#i) }
+	peek = (i) => this.#s.charCodeAt(i);
 	advance = () => {
 		this.#i++;
 		return this.next;
 	}
 	acceptToken = (token) => this.#token = token;
+	acceptTokenTo = (token, tokenTo) => this.#token = token;
 }

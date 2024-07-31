@@ -32,6 +32,15 @@
   },
   "types": "dist/editor.d.ts",
   "sideEffects": false,
+
+  "wallaby": {
+    "env": {
+      "params": {
+        "runner": "--experimental-vm-modules"
+      }
+    }
+  },
+
   "dependencies": {
     "@codemirror/language": "^6.10.2",
     "@lezer/highlight": "^1.2.0",

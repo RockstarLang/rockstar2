@@ -1,4 +1,5 @@
 import { styleTags, tags } from "@lezer/highlight"
+import { Ampersand, OxfordComma } from "./rockstar.terms";
 
 export const highlighting = styleTags({
 	ProperVariable: tags.variableName,
@@ -18,6 +19,10 @@ export const highlighting = styleTags({
 	VLS: tags.separator,
 	XLS: tags.separator,
 	ALS: tags.separator,
+	Comma: tags.separator,
+	Nacton: tags.separator,
+	Ampersand: tags.separator,
+	OxfordComma: tags.separator,
 
 Above: tags.compareOperator,
 And: tags.logicOperator,

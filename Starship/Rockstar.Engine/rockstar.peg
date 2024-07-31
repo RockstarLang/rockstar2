@@ -155,8 +155,8 @@ _nacton	= (_ "n'" / _? "'n'")
 
 _VLS_	= _ and _ / _ALS_
 _ALS_	= oxford_comma _ / _XLS_
-_XLS_	= (',' _? ('&' _?)?)
-		/ _nacton _?
+_XLS_	= ','? _nacton _?
+		/ (',' _? ('&' _?)?)
 		/ _? '&' _?
 		/ _? ',' _?
 
@@ -217,16 +217,6 @@ output_stmt <Statement>
 binary_rhs <IEnumerable<Expression>>
 	= primary_list
 	/ e:expression { new List<Expression> { e } }
-
-index <Expression>
-	= _ at _ i:numeric_expression
-		{ i }
-
-indexes <IEnumerable<Expression>>
-	= head:index tail:indexes
-		{ head.Concat(tail) }
-	/ head:index
-		{ new List<Expression> { head } }
 
 assignable <Variable>
 	= v:variable i:indexes
@@ -387,6 +377,17 @@ lookup <Expression>
 		{ new Lookup(v.AtIndex(i)) }
 	/ v:variable
 		{ new Lookup(v) }
+
+index <Expression>
+	= _ at _ i:numeric_expression
+		{ i }
+
+indexes <IEnumerable<Expression>>
+	= head:index tail:indexes
+		{ head.Concat(tail) }
+	/ head:index
+		{ new List<Expression> { head } }
+
 
 increment <Increment>
 	= build _ v:variable t:((_? ',')? _? up)+

@@ -40,6 +40,7 @@ function makeParseTreeLogger(parser) {
 }
 
 function logTree(tree, targetElement) {
+	if (! targetElement) return;
 	tree = tree.toString();
 	var output = [];
 	var indent = "";

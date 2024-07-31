@@ -13,8 +13,8 @@ statement {
 	ListenStatement
 	| OutputStatement
 	| Function
-	// | FunctionCall
-	// | CallStatement
+	| FunctionCall
+	| CallStatement
 	// | ReturnStatement
 	// | ContinueStatement
 	// | BreakStatement
@@ -30,27 +30,40 @@ statement {
 	// | Expression
 }
 
-@precedence { PoeticNumber, Expression }
+@precedence { CallStatement, XLS, VLS, ALS, PoeticNumber, Expression, SeperatorAnd, And }
 
 Function {
-	Variable Takes Null Consequent
-	| Variable Takes variableList Consequent
+	variable Takes Null Consequent
+	| variable Takes variableList Consequent
 }
 
-variableList { Variable VLS variableList | Variable }
+CallStatement {
+	Call variable With argumentList Into assignable
+	| Call variable With argumentList
+	| Call variable Into assignable
+	| Call variable
+}
+
+FunctionCall {
+	variable Taking argumentList
+}
+
+argumentList { Primary ALS argumentList | Primary }
+
+variableList { variable VLS variableList | variable }
 
 Consequent { EOS+ Block EOB | statement }
 
 Assignment {
-	Put Expression Into Variable |
-	Variable Says PoeticString |
-	Variable Is Operator Expression |
-	Variable Is Now Expression |
-	Variable Is PoeticNumber
-	Variable Is Expression
+	Put Expression Into assignable |
+	variable Says PoeticString |
+	variable Is Operator Expression |
+	variable Is Now Expression |
+	variable Is PoeticNumber
+	variable Is Expression
 }
 
-ListenStatement { Listen To Variable }
+ListenStatement { Listen To assignable }
 OutputStatement { Print Expression }
 Boolean { True | False }
 
@@ -67,9 +80,13 @@ Primary {
 
 Constant { True | False | Empty | Null | Mysterious }
 
-Lookup { Variable } // (At index)* }
+Indexer { At Expression }
 
-Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
+assignable { variable Indexer* }
+
+Lookup { variable Indexer* } // (At index)* }
+
+variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 
 @external tokens Variables from "../tokenizers/rockstar-tokenizer" { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 @external tokens Operators from "../tokenizers/rockstar-tokenizer" { LogicOperator, CompareOperator, ArithmeticOperator }
@@ -86,16 +103,19 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	Using, While,With,	Write
 }
 
-oxford_comma { ", " And }
-VLS { And | XLS }
+OxfordComma { ", AND" | ", ANd" | ", AnD" | ", And" | ", aND" | ", aNd" | ", anD" | ", and" }
+VLS { ("AND" | "ANd" | "AnD" | "And" | "aND" | "aNd" | "anD" | "and") | XLS }
+ALS { OxfordComma | XLS }
+XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 
 @tokens {
-	nacton { "n'" | "'n'" }
-	XLS { "," ("&")? | nacton | "&" | "," }
-	ALX { oxford_comma | als }
+	Ampersand { "&" }
+	Comma { "," }
+	trailing_punctuation { (Comma | $[.?!;: \t])* }
+	@precedence { Comma, EOB, EOS, space }
+	Nacton { "n'" | "'n'" }
 	PoeticLiteral { ![\n]* "\n" }
-	@precedence { EOB EOS space }
-	EOS { $[,.?!;: \t]* EOL }
+	EOS { trailing_punctuation EOL }
 	EOB { EOS EOS+ }
 	EOL { $[\r]? "\n" }
 	LineComment { "#" ![\n]* "\n" }

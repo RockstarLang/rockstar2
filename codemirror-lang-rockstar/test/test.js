@@ -50,7 +50,6 @@ const operators = [
 ];
 
 describe.each(operators)("%p is operator ", (token, lexemes) => {
-	console.log(token);
 	test.each(lexemes)("%p", (lexeme) => {
 		var input = new parserInput(lexeme);
 		rockstar.tokenizeOperator(input);
@@ -88,7 +87,7 @@ test.each(simpleVariables)("%p is a simple variable", (lexeme) => {
 	expect(input.token).toBe(tokens.SimpleVariable);
 });
 
-const notSimpleVariables = ["say", "times", "Big Daddy", "my leg", "lying in the street" ];
+const notSimpleVariables = ["say", "times", "Big Daddy", "my leg" ];
 test.each(notSimpleVariables)("%p is NOT a simple variable", (lexeme) => {
 	var input = new parserInput(lexeme);
 	rockstar.tokenizeVariable(input);

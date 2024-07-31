@@ -10,6 +10,10 @@ background-color: #000; z-index: 999;">parse tree</textarea>
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar
+Call my function with 1, 2, & 3, 'n' 4, & 5, and 6
+```
+
+
 Midnight takes your heart, time and a word
 Shout time
 Give back your heart
@@ -23,8 +27,6 @@ A boy was 2 + 4
 A girl says she was there the whole time
 A girl is "she was there the whole time"
 A child is without fear
-```
-
 
 Shout a boy
 Shout Johnny B. Goode

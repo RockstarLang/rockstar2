@@ -1,6 +1,22 @@
 import * as rockstar from "../src/tokenizers/rockstar-lexer.js"
 import * as tokens from "../src/grammars/rockstar.terms";
 
+const validPoeticNumbers = [ "'rock'", "a lovestruck ladykiller", "the sands of time", "ice. A life unfilled"];
+test.each(validPoeticNumbers)("%p is a poetic number", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizePoeticNumber(input);
+	expect(input.token).toBe(tokens.PoeticNumber);
+});
+
+const invalidPoeticNumbers = ["with a dream", "without fear", "times of no trust", "5"]
+
+test.each(invalidPoeticNumbers)("%p is not a poetic number", (lexeme) => {
+	var input = new parserInput(lexeme);
+	rockstar.tokenizePoeticNumber(input);
+	expect(input.token).not.toBe(tokens.PoeticNumber);
+});
+
+
 const cases = [
 	[["shout", "Print", "ScreAM"], tokens.Print]
 ];

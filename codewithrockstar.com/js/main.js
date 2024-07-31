@@ -38,12 +38,15 @@ function makeParseTreeLogger(parser) {
 		}
 	};
 }
+
 function logTree(tree, targetElement) {
 	tree = tree.toString();
 	var output = [];
 	var indent = "";
 	for(var i = 0; i < tree.length; i++) {
-		if (tree[i] == '(') {
+		if (tree[i] == ',') {
+			output.push(' ');
+		} else if (tree[i] == '(') {
 			indent += "  ";
 			output.push('\n' + indent);
 		} else if (tree[i] == ')') {
@@ -53,6 +56,7 @@ function logTree(tree, targetElement) {
 				indent = indent.substring(2);
 				i++;
 			}
+			output.push(indent);
 		} else {
 			output.push(tree[i]);
 		}

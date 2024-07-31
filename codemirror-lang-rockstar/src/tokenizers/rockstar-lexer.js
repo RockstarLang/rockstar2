@@ -4,6 +4,37 @@ import { ASCII } from './ascii.js';
 const compareOperators = [">=", "<=", ">", "<", "="];
 const arithmeticOperators = ["+", "/", "*", "-"];
 
+export function tokenizePoeticNumber(input) {
+	let codes = [];
+	while(whitespaceCodes.includes(input.next)) input.advance();
+	// poetic numbers always start with a letter
+	if (! (alphaCodes.concat( [ ASCII.Apostrophe, ASCII.Hyphen ]).includes(input.next))) return;
+	while(input.next >= 0 && ! whitespaceCodes.includes(input.next)) {
+		codes.push(input.next);
+		input.advance();
+	}
+	let lexeme = String.fromCodePoint(...codes).toLowerCase();
+	if (isArithmeticOperator(lexeme)) return;
+	while(input.next >= 0 && input.next != ASCII.LF) input.advance();
+	return input.acceptToken(tokens.PoeticNumber);
+}
+
+export function tokenizePoeticString(input) {
+	while(input.next >= 0 && input.next != ASCII.LF) input.advance();
+	input.acceptToken(tokens.PoeticString);
+}
+
+function isArithmeticOperator(lexeme) {
+	if (compareOperators.includes(lexeme)) return true;
+	if (arithmeticOperators.includes(lexeme)) return true;
+	for (var op of operatorMaps.keys()) {
+		for (var token of operatorMaps.get(op)) {
+			if (aliases.get(token).includes(lexeme)) return true;
+		}
+	}
+	return false;
+}
+
 export function tokenizeOperator(input) {
 	var codes = readNextWordIncludingOperators(input);
 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
@@ -29,7 +60,6 @@ export function tokenizeOperator(input) {
 			lexeme = String.fromCodePoint(...codes).toLowerCase();
 			for (var token of [tokens.Great, tokens.Small]) {
 				if (aliases.get(token).includes(lexeme)) {
-					console.log(lexeme);
 					codes = readNextWordIncludingOperators(input);
 					lexeme = String.fromCodePoint(...codes).toLowerCase();
 					if (aliases.get(tokens.As).includes(lexeme)) return input.acceptToken(tokens.CompareOperator);
@@ -99,6 +129,7 @@ const readNextWordIncludingOperators = (input) => readWhileContains(input, alpha
 const readNextWordIncludingApostrophes = (input) => readWhileContains(input, [ASCII.Apostrophe].concat(alphaCodes));
 
 const readNextWord = (input) => readWhileContains(input, alphaCodes);
+
 
 function readWhileContains(input, accept) {
 	let codes = [];

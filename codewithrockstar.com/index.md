@@ -10,9 +10,11 @@ background-color: #000; z-index: 999;">parse tree</textarea>
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar
-Shout 1 + 2
+A man was lying in the street.
+A boy was 2 + 4
+A girl says she was there the whole time
+A child is without fear
 ```
-
 
 
 Shout a boy

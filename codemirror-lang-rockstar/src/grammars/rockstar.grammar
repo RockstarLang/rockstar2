@@ -1,21 +1,30 @@
 @external propSource highlighting from "./rockstar-highlight.js"
 
-@top Program { EOS* block (EOB block)*
-	| EOS* block EOF }
+@top Program { EOS* Block (EOB Block)*
+	| EOS* Block EOF }
 
-block { statement (EOS statement)* }
+Block { statement (EOS statement)* }
 
 @skip { space | comment }
 
 comment { LineComment | BlockComment }
 
-statement {	ListenStatement	| OutputStatement }
+statement {	ListenStatement	| OutputStatement | AssignStmt }
+
+@precedence { PoeticNumber, Expression }
+
+AssignStmt {
+	Put Expression Into Variable |
+	Variable Says PoeticString |
+	Variable Is Operator Expression |
+	Variable Is Now Expression |
+	Variable Is PoeticNumber
+	Variable Is Expression
+}
 
 ListenStatement { Listen To Variable }
 OutputStatement { Print Expression }
 Boolean { True | False }
-
-// @precedence { comparator, equality, comparison, addition, Number, unary, ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 
 Expression {  Binary }
 
@@ -24,9 +33,11 @@ Binary { Primary Operator Binary }
 Operator { LogicOperator | ArithmeticOperator | CompareOperator }
 
 Primary {
-	String | Number | Lookup
+	String | Number | Lookup | Constant
 	//| constant | function_call | delist
 }
+
+Constant { True | False | Empty | Null | Mysterious }
 
 Lookup { Variable } // (At index)* }
 
@@ -34,6 +45,8 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 
 @external tokens Variables from "../tokenizers/rockstar-tokenizer" { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 @external tokens Operators from "../tokenizers/rockstar-tokenizer" { LogicOperator, CompareOperator, ArithmeticOperator }
+@external tokens PoeticNumber from "../tokenizers/rockstar-tokenizer" { PoeticNumber }
+@external tokens PoeticString from "../tokenizers/rockstar-tokenizer" { PoeticString }
 
 @external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
 	Above, And, Around, As, At, Back, Be, Break, Build, Call, Cast,
@@ -52,9 +65,10 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	vls { And | xls }
 	als { oxford_comma | als }
 	PoeticLiteral { ![\n]* "\n" }
-	@precedence { EOS EOB }
+	@precedence { EOB EOS space }
+	EOS { $[,.?!;: \t]* EOL }
 	EOB { EOS EOS+ }
-	EOS { "\r"? "\n" }
+	EOL { $[\r]? "\n" }
 	LineComment { "#" ![\n]* "\n" }
 	String { '"' (!["\\] | "\\" _)* '"' }
 	Number { (@digit+ "." | ".")? @digit+ }

@@ -16,7 +16,7 @@ statement {
 
 ListenStatement { Listen To Variable }
 OutputStatement { Print Expression }
-Expression { String | Variable | Boolean | Number }
+Expression { Number | String | Variable | Boolean }
 Boolean { True | False }
 
 @precedence { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
@@ -40,7 +40,7 @@ Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	EOS { "\r"? "\n" }
 	LineComment { "#" ![\n]* "\n" }
 	String { '"' (!["\\] | "\\" _)* '"' }
-	Number { $[+-]? (@digit+ "." | ".") @digit+ }
+	Number { $[+-]? (@digit+ "." | ".")? @digit+ }
 	BlockComment { "(" ![\)]* ")" | "{" ![\}]* "}" | "[" ![\]]* "]" }
 	space { $[ \t]+ }
 	EOF { @eof }

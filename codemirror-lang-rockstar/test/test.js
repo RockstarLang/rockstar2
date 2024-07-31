@@ -1,4 +1,4 @@
-import * as rockstar from "../src/tokenizers/rockstar.js"
+import * as rockstar from "../src/tokenizers/rockstar-lexer.js"
 import * as tokens from "../src/grammars/rockstar.terms";
 
 const cases = [
@@ -12,6 +12,33 @@ describe("tokenizer", () => {
 			rockstar.tokenizeKeyword(input);
 			expect(input.token).toBe(token);
 		});
+	});
+});
+
+const operators = [
+	[tokens.ArithmeticOperator, [
+		"+", "plus", "with", "WITH", "plUs",
+		"-", "minus", "without", "MInus",
+		"*", "times", "of", "tiMES",
+		"/", "divided by", "divided    by", "DIVIDED BY"
+	]],
+	[tokens.CompareOperator, [
+		">=", "is as great as", "IS AS HIGH AS", "is       as BIG as", "IS as strOnG as",
+		"<=", "is as low as", "is as SMALL as", "Is As Weak As",
+		">", "is stronger than", "is MOre Than", "is GREATER THAN", "IS bigger ThAN", "IS highEr ThAn", "is above",
+		"<", "IS WEAKER THAN", "is lower than", "is below", "is under", "is LESS than"
+	]],
+	[tokens.LogicOperator, [
+		"and", "or", "nor"
+	]]
+];
+
+describe.each(operators)("%p is operator ", (token, lexemes) => {
+	console.log(token);
+	test.each(lexemes)("%p", (lexeme) => {
+		var input = new parserInput(lexeme);
+		rockstar.tokenizeOperator(input);
+		expect(input.token).toBe(token);
 	});
 });
 

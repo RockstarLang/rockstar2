@@ -26067,77 +26067,223 @@ const ProperVariable = 1,
   CommonVariable = 2,
   SimpleVariable = 3,
   Pronoun = 4,
-  Above = 5,
-  And = 6,
-  Around = 7,
-  As = 8,
-  AsGreat = 9,
-  AsSmall = 10,
-  At = 11,
-  Back = 12,
-  Be = 13,
-  Break = 14,
-  Build = 15,
-  Call = 16,
-  Cast = 17,
-  Continue = 18,
-  Debug = 19,
-  Divided = 20,
-  Down = 21,
-  Else = 22,
-  Empty = 23,
-  End = 24,
-  Exactly = 25,
-  False = 26,
-  His = 27,
-  If = 28,
-  Into = 29,
-  Is = 30,
-  Isnt = 31,
-  Join = 32,
-  Knock = 33,
-  Less = 34,
-  Let = 35,
-  Like = 36,
-  Listen = 37,
-  Minus = 38,
-  More = 39,
-  Mysterious = 40,
-  Non = 41,
-  Nor = 42,
-  Not = 43,
-  Now = 44,
-  Null = 45,
-  Or = 46,
-  Over = 47,
-  Plus = 48,
-  Pop = 49,
-  Print = 50,
-  Push = 51,
-  Put = 52,
-  Return = 53,
-  Says = 54,
-  Split = 55,
-  Takes = 56,
-  Taking = 57,
-  Than = 58,
-  The = 59,
-  Then = 60,
-  Times = 61,
-  To = 62,
-  True = 63,
-  Turn = 64,
-  Under = 65,
-  Until = 66,
-  Up = 67,
-  Using = 68,
-  While = 69,
-  With = 70,
-  Write = 71;
+  LogicOperator = 5,
+  CompareOperator = 6,
+  ArithmeticOperator = 7,
+  Above = 8,
+  And = 9,
+  Around = 10,
+  As = 11,
+  At = 12,
+  Back = 13,
+  Be = 14,
+  Break = 15,
+  Build = 16,
+  Call = 17,
+  Cast = 18,
+  Continue = 19,
+  Debug = 20,
+  Divided = 21,
+  Down = 22,
+  Else = 23,
+  Empty = 24,
+  End = 25,
+  Exactly = 26,
+  False = 27,
+  Great = 28,
+  His = 29,
+  If = 30,
+  Into = 31,
+  Is = 32,
+  Isnt = 33,
+  Join = 34,
+  Knock = 35,
+  Less = 36,
+  Let = 37,
+  Like = 38,
+  Listen = 39,
+  Minus = 40,
+  More = 41,
+  Mysterious = 42,
+  Non = 43,
+  Nor = 44,
+  Not = 45,
+  Now = 46,
+  Null = 47,
+  Or = 48,
+  Over = 49,
+  Plus = 50,
+  Pop = 51,
+  Print = 52,
+  Push = 53,
+  Put = 54,
+  Return = 55,
+  Says = 56,
+  Small = 57,
+  Split = 58,
+  Takes = 59,
+  Taking = 60,
+  Than = 61,
+  The = 62,
+  Then = 63,
+  Times = 64,
+  To = 65,
+  True = 66,
+  Turn = 67,
+  Under = 68,
+  Until = 69,
+  Up = 70,
+  Using = 71,
+  While = 72,
+  With = 73,
+  Write = 74;
 
 const ASCII = {
-	FullStop: 46
+	Space: 32, // U+0020
+	ExclamationMark: 33, // U+0021 !
+	QuotationMark: 34, // U+0022 "
+	Hash: 35, // U+0023 #
+	DollarSign: 36, // U+0024 $
+	PercentSign: 37, // U+0025 %
+	Ampersand: 38, // U+0026 &
+	Apostrophe: 39, // U+0027 '
+	LeftParenthesis: 40, // U+0028 (
+	RightParenthesis: 41, // U+0029 )
+	Asterisk: 42, // U+002A *
+	PlusSign: 43, // U+002B +
+	Comma: 44, // U+002C ,
+	Hyphen: 45, // U+002D -
+	FullStop: 46, // U+002E .
+	Slash: 47, // U+002F /
+	Digit0: 48, // U+0030 0
+	Digit1: 49, // U+0031 1
+	Digit2: 50, // U+0032 2
+	Digit3: 51, // U+0033 3
+	Digit4: 52, // U+0034 4
+	Digit5: 53, // U+0035 5
+	Digit6: 54, // U+0036 6
+	Digit7: 55, // U+0037 7
+	Digit8: 56, // U+0038 8
+	Digit9: 57, // U+0039 9
+	Colon: 58, // U+003A :
+	Semicolon: 59, // U+003B ;
+	LessThanSign: 60, // U+003C <
+	EqualSign: 61, // U+003D =
+	GreaterThanSign: 62, // U+003E >
+	QuestionMark: 63, // U+003F ?
+	AtSign: 64, // U+0040 @
+	A: 65, // U+0041 A
+	B: 66, // U+0042 B
+	C: 67, // U+0043 C
+	D: 68, // U+0044 D
+	E: 69, // U+0045 E
+	F: 70, // U+0046 F
+	G: 71, // U+0047 G
+	H: 72, // U+0048 H
+	I: 73, // U+0049 I
+	J: 74, // U+004A J
+	K: 75, // U+004B K
+	L: 76, // U+004C L
+	M: 77, // U+004D M
+	N: 78, // U+004E N
+	O: 79, // U+004F O
+	P: 80, // U+0050 P
+	Q: 81, // U+0051 Q
+	R: 82, // U+0052 R
+	S: 83, // U+0053 S
+	T: 84, // U+0054 T
+	U: 85, // U+0055 U
+	V: 86, // U+0056 V
+	W: 87, // U+0057 W
+	X: 88, // U+0058 X
+	Y: 89, // U+0059 Y
+	Z: 90, // U+005A Z
+	LeftSquareBracket: 91, // U+005B [
+	Backslash: 92, // U+005C \
+	RightSquareBracket: 93, // U+005D ]
+	Circumflex: 94, // U+005E ^
+	Underscore: 95, // U+005F _
+	Grave: 96, // U+0060 `
+	a: 97, // U+0061 a
+	b: 98, // U+0062 b
+	c: 99, // U+0063 c
+	d: 100, // U+0064 d
+	e: 101, // U+0065 e
+	f: 102, // U+0066 f
+	g: 103, // U+0067 g
+	h: 104, // U+0068 h
+	i: 105, // U+0069 i
+	j: 106, // U+006A j
+	k: 107, // U+006B k
+	l: 108, // U+006C l
+	m: 109, // U+006D m
+	n: 110, // U+006E n
+	o: 111, // U+006F o
+	p: 112, // U+0070 p
+	q: 113, // U+0071 q
+	r: 114, // U+0072 r
+	s: 115, // U+0073 s
+	t: 116, // U+0074 t
+	u: 117, // U+0075 u
+	v: 118, // U+0076 v
+	w: 119, // U+0077 w
+	x: 120, // U+0078 x
+	y: 121, // U+0079 y
+	z: 122, // U+007A z
+	LeftCurlyBracket: 123, // U+007B {
+	Pipe: 124, // U+007C |
+	RightCurlyBracket: 125, // U+007D }
+	Tilde: 126 // U+007E ~
 };
+
+const compareOperators = [">=", "<=", ">", "<", "="];
+const arithmeticOperators = ["+", "/", "*", "-"];
+
+function tokenizeOperator(input) {
+	var codes = readNextWordIncludingOperators(input);
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	if (compareOperators.includes(lexeme)) return input.acceptToken(CompareOperator);
+	if (arithmeticOperators.includes(lexeme)) return input.acceptToken(ArithmeticOperator);
+	if (aliases.get(Is).includes(lexeme)) {
+		codes = readNextWordIncludingOperators(input);
+		lexeme = String.fromCodePoint(...codes).toLowerCase();
+		for (var token of [Above, Less, More, Under]) {
+			if (aliases.get(token).includes(lexeme)) {
+				var tokenTo = input.pos;
+				codes = readNextWordIncludingOperators(input);
+				lexeme = String.fromCodePoint(...codes).toLowerCase();
+				if (aliases.get(Than).includes(lexeme)) {
+					return input.acceptToken(CompareOperator);
+				} else {
+					return input.acceptTokenTo(CompareOperator, tokenTo);
+				}
+			}
+		}
+		if (lexeme == "as") {
+			codes = readNextWordIncludingOperators(input);
+			lexeme = String.fromCodePoint(...codes).toLowerCase();
+			for (var token of [Great, Small]) {
+				if (aliases.get(token).includes(lexeme)) {
+					console.log(lexeme);
+					codes = readNextWordIncludingOperators(input);
+					lexeme = String.fromCodePoint(...codes).toLowerCase();
+					if (aliases.get(As).includes(lexeme)) return input.acceptToken(CompareOperator);
+				}
+			}
+		}
+	} else {
+		for (var op of operatorMaps.keys()) {
+			for (var token of operatorMaps.get(op)) {
+				if (aliases.get(token).includes(lexeme)) return input.acceptToken(op);
+			}
+		}
+	}
+}
+
+const operatorMaps = new Map();
+operatorMaps.set(CompareOperator, [Not, Is, Isnt]);
+operatorMaps.set(ArithmeticOperator, [Plus, Minus, Divided, Times]);
+operatorMaps.set(LogicOperator, [And, Nor, Or]);
 
 function tokenizeKeyword(input) {
 	var codes = readNextWord(input);
@@ -26149,7 +26295,7 @@ function tokenizeKeyword(input) {
 
 function tokenizeVariable(input) {
 	var codes = readNextWord(input);
-	if (! codes.length) return;
+	if (!codes.length) return;
 	var lexeme = String.fromCodePoint(...codes);
 	if (aliases.get(The).includes(lexeme.toLowerCase())) {
 		readNextWord(input);
@@ -26176,41 +26322,6 @@ function tokenizeVariable(input) {
 	if (!isKeyword(codes)) return input.acceptToken(SimpleVariable);
 }
 
-// export function tokenizePronoun(input) {
-// 	var codes = readNextWord(input);
-// 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-
-// }
-
-// export function tokenizeSimpleVariable(input) {
-// 	var codes = readNextWord(input);
-// 	if (! isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
-// }
-
-// export function tokenizeCommonVariable(input) {
-// 	var codes = readNextWord(input);
-// 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-
-
-// }
-// export function tokenizeProperVariable(input) {
-// 	var tokenTo = -1;
-// 	let codes = [];
-// 	var i = 0;
-// 	while (input.next > 0) {
-// 		codes = [];
-// 		if (!upperCodes.includes(input.next)) break;
-// 		codes.push(input.peek(i));
-// 		while (alphaCodes.includes(input.advance())) codes.push(input.next);
-// 		if (isKeyword(codes)) break;
-// 		tokenTo = i;
-// 		console.log(String.fromCodePoint(...codes));
-// 		if (ASCII.FullStop == input.peek(i)) i++;
-// 		while (whitespaceCodes.includes(input.peek(++i)));
-// 	}
-// 	if (tokenTo >= 0) input.acceptTokenTo(tokens.ProperVariable, tokenTo);
-// }
-
 function isKeyword(codes) {
 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
 	return keywords.includes(lexeme);
@@ -26219,15 +26330,20 @@ function isKeyword(codes) {
 const whitespace = " \t";
 const whitespaceCodes = stringToCharCodeArray(whitespace);
 
-function readNextWord(input) {
+const readNextWordIncludingOperators = (input) => readWhileContains(input, alphaCodes.concat(opCodes));
+
+const readNextWord = (input) => readWhileContains(input, alphaCodes);
+
+function readWhileContains(input, accept) {
 	let codes = [];
 	while (whitespaceCodes.includes(input.next)) input.advance();
-	while(alphaCodes.includes(input.next)) {
+	while (accept.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();
 	}
 	return codes;
 }
+
 
 function stringToCharCodeArray(s) {
 	var result = [];
@@ -26235,8 +26351,10 @@ function stringToCharCodeArray(s) {
 	return result;
 }
 
+const operators = "'<>=!+/-*";
 const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ";
 const lowers = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįi̇ĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß";
+const opCodes = stringToCharCodeArray(operators);
 const upperCodes = stringToCharCodeArray(uppers);
 const lowerCodes = stringToCharCodeArray(lowers);
 const alphaCodes = upperCodes.concat(lowerCodes);
@@ -26246,8 +26364,8 @@ aliases.set(Above, ['above', 'over']);
 aliases.set(And, ['and']);
 aliases.set(Around, ['around', 'round']);
 aliases.set(As, ['as']);
-aliases.set(AsGreat, ['great', 'high', 'big', 'strong']);
-aliases.set(AsSmall, ['less', 'low', 'small', 'weak']);
+aliases.set(Great, ['great', 'high', 'big', 'strong']);
+aliases.set(Small, ['less', 'low', 'small', 'weak']);
 aliases.set(At, ['at']);
 aliases.set(Back, ['back']);
 aliases.set(Be, ['be']);
@@ -26317,6 +26435,7 @@ const Keywords = new ExternalTokenizer(tokenizeKeyword);
 new ExternalTokenizer(undefined);
 new ExternalTokenizer(undefined);
 const Variables = new ExternalTokenizer(tokenizeVariable);
+const Operators = new ExternalTokenizer(tokenizeOperator);
 
 const highlighting$1 = styleTags({
 	ProperVariable: tags.variableName,
@@ -26490,18 +26609,18 @@ Write: tags.keyword
 // This file was generated by lezer-generator. You probably shouldn't edit it.
 const parser$1 = LRParser.deserialize({
   version: 14,
-  states: "$hO]QUOOPhOSOOOOQQ'#ET'#ETO]QUOOOpQUO'#DzOuQVO'#D|OOQO'#E]'#E]O!aQSO'#E[Q!oQSOOPOOO'#EZ'#EZPOOO)C?})C?}OOQQ-E8R-E8RO!wQTO,5:fOOQO'#D{'#D{OOQO'#EQ'#EQOOQO'#D}'#D}OOQO,5:h,5:hO#VQUO'#EUO#_QSO,5:vO#VQUO'#EVQ#mQSOOQOQSOOOOQO1G0Q1G0QOOQO,5:p,5:pOOQO-E8S-E8SOOQO,5:q,5:qOOQO-E8T-E8T",
-  stateData: "#u~O!|OS!jPQ!kPQ~OuSO!STO!mQO~O!jXO!kXO~O!`[O~OP]OQ]OR]OS]Oj^O!a^O!r_O!s_O~O!maO!u#OX!v#OX!z#OX~O!ucO!veO~OP]OQ]OR]OS]O~OuSO!STO~O!maO!u#Oa!v#Oa!z#Oa~O!ucO~O!m!u~",
-  goto: "$Z#QPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#R#X#R#_PP#bPP#e#k#qPPP#w#z$RXUORacQ_TRf[R`TR_TQRORZRQbVRhbQdWRjdRYPSWORRicUVORcRga",
-  nodeNames: "⚠ ProperVariable CommonVariable SimpleVariable Pronoun Above And Around As AsGreat AsSmall At Back Be Break Build Call Cast Continue Debug Divided Down Else Empty End Exactly False His If Into Is Isnt Join Knock Less Let Like Listen Minus More Mysterious Non Nor Not Now Null Or Over Plus Pop Print Push Put Return Says Split Takes Taking Than The Then Times To True Turn Under Until Up Using While With Write LineComment BlockComment Program EOS ListenStatement Variable OutputStatement Expression Number String Boolean EOB EOF",
-  maxTerm: 93,
+  states: "$tO]Q[OOPhOWOOOOQS'#ET'#ETO]Q[OOOpQ[O'#D}OOQO'#E]'#E]OuQWO'#E[Q!TQWOOOOQWO'#EOPOOO'#EZ'#EZPOOO)C?})C?}OOQS-E8R-E8RO!]QXO,5:iO!kQ[O'#EUO!sQWO,5:vO!kQ[O'#EVQ#RQWOOQOQWOOO#WQYO,5:jOOQQ'#E^'#E^OOQO1G0T1G0TOOQO,5:p,5:pOOQO-E8S-E8SOOQO,5:q,5:qOOQO-E8T-E8TOOQP'#E`'#E`O#oQXO,5:yOOQQ'#Ea'#EaOOQQ1G0e1G0e",
+  stateData: "$W~O!|OS!mPQ!nPQ~OwSO!UWO!pQO~O!mXO!nXO~O!c[O~O!p]O!u#OX!v#OX!z#OX~O!u_O!vaO~OPcOQcORcOScO~OwSO!UWO~O!p]O!u#Oa!v#Oa!z#Oa~O!u_O~OTiOUiOViO!p!ra!u!ra!v!ra!z!ra~OPcOQcORcOScO!skO!tkO~O!p!u~",
+  goto: "$b#UPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#V#VPPPP#]#c#iPPP#o#r#y$R$X$[$_XTOR]_QRORZRQ^URf^Q`VRh`RYPSVORRg_UUOR_Re]Qd[RkjRbWRjbRlj",
+  nodeNames: "⚠ ProperVariable CommonVariable SimpleVariable Pronoun LogicOperator CompareOperator ArithmeticOperator Above And Around As At Back Be Break Build Call Cast Continue Debug Divided Down Else Empty End Exactly False Great His If Into Is Isnt Join Knock Less Let Like Listen Minus More Mysterious Non Nor Not Now Null Or Over Plus Pop Print Push Put Return Says Small Split Takes Taking Than The Then Times To True Turn Under Until Up Using While With Write LineComment BlockComment Program EOS ListenStatement OutputStatement String Number EOB EOF",
+  maxTerm: 97,
   propSources: [highlighting$1],
-  skippedNodes: [0,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,35,36,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,64,65,66,67,68,69,70,71,72,73],
+  skippedNodes: [0,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,40,41,42,43,44,45,46,47,48,49,50,51,53,54,55,56,57,58,59,60,61,62,63,64,66,67,68,69,70,71,72,73,74,75,76],
   repeatNodeCount: 3,
-  tokenData: "'q~R^XY}YZ!Y]^!vpq}rs!|st$jxy%X{|%v}!O%v!O!P&P!Q![&_!}#O&j#o#p'S~~'l~!SQ!|~XY}pq}~!_Q!m~YZ!e]^!p~!jQ!u~YZ!e]^!p~!sPYZ!e~!yPYZ!Y~#PVOr!|rs#fs#O!|#O#P#k#P;'S!|;'S;=`$d<%lO!|~#kO!s~~#nRO;'S!|;'S;=`#w;=`O!|~#zWOr!|rs#fs#O!|#O#P#k#P;'S!|;'S;=`$d;=`<%l!|<%lO!|~$gP;=`<%l!|~$mTOY$jYZ$|Z;'S$j;'S;=`%R<%lO$j~%RO!j~~%UP;=`<%l$j~%[TOy%Xyz%kz;'S%X;'S;=`%p<%lO%X~%pO!k~~%sP;=`<%l%X~%yQ!O!P&P!Q![&_~&SP!Q![&V~&[P!r~!Q![&V~&dQ!r~!O!P&P!Q![&_~&mTO#P&j#P#Q%k#Q;'S&j;'S;=`&|<%lO&j~'PP;=`<%l&j~'VTO#q'S#q#r%k#r;'S'S;'S;=`'f<%lO'S~'iP;=`<%l'S~'qO!v~",
-  tokenizers: [Variables, Keywords, 0],
-  topRules: {"Program":[0,74]},
-  tokenPrec: 126
+  tokenData: "'b~R[XYwYZ!S]^!ppqwrs!vst$dxy%R!O!P%p!Q![&O!}#O&Z#o#p&s~~']~|Q!|~XYwpqw~!XQ!p~YZ!_]^!j~!dQ!u~YZ!_]^!j~!mPYZ!_~!sPYZ!S~!yVOr!vrs#`s#O!v#O#P#e#P;'S!v;'S;=`$^<%lO!v~#eO!s~~#hRO;'S!v;'S;=`#q;=`O!v~#tWOr!vrs#`s#O!v#O#P#e#P;'S!v;'S;=`$^;=`<%l!v<%lO!v~$aP;=`<%l!v~$gTOY$dYZ$vZ;'S$d;'S;=`${<%lO$d~${O!m~~%OP;=`<%l$d~%UTOy%Ryz%ez;'S%R;'S;=`%j<%lO%R~%jO!n~~%mP;=`<%l%R~%sP!Q![%v~%{P!t~!Q![%v~&TQ!t~!O!P%p!Q![&O~&^TO#P&Z#P#Q%e#Q;'S&Z;'S;=`&m<%lO&Z~&pP;=`<%l&Z~&vTO#q&s#q#r%e#r;'S&s;'S;=`'V<%lO&s~'YP;=`<%l&s~'bO!v~",
+  tokenizers: [Variables, Operators, Keywords, 0],
+  topRules: {"Program":[0,77]},
+  tokenPrec: 143
 });
 
 const RockstarLanguage = LRLanguage.define({

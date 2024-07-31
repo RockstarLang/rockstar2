@@ -14,33 +14,88 @@ statement {
 	| OutputStatement
 }
 
-ListenStatement { Listen To Variable }
-OutputStatement { Print Expression }
-Expression { Number | String | Variable | Boolean }
+ListenStatement { Listen To variable }
+OutputStatement { Print expression }
 Boolean { True | False }
 
-@precedence { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
-Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
+@precedence { comparator, equality, comparison, addition, Number, unary, ProperVariable, CommonVariable, SimpleVariable, Pronoun }
+
+variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
+
+expression { boolean } // | primary }
+
+boolean { binary }
+
+binary { binary op primary }
+
+op { LogicOperator | ArithmeticOperator | CompareOperator }
+
+binary_or { binary_nor Or binary_or | binary_nor }
+
+binary_nor { binary_and Nor binary_nor | binary_and }
+
+binary_and { equality And binary_and | equality }
+
+equality { unary ( Is | Isnt ) equality | unary }
+
+unary { not unary | comparison }
+
+not { Not | Non | Non "-" }
+
+comparison { addition comparator comparison | addition }
+
+comparator {
+	">=" | //Is As Great As |
+	"<=" | //Is As Small As |
+	">"  | //Is (Above | More) Than |
+	"<" //Is (Under | Less) Than
+}
+
+primary {
+	String | Number | lookup
+	//| constant | function_call | delist
+}
+
+lookup { variable } // (At index)* }
+
+index { addition }
+
+addition {
+	// addition (Plus | Minus) primary_list |
+	addition (Plus | Minus) product	|
+	product
+}
+
+product { primary }
+
+primary_list { primary (xls primary)+ }
 
 @external tokens Variables from "../tokenizers/rockstar-tokenizer" { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
+@external tokens Operators from "../tokenizers/rockstar-tokenizer" { LogicOperator, CompareOperator, ArithmeticOperator }
 
 @external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
-	Above, And, Around, As, AsGreat, AsSmall, At, Back, Be, Break, Build,
-	Call, Cast, Continue, Debug, Divided, Down, Else, Empty, End, Exactly,
-	False, His, If, Into, Is, Isnt, Join, Knock, Less, Let, Like, Listen,
-	Minus, More, Mysterious, Non, Nor, Not, Now, Null, Or, Over, Plus, Pop,
-	Print, Push, Put, Return, Says, Split, Takes, Taking, Than,	The, Then,
-	Times, To, True, Turn, Under, Until, Up, Using, While,With,	Write
+	Above, And, Around, As, At, Back, Be, Break, Build, Call, Cast,
+	Continue, Debug, Divided, Down, Else, Empty, End, Exactly, False,
+	Great, His, If, Into, Is, Isnt, Join, Knock, Less, Let, Like,
+	Listen, Minus, More, Mysterious, Non, Nor, Not, Now, Null, Or, Over,
+	Plus,  Pop, Print, Push, Put, Return, Says, Small, Split, Takes,
+	Taking, Than, The, Then, Times, To, True, Turn, Under, Until, Up,
+	Using, While,With,	Write
 }
 
 @tokens {
+	oxford_comma { ", " And }
+	nacton { "n'" | "'n'" }
+	xls { "," ("&")? | nacton | "&" | "," }
+	vls { And | xls }
+	als { oxford_comma | als }
 	PoeticLiteral { ![\n]* "\n" }
 	@precedence { EOS EOB }
 	EOB { EOS EOS+ }
 	EOS { "\r"? "\n" }
 	LineComment { "#" ![\n]* "\n" }
 	String { '"' (!["\\] | "\\" _)* '"' }
-	Number { $[+-]? (@digit+ "." | ".")? @digit+ }
+	Number { (@digit+ "." | ".")? @digit+ }
 	BlockComment { "(" ![\)]* ")" | "{" ![\}]* "}" | "[" ![\]]* "]" }
 	space { $[ \t]+ }
 	EOF { @eof }

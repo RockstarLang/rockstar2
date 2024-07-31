@@ -1,9 +1,54 @@
 import * as tokens from "../grammars/rockstar.terms.js"
+import { ASCII } from './ascii.js';
 
+const compareOperators = [">=", "<=", ">", "<", "="];
+const arithmeticOperators = ["+", "/", "*", "-"];
 
-const ASCII = {
-	FullStop: 46
-};
+export function tokenizeOperator(input) {
+	var codes = readNextWordIncludingOperators(input);
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	if (compareOperators.includes(lexeme)) return input.acceptToken(tokens.CompareOperator);
+	if (arithmeticOperators.includes(lexeme)) return input.acceptToken(tokens.ArithmeticOperator);
+	if (aliases.get(tokens.Is).includes(lexeme)) {
+		codes = readNextWordIncludingOperators(input);
+		lexeme = String.fromCodePoint(...codes).toLowerCase();
+		for (var token of [tokens.Above, tokens.Less, tokens.More, tokens.Under]) {
+			if (aliases.get(token).includes(lexeme)) {
+				var tokenTo = input.pos;
+				codes = readNextWordIncludingOperators(input);
+				lexeme = String.fromCodePoint(...codes).toLowerCase();
+				if (aliases.get(tokens.Than).includes(lexeme)) {
+					return input.acceptToken(tokens.CompareOperator);
+				} else {
+					return input.acceptTokenTo(tokens.CompareOperator, tokenTo);
+				}
+			}
+		}
+		if (lexeme == "as") {
+			codes = readNextWordIncludingOperators(input);
+			lexeme = String.fromCodePoint(...codes).toLowerCase();
+			for (var token of [tokens.Great, tokens.Small]) {
+				if (aliases.get(token).includes(lexeme)) {
+					console.log(lexeme);
+					codes = readNextWordIncludingOperators(input);
+					lexeme = String.fromCodePoint(...codes).toLowerCase();
+					if (aliases.get(tokens.As).includes(lexeme)) return input.acceptToken(tokens.CompareOperator);
+				}
+			}
+		}
+	} else {
+		for (var op of operatorMaps.keys()) {
+			for (var token of operatorMaps.get(op)) {
+				if (aliases.get(token).includes(lexeme)) return input.acceptToken(op);
+			}
+		}
+	}
+}
+
+const operatorMaps = new Map();
+operatorMaps.set(tokens.CompareOperator, [tokens.Not, tokens.Is, tokens.Isnt]);
+operatorMaps.set(tokens.ArithmeticOperator, [tokens.Plus, tokens.Minus, tokens.Divided, tokens.Times]);
+operatorMaps.set(tokens.LogicOperator, [tokens.And, tokens.Nor, tokens.Or]);
 
 export function tokenizeKeyword(input) {
 	var codes = readNextWord(input);
@@ -15,7 +60,7 @@ export function tokenizeKeyword(input) {
 
 export function tokenizeVariable(input) {
 	var codes = readNextWord(input);
-	if (! codes.length) return;
+	if (!codes.length) return;
 	var lexeme = String.fromCodePoint(...codes);
 	if (aliases.get(tokens.The).includes(lexeme.toLowerCase())) {
 		readNextWord(input);
@@ -42,41 +87,6 @@ export function tokenizeVariable(input) {
 	if (!isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
 }
 
-// export function tokenizePronoun(input) {
-// 	var codes = readNextWord(input);
-// 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-
-// }
-
-// export function tokenizeSimpleVariable(input) {
-// 	var codes = readNextWord(input);
-// 	if (! isKeyword(codes)) return input.acceptToken(tokens.SimpleVariable);
-// }
-
-// export function tokenizeCommonVariable(input) {
-// 	var codes = readNextWord(input);
-// 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-
-
-// }
-// export function tokenizeProperVariable(input) {
-// 	var tokenTo = -1;
-// 	let codes = [];
-// 	var i = 0;
-// 	while (input.next > 0) {
-// 		codes = [];
-// 		if (!upperCodes.includes(input.next)) break;
-// 		codes.push(input.peek(i));
-// 		while (alphaCodes.includes(input.advance())) codes.push(input.next);
-// 		if (isKeyword(codes)) break;
-// 		tokenTo = i;
-// 		console.log(String.fromCodePoint(...codes));
-// 		if (ASCII.FullStop == input.peek(i)) i++;
-// 		while (whitespaceCodes.includes(input.peek(++i)));
-// 	}
-// 	if (tokenTo >= 0) input.acceptTokenTo(tokens.ProperVariable, tokenTo);
-// }
-
 function isKeyword(codes) {
 	var lexeme = String.fromCodePoint(...codes).toLowerCase();
 	return keywords.includes(lexeme);
@@ -85,15 +95,21 @@ function isKeyword(codes) {
 const whitespace = " \t";
 const whitespaceCodes = stringToCharCodeArray(whitespace);
 
-function readNextWord(input) {
+const readNextWordIncludingOperators = (input) => readWhileContains(input, alphaCodes.concat(opCodes));
+const readNextWordIncludingApostrophes = (input) => readWhileContains(input, [ASCII.Apostrophe].concat(alphaCodes));
+
+const readNextWord = (input) => readWhileContains(input, alphaCodes);
+
+function readWhileContains(input, accept) {
 	let codes = [];
 	while (whitespaceCodes.includes(input.next)) input.advance();
-	while(alphaCodes.includes(input.next)) {
+	while (accept.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();
 	}
 	return codes;
 }
+
 
 function stringToCharCodeArray(s) {
 	var result = [];
@@ -101,8 +117,10 @@ function stringToCharCodeArray(s) {
 	return result;
 }
 
+const operators = "'<>=!+/-*";
 const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞĀĂĄĆĈĊČĎĐĒĔĖĘĚĜĞĠĢĤĦĨĪĬĮİĲĴĶĸĹĻĽĿŁŃŅŇŊŌŎŐŒŔŖŘŚŜŞŠŢŤŦŨŪŬŮŰŲŴŶŸŹŻŽ";
 const lowers = "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþāăąćĉċčďđēĕėęěĝğġģĥħĩīĭįi̇ĳĵķĸĺļľŀłńņňŋōŏőœŕŗřśŝşšţťŧũūŭůűųŵŷÿźżžŉß";
+const opCodes = stringToCharCodeArray(operators);
 const upperCodes = stringToCharCodeArray(uppers);
 const lowerCodes = stringToCharCodeArray(lowers);
 const alphaCodes = upperCodes.concat(lowerCodes);
@@ -112,8 +130,8 @@ aliases.set(tokens.Above, ['above', 'over']);
 aliases.set(tokens.And, ['and']);
 aliases.set(tokens.Around, ['around', 'round']);
 aliases.set(tokens.As, ['as']);
-aliases.set(tokens.AsGreat, ['great', 'high', 'big', 'strong']);
-aliases.set(tokens.AsSmall, ['less', 'low', 'small', 'weak']);
+aliases.set(tokens.Great, ['great', 'high', 'big', 'strong']);
+aliases.set(tokens.Small, ['less', 'low', 'small', 'weak']);
 aliases.set(tokens.At, ['at']);
 aliases.set(tokens.Back, ['back']);
 aliases.set(tokens.Be, ['be']);

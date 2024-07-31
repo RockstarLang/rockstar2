@@ -1,27 +1,13 @@
-import { Rockstar } from "./parser/editor.js"
-import { OutputTokenizer } from "../src/grammars/rockstar-tokenizer.js";
-
-//import { fileTests } from "@lezer/generator/dist/test"
-
-//import * as fs from "fs"
-//import * as path from "path"
-//import { fileURLToPath } from 'url';
-//let caseDir = path.dirname(fileURLToPath(import.meta.url))
-
-//for (let file of fs.readdirSync(caseDir)) {
-//if (!/\.txt$/.test(file)) continue
-
-//let name = /^[^\.]*/.exec(file)[0]
-//describe(name, () => {
-//for (let { name, run } of fileTests(fs.readFileSync(path.join(caseDir, file), "utf8"), file))
-//it(name, () => run(Rockstar.parser))
-//})
-//}
+import * as rockstar from "../src/tokenizers/rockstar.js"
 
 describe("it", () => {
+	test("matches keywords", () => {
+		var token = rockstar.tokenizeKeyword(new parserInput("SHOUT")).token;
+		expect(token).toBe(tokens.Print);
+	});
 	it("finds proper variables", () => {
 		var input = new parserInput("print hello world");
-		OutputTokenizer(input);
+		rockstar.tokenizeKeyword(input);
 	});
 	it("works", () => {
 		var input = new parserInput("hello");
@@ -35,15 +21,15 @@ describe("it", () => {
 });
 
 class parserInput {
+	#token;
 	#s;
 	#i = 0;
-	constructor(s) {
-		this.#s = s;
-	}
+	constructor(s) { this.#s = s; }
+	get token() { return this.#token; }
 	get next() { return this.#i >= this.#s.length ? -1 : this.#s.charCodeAt(this.#i) }
 	advance = () => {
 		this.#i++;
 		return this.next;
 	}
-	acceptToken = (token) => console.log(token);
+	acceptToken = (token) => this.#token = token;
 }

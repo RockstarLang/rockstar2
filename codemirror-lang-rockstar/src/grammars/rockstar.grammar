@@ -14,33 +14,38 @@ statement {
 	| OutputStatement
 }
 
-ListenStatement { Listen to VariableName }
+ListenStatement { Listen To Variable }
+OutputStatement { Print Expression }
+Expression { True | False }
 
-OutputStatement { output VariableName }
+Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 
-// OutputToken { KeywordToken }
-// DonkeyToken { KeywordToken }
-// Listen { KeywordToken }
-// To { KeywordToken }
-// Burn { KeywordToken }
-// The { KeywordToken }
+@external tokens PoeticLiterals from "../tokenizers/rockstar-tokenizer" {
+	PoeticString, PoeticNumber
+}
 
-// @external tokens OutputFinder from "./rockstar-tokenizer" { OutputToken }
-@external tokens KeywordTokenizer from "./rockstar-tokenizer" { Listen, to, burn, the, output }
+@external tokens Variables from "../tokenizers/rockstar-tokenizer" {
+	ProperVariable, CommonVariable, SimpleVariable, Pronoun
+}
+
+@external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
+	Above, And, Around, As, AsGreat, AsSmall, At, Back, Be, Break, Build,
+	Call, Cast, Continue, Debug, Divided, Down, Else, Empty, End, Exactly,
+	False, His, If, Into, Is, Isnt, Join, Knock, Less, Let, Like, Listen,
+	Minus, More, Mysterious, Non, Nor, Not, Now, Null, Or, Over, Plus, Pop,
+	Print, Push, Put, Return, Says, Split, Takes, Taking, Than,	The, Then,
+	Times, To, True, Turn, Under, Until, Up, Using, While,With,	Write
+}
 
 @tokens {
-	// Keyword { listen | to | burn | the | output }
-	VariableName { "the sound" }
 	@precedence { EOS EOB }
 	EOB { EOS EOS+ }
 	EOS { "\r"? "\n" }
 	LineComment { "#" ![\n]* "\n" }
 	String { '"' (!["\\] | "\\" _)* '"' }
-	Boolean { "true" | "false" }
 	BlockComment { "(" ![\)]* ")" | "{" ![\}]* "}" | "[" ![\]]* "]" }
 	space { $[ \t]+ }
 	EOF { @eof }
 }
-
 
 @detectDelim

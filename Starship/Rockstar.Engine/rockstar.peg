@@ -96,12 +96,12 @@ primary_list <IEnumerable<Expression>>
 	/ head:primary _XLS_ tail:primary { new List<Expression> { head, tail } }
 
 molecule_list <IEnumerable<Expression>>
-  	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
-  	/ head:molecule { new List<Expression> { head } }
+ 	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
+ 	/ head:molecule { new List<Expression> { head } }
 
 argument_list <IEnumerable<Expression>>
-  	= head:primary _ALS_ tail:argument_list { head.Concat(tail) }
-  	/ head:primary { new List<Expression> { head } }
+ 	= head:primary _ALS_ tail:argument_list { head.Concat(tail) }
+ 	/ head:primary { new List<Expression> { head } }
 
 argument
 	= molecule
@@ -153,11 +153,11 @@ expression_list <IEnumerable<Expression>>
 oxford_comma = ',' _ and
 _nacton	= (_ "n'" / _? "'n'")
 
-_VLS_	=  _ and _ / _ALS_
+_VLS_	= _ and _ / _ALS_
 _ALS_	= oxford_comma _ / _XLS_
 _XLS_	= (',' _? ('&' _?)?)
 		/ _nacton _?
-		/  _? '&' _?
+		/ _? '&' _?
 		/ _? ',' _?
 
 break_stmt <Statement>
@@ -174,11 +174,11 @@ EOB -memoize
 	= EOL &EOL
 	/ EOL _ &EOL
 	/ (_ / [,?!.;])* EOL &((_ / [,?!.;])? EOL)
-    / EOS* &(_? else)
-    / EOS* ','? _? end (_ / [,?!.;])*
-    / EOS* ','? _? end (_ / [,?!.;])*
-   	/ EOS* ','? _? 'o' &('o'+ 'h')
-    / EOF
+ / EOS* &(_? else)
+ / EOS* ','? _? end (_ / [,?!.;])*
+ / EOS* ','? _? end (_ / [,?!.;])*
+ 	/ EOS* ','? _? 'o' &('o'+ 'h')
+ / EOF
 
 consequent <Block>
 	= EOS+ b:block EOB { b }
@@ -333,8 +333,8 @@ comparison <Expression>
 comparator <Operator>
 	= (_? '>=' _? / _is _ as _ as_great _ as _) { Operator.MoreThanEqual }
 	/ (_? '<=' _? / _is _ as _ as_small _ as _) { Operator.LessThanEqual }
-	/ (_? '>' _?  / _is _ (above / more _ than) _) { Operator.MoreThan }
-	/ (_? '<' _?  / _is _ (under / less _ than) _) { Operator.LessThan }
+	/ (_? '>' _? / _is _ (above / more _ than) _) { Operator.MoreThan }
+	/ (_? '<' _? / _is _ (under / less _ than) _) { Operator.LessThan }
 
 numeric_expression
 	= addition
@@ -446,7 +446,7 @@ constant <Value>
 	/ mysterious { Mysterious.Instance }
 
 number <Number>
-    = like _ n:poetic_number { n }
+ = like _ n:poetic_number { n }
 	/ d:digits&{ decimal.TryParse(d, out var _) }
 		{ new Number(d) }
 	/ d:digits
@@ -558,8 +558,8 @@ above = 'above' !letter / over
 and = 'and' !letter
 around = 'around' !letter / 'round' !letter
 as = 'as' !letter
-as_great = 'great' !letter/ 'high' !letter/ 'big' !letter/ 'strong' !letter
-as_small = 'less' !letter/ 'low' !letter/ 'small' !letter/ 'weak' !letter
+as_great = 'great' !letter / 'high' !letter / 'big' !letter / 'strong' !letter
+as_small = 'less' !letter / 'low' !letter / 'small' !letter / 'weak' !letter
 at = 'at' !letter
 back = 'back' !letter
 be = 'be' !letter
@@ -575,7 +575,7 @@ else = 'else' !letter / 'otherwise' !letter
 empty = 'empty' !letter / 'silent' !letter / 'silence' !letter
 end = 'end' !letter / 'yeah' !letter / 'baby' !letter / 'oh' !letter
 exactly = 'exactly' !letter / 'totally' !letter / 'really' !letter
-false = "false" !letter/ "lies" !letter/ "no" !letter/ "wrong"!letter
+false = "false" !letter / "lies" !letter / "no" !letter / "wrong"!letter
 his = 'his' !letter / 'her' !letter
 if = 'if' !letter / 'when' !letter
 into = 'into' !letter / 'in' !letter
@@ -583,24 +583,24 @@ is = 'is' !letter / 'was' !letter / 'are' !letter / 'were' !letter / 'am' !lette
 isnt = "isnt" !letter / "isn't" !letter / 'aint' !letter / "ain't" !letter / "wasn't" !letter / "wasnt" !letter / "aren't" !letter / "arent" !letter / "weren't" !letter / "werent" !letter
 join = 'join' !letter / 'unite' !letter
 knock = 'knock' !letter
-less = 'less' !letter/ 'lower'	/ 'smaller' !letter/ 'weaker' !letter
+less = 'less' !letter / 'lower'	 / 'smaller' !letter / 'weaker' !letter
 let = 'let' !letter
 like = 'like' !letter / 'so' !letter
 listen = 'listen' !letter
 minus = 'minus' !letter / 'without' !letter
-more = 'greater'/ 'higher' / 'bigger' / 'stronger' !letter/ 'more' !letter
+more = 'greater' / 'higher' / 'bigger' / 'stronger' !letter / 'more' !letter
 mysterious = 'mysterious' !letter
 non = 'non' !letter
 nor = 'nor' !letter
 not = 'not' !letter
 now = 'now' !letter
-null = 'null' !letter/ 'nothing' !letter/ 'nowhere' !letter/ 'nobody' !letter/ 'gone'!letter
+null = 'null' !letter / 'nothing' !letter / 'nowhere' !letter / 'nobody' !letter / 'gone'!letter
 or = 'or' !letter
 over = 'over' !letter
 plus = 'plus' !letter / 'with' !letter
 pop = 'roll' !letter / 'pop' !letter
 print = "print" !letter / "shout" !letter / "say" !letter / "scream" !letter / "whisper" !letter
-pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter/ 'zie' !letter/ 'zir' !letter/ 'xem' !letter/ 'ver'!letter / 'ze' !letter/ 've' !letter/ 'xe' !letter/ 'it' !letter/ 'he'!letter / 'you' !letter / 'me' !letter / 'i' !letter
+pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter / 'zie' !letter / 'zir' !letter / 'xem' !letter / 'ver'!letter / 'ze' !letter / 've' !letter / 'xe' !letter / 'it' !letter / 'he'!letter / 'you' !letter / 'me' !letter / 'i' !letter
 push = 'rock' !letter / 'push' !letter
 put = 'put' !letter
 return = 'return' !letter / 'giving' !letter / 'give' !letter / 'send' !letter
@@ -609,11 +609,11 @@ split = 'cut' !letter / 'split' !letter / 'shatter' !letter
 takes = 'takes' !letter / 'wants' !letter
 taking = 'taking' !letter
 than = 'than' !letter
-the	= 'an'  !letter/ 'a'  !letter / 'the'  !letter / 'my'  !letter / 'your'  !letter / 'our' !letter / 'their' !letter
+the	= 'an' !letter / 'a' !letter / 'the' !letter / 'my' !letter / 'your' !letter / 'our' !letter / 'their' !letter
 then = 'then' !letter
 times = 'times' !letter / 'of' !letter
 to = 'to' !letter
-true = "true" !letter/ "yes" !letter/ "ok" !letter/ "right"!letter
+true = "true" !letter / "yes" !letter / "ok" !letter / "right"!letter
 turn = 'turn' !letter
 under = 'under' !letter / 'below' !letter
 until = 'until' !letter

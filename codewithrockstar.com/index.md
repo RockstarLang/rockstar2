@@ -12,7 +12,7 @@ Shout 1 + 2
 Shout a boy
 Shout Johnny B. Goode
 Shout a boy with a dream
-Shout it. Shout true, shout empty, shout silence
+Shout it. Shout true, shout empty, shout silence.
 
 Listen to the sound
 # a line comment

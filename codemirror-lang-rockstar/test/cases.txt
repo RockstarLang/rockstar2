@@ -1,7 +1,0 @@
-# Hello world
-
-say "hello world"
-
-==>
-
-Program(Output(Expression))

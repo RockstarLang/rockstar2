@@ -26072,74 +26072,75 @@ const ProperVariable = 1,
   ArithmeticOperator = 7,
   PoeticNumber$1 = 8,
   PoeticString$1 = 9,
-  Above = 10,
-  And = 11,
-  Around = 12,
-  As = 13,
-  At = 14,
-  Back = 15,
-  Be = 16,
-  Break = 17,
-  Build = 18,
-  Call = 19,
-  Cast = 20,
-  Continue = 21,
-  Debug = 22,
-  Divided = 23,
-  Down = 24,
-  Else = 25,
-  Empty = 26,
-  End = 27,
-  Exactly = 28,
-  False = 29,
-  Great = 30,
-  His = 31,
-  If = 32,
-  Into = 33,
-  Is = 34,
-  Isnt = 35,
-  Join = 36,
-  Knock = 37,
-  Less = 38,
-  Let = 39,
-  Like = 40,
-  Listen = 41,
-  Minus = 42,
-  More = 43,
-  Mysterious = 44,
-  Non = 45,
-  Nor = 46,
-  Not = 47,
-  Now = 48,
-  Null = 49,
-  Or = 50,
-  Over = 51,
-  Plus = 52,
-  Pop = 53,
-  Print = 54,
-  Push = 55,
-  Put = 56,
-  Return = 57,
-  Says = 58,
-  Small = 59,
-  Split = 60,
-  Takes = 61,
-  Taking = 62,
-  Than = 63,
-  The = 64,
-  Then = 65,
-  Times = 66,
-  To = 67,
-  True = 68,
-  Turn = 69,
-  Under = 70,
-  Until = 71,
-  Up = 72,
-  Using = 73,
-  While = 74,
-  With = 75,
-  Write = 76,
-  EOB = 95;
+  EOB = 10,
+  EOS = 11,
+  Above = 12,
+  And = 13,
+  Around = 14,
+  As = 15,
+  At = 16,
+  Back = 17,
+  Be = 18,
+  Break = 19,
+  Build = 20,
+  Call = 21,
+  Cast = 22,
+  Continue = 23,
+  Debug = 24,
+  Divided = 25,
+  Down = 26,
+  Else = 27,
+  Empty = 28,
+  End = 29,
+  Exactly = 30,
+  False = 31,
+  Great = 32,
+  His = 33,
+  If = 34,
+  Into = 35,
+  Is = 36,
+  Isnt = 37,
+  Join = 38,
+  Knock = 39,
+  Less = 40,
+  Let = 41,
+  Like = 42,
+  Listen = 43,
+  Minus = 44,
+  More = 45,
+  Mysterious = 46,
+  Non = 47,
+  Nor = 48,
+  Not = 49,
+  Now = 50,
+  Null = 51,
+  Or = 52,
+  Over = 53,
+  Plus = 54,
+  Pop = 55,
+  Print = 56,
+  Push = 57,
+  Put = 58,
+  Return = 59,
+  Says = 60,
+  Small = 61,
+  Split = 62,
+  Takes = 63,
+  Taking = 64,
+  Than = 65,
+  The = 66,
+  Then = 67,
+  Times = 68,
+  To = 69,
+  True = 70,
+  Turn = 71,
+  Under = 72,
+  Until = 73,
+  Up = 74,
+  Using = 75,
+  While = 76,
+  With = 77,
+  Write = 78;
 
 const ASCII = {
 	NUL: 0,
@@ -26269,34 +26270,50 @@ const arithmeticOperators = ["+", "/", "*", "-"];
 const noise = " \t,?!./;";
 const noiseCodes = stringToCharCodeArray(noise);
 
-const endOfStatementMarkers = ",?!./;";
-stringToCharCodeArray(endOfStatementMarkers);
+const endOfStatementMarkers = ",?!.;";
+const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
 
 function tokenizeEndMarkers(input) {
-	// Skip all trailing punctuation
-	while(noiseCodes.includes(input.next)) input.advance();
-	if (input.next == ASCII.CR) input.advance();
-	if (input.next == ASCII.LF) {
-		input.advance(); // eat the newline.
-		var i = 0;
+	var foundEOS = false;
+	var skipCodes = spaceCodes.concat(noiseCodes);
+	while(skipCodes.includes(input.next)) {
+		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
+		input.advance();
+	}
+	var i = 0;
+	if (input.peek(i) == ASCII.CR) i++;
+	if (input.peek(i) == ASCII.LF) {
+		input.advance(i+1); // eat the newline.
+		i = 0;
+		if (input.next < 0) return input.acceptToken(EOS);
+		console.log(input.next);
 		while (input.peek(i) >= 0) {
-			while (noiseCodes.includes(input.peek(i++)));
+			while (noiseCodes.includes(input.peek(i))) i++;
 			if (input.peek(i) == ASCII.CR) i++;
 			if (input.peek(i) == ASCII.LF) return input.acceptToken(EOB);
-			let [codes, index] = peekNextWord(input);
+			while(noiseCodes.includes(input.peek(i))) i++;
+			let [codes, _] = peekNextWord(input, i);
 			var lexeme = String.fromCodePoint(...codes).toLowerCase();
+			console.log(lexeme);
 			if (aliases.get(Else).includes(lexeme)) return input.acceptToken(EOB);
 			if (aliases.get(End).includes(lexeme)) return input.acceptToken(EOB);
 		}
 	}
+	var offset = input.pos;
+	var codes = readNextWord(input);
+	var lexeme = String.fromCodePoint(...codes);
+	if (/oo*h/i.test(lexeme)) return input.acceptTokenTo(EOB, offset + 1);
+	if (aliases.get(Else).includes(lexeme)) return input.acceptToken(EOB);
+	if (aliases.get(End).includes(lexeme)) return input.acceptToken(EOB);
+	if (foundEOS) return input.acceptToken(EOS);
 }
 
 function tokenizePoeticNumber(input) {
 	let codes = [];
-	while (whitespaceCodes.includes(input.next)) input.advance();
+	while (spaceCodes.includes(input.next)) input.advance();
 	// poetic numbers always start with a letter
 	if (!(alphaCodes.concat([ASCII.Apostrophe, ASCII.Hyphen]).includes(input.next))) return;
-	while (input.next >= 0 && !whitespaceCodes.includes(input.next)) {
+	while (input.next >= 0 && !spaceCodes.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();
 	}
@@ -26423,17 +26440,16 @@ function isKeyword(codes) {
 	return keywords.includes(lexeme);
 }
 
-const whitespace = " \t";
-const whitespaceCodes = stringToCharCodeArray(whitespace);
+const space = " \t";
+const spaceCodes = stringToCharCodeArray(space);
 
 const readNextWordIncludingOperators = (input) => readWhileContains(input, alphaCodes.concat(opCodes));
 
 const readNextWord = (input) => readWhileContains(input, alphaCodes);
 
-const peekNextWord = (input) => {
+const peekNextWord = (input, index = 0) => {
 	let codes = [];
-	let index = 0;
-	while (whitespaceCodes.includes(input.peek(index))) index++;
+	while (spaceCodes.includes(input.peek(index))) index++;
 	if (input.peek(index) <= 0) return [codes, index];
 	while (alphaCodes.includes(input.peek(index))) codes.push(input.peek(index++));
 	while(input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
@@ -26442,7 +26458,7 @@ const peekNextWord = (input) => {
 
 function readWhileContains(input, accept) {
 	let codes = [];
-	while (whitespaceCodes.includes(input.next)) input.advance();
+	while (spaceCodes.includes(input.next)) input.advance();
 	while (accept.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();
@@ -26541,7 +26557,7 @@ const Variables = new ExternalTokenizer(tokenizeVariable);
 const Operators = new ExternalTokenizer(tokenizeOperator);
 const PoeticString = new ExternalTokenizer(tokenizePoeticString);
 const PoeticNumber = new ExternalTokenizer(tokenizePoeticNumber);
-new ExternalTokenizer(tokenizeEndMarkers);
+const EndMarkers = new ExternalTokenizer(tokenizeEndMarkers);
 
 const highlighting$1 = styleTags({
 	ProperVariable: tags.variableName,
@@ -26724,17 +26740,17 @@ Write: tags.keyword
 // This file was generated by lezer-generator. You probably shouldn't edit it.
 const parser$1 = LRParser.deserialize({
   version: 14,
-  states: "+pO]Q!ROOPzOpOOOOQa'#Ek'#EkO]Q!ROOOOQc'#Eu'#EuO!SQ!QO'#EQO!XQ!RO'#E[O!|Q!QO'#EeO#[QqO'#EhO!XQ!RO'#EiOOQO'#Es'#EsO#jQpO'#EPQ#xQpOOPOOO'#Er'#ErPOOO)C@f)C@fOOQa-E8i-E8iO#[QqO,5:lO$QQ!SO'#EXOOQb'#EY'#EYOOQb'#EU'#EUO%bQrO'#ETOOQb'#ES'#ESOOQO,5:v,5:vO%mQ!RO,5:wO!XQ!RO,5;PO&OQxO,5;TO&TQ!WO,5;TO&fQ!QO,5;SO&zQ!QO,5;TO'PQ!RO'#EmO'kQpO,5:kO'PQ!RO'#EnQ'yQpOOQOQpOOO(OQ!QO'#EtOOQO1G0W1G0WO(aQ!SO,5:sO!XQ!RO'#EROOQb'#El'#ElOOQa'#EZ'#EZO!XQ!RO,5:oO)qQ!RO'#EvO]Q!RO1G0cO+RQ!QO'#FPOOQO1G0k1G0kOOQO1G0o1G0oO!XQ!RO1G0oO#[QqO1G0oO!XQ!RO1G0nO#[QqO1G0nO#[QqO1G0oOOQO,5;X,5;XOOQO-E8k-E8kOOQO,5;Y,5;YOOQO-E8l-E8lO,VQ!QO,5;`OOQb-E8j-E8jOOQb,5:m,5:mOOQb1G0Z1G0ZO,hQ!RO'#EaOOQa'#Ea'#EaOOQP'#E`'#E`O#[QqO,5;bO]Q!RO'#E^OOQO'#E^'#E^OOQO7+%}7+%}OOQa'#Eg'#EgOOQa'#Ef'#EfO!XQ!RO,5;kOOQO7+&Z7+&ZO-`Q!QO7+&ZO-eQ!QO7+&YOOQO7+&Y7+&YOOQa,5:{,5:{OOQa1G0|1G0|O-vQpO,5:xOOQ`1G1V1G1VO!XQ!RO<<IuO#[QqO<<ItOOQO1G0d1G0dOOQOAN?aAN?aOOQOAN?`AN?`",
-  stateData: ".R~O#eOS!oPQ!pPQ~OPSOQSORSOSSOcWOyTO!WUO!YXO!rQO~O!o]O!p]O~O!e`O~OPSOQSORSOSSOjbOmbO|bO!RbO!fbO!ycO!zcO~OrjO![iO!_gO!`hO~OPSOQSORSOSSO~O!rmO#R!sX#^!sX#c!sX~O#RoO#^qO~O^uOT!{XU!{XV!{X!r!{X#R!{X#U!{X#V!{X#W!{X#^!{X#c!{X#t!{X#u!{X#v!{X#w!{X#x!{X#y!{X#z!{X#{!{Xq!{X~OTwOUwOVwO~OPSOQSORSOSSO!RzO~OX}O~OTwOUwOVwOW!PO!Q!OO~Oq!RO!m!QO!r#[a#R#[a#^#[a#c#[a~Oq!SO~OPSOQSORSOSSOcWOyTO!WUO!YXO~O!rmO#R!sa#^!sa#c!sa~O#RoO~O^uO!r#hX#R#hX#^#hX#c#hX~O^uOT!{aU!{aV!{a!r!{a#R!{a#U!{a#V!{a#W!{a#^!{a#c!{a#t!{a#u!{a#v!{a#w!{a#x!{a#y!{a#z!{a#{!{aq!{a~O#U!]O#V!^O#W!^O#k!_O#l!_O#m!_O#n!_O#o!_O#p!_O#q!_O#r!_OP#jXQ#jXR#jXS#jXc#jXy#jX!W#jX!Y#jX!r#jX~O#U!]O#V!^O#W!^O#t!dO#u!dO#v!dO#w!dO#x!dO#y!dO#z!dO#{!dO!r#sX#R#sX#^#sX#c#sXq#sX~O^uO!r#ha#R#ha#^#ha#c#ha~O#V!kOP#TXQ#TXR#TXS#TXj#TXm#TX|#TX!R#TX!f#TX!y#TX!z#TX~Or!oO~Oq!pO!r#[q#R#[q#^#[q#c#[q~O#R!qO~O#U#R!r#e!r~",
-  goto: "(Y#tPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#u$P$X$_$n$xPP%V%V%b$P$P%hP%k%nPPP$P%t%q$P$PP%w&R&]&cPPP&i&l&x'U'yPPPPPPPP(PS[ORQ!VoR!m!a]YORmoz!aXvart!XQfUQlXQ!ZuQ!g!OR!r!oYeUXu!O!oR![x[dUXux!O!oV{h!Q!fccUXhux!O!Q!f!oQxdR!OjR!czR!`yQ!_yR!e{R!f{QROS_R!aR!azQtaQ!XrT!Yt!XQnZR!UnQp[R!WpR^PWZORo!aQ!TmR!bzQs`Q!g!SQ!j!RR!s!p[VORmoz!abaUXhux!O!Q!f!oQkWWr`!R!S!pSyg!`R!h!PQzgR!l!`Q|hQ!i!QR!n!f",
-  nodeNames: "⚠ ProperVariable CommonVariable SimpleVariable Pronoun LogicOperator CompareOperator ArithmeticOperator PoeticNumber PoeticString Above And Around As At Back Be Break Build Call Cast Continue Debug Divided Down Else Empty End Exactly False Great His If Into Is Isnt Join Knock Less Let Like Listen Minus More Mysterious Non Nor Not Now Null Or Over Plus Pop Print Push Put Return Says Small Split Takes Taking Than The Then Times To True Turn Under Until Up Using While With Write LineComment BlockComment Program EOS Block ListenStatement Indexer Expression Binary Primary String Number Lookup Constant Operator OutputStatement Function Consequent EOB VLS XLS Comma Ampersand Nacton FunctionCall ALS OxfordComma CallStatement Assignment EOF",
+  states: "+pO]Q#eOOPzO!bOOOOQ!R'#Ek'#EkO]Q#eOOOOQ!T'#Eu'#EuO!SQ#SO'#ERO!XQ#TO'#E]O!|Q#SO'#EeO#[Q!cO'#EhO!XQ#TO'#EiOOQ`'#Es'#EsO#jQ!rO'#EQQ#xQ!rOOPOOO'#Er'#ErPOOO)C@f)C@fOOQ!R-E8i-E8iO#[Q!cO,5:mO$QQ#fO'#EYOOQ!S'#EZ'#EZOOQ!S'#EV'#EVO%bQ!dO'#EUOOQ!S'#ET'#ETOOQ`,5:w,5:wO%mQ#TO,5:xO!XQ#TO,5;PO&OQ!jO,5;TO&TQ#YO,5;TO&fQ#dO,5;SO&zQ#SO,5;TO'PQ#TO'#EmO'kQ!rO,5:lO'PQ#TO'#EnQ'yQ!rOOQOQ!bOOO(OQ#dO'#EtOOQ`1G0X1G0XO(aQ#fO,5:tO!XQ#TO'#ESOOQ!S'#El'#ElOOQq'#E['#E[O!XQ#TO,5:pO)qQ#eO'#EvO]Q#eO1G0dO+RQ#dO'#FPOOQ`1G0k1G0kOOQ`1G0o1G0oO!XQ#TO1G0oO#[Q!cO1G0oO!XQ#TO1G0nO#[Q!cO1G0nO#[Q!cO1G0oOOQ`,5;X,5;XOOQ`-E8k-E8kOOQ`,5;Y,5;YOOQ`-E8l-E8lO,VQ#dO,5;`OOQ!S-E8j-E8jOOQ!S,5:n,5:nOOQ!S1G0[1G0[O,hQ#TO'#EaOOQq'#Ea'#EaOOQP'#E`'#E`O#[Q!cO,5;bO]Q#eO'#E_OOQ`'#E_'#E_OOQ`7+&O7+&OOOQq'#Eg'#EgOOQq'#Ef'#EfO!XQ#TO,5;kOOQ`7+&Z7+&ZO-`Q#SO7+&ZO-eQ#dO7+&YOOQ`7+&Y7+&YOOQq,5:{,5:{OOQ!R1G0|1G0|O-vQ!rO,5:yOOQ!Q1G1V1G1VO!XQ#TO<<IuO#[Q!cO<<ItOOQ`1G0e1G0eOOQ`AN?aAN?aOOQ`AN?`AN?`",
+  stateData: ".O~O#eOS!qPQ!rPQ~OPSOQSORSOSSOZQOeWO{TO!YUO![XO~O!q]O!r]O~O!g`O~OPSOQSORSOSSOlbOobO!ObO!TbO!hbO!zcO!{cO~OtjO!^iO!agO!bhO~OPSOQSORSOSSO~OZmOY!tX#^!tX#c!tX~OYoO#^qO~O`uOT!|XU!|XV!|XY!|XZ!|X#U!|X#V!|X#W!|X#^!|X#c!|X#t!|X#u!|X#v!|X#w!|X#x!|X#y!|X#z!|X#{!|Xs!|X~OTwOUwOVwO~OPSOQSORSOSSO!TzO~OX}O~OTwOUwOVwOW!PO!S!OO~Os!RO!o!QOY#[aZ#[a#^#[a#c#[a~Os!SO~OPSOQSORSOSSOeWO{TO!YUO![XO~OZmOY!ta#^!ta#c!ta~OYoO~O`uOY#hXZ#hX#^#hX#c#hX~O`uOT!|aU!|aV!|aY!|aZ!|a#U!|a#V!|a#W!|a#^!|a#c!|a#t!|a#u!|a#v!|a#w!|a#x!|a#y!|a#z!|a#{!|as!|a~O#U!]O#V!^O#W!^O#k!_O#l!_O#m!_O#n!_O#o!_O#p!_O#q!_O#r!_OP#jXQ#jXR#jXS#jXZ#jXe#jX{#jX!Y#jX![#jX~O#U!]O#V!^O#W!^O#t!dO#u!dO#v!dO#w!dO#x!dO#y!dO#z!dO#{!dOY#sXZ#sX#^#sX#c#sXs#sX~O`uOY#haZ#ha#^#ha#c#ha~O#V!kOP#TXQ#TXR#TXS#TXl#TXo#TX!O#TX!T#TX!h#TX!z#TX!{#TX~Ot!oO~Os!pOY#[qZ#[q#^#[q#c#[q~OY!qO~O#U#e~",
+  goto: "(Y#tPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#u$P$X$_$n$xPP%V%V%b$P$P%h%k%nPPP$P%t%q$P$PP%w&R&]&cPPP&i&l&x'U'yPPPPPPPP(PS[ORQ!VoR!m!a]YORmoz!aXvart!XQfUQlXQ!ZuQ!g!OR!r!oYeUXu!O!oR![x[dUXux!O!oV{h!Q!fccUXhux!O!Q!f!oQxdR!OjR!czR!`yQ!_yR!e{R!f{QROS_R!aR!azQtaQ!XrT!Yt!XQnZR!UnQp[R!WpR^PWZORo!aQ!TmR!bzQs`Q!g!SQ!j!RR!s!p[VORmoz!abaUXhux!O!Q!f!oQkWWr`!R!S!pSyg!`R!h!PQzgR!l!`Q|hQ!i!QR!n!f",
+  nodeNames: "⚠ ProperVariable CommonVariable SimpleVariable Pronoun LogicOperator CompareOperator ArithmeticOperator PoeticNumber PoeticString EOB EOS Above And Around As At Back Be Break Build Call Cast Continue Debug Divided Down Else Empty End Exactly False Great His If Into Is Isnt Join Knock Less Let Like Listen Minus More Mysterious Non Nor Not Now Null Or Over Plus Pop Print Push Put Return Says Small Split Takes Taking Than The Then Times To True Turn Under Until Up Using While With Write LineComment BlockComment Program Block ListenStatement Indexer Expression Binary Primary String Number Lookup Constant Operator OutputStatement Function Consequent VLS XLS Comma Ampersand Nacton FunctionCall ALS OxfordComma CallStatement Assignment EOF",
   maxTerm: 135,
   propSources: [highlighting$1],
-  skippedNodes: [0,10,11,12,13,15,16,17,18,20,21,22,23,24,25,27,28,30,31,32,35,36,37,38,39,40,42,43,45,46,47,50,51,52,53,55,57,59,60,63,64,65,66,69,70,71,72,73,74,76,77,78],
+  skippedNodes: [0,12,13,14,15,17,18,19,20,22,23,24,25,26,27,29,30,32,33,34,37,38,39,40,41,42,44,45,47,48,49,52,53,54,55,57,59,61,62,65,66,67,68,71,72,73,74,75,76,78,79,80],
   repeatNodeCount: 4,
-  tokenData: "2O~RfXY!gYZ#[]^%mpq!gqr%srs&fst(Svw(qwx(vxy)X|})v!O!P-f!Q![.d![!]%s!]!^%s!a!b%s!c!d.u!}#O/v#T#U0`#b#c(|#o#p1a~~1y~!lY#e~XY!gYZ#[]^%mpq!gqr%s|}%s!O!P%s![!]%s!]!^%s!a!b%s~#aY!r~XY$PYZ$r]^%gpq$Pqr$P|}$P!O!P$P![!]$P!]!^$P!a!b$P~$SYXY$PYZ$r]^%gpq$Pqr$P|}$P!O!P$P![!]$P!]!^$P!a!b$P~$wY#R~XY$PYZ$r]^%gpq$Pqr$P|}$P!O!P$P![!]$P!]!^$P!a!b$P~%jPYZ$r~%pPYZ#[~%vYXY%sYZ#[]^%mpq%sqr%s|}%s!O!P%s![!]%s!]!^%s!a!b%s~&iVOr&frs'Os#O&f#O#P'T#P;'S&f;'S;=`'|<%lO&f~'TO!y~~'WRO;'S&f;'S;=`'a;=`O&f~'dWOr&frs'Os#O&f#O#P'T#P;'S&f;'S;=`'|;=`<%l&f<%lO&f~(PP;=`<%l&f~(VTOY(SYZ(fZ;'S(S;'S;=`(k<%lO(S~(kO!o~~(nP;=`<%l(S~(vO#V~~(yP#b#c(|~)PPwx)S~)XO#W~~)[TOy)Xyz)kz;'S)X;'S;=`)p<%lO)X~)pO!p~~)sP;=`<%l)X~){Y#U~XY%sYZ#[]^%mpq*kqr%s|}%s!O!P%s![!]%s!]!^%s!a!b%s~*n[XY%sYZ#[]^%mpq%sqr%s|}%s!O!P%s![!]%s!]!^%s!a!b%s!c!d+d#T#U,e~+gQ!p!q+m#b#c,Q~+pQ!f!g+v#W#X+{~+{O#t~~,QO#u~~,TQ!f!g,Z#W#X,`~,`O#v~~,eO#w~~,hQ!p!q,n#b#c-R~,qQ!f!g,w#W#X,|~,|O#x~~-RO#y~~-UQ!f!g-[#W#X-a~-aO#z~~-fO#{~~-iZXY%sYZ#[]^%mpq%sqr%s|}%s!O!P%s!Q![.[![!]%s!]!^%s!a!b%s~.aP!z~!Q![.[~.iQ!z~!O!P.o!Q![.d~.rP!Q![.[~.xQ!p!q/O#b#c/c~/RQ!f!g/X#W#X/^~/^O#k~~/cO#l~~/fQ!f!g/l#W#X/q~/qO#m~~/vO#n~~/yTO#P/v#P#Q)k#Q;'S/v;'S;=`0Y<%lO/v~0]P;=`<%l/v~0cQ!p!q0i#b#c0|~0lQ!f!g0r#W#X0w~0wO#o~~0|O#p~~1PQ!f!g1V#W#X1[~1[O#q~~1aO#r~~1dTO#q1a#q#r)k#r;'S1a;'S;=`1s<%lO1a~1vP;=`<%l1a~2OO#^~",
-  tokenizers: [Variables, Operators, PoeticNumber, PoeticString, Keywords, 0],
-  topRules: {"Program":[0,79]},
+  tokenData: "+w~R`XY!Tpq!Trs!`st#|vw$kwx$pxy%R|}%p!O!P(T!Q![(c!c!d(n!}#O)o#T#U*X#b#c$v#o#p+Y~~+r~!YQ#e~XY!Tpq!T~!cVOr!`rs!xs#O!`#O#P!}#P;'S!`;'S;=`#v<%lO!`~!}O!z~~#QRO;'S!`;'S;=`#Z;=`O!`~#^WOr!`rs!xs#O!`#O#P!}#P;'S!`;'S;=`#v;=`<%l!`<%lO!`~#yP;=`<%l!`~$PTOY#|YZ$`Z;'S#|;'S;=`$e<%lO#|~$eO!q~~$hP;=`<%l#|~$pO#V~~$sP#b#c$v~$yPwx$|~%RO#W~~%UTOy%Ryz%ez;'S%R;'S;=`%j<%lO%R~%jO!r~~%mP;=`<%l%R~%uP#U~pq%x~%{Q!c!d&R#T#U'S~&UQ!p!q&[#b#c&o~&_Q!f!g&e#W#X&j~&jO#t~~&oO#u~~&rQ!f!g&x#W#X&}~&}O#v~~'SO#w~~'VQ!p!q']#b#c'p~'`Q!f!g'f#W#X'k~'kO#x~~'pO#y~~'sQ!f!g'y#W#X(O~(OO#z~~(TO#{~~(WP!Q![(Z~(`P!{~!Q![(Z~(hQ!{~!O!P(T!Q![(c~(qQ!p!q(w#b#c)[~(zQ!f!g)Q#W#X)V~)VO#k~~)[O#l~~)_Q!f!g)e#W#X)j~)jO#m~~)oO#n~~)rTO#P)o#P#Q%e#Q;'S)o;'S;=`*R<%lO)o~*UP;=`<%l)o~*[Q!p!q*b#b#c*u~*eQ!f!g*k#W#X*p~*pO#o~~*uO#p~~*xQ!f!g+O#W#X+T~+TO#q~~+YO#r~~+]TO#q+Y#q#r%e#r;'S+Y;'S;=`+l<%lO+Y~+oP;=`<%l+Y~+wO#^~",
+  tokenizers: [Variables, Operators, PoeticNumber, PoeticString, EndMarkers, Keywords, 0],
+  topRules: {"Program":[0,81]},
   tokenPrec: 595
 });
 

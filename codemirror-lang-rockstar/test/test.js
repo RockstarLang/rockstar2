@@ -1,6 +1,31 @@
 import * as rockstar from "../src/tokenizers/rockstar-lexer.js"
 import * as tokens from "../src/grammars/rockstar.terms";
 
+const oooh = ["oh", "oooh", "ooooh"];
+
+test.each(oooh)("%p ends a block", (source) => {
+	var input = new parserInput(source);
+	rockstar.tokenizeEndMarkers(input);
+	expect(input.token).toBe(tokens.EOB);
+	expect(input.tokenTo).toBe(1);
+});
+
+const endOfStatements = [ "\\n", "\\r\\n", ",", "!", ";", "?", "...\\n", "...\\r\\n", "!\r\n", "?!?\\r\\n" ];
+test.each(endOfStatements)("%s ends a statement", (source) => {
+	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
+	var input = new parserInput(source);
+	rockstar.tokenizeEndMarkers(input);
+	expect(input.token).toBe(tokens.EOS);
+});
+
+const endOfBlocks = ["\\nyeah", "\\nEnd", "end", "yeah", "baby", "oh", ", end", ", yeah!", ".... yeah!", "\\r\\nelse", "\\r\\n\\r\\n", "\\n\\n", "\\n\\r\\n", "\\r\\nEnd", "\\r\\nBaby", "\\r\\nOh yeah baby"]
+test.each(endOfBlocks)("%s ends a block", (source) => {
+	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
+	var input = new parserInput(source);
+	rockstar.tokenizeEndMarkers(input);
+	expect(input.token).toBe(tokens.EOB);
+});
+
 const validPoeticNumbers = [ "'rock'", "a lovestruck ladykiller", "the sands of time", "ice. A life unfilled"];
 test.each(validPoeticNumbers)("%p is a poetic number", (lexeme) => {
 	var input = new parserInput(lexeme);
@@ -64,7 +89,6 @@ test.each(notAnyKindOfVariables)("%p is NOT any kind of variable", (lexeme) => {
 	expect(input.token).toBe(undefined);
 });
 
-
 const notCommonVariables = ["his right", "her times"];
 test.each(notCommonVariables)("%p is NOT a common variable", (lexeme) => {
 	var input = new parserInput(lexeme);
@@ -119,15 +143,20 @@ class parserInput {
 	#token;
 	#s;
 	#i = 0;
+	#tokenTo = 0;
 	constructor(s) { this.#s = s; }
 	get token() { return this.#token; }
+	get tokenTo() { return this.#tokenTo; }
 	get next() { return this.#i >= this.#s.length ? -1 : this.#s.charCodeAt(this.#i); }
 	get pos() { return this.#i; }
-	peek = (offset = 0) => this.#s.charCodeAt(this.#i + offset);
+	peek = (offset = 0) => (this.#i + offset < this.#s.length ? this.#s.charCodeAt(this.#i + offset) : -1);
 	advance = (offset = 1) => {
 		this.#i += offset;
 		return this.next;
 	}
 	acceptToken = (token) => this.#token = token;
-	acceptTokenTo = (token, tokenTo) => this.#token = token;
+	acceptTokenTo = (token, tokenTo) => {
+		this.#token = token;
+		this.#tokenTo = tokenTo;
+	}
 }

@@ -7,7 +7,7 @@ const arithmeticOperators = ["+", "/", "*", "-"];
 const noise = " \t,?!./;";
 const noiseCodes = stringToCharCodeArray(noise);
 
-const endOfStatementMarkers = ",?!./;";
+const endOfStatementMarkers = ",?!.;";
 const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
 
 export function tokenizeEndOfStatement(input) {
@@ -26,30 +26,46 @@ export function tokenizeEndOfStatement(input) {
 }
 
 export function tokenizeEndMarkers(input) {
-	// Skip all trailing punctuation
-	while(noiseCodes.includes(input.next)) input.advance();
-	if (input.next == ASCII.CR) input.advance();
-	if (input.next == ASCII.LF) {
-		input.advance(); // eat the newline.
-		var i = 0;
+	var foundEOS = false;
+	var skipCodes = spaceCodes.concat(noiseCodes);
+	while(skipCodes.includes(input.next)) {
+		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
+		input.advance();
+	}
+	var i = 0;
+	if (input.peek(i) == ASCII.CR) i++;
+	if (input.peek(i) == ASCII.LF) {
+		input.advance(i+1); // eat the newline.
+		i = 0;
+		if (input.next < 0) return input.acceptToken(tokens.EOS);
+		console.log(input.next);
 		while (input.peek(i) >= 0) {
-			while (noiseCodes.includes(input.peek(i++)));
+			while (noiseCodes.includes(input.peek(i))) i++;
 			if (input.peek(i) == ASCII.CR) i++;
 			if (input.peek(i) == ASCII.LF) return input.acceptToken(tokens.EOB);
-			let [codes, index] = peekNextWord(input);
+			while(noiseCodes.includes(input.peek(i))) i++;
+			let [codes, _] = peekNextWord(input, i);
 			var lexeme = String.fromCodePoint(...codes).toLowerCase();
+			console.log(lexeme);
 			if (aliases.get(tokens.Else).includes(lexeme)) return input.acceptToken(tokens.EOB);
 			if (aliases.get(tokens.End).includes(lexeme)) return input.acceptToken(tokens.EOB);
 		}
 	}
+	var offset = input.pos;
+	var codes = readNextWord(input);
+	var lexeme = String.fromCodePoint(...codes);
+	if (/oo*h/i.test(lexeme)) return input.acceptTokenTo(tokens.EOB, offset + 1);
+	if (aliases.get(tokens.Else).includes(lexeme)) return input.acceptToken(tokens.EOB);
+	if (aliases.get(tokens.End).includes(lexeme)) return input.acceptToken(tokens.EOB);
+	if (foundEOS) return input.acceptToken(tokens.EOS);
 }
 
 export function tokenizePoeticNumber(input) {
 	let codes = [];
-	while (whitespaceCodes.includes(input.next)) input.advance();
+	while (spaceCodes.includes(input.next)) input.advance();
 	// poetic numbers always start with a letter
 	if (!(alphaCodes.concat([ASCII.Apostrophe, ASCII.Hyphen]).includes(input.next))) return;
-	while (input.next >= 0 && !whitespaceCodes.includes(input.next)) {
+	while (input.next >= 0 && !spaceCodes.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();
 	}
@@ -176,18 +192,17 @@ function isKeyword(codes) {
 	return keywords.includes(lexeme);
 }
 
-const whitespace = " \t";
-const whitespaceCodes = stringToCharCodeArray(whitespace);
+const space = " \t";
+const spaceCodes = stringToCharCodeArray(space);
 
 const readNextWordIncludingOperators = (input) => readWhileContains(input, alphaCodes.concat(opCodes));
 const readNextWordIncludingApostrophes = (input) => readWhileContains(input, [ASCII.Apostrophe].concat(alphaCodes));
 
 const readNextWord = (input) => readWhileContains(input, alphaCodes);
 
-const peekNextWord = (input) => {
+const peekNextWord = (input, index = 0) => {
 	let codes = [];
-	let index = 0;
-	while (whitespaceCodes.includes(input.peek(index))) index++;
+	while (spaceCodes.includes(input.peek(index))) index++;
 	if (input.peek(index) <= 0) return [codes, index];
 	while (alphaCodes.includes(input.peek(index))) codes.push(input.peek(index++));
 	while(input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
@@ -196,7 +211,7 @@ const peekNextWord = (input) => {
 
 function readWhileContains(input, accept) {
 	let codes = [];
-	while (whitespaceCodes.includes(input.next)) input.advance();
+	while (spaceCodes.includes(input.next)) input.advance();
 	while (accept.includes(input.next)) {
 		codes.push(input.next);
 		input.advance();

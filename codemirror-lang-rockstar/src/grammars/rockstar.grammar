@@ -92,6 +92,7 @@ variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 @external tokens Operators from "../tokenizers/rockstar-tokenizer" { LogicOperator, CompareOperator, ArithmeticOperator }
 @external tokens PoeticNumber from "../tokenizers/rockstar-tokenizer" { PoeticNumber }
 @external tokens PoeticString from "../tokenizers/rockstar-tokenizer" { PoeticString }
+@external tokens EndMarkers from "../tokenizers/rockstar-tokenizer" { EOB, EOS }
 
 @external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
 	Above, And, Around, As, At, Back, Be, Break, Build, Call, Cast,
@@ -115,8 +116,6 @@ XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 	@precedence { Comma, EOB, EOS, space }
 	Nacton { "n'" | "'n'" }
 	PoeticLiteral { ![\n]* "\n" }
-	EOS { trailing_punctuation EOL }
-	EOB { EOS EOS+ }
 	EOL { $[\r]? "\n" }
 	LineComment { "#" ![\n]* "\n" }
 	String { '"' (!["\\] | "\\" _)* '"' }

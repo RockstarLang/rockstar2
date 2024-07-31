@@ -26273,17 +26273,32 @@ const noiseCodes = stringToCharCodeArray(noise);
 const endOfStatementMarkers = ",?!.;";
 const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
 
+// export function tokenizeEndOfStatement(input) {
+// 	var found = false;
+// 	while (input.next >= 0) {
+// 		while (spaceCodes.includes(input.next)) input.advance();
+// 		if (input.next == ASCII.LF) {
+// 			found = true;
+// 			break;
+// 		}
+// 		while (spaceCodes.includes(input.next)) input.advance();
+// 		if (endOfStatementCodes.includes(input.next)) found = true;
+// 		input.advance();
+// 	}
+// 	if (found) return input.acceptTokens(tokens.EOS);
+// }
+
 function tokenizeEndMarkers(input) {
 	var foundEOS = false;
 	var skipCodes = spaceCodes.concat(noiseCodes);
-	while(skipCodes.includes(input.next)) {
+	while (input.next >= 0 && skipCodes.includes(input.next)) {
 		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
 		input.advance();
 	}
 	var i = 0;
 	if (input.peek(i) == ASCII.CR) i++;
 	if (input.peek(i) == ASCII.LF) {
-		input.advance(i+1); // eat the newline.
+		input.advance(i + 1); // eat the newline.
 		i = 0;
 		if (input.next < 0) return input.acceptToken(EOS);
 		console.log(input.next);
@@ -26291,12 +26306,12 @@ function tokenizeEndMarkers(input) {
 			while (noiseCodes.includes(input.peek(i))) i++;
 			if (input.peek(i) == ASCII.CR) i++;
 			if (input.peek(i) == ASCII.LF) return input.acceptToken(EOB);
-			while(noiseCodes.includes(input.peek(i))) i++;
+			while (noiseCodes.includes(input.peek(i))) i++;
 			let [codes, _] = peekNextWord(input, i);
 			var lexeme = String.fromCodePoint(...codes).toLowerCase();
-			console.log(lexeme);
 			if (aliases.get(Else).includes(lexeme)) return input.acceptToken(EOB);
 			if (aliases.get(End).includes(lexeme)) return input.acceptToken(EOB);
+			i++;
 		}
 	}
 	var offset = input.pos;
@@ -26373,7 +26388,13 @@ function tokenizeOperator(input) {
 	} else {
 		for (var op of operatorMaps.keys()) {
 			for (var token of operatorMaps.get(op)) {
-				if (aliases.get(token).includes(lexeme)) return input.acceptToken(op);
+				if (aliases.get(token).includes(lexeme)) {
+					if (lexeme == "divided") {
+						var [codes, index] = peekNextWord(input);
+						if (String.fromCodePoint(...codes).toLowerCase() == "by") readNextWord(input);
+					}
+					return input.acceptToken(op);
+				}
 			}
 		}
 	}
@@ -26422,7 +26443,7 @@ function tokenizeVariable(input) {
 	var index = 0;
 	var tokenTo = input.pos;
 
-	for(var i = 0; i < MAXIMUM_PARTS_IN_A_PROPER_VARIABLE; i++) {
+	for (var i = 0; i < MAXIMUM_PARTS_IN_A_PROPER_VARIABLE; i++) {
 		if (isKeyword(codes)) break;
 		if (upperCodes.includes(codes[0])) {
 			properNouns.push(String.fromCodePoint(...codes));
@@ -26452,7 +26473,7 @@ const peekNextWord = (input, index = 0) => {
 	while (spaceCodes.includes(input.peek(index))) index++;
 	if (input.peek(index) <= 0) return [codes, index];
 	while (alphaCodes.includes(input.peek(index))) codes.push(input.peek(index++));
-	while(input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
+	while (input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
 	return [codes, index];
 };
 
@@ -26582,74 +26603,74 @@ const highlighting$1 = styleTags({
 	Ampersand: tags.separator,
 	OxfordComma: tags.separator,
 
-Above: tags.compareOperator,
-And: tags.logicOperator,
-Around: tags.keyword,
-As: tags.keyword,
-AsGreat: tags.compareOperator,
-AsSmall: tags.compareOperator,
-At: tags.keyword,
-Back: tags.keyword,
-Be: tags.keyword,
-Break: tags.controlKeyword,
-Build: tags.keyword,
-Call: tags.keyword,
-Cast: tags.keyword,
-Continue: tags.controlKeyword,
-Debug: tags.keyword,
-Divided: tags.arithmeticOperator,
-Down: tags.keyword,
-Else: tags.controlKeyword,
-Empty: tags.literal,
-End: tags.keyword,
-Exactly: tags.compareOperator,
-False: tags.bool,
-//His: tags.keyword,
-If: tags.controlKeyword,
-Into: tags.keyword,
-Is: tags.compareOperator,
-Isnt: tags.compareOperator,
-Join: tags.keyword,
-Knock: tags.keyword,
-Less: tags.compareOperator,
-Let: tags.keyword,
-Like: tags.keyword,
-Listen: tags.keyword,
-Minus: tags.arithmeticOperator,
-More: tags.compareOperator,
-Mysterious: tags.null,
-Non: tags.logicOperator,
-Nor: tags.logicOperator,
-Not: tags.logicOperator,
-Now: tags.keyword,
-Null: tags.null,
-Or: tags.logicOperator,
-Over: tags.arithmeticOperator,
-Plus: tags.arithmeticOperator,
-Pop: tags.keyword,
-Print: tags.keyword,
-// Pronoun: tags.keyword,
-Push: tags.keyword,
-Put: tags.keyword,
-Return: tags.controlKeyword,
-Says: tags.keyword,
-Split: tags.keyword,
-Takes: tags.keyword,
-Taking: tags.keyword,
-Than: tags.compareOperator,
-// The: tags.keyword,
-Then: tags.controlKeyword,
-Times: tags.arithmeticOperator,
-To: tags.keyword,
-True: tags.bool,
-Turn: tags.keyword,
-Under: tags.keyword,
-Until: tags.controlKeyword,
-Up: tags.keyword,
-Using: tags.keyword,
-While: tags.controlKeyword,
-With: tags.keyword,
-Write: tags.keyword
+	Above: tags.compareOperator,
+	And: tags.logicOperator,
+	Around: tags.keyword,
+	As: tags.keyword,
+	AsGreat: tags.compareOperator,
+	AsSmall: tags.compareOperator,
+	At: tags.keyword,
+	Back: tags.keyword,
+	Be: tags.keyword,
+	Break: tags.controlKeyword,
+	Build: tags.keyword,
+	Call: tags.keyword,
+	Cast: tags.keyword,
+	Continue: tags.controlKeyword,
+	Debug: tags.keyword,
+	Divided: tags.arithmeticOperator,
+	Down: tags.keyword,
+	Else: tags.controlKeyword,
+	Empty: tags.literal,
+	End: tags.keyword,
+	Exactly: tags.compareOperator,
+	False: tags.bool,
+	//His: tags.keyword,
+	If: tags.controlKeyword,
+	Into: tags.keyword,
+	Is: tags.compareOperator,
+	Isnt: tags.compareOperator,
+	Join: tags.keyword,
+	Knock: tags.keyword,
+	Less: tags.compareOperator,
+	Let: tags.keyword,
+	Like: tags.keyword,
+	Listen: tags.keyword,
+	Minus: tags.arithmeticOperator,
+	More: tags.compareOperator,
+	Mysterious: tags.null,
+	Non: tags.logicOperator,
+	Nor: tags.logicOperator,
+	Not: tags.logicOperator,
+	Now: tags.keyword,
+	Null: tags.null,
+	Or: tags.logicOperator,
+	Over: tags.arithmeticOperator,
+	Plus: tags.arithmeticOperator,
+	Pop: tags.keyword,
+	Print: tags.keyword,
+	// Pronoun: tags.keyword,
+	Push: tags.keyword,
+	Put: tags.keyword,
+	Return: tags.controlKeyword,
+	Says: tags.keyword,
+	Split: tags.keyword,
+	Takes: tags.keyword,
+	Taking: tags.keyword,
+	Than: tags.compareOperator,
+	// The: tags.keyword,
+	Then: tags.controlKeyword,
+	Times: tags.arithmeticOperator,
+	To: tags.keyword,
+	True: tags.bool,
+	Turn: tags.keyword,
+	Under: tags.keyword,
+	Until: tags.controlKeyword,
+	Up: tags.keyword,
+	Using: tags.keyword,
+	While: tags.controlKeyword,
+	With: tags.keyword,
+	Write: tags.keyword
 
 	// DocComment: tags.docComment,
 	// Name: tags.name,

@@ -174,11 +174,10 @@ EOB -memoize
 	= EOL &EOL
 	/ EOL _ &EOL
 	/ (_ / [,?!.;])* EOL &((_ / [,?!.;])? EOL)
- / EOS* &(_? else)
- / EOS* ','? _? end (_ / [,?!.;])*
- / EOS* ','? _? end (_ / [,?!.;])*
- 	/ EOS* ','? _? 'o' &('o'+ 'h')
- / EOF
+	/ EOS* &(_? else)
+	/ EOS* ','? _? end (_ / [,?!.;])*
+	/ EOS* ','? _? 'o' &('o'+ 'h')
+	/ EOF
 
 consequent <Block>
 	= EOS+ b:block EOB { b }

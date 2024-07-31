@@ -10,32 +10,32 @@ const noiseCodes = stringToCharCodeArray(noise);
 const endOfStatementMarkers = ",?!.;";
 const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
 
-export function tokenizeEndOfStatement(input) {
-	var found = false;
-	while(input.next >= 0) {
-		while(spaceCodes.includes(input.next)) input.advance();
-		if (input.next == ASCII.LF) {
-			found = true;
-			break;
-		}
-		while(spaceCodes.includes(input.next)) input.advance();
-		if (endOfStatementCodes.includes(input.next)) found = true;
-		input.advance();
-	}
-	if (found) return input.acceptTokens(tokens.EOS);
-}
+// export function tokenizeEndOfStatement(input) {
+// 	var found = false;
+// 	while (input.next >= 0) {
+// 		while (spaceCodes.includes(input.next)) input.advance();
+// 		if (input.next == ASCII.LF) {
+// 			found = true;
+// 			break;
+// 		}
+// 		while (spaceCodes.includes(input.next)) input.advance();
+// 		if (endOfStatementCodes.includes(input.next)) found = true;
+// 		input.advance();
+// 	}
+// 	if (found) return input.acceptTokens(tokens.EOS);
+// }
 
 export function tokenizeEndMarkers(input) {
 	var foundEOS = false;
 	var skipCodes = spaceCodes.concat(noiseCodes);
-	while(skipCodes.includes(input.next)) {
+	while (input.next >= 0 && skipCodes.includes(input.next)) {
 		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
 		input.advance();
 	}
 	var i = 0;
 	if (input.peek(i) == ASCII.CR) i++;
 	if (input.peek(i) == ASCII.LF) {
-		input.advance(i+1); // eat the newline.
+		input.advance(i + 1); // eat the newline.
 		i = 0;
 		if (input.next < 0) return input.acceptToken(tokens.EOS);
 		console.log(input.next);
@@ -43,12 +43,12 @@ export function tokenizeEndMarkers(input) {
 			while (noiseCodes.includes(input.peek(i))) i++;
 			if (input.peek(i) == ASCII.CR) i++;
 			if (input.peek(i) == ASCII.LF) return input.acceptToken(tokens.EOB);
-			while(noiseCodes.includes(input.peek(i))) i++;
+			while (noiseCodes.includes(input.peek(i))) i++;
 			let [codes, _] = peekNextWord(input, i);
 			var lexeme = String.fromCodePoint(...codes).toLowerCase();
-			console.log(lexeme);
 			if (aliases.get(tokens.Else).includes(lexeme)) return input.acceptToken(tokens.EOB);
 			if (aliases.get(tokens.End).includes(lexeme)) return input.acceptToken(tokens.EOB);
+			i++;
 		}
 	}
 	var offset = input.pos;
@@ -125,7 +125,13 @@ export function tokenizeOperator(input) {
 	} else {
 		for (var op of operatorMaps.keys()) {
 			for (var token of operatorMaps.get(op)) {
-				if (aliases.get(token).includes(lexeme)) return input.acceptToken(op);
+				if (aliases.get(token).includes(lexeme)) {
+					if (lexeme == "divided") {
+						var [codes, index] = peekNextWord(input);
+						if (String.fromCodePoint(...codes).toLowerCase() == "by") readNextWord(input);
+					}
+					return input.acceptToken(op);
+				}
 			}
 		}
 	}
@@ -174,7 +180,7 @@ export function tokenizeVariable(input) {
 	var index = 0;
 	var tokenTo = input.pos;
 
-	for(var i = 0; i < MAXIMUM_PARTS_IN_A_PROPER_VARIABLE; i++) {
+	for (var i = 0; i < MAXIMUM_PARTS_IN_A_PROPER_VARIABLE; i++) {
 		if (isKeyword(codes)) break;
 		if (upperCodes.includes(codes[0])) {
 			properNouns.push(String.fromCodePoint(...codes));
@@ -205,7 +211,7 @@ const peekNextWord = (input, index = 0) => {
 	while (spaceCodes.includes(input.peek(index))) index++;
 	if (input.peek(index) <= 0) return [codes, index];
 	while (alphaCodes.includes(input.peek(index))) codes.push(input.peek(index++));
-	while(input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
+	while (input.peek(index) == ASCII.FullStop) codes.push(input.peek(index++));
 	return [codes, index];
 }
 

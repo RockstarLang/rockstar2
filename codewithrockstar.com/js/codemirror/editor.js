@@ -26138,7 +26138,8 @@ const ProperVariable = 1,
   Using = 73,
   While = 74,
   With = 75,
-  Write = 76;
+  Write = 76,
+  EOB = 95;
 
 const ASCII = {
 	NUL: 0,
@@ -26264,6 +26265,31 @@ const ASCII = {
 
 const compareOperators = [">=", "<=", ">", "<", "="];
 const arithmeticOperators = ["+", "/", "*", "-"];
+
+const noise = " \t,?!./;";
+const noiseCodes = stringToCharCodeArray(noise);
+
+const endOfStatementMarkers = ",?!./;";
+stringToCharCodeArray(endOfStatementMarkers);
+
+function tokenizeEndMarkers(input) {
+	// Skip all trailing punctuation
+	while(noiseCodes.includes(input.next)) input.advance();
+	if (input.next == ASCII.CR) input.advance();
+	if (input.next == ASCII.LF) {
+		input.advance(); // eat the newline.
+		var i = 0;
+		while (input.peek(i) >= 0) {
+			while (noiseCodes.includes(input.peek(i++)));
+			if (input.peek(i) == ASCII.CR) i++;
+			if (input.peek(i) == ASCII.LF) return input.acceptToken(EOB);
+			let [codes, index] = peekNextWord(input);
+			var lexeme = String.fromCodePoint(...codes).toLowerCase();
+			if (aliases.get(Else).includes(lexeme)) return input.acceptToken(EOB);
+			if (aliases.get(End).includes(lexeme)) return input.acceptToken(EOB);
+		}
+	}
+}
 
 function tokenizePoeticNumber(input) {
 	let codes = [];
@@ -26515,6 +26541,7 @@ const Variables = new ExternalTokenizer(tokenizeVariable);
 const Operators = new ExternalTokenizer(tokenizeOperator);
 const PoeticString = new ExternalTokenizer(tokenizePoeticString);
 const PoeticNumber = new ExternalTokenizer(tokenizePoeticNumber);
+new ExternalTokenizer(tokenizeEndMarkers);
 
 const highlighting$1 = styleTags({
 	ProperVariable: tags.variableName,

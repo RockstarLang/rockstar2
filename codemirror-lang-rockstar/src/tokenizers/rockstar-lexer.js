@@ -4,6 +4,46 @@ import { ASCII } from './ascii.js';
 const compareOperators = [">=", "<=", ">", "<", "="];
 const arithmeticOperators = ["+", "/", "*", "-"];
 
+const noise = " \t,?!./;";
+const noiseCodes = stringToCharCodeArray(noise);
+
+const endOfStatementMarkers = ",?!./;";
+const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
+
+export function tokenizeEndOfStatement(input) {
+	var found = false;
+	while(input.next >= 0) {
+		while(spaceCodes.includes(input.next)) input.advance();
+		if (input.next == ASCII.LF) {
+			found = true;
+			break;
+		}
+		while(spaceCodes.includes(input.next)) input.advance();
+		if (endOfStatementCodes.includes(input.next)) found = true;
+		input.advance();
+	}
+	if (found) return input.acceptTokens(tokens.EOS);
+}
+
+export function tokenizeEndMarkers(input) {
+	// Skip all trailing punctuation
+	while(noiseCodes.includes(input.next)) input.advance();
+	if (input.next == ASCII.CR) input.advance();
+	if (input.next == ASCII.LF) {
+		input.advance(); // eat the newline.
+		var i = 0;
+		while (input.peek(i) >= 0) {
+			while (noiseCodes.includes(input.peek(i++)));
+			if (input.peek(i) == ASCII.CR) i++;
+			if (input.peek(i) == ASCII.LF) return input.acceptToken(tokens.EOB);
+			let [codes, index] = peekNextWord(input);
+			var lexeme = String.fromCodePoint(...codes).toLowerCase();
+			if (aliases.get(tokens.Else).includes(lexeme)) return input.acceptToken(tokens.EOB);
+			if (aliases.get(tokens.End).includes(lexeme)) return input.acceptToken(tokens.EOB);
+		}
+	}
+}
+
 export function tokenizePoeticNumber(input) {
 	let codes = [];
 	while (whitespaceCodes.includes(input.next)) input.advance();

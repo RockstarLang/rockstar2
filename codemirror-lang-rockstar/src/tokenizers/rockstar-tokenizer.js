@@ -1,8 +1,9 @@
 import { ExternalTokenizer } from "@lezer/lr"
-import * as rockstar from "./rockstar-lexer.js"
+import * as lexer from "./rockstar-lexer.js"
 
-export const Keywords = new ExternalTokenizer(rockstar.tokenizeKeyword);
-export const Variables = new ExternalTokenizer(rockstar.tokenizeVariable);
-export const Operators = new ExternalTokenizer(rockstar.tokenizeOperator);
-export const PoeticString = new ExternalTokenizer(rockstar.tokenizePoeticString);
-export const PoeticNumber = new ExternalTokenizer(rockstar.tokenizePoeticNumber);
+export const Keywords = new ExternalTokenizer(lexer.tokenizeKeyword);
+export const Variables = new ExternalTokenizer(lexer.tokenizeVariable);
+export const Operators = new ExternalTokenizer(lexer.tokenizeOperator);
+export const PoeticString = new ExternalTokenizer(lexer.tokenizePoeticString);
+export const PoeticNumber = new ExternalTokenizer(lexer.tokenizePoeticNumber);
+export const EndMarkers = new ExternalTokenizer(lexer.tokenizeEndMarkers);

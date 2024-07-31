@@ -12,6 +12,9 @@ export const highlighting = styleTags({
 	Comment: tags.comment,
 	LineComment: tags.lineComment,
 	BlockComment: tags.blockComment,
+	ArithmeticOperator: tags.arithmeticOperator,
+	LogicOperator: tags.logicOperator,
+	CompareOperator: tags.compareOperator,
 
 
 Above: tags.compareOperator,

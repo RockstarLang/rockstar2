@@ -9,66 +9,28 @@ block { statement (EOS statement)* }
 
 comment { LineComment | BlockComment }
 
-statement {
-	ListenStatement
-	| OutputStatement
-}
+statement {	ListenStatement	| OutputStatement }
 
-ListenStatement { Listen To variable }
-OutputStatement { Print expression }
+ListenStatement { Listen To Variable }
+OutputStatement { Print Expression }
 Boolean { True | False }
 
-@precedence { comparator, equality, comparison, addition, Number, unary, ProperVariable, CommonVariable, SimpleVariable, Pronoun }
+// @precedence { comparator, equality, comparison, addition, Number, unary, ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 
-variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
+Expression {  Binary }
 
-expression { boolean } // | primary }
+Binary { Primary Operator Binary }
 
-boolean { binary }
+Operator { LogicOperator | ArithmeticOperator | CompareOperator }
 
-binary { binary op primary }
-
-op { LogicOperator | ArithmeticOperator | CompareOperator }
-
-binary_or { binary_nor Or binary_or | binary_nor }
-
-binary_nor { binary_and Nor binary_nor | binary_and }
-
-binary_and { equality And binary_and | equality }
-
-equality { unary ( Is | Isnt ) equality | unary }
-
-unary { not unary | comparison }
-
-not { Not | Non | Non "-" }
-
-comparison { addition comparator comparison | addition }
-
-comparator {
-	">=" | //Is As Great As |
-	"<=" | //Is As Small As |
-	">"  | //Is (Above | More) Than |
-	"<" //Is (Under | Less) Than
-}
-
-primary {
-	String | Number | lookup
+Primary {
+	String | Number | Lookup
 	//| constant | function_call | delist
 }
 
-lookup { variable } // (At index)* }
+Lookup { Variable } // (At index)* }
 
-index { addition }
-
-addition {
-	// addition (Plus | Minus) primary_list |
-	addition (Plus | Minus) product	|
-	product
-}
-
-product { primary }
-
-primary_list { primary (xls primary)+ }
+Variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 
 @external tokens Variables from "../tokenizers/rockstar-tokenizer" { ProperVariable, CommonVariable, SimpleVariable, Pronoun }
 @external tokens Operators from "../tokenizers/rockstar-tokenizer" { LogicOperator, CompareOperator, ArithmeticOperator }

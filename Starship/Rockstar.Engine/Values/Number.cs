@@ -41,6 +41,7 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public override Value Clone() => new Number(Value);
 
 	public override string ToString() => "number: " + this.ToStrïng().Value;
+
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).AppendLine(ToString());
 

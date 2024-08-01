@@ -3,7 +3,7 @@
 @top Program { EOS* Block (EOB+ Block)*
 	| EOS* Block EOF }
 
-Block { statement (EOS statement)*  EOB }
+Block { statement (EOS statement)* EOB }
 
 @skip { space | comment }
 
@@ -21,7 +21,7 @@ statement {
 	| BreakStatement
 	| ContinueStatement
 	| LoopStatement
-//	| ConditionalStatement
+	| ConditionalStatement
 	// | DeclarationStatement
 	| Assignment
 	// | Enlistment
@@ -37,6 +37,14 @@ Consequent { EOS+ Block | statement }
 LoopStatement {
 	While Expression Consequent	| Until Expression Consequent
 }
+
+ConditionalStatement {
+	If Expression Then? Consequent? Else Consequent
+	// | If Expression ~else Else Alternate
+	// | If Expression Then? Consequent ~else
+}
+
+Alternate { Consequent }
 
 ContinueStatement { Continue Wildcard }
 

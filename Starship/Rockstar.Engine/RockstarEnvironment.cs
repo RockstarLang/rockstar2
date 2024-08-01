@@ -315,12 +315,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 		=> Assign(assign.Variable, Eval(assign.Expression), Scope.Global);
 
 	public Result Assign(Variable variable, Value value, Scope scope = Scope.Global) => value switch {
-		Function function => SetVariable(variable, MakeLambda(function), Scope.Local),
+		Function function => SetVariable(variable, MakeLambda(function, variable), Scope.Local),
 		_ => SetVariable(variable, value, scope)
 	};
 
-	private Value MakeLambda(Function function)
-		=> this.Parent == default ? new(function, this.Extend()) : new Closure(function, this);
+	private Value MakeLambda(Function function, Variable variable)
+		=> this.Parent == default ? new(function, variable, this.Extend()) : new Closure(function, variable, this);
 
 	private Value LookupValue(string key) {
 		if (variables.TryGetValue(key, out var value)) return value;

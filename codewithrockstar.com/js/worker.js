@@ -7,15 +7,16 @@ const exports = await getAssemblyExports(config.mainAssemblyName);
 
 function report(editorId) {
 	return function (output) {
-		self.postMessage({ output: output, editorId: editorId })
+		self.postMessage({ type: "output", output: output, editorId: editorId })
 	}
 }
-
 async function RunRockstarProgram(source, editorId) {
 	try {
-		return await exports.Rockstar.Wasm.RockstarRunner.Run(source, report(editorId));
+		var result = await exports.Rockstar.Wasm.RockstarRunner.Run(source, report(editorId));
+		console.log(result);
+		self.postMessage({ type: "result", result: result, editorId: editorId });
 	} catch (error) {
-		self.postMessage({ error: error, editorId: editorId })
+		self.postMessage({ type: "error", error: error, editorId: editorId })
 	}
 }
 

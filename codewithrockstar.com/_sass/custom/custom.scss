@@ -1,16 +1,80 @@
-pre.rockstar-output {
-	border: 2px solid #000;
-	height: 64px;
-}
+$breakpoint-fullwidth: 768px;
 
-button.rockstar-button {
-	padding: 16px;
-	border: 1px solid $link-color;
-	background-color: $button-color !important;
+div.rockstar-controls {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+
+	@media (min-width: $breakpoint-fullwidth) {
+		flex-direction: row;
+	}
+
+	box-sizing: border-box;
+	padding-top: 8px;
+
+	.buttons {
+		align-self: flex-start;
+		display: flex;
+		gap: .5rem;
+		justify-content: space-between;
+		padding-bottom: .5rem;
+		width: 100%;
+
+		@media (min-width: $breakpoint-fullwidth) {
+			flex-direction: column;
+			width: auto;
+			padding-right: 8px;
+		}
+
+		button {
+			cursor: pointer;
+			width: 6em;
+			display: block;
+			margin-bottom: 8px;
+			padding: 8px;
+			border-radius: 4px;
+			border: 1px solid $link-color;
+			background-color: $button-color !important;
+			text-align: left;
+		}
+	}
+
+	div.output {
+		position: relative;
+		font-family: monospace;
+		white-space: pre;
+		padding: 8px;
+		font-size: 12px;
+		line-height: 1.1em;
+		box-sizing: border-box;
+		margin: 0;
+		flex: 10 150px;
+		border: 1px solid $link-color;
+		height: 120px;
+		border-radius: 4px;
+		resize: vertical;
+		overflow-y: auto;
+
+		@media (max-width: $breakpoint-fullwidth) {
+			width: 100%;
+		}
+
+		width: 100%;
+		span.result {
+			font-style: italic;
+			position: absolute;
+			left: 8px;
+			bottom: 8px;
+		}
+	}
+
 }
 
 pre {
 	tab-size: 2 !important;
 }
 
-code { border: 0; font-size: 1.1em !important; }
+code {
+	border: 0;
+	font-size: 1.1em !important;
+}

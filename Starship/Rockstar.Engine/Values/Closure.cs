@@ -2,10 +2,13 @@ using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Engine.Values;
 
-public class Closure(Function function, RockstarEnvironment scope) : Value {
+public class Closure(Function function, Variable functionName, RockstarEnvironment scope) : Value {
 	public Function Function => function;
 	public override int GetHashCode() => function.GetHashCode() ^ scope.GetHashCode();
-	public override Strïng ToStrïng() => new("[closure]");
+	public override Strïng ToStrïng() => new(this.ToString());
+
+	public override string ToString() => "closure: {functionName.Key} => value";
+
 	public override bool Truthy => true;
 
 	public Result Apply(Dictionary<Variable, Value> args) {

@@ -1,22 +1,31 @@
 import {
-	EditorView, basicSetup,
+	EditorView, basicSetup, keymap, Prec,
 	// Language definitions
 	Rockstar, KitchenSink,
 	// themes
 	kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight
 } from './codemirror/editor.js';
 
+const ROCK_BUTTON_HTML = "Rock <i class='fa-solid fa-play'></i>";
+const STOP_BUTTON_HTML = "Stop <i class='fa-solid  fa-sync fa-spin'></i>"
+
+var rockCount = 0;
+
 function handleMessageFromWorker(message) {
+	console.log(message);
 	if (message.data.editorId) {
 		var output = document.getElementById(`rockstar-output-${message.data.editorId}`);
-		var button = document.getElementById(`rockstar-button-${message.data.editorId}`);
-		button.classList.remove("running");
-		button.innerText = "Rock";
-		if (message.data.error) {
-			output.innerText = message.data.error;
+		if (message.data.type == "output") return output.innerText += message.data.output;
+		if (message.data.type == "error") {
+			output.innerHTML += `<span class="error">error: ${message.data.error}</span>`;
+		} else if (message.data.type == "result") {
+			output.innerHTML += `<span class="result">&raquo; ${message.data.result}</span>`;
 		} else {
-			output.innerText += message.data.output;
+			console.log(message);
 		}
+		var button = document.getElementById(`rockstar-button-${message.data.editorId}`);
+		button.innerHTML = ROCK_BUTTON_HTML;
+		rockCount--;
 	} else {
 		console.log(message);
 	}
@@ -26,7 +35,20 @@ var worker = new Worker("/js/worker.js", { type: 'module' });
 worker.addEventListener("message", handleMessageFromWorker);
 
 function executeProgram(program, editorId) {
+	rockCount++;
 	worker.postMessage({ program: program, editorId: editorId });
+}
+
+function stopTheRock() {
+	console.log("STOPPING THE ROCK...");
+	worker.terminate();
+	worker = new Worker("/js/worker.js", { type: 'module' });
+	worker.addEventListener("message", handleMessageFromWorker);
+	document.querySelectorAll("button.rock-button").forEach((button) => {
+		button.innerHTML = ROCK_BUTTON_HTML;
+	})
+	// document.querySelectorAll("div.rockstar-controls div.output").forEach(div => div.innerHTML = "");
+	rockCount = 0;
 }
 
 function makeParseTreeLogger(parser) {
@@ -65,45 +87,89 @@ function logTree(tree, targetElement) {
 	targetElement.value = output.join('');
 }
 
-function replaceElementWithEditor(element, languageSupport, theme) {
-	var language = languageSupport();
-	var logger = makeParseTreeLogger(language.language.parser);
-	let view = new EditorView({
-		doc: element.innerText, extensions: [
-			basicSetup, language, theme,
-			EditorView.updateListener.of(logger.bind(this))
-		] });
-	logTree(language.language.parser.parse(element.innerText), document.getElementById('parseTreeTextarea'));
-	element.parentNode.insertBefore(view.dom, element);
-	element.style.display = "none";
+function makeRockstarRunner(editorId) {
+	return function handleCtrlEnter({state, dispatch}) {
+		document.getElementById(`rockstar-button-${editorId}`).click();
+		console.log(state);
+		console.log(dispatch);
+		return true;
+	}
+}
+
+function replaceElementWithEditor(editorElement, languageSupport, theme, editorId, parseTreeElement) {
+	let language = languageSupport();
+	let rockstarKeymap = Prec.highest(
+		keymap.of([
+		  { key: "Ctrl-Enter", mac: "Cmd-Enter", run: makeRockstarRunner(editorId) }
+		])
+	  );
+	let extensions = [ basicSetup, language, rockstarKeymap, theme ];
+	if (parseTreeElement) {
+		let logger = makeParseTreeLogger(language.language.parser);
+		extensions.push(EditorView.updateListener.of(logger.bind(this)));
+		logTree(language.language.parser.parse(editorElement.innerText), parseTreeElement);
+	}
+
+
+	let view = new EditorView({ doc: editorElement.innerText, extensions: extensions });
+	console.log(view);
+	editorElement.parentNode.insertBefore(view.dom, editorElement);
+	editorElement.style.display = "none";
 	return view;
+}
+
+function createControls(editorId, editorView, originalSource) {
+	let div = document.createElement("div");
+	div.className = "rockstar-controls";
+	let output = document.createElement("div");
+	output.className = "output";
+	let rockButton = document.createElement("button");
+	rockButton.className = "rock-button";
+	let resetButton = document.createElement("button");
+	let buttonContainer = document.createElement("div");
+	buttonContainer.className = "buttons";
+
+	rockButton.id = `rockstar-button-${editorId}`;
+	output.id = `rockstar-output-${editorId}`;
+	rockButton.innerHTML = ROCK_BUTTON_HTML;
+	resetButton.innerHTML = "Reset <i class='fa-solid fa-rotate-right'></i>";
+	rockButton.onclick = () => {
+		console.log(rockCount);
+		if (rockCount > 0) {
+			stopTheRock();
+		} else {
+			rockButton.innerHTML = STOP_BUTTON_HTML;
+			output.innerText = "";
+			let source = editorView.state.doc.toString();
+			try {
+				executeProgram(source, editorId);
+			} catch (e) {
+				console.log(e);
+			}
+		}
+	}
+	resetButton.onclick = evt => {
+		output.innerText = "";
+		editorView.dispatch({changes: {
+			from: 0,
+			to: editorView.state.doc.length,
+			insert: originalSource
+		}});
+	}
+	buttonContainer.appendChild(rockButton);
+	buttonContainer.appendChild(resetButton);
+	div.appendChild(buttonContainer);
+	div.appendChild(output);
+	return div;
 }
 
 var editorId = 1;
 document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	editorId++;
-	let output = document.createElement("pre");
-	let button = document.createElement("button");
-	button.className = "rockstar-button";
-	output.className = "rockstar-output";
-	button.id = `rockstar-button-${editorId}`;
-	output.id = `rockstar-output-${editorId}`;
-	button.innerText = "Rock";
-	var editor = replaceElementWithEditor(el, Rockstar, kitchenSink);
-	el.parentNode.insertBefore(button, el);
-	el.parentNode.insertBefore(output, el);
-	button.onclick = () => {
-		button.innerText = "Stop";
-		button.classList.add("running");
-		output.innerText = "";
-		let source = editor.state.doc.toString();
-		try {
-			executeProgram(source, editorId);
-		} catch (e) {
-			console.log(e);
-		}
-	};
-
+	var originalSource = el.innerText;
+	var editorView = replaceElementWithEditor(el, Rockstar, kitchenSink, editorId);
+	var controls = createControls(editorId, editorView, originalSource);
+	el.parentNode.insertBefore(controls, el);
 });
 
 document.querySelectorAll(('code.language-kitchen-sink')).forEach((el) => {

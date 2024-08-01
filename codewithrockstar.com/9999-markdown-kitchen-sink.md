@@ -7,6 +7,41 @@ layout: home
 
 # Markdown kitchen sink
 
+## FontAwesome
+
+### Icons
+  <i class="fa-solid fa-guitars"></i>
+  <i class="fa-light fa-guitars"></i>
+  <i class="fa-thin fa-guitars"></i>
+  <i class="fa-regular fa-guitars"></i>
+
+  <i class="fa-solid fa-saxophone"></i>
+  <i class="fa-solid fa-piano"></i>
+  <i class="fa-solid fa-hand-horns"></i>
+  <i class="fa-regular fa-hand-horns"></i>
+  <i class="fa-light fa-hand-horns"></i>
+  <!-- uses solid style -->
+
+### Animations
+
+  <i class="fa-solid fa-sync fa-spin"></i>
+  <i class="fa-solid fa-circle-notch fa-spin"></i>
+  <i class="fa-solid fa-cog fa-spin"></i>
+  <i class="fa-solid fa-cog fa-spin fa-spin-reverse"></i>
+  <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+  <i class="fa-solid fa-spinner fa-spin-pulse fa-spin-reverse"></i>
+
+  <i class="fa-solid fa-bell fa-shake"></i>
+  <i class="fa-solid fa-lock fa-shake"></i>
+  <i class="fa-solid fa-stopwatch fa-shake"></i>
+  <i class="fa-solid fa-bomb fa-shake"></i>
+
+  <i class="fa-solid fa-circle-plus fa-beat"></i>
+  <i class="fa-solid fa-heart fa-beat"></i>
+  <i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s;"></i>
+  <i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 2s;"></i>
+  <i class="fa-solid fa-heart fa-beat" style="--fa-beat-scale: 2.0;"></i>
+
 The [kramdown GFM parser](https://github.com/kramdown/parser-gfm) `README` includes:
 > By default, Jekyll uses the GitHub Flavored Markdown (GFM) processor for kramdown.
 > At the moment this parser is based on the kramdown parser, with the following changes:

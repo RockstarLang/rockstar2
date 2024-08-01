@@ -31,7 +31,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	public override Value Clone() => new Strïng(Value);
 
-	public override string ToString() => this.Value;
+	public override string ToString() => $"string: \"{this.Value}\"";
 
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).Append("string: \"").Append(Value).AppendLine("\"");

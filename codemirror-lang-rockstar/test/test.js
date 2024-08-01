@@ -5,16 +5,26 @@ const oooh = ["oh", "oooh", "ooooh"];
 
 test.each(oooh)("%p ends a block", (source) => {
 	var input = new parserInput(source);
-	rockstar.tokenizeEndMarkers(input);
+	rockstar.tokenizeEOB(input);
 	expect(input.token).toBe(tokens.EOB);
 	expect(input.pos).toBe(1);
 });
 
-const notEndOfStatement = [ ", &", ", 'n'", ", n' ", ", and"]
+
+const notEndOfStatement = [
+	" & ",
+	" 'n' ",
+	" n' ",
+//	", ",
+	", &",
+	", 'n'",
+	", n' ",
+	", and" ]
 test.each(notEndOfStatement)("%s does NOT end a statement", (source) => {
 	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
 	var input = new parserInput(source);
-	rockstar.tokenizeEndMarkers(input);
+	rockstar.tokenizeEOS(input);
+	console.log(input.token);
 	expect(input.token).not.toBe(tokens.EOS);
 });
 
@@ -27,18 +37,18 @@ const endOfStatementsWithSubsequentKeyword = [
 test.each(endOfStatementsWithSubsequentKeyword)("%s ends a statement at position %[", (source, tokenTo) => {
 	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
 	var input = new parserInput(source);
-	rockstar.tokenizeEndMarkers(input);
+	rockstar.tokenizeEOS(input);
 	expect(input.token).toBe(tokens.EOS);
 	expect(input.pos).toBe(tokenTo);
 	//expect(input.tokenTo).toBe(tokenTo);
 });
 
 
-const endOfStatements = [ "\\n", "\\r\\n", ",", "!", ";", "?", "...\\n", "...\\r\\n", "!\r\n", "?!?\\r\\n" ];
+const endOfStatements = [ "\\n", "\\r\\n", "!", ";", "?", "...\\n", "...\\r\\n", "!\r\n", "?!?\\r\\n" ];
 test.each(endOfStatements)("%s ends a statement", (source) => {
 	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
 	var input = new parserInput(source);
-	rockstar.tokenizeEndMarkers(input);
+	rockstar.tokenizeEOS(input);
 	expect(input.token).toBe(tokens.EOS);
 });
 
@@ -46,7 +56,7 @@ const endOfBlocks = ["\\nyeah", "\\nEnd", "end", "yeah", "baby", "oh", ", end", 
 test.each(endOfBlocks)("%s ends a block", (source) => {
 	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
 	var input = new parserInput(source);
-	rockstar.tokenizeEndMarkers(input);
+	rockstar.tokenizeEOB(input);
 	expect(input.token).toBe(tokens.EOB);
 });
 

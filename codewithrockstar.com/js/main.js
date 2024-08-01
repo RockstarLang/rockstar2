@@ -110,7 +110,6 @@ function replaceElementWithEditor(editorElement, languageSupport, theme, editorI
 		logTree(language.language.parser.parse(editorElement.innerText), parseTreeElement);
 	}
 
-
 	let view = new EditorView({ doc: editorElement.innerText, extensions: extensions });
 	console.log(view);
 	editorElement.parentNode.insertBefore(view.dom, editorElement);
@@ -166,8 +165,9 @@ function createControls(editorId, editorView, originalSource) {
 var editorId = 1;
 document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	editorId++;
+	var parseTreeTextarea = document.getElementById('parseTreeTextarea');
 	var originalSource = el.innerText;
-	var editorView = replaceElementWithEditor(el, Rockstar, kitchenSink, editorId);
+	var editorView = replaceElementWithEditor(el, Rockstar, kitchenSink, editorId, parseTreeTextarea);
 	var controls = createControls(editorId, editorView, originalSource);
 	el.parentNode.insertBefore(controls, el);
 });

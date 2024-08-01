@@ -10,6 +10,7 @@ test("parse", () => {
 
 test("argument separators aren't EOS", () => {
 	let result = parser.parse("Call my function with 1, 2, & 3, 'n' 4, n' 5 & 6 'n' 7 n' 8, and 9");
+	console.log(result.toString());
 	expect(result.toString()).not.toContain("EOS");
 });
 

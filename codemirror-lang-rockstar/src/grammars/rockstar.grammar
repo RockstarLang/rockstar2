@@ -1,17 +1,20 @@
 @external propSource highlighting from "./rockstar-highlight.js"
 
-@top Program { EOS* Block (EOB+ Block)*
-	| EOS* Block EOF }
+@top Program {
+	EOS* Block (EOB+ Block)* EOS* EOF
+	| EOS* EOF
+}
 
-Block { statement (EOS statement)* EOB }
+Block {
+	Statement (EOS* Statement)* EOB
+	| Statement EOS* EOF
+ }
 
-@skip { space | comment }
+@skip { Comment }
 
-@precedence { OxfordComma, CallStatement, XLS, VLS, ALS, PoeticNumber, Expression, SeperatorAnd, And, Alternate, Consequent, statement, EOS }
+Comment { LineComment | BlockComment }
 
-comment { LineComment | BlockComment }
-
-statement {
+Statement {
 	ListenStatement
 	| OutputStatement
 	| Function
@@ -21,7 +24,7 @@ statement {
 	| BreakStatement
 	| ContinueStatement
 	| LoopStatement
-	| ConditionalStatement
+	//| ConditionalStatement
 	// | DeclarationStatement
 	| Assignment
 	// | Enlistment
@@ -32,19 +35,22 @@ statement {
 	// | Expression
 }
 
-Consequent { EOS+ Block | statement }
+@precedence { ALS, VLS, XLS, Wildcard, Whitespace, EOS, EOB }
+
+Consequent { EOS+ Block | Statement }
+
+Alternate { EOS+ Else Consequent | Else Consequent }
+
+// ConditionalStatement {
+// 	"if" Expression "then" Consequent "else" Consequent "end"
+// 	//If Expression Then? Consequent Alternate
+// 	//| If Expression Else Alternate
+// 	//| If Expression Then? Consequent
+// }
 
 LoopStatement {
 	While Expression Consequent	| Until Expression Consequent
 }
-
-ConditionalStatement {
-	If Expression Then? Consequent? Else Consequent
-	// | If Expression ~else Else Alternate
-	// | If Expression Then? Consequent ~else
-}
-
-Alternate { Consequent }
 
 ContinueStatement { Continue Wildcard }
 
@@ -110,7 +116,8 @@ variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 @external tokens Operators from "../tokenizers/rockstar-tokenizer" { LogicOperator, CompareOperator, ArithmeticOperator }
 @external tokens PoeticNumber from "../tokenizers/rockstar-tokenizer" { PoeticNumber }
 @external tokens PoeticString from "../tokenizers/rockstar-tokenizer" { PoeticString }
-@external tokens EndMarkers from "../tokenizers/rockstar-tokenizer" { EOB, EOS }
+@external tokens EOB from "../tokenizers/rockstar-tokenizer" { EOB }
+@external tokens EOS from "../tokenizers/rockstar-tokenizer" { EOS }
 
 @external tokens Keywords from "../tokenizers/rockstar-tokenizer" {
 	Above, And, Around, As, At, Back, Be, Break, Build, Call, Cast,
@@ -119,7 +126,7 @@ variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	Listen, Minus, More, Mysterious, Non, Nor, Not, Now, Null, Or, Over,
 	Plus,  Pop, Print, Push, Put, Return, Says, Small, Split, Takes,
 	Taking, Than, The, Then, Times, To, True, Turn, Under, Until, Up,
-	Using, While,With,	Write
+	Using, While, With, Write
 }
 
 OxfordComma { ", AND" | ", ANd" | ", AnD" | ", And" | ", aND" | ", aNd" | ", anD" | ", and" }
@@ -128,8 +135,7 @@ VLS { ("AND" | "ANd" | "AnD" | "And" | "aND" | "aNd" | "anD" | "and") | XLS }
 XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 
 @tokens {
-
-	@precedence { Wildcard, Comma, space }
+	@precedence { Wildcard, Whitespace, Comma }
 
 	Wildcard { " wild" } // ![#\{\}\(\)\[\]\r\n!.?;]+ }
 	Ampersand { "&" }
@@ -143,7 +149,7 @@ XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 	String { '"' (!["\\] | "\\" _)* '"' }
 	Number { (@digit+ "." | ".")? @digit+ }
 	BlockComment { "(" ![\)]* ")" | "{" ![\}]* "}" | "[" ![\]]* "]" }
-	space { $[ \t]+ }
+	Whitespace { $[ \r\n\t]+ }
 	EOF { @eof }
 }
 

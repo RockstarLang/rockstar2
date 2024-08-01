@@ -10,15 +10,16 @@ background-color: #000; z-index: 999;">parse tree</textarea>
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar
-if true then if true then 1 else 2 end
-
+if true then if true then 1 else 2
+If true then
+say 1
+Else say 2
 
 If true
-print true
-else print false
+Say 1
+Otherwise
+Say 2
 End
-
-Call my function with 1, 2, & 3, 'n' 4, & 5, and 6
 
 ```
 

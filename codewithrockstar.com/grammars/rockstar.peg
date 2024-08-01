@@ -128,7 +128,7 @@ wildcard <string>
 	/ ignored:((. !end_of_wildcard)* .) { String.Join("", ignored.ToArray()) }
 	
 filler = (_ / [,?!.;])* 
-EOS = EOL / _? [,.?!;:]
+EOS = EOL / _? [.?!;:]
 EOL = filler '\r'? '\n'
 EOF = EOS* _? !.
 
@@ -146,8 +146,9 @@ EOB -memoize
 consequent <Block>
 	// Yes, you SHOULD be able to put EOB at the end of the BLOCK definition and it'll work.
 	// IT DOESN'T. I have no idea why. It screws up break/continue wildcard parsing.
-	= EOS+ b:block EOB { b }
-	/ _ s:statement { new Block(s) }
+	= ',' _ b:block EOB { b }
+	/ EOS+ b:block EOB { b }
+	/ ','? _ s:statement { new Block(s) }
 
 if_test <Expression>
 	= if _ e:expression (_ then)?
@@ -632,4 +633,4 @@ write = 'write' !letter
 
 // binary_rhs <IEnumerable<Expression>>
 //	= primary_list
-//	/ e:expression { new List<Expression> { e } }
+//	/ e:expression

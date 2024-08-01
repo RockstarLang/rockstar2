@@ -26,6 +26,7 @@ export const highlighting = styleTags({
 	Wildcard: tags.lineComment,
 	End: tags.controlKeyword,
 	EOB: tags.controlKeyword,
+	EOS: tags.controlKeyword,
 
 	Above: tags.compareOperator,
 	And: tags.logicOperator,

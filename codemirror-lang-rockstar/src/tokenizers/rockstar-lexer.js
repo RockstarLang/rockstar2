@@ -11,19 +11,15 @@ const noiseCodes = stringToCharCodeArray(noise);
 const endOfStatementMarkers = "?!.;";
 const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
 
-export function tokenizeEndMarkers(input) {
-	var foundEOS = false;
+export function tokenizeEOB(input) {
 	var skipCodes = spaceCodes.concat(noiseCodes);
-	while (input.next >= 0 && skipCodes.includes(input.next)) {
-		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
-		input.advance();
-	}
+	while (input.next >= 0 && skipCodes.includes(input.next)) input.advance();
 	var i = 0;
 	if (input.peek(i) == ASCII.CR) i++;
 	if (input.peek(i) == ASCII.LF) {
 		input.advance(i + 1); // eat the newline.
 		i = 0;
-		if (input.next < 0) return input.acceptToken(tokens.EOS);
+		if (input.next < 0) return;
 		while (input.peek(i) >= 0) {
 			while (noiseCodes.includes(input.peek(i))) i++;
 			if (input.peek(i) == ASCII.CR) i++;
@@ -36,20 +32,81 @@ export function tokenizeEndMarkers(input) {
 			i++;
 		}
 	}
-	var offset = input.pos;
-	var [codes, index] = peekNextWord(input);
+	var [codes, _] = peekNextWord(input);
 	var lexeme = String.fromCodePoint(...codes);
 	if (/oo*h/i.test(lexeme)) {
 		input.advance(1);
 		return input.acceptToken(tokens.EOB);
 	}
-	if (aliases.get(tokens.Else).includes(lexeme || aliases.get(tokens.End).includes(lexeme))) {
+	if (aliases.get(tokens.Else).includes(lexeme) || aliases.get(tokens.End).includes(lexeme)) {
 		readNextWord(input);
 		return input.acceptToken(tokens.EOB);
 	}
-	if (aliases.get(tokens.And).includes(codes)) return; // Do not treat the ", and" Oxford comma as an EOS
+}
+
+export function tokenizeEOS(input) {
+	var foundEOS = false;
+	var skipCodes = spaceCodes.concat(noiseCodes);
+	while (input.next >= 0 && skipCodes.includes(input.next)) {
+		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
+		input.advance();
+	}
+	var i = 0;
+	if (input.peek(i) == ASCII.CR) i++;
+	if (input.peek(i) == ASCII.LF) {
+		input.advance(i + 1); // eat the newline.
+		foundEOS = true;
+	}
+	var [codes, _] = peekUntilNextWhitespace(input);
+	var lexeme = String.fromCodePoint(...codes).toLowerCase();
+	console.log(lexeme);
+	if (aliases.get(tokens.And).includes(lexeme)) return;
+	if ([ "&", "n'", "'n'" ].includes(lexeme)) {
+		console.log(lexeme);
+		return;
+	}
 	if (foundEOS) return input.acceptToken(tokens.EOS);
 }
+
+// export function tokenizeEndMarkers(input) {
+// 	var foundEOS = false;
+// 	var skipCodes = spaceCodes.concat(noiseCodes);
+// 	while (input.next >= 0 && skipCodes.includes(input.next)) {
+// 		if (endOfStatementCodes.includes(input.next)) foundEOS = true;
+// 		input.advance();
+// 	}
+// 	var i = 0;
+// 	if (input.peek(i) == ASCII.CR) i++;
+// 	if (input.peek(i) == ASCII.LF) {
+// 		input.advance(i + 1); // eat the newline.
+// 		i = 0;
+// 		if (input.next < 0) return input.acceptToken(tokens.EOS);
+// 		while (input.peek(i) >= 0) {
+// 			while (noiseCodes.includes(input.peek(i))) i++;
+// 			if (input.peek(i) == ASCII.CR) i++;
+// 			if (input.peek(i) == ASCII.LF) return input.acceptToken(tokens.EOB);
+// 			while (noiseCodes.includes(input.peek(i))) i++;
+// 			let [codes, _] = peekNextWord(input, i);
+// 			var lexeme = String.fromCodePoint(...codes).toLowerCase();
+// 			if (aliases.get(tokens.Else).includes(lexeme)) return input.acceptToken(tokens.EOB);
+// 			if (aliases.get(tokens.End).includes(lexeme)) return input.acceptToken(tokens.EOB);
+// 			i++;
+// 		}
+// 	}
+// 	var offset = input.pos;
+// 	var [codes, index] = peekNextWord(input);
+// 	var lexeme = String.fromCodePoint(...codes);
+// 	if (/oo*h/i.test(lexeme)) {
+// 		input.advance(1);
+// 		return input.acceptToken(tokens.EOB);
+// 	}
+// 	if (aliases.get(tokens.Else).includes(lexeme || aliases.get(tokens.End).includes(lexeme))) {
+// 		readNextWord(input);
+// 		return input.acceptToken(tokens.EOB);
+// 	}
+// 	if (aliases.get(tokens.And).includes(codes)) return; // Do not treat the ", and" Oxford comma as an EOS
+// 	if (foundEOS) return input.acceptToken(tokens.EOS);
+// }
 
 export function tokenizePoeticNumber(input) {
 	let codes = [];
@@ -196,6 +253,19 @@ const readNextWordIncludingOperators = (input) => readWhileContains(input, alpha
 const readNextWordIncludingApostrophes = (input) => readWhileContains(input, [ASCII.Apostrophe].concat(alphaCodes));
 
 const readNextWord = (input) => readWhileContains(input, alphaCodes);
+
+const peekUntilNextWhitespace = (input, index = 0) => {
+	let codes = [];
+	while (spaceCodes.includes(input.peek(index))) index++;
+	while(true) {
+		var code = input.peek(index);
+		if (code <= 0) break;
+		if (spaceCodes.includes(code)) break;
+		codes.push(code);
+		index++;
+	}
+	return [codes, index];
+}
 
 const peekNextWord = (input, index = 0) => {
 	let codes = [];

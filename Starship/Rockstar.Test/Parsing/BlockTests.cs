@@ -29,7 +29,7 @@ public class CommentTests(ITestOutputHelper output) : ParserTestBase(output) {
 	            My heart is nothing
 	            The night is like schizoidism
 	            Until my heart is as high as the sky
-	            Whisper it, it's with the night baby.
+	            Whisper it. It's with the night, baby.
 	            """)]
 	public void ParserParsesBlocks(string source) {
 		var program = Parse(source);

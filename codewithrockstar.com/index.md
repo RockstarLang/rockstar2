@@ -4,113 +4,59 @@ layout: home
 nav_order: "1000"
 ---
 
-<textarea id="parseTreeTextarea" style="position: fixed; bottom: 10px; top: 10px; left: 10px; width: 370px; font-family: Fira Code; font-size: 10px;
-background-color: #000; z-index: 999;">parse tree</textarea>
+# Rockstar 2.0 Beta
 
-Run some Rockstar at {{ site.time }}:
+Everything here is work in progress.
+
+### What's here?
+
+* Rockstar 2.0 language spec
+* Rockstar interactive interpreter
+
+The Rockstar engine has been completely rebuilt in .NET, and
+is running here as a web assembly (WASM) binary.
+
+Browser around, try some stuff, let me know what you find.
+
+Here's Hello World to get you started:
 
 ```rockstar
-if true then if true then 1 else 2
-If true then
-say 1
-Else say 2
-
-If true
-Say 1
-Otherwise
-Say 2
-End
-
+print "hello world"
 ```
 
-```rockstarff
-{% include_relative examples/99-appendix/acid-test.rock %}
+and here's a slightly more idiomatic version:
 
+```rockstar
+Eternity takes the pain.
+The prize is silence
+Until the pain is nothing,
+Roll the pain into violence,
+Cast violence into your lies,
+Let the prize be with your lies.
 
+Give back the prize
 
-Break it down. Shout it out.
-Take it to the top. Scream my name.
-Continue
+The night is calling me
+Rock the night like a colourcast tranquility
+The dawn is a spellbound moonbeam
+Rock the night with the dawn, the dawn,
+Your fire is a neverending aftereffect
+Rock the night with your fire
 
-My function takes b & c 'n'd & f and g
-Give back b with c plus d over e times f without g, yeah
+The spirit is electric thunder
+Rock the spirit with your fire
+Rock the spirit like a thunderbolt fist
+Rock the spirit with the dawn
+Rock the spirit like a chamaeleon stormcloud
 
+Let salvation be eternity taking the night
+Let surrender be eternity taking the spirit
 
-Midnight takes your heart, time and a word
-Shout time
-Give back your heart
+Time is all up
+Cast it into the void
+Let salvation be with the void
+Let salvation be with surrender
 
-Call midnight with 1, 2, 'n' 3
-Call midnight
-Midnight taking 1, 2, & 3
-
-A man was lying in the street.
-A boy was 2 + 4
-A girl says she was there the whole time
-A girl is "she was there the whole time"
-A child is without fear
-
-Shout a boy
-Shout Johnny B. Goode
-Shout a boy with a dream
-Shout it. Shout true, shout empty, shout silence.
-
-Listen to the sound
-# a line comment
-(block comment)
-Listen to the sound
-A variable is true
-Proper Variable is false
-Johnny B. Goode is 123
-Shout the sound, shout my dreams, shout Johnny B. Goode
-say "hello world" (yeah!)
-JRR Tolkien is 456
-Let my heroes [Am] be Johnny B. Goode with [Dmaj7] JRR Tolkien
-A girl is laughing
-A boy is without a girl
-A function takes a boy and a girl
-Give back a boy with a girl, yeah
-Cast a boy into the fire
-Turn up the radio
+Whisper salvation
 ```
 
-Well... do you wanna get rocked?
-
-* 01 Getting Started
-	* Hello World
-	* Whitespace and comments
-	* Aliases
-* 02 Values and Variables
-	* Types
-	* Literals
-		* Strings
-		* Numbers
-		* Poetic strings
-		* Poetic digits
-	* Constants
-		* true, false, null, mysterious, empty
-	* Variables
-		* Simple
-		* Common
-		* Proper
-		* Pronouns
-	* Assignment
-		* Is, are, was, were,
-		* Let, put
-* 03 Expressions
-	* Equality
-	* Comparison
-	* Arithmetic
-	* Compound operators
-* 04 Flow Control
-	* If / Else
-	* While / Until
-	* Break, continue
-* 05 Functions
-	* Declaring functions
-	* Calling functions
-* 06 Arrays
-	* Rock, roll, split, join
-* 07 Built-functions
-	* Round, turn, cast, burn, split
-	*

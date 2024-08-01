@@ -3,7 +3,7 @@ import {
 	// Language definitions
 	Rockstar, KitchenSink,
 	// themes
-	kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight
+	kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight, coolGlow, amy
 } from './codemirror/editor.js';
 
 const ROCK_BUTTON_HTML = "Rock <i class='fa-solid fa-play'></i>";
@@ -12,7 +12,6 @@ const STOP_BUTTON_HTML = "Stop <i class='fa-solid  fa-sync fa-spin'></i>"
 var rockCount = 0;
 
 function handleMessageFromWorker(message) {
-	console.log(message);
 	if (message.data.editorId) {
 		var output = document.getElementById(`rockstar-output-${message.data.editorId}`);
 		if (message.data.type == "output") return output.innerText += message.data.output;
@@ -62,11 +61,11 @@ function makeParseTreeLogger(parser) {
 }
 
 function logTree(tree, targetElement) {
-	if (! targetElement) return;
+	if (!targetElement) return;
 	tree = tree.toString();
 	var output = [];
 	var indent = "";
-	for(var i = 0; i < tree.length; i++) {
+	for (var i = 0; i < tree.length; i++) {
 		if (tree[i] == ',') {
 			output.push(' ');
 		} else if (tree[i] == '(') {
@@ -75,7 +74,7 @@ function logTree(tree, targetElement) {
 		} else if (tree[i] == ')') {
 			indent = indent.substring(2);
 			output.push('\n');
-			while(tree[i+1] == ')') {
+			while (tree[i + 1] == ')') {
 				indent = indent.substring(2);
 				i++;
 			}
@@ -88,7 +87,7 @@ function logTree(tree, targetElement) {
 }
 
 function makeRockstarRunner(editorId) {
-	return function handleCtrlEnter({state, dispatch}) {
+	return function handleCtrlEnter({ state, dispatch }) {
 		document.getElementById(`rockstar-button-${editorId}`).click();
 		console.log(state);
 		console.log(dispatch);
@@ -96,22 +95,29 @@ function makeRockstarRunner(editorId) {
 	}
 }
 
-function replaceElementWithEditor(editorElement, languageSupport, theme, editorId, parseTreeElement) {
-	let language = languageSupport();
+function replaceElementWithEditor({ editorElement, languageSupport, theme, editorId, parseTreeElement }) {
+	let language = (languageSupport ? languageSupport() : null);
 	let rockstarKeymap = Prec.highest(
 		keymap.of([
-		  { key: "Ctrl-Enter", mac: "Cmd-Enter", run: makeRockstarRunner(editorId) }
+			{ key: "Ctrl-Enter", mac: "Cmd-Enter", run: makeRockstarRunner(editorId) }
 		])
-	  );
-	let extensions = [ basicSetup, language, rockstarKeymap, theme ];
-	if (parseTreeElement) {
+	);
+	let extensions = [basicSetup, rockstarKeymap];
+	if (language) extensions.push(language);
+	if (theme) extensions.push(theme);
+	if (language && parseTreeElement) {
 		let logger = makeParseTreeLogger(language.language.parser);
 		extensions.push(EditorView.updateListener.of(logger.bind(this)));
 		logTree(language.language.parser.parse(editorElement.innerText), parseTreeElement);
 	}
 
+	const fixedHeightEditor = EditorView.theme({
+		".cm-content, .cm-gutter": { minHeight: "120px" }
+		//		"&": {height: "300px"},
+		//		".cm-scroller": {overflow: "auto"}
+	});
+	extensions.push(fixedHeightEditor);
 	let view = new EditorView({ doc: editorElement.innerText, extensions: extensions });
-	console.log(view);
 	editorElement.parentNode.insertBefore(view.dom, editorElement);
 	editorElement.style.display = "none";
 	return view;
@@ -149,11 +155,13 @@ function createControls(editorId, editorView, originalSource) {
 	}
 	resetButton.onclick = evt => {
 		output.innerText = "";
-		editorView.dispatch({changes: {
-			from: 0,
-			to: editorView.state.doc.length,
-			insert: originalSource
-		}});
+		editorView.dispatch({
+			changes: {
+				from: 0,
+				to: editorView.state.doc.length,
+				insert: originalSource
+			}
+		});
 	}
 	buttonContainer.appendChild(rockButton);
 	buttonContainer.appendChild(resetButton);
@@ -165,9 +173,15 @@ function createControls(editorId, editorView, originalSource) {
 var editorId = 1;
 document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	editorId++;
-	var parseTreeTextarea = document.getElementById('parseTreeTextarea');
 	var originalSource = el.innerText;
-	var editorView = replaceElementWithEditor(el, Rockstar, kitchenSink, editorId, parseTreeTextarea);
+	var settings = {
+		editorElement: el,
+		parseTreeTextarea: document.getElementById('parseTreeTextarea'),
+		language: null, // Rockstar
+		theme: coolGlow, // kitchenSink
+		editorId: editorId
+	};
+	var editorView = replaceElementWithEditor(settings);
 	var controls = createControls(editorId, editorView, originalSource);
 	el.parentNode.insertBefore(controls, el);
 });

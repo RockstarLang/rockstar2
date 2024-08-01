@@ -8,3 +8,4 @@ export const PoeticString = new ExternalTokenizer(lexer.tokenizePoeticString);
 export const PoeticNumber = new ExternalTokenizer(lexer.tokenizePoeticNumber);
 export const EOB = new ExternalTokenizer(lexer.tokenizeEOB);
 export const EOS = new ExternalTokenizer(lexer.tokenizeEOS);
+export const Wildcard = new ExternalTokenizer(lexer.tokenizeWildcard);

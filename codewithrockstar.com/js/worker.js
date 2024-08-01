@@ -13,7 +13,6 @@ function report(editorId) {
 async function RunRockstarProgram(source, editorId) {
 	try {
 		var result = await exports.Rockstar.Wasm.RockstarRunner.Run(source, report(editorId));
-		console.log(result);
 		self.postMessage({ type: "result", result: result, editorId: editorId });
 	} catch (error) {
 		self.postMessage({ type: "error", error: error, editorId: editorId })
@@ -22,5 +21,9 @@ async function RunRockstarProgram(source, editorId) {
 
 self.addEventListener('message', async function (message) {
 	var data = message.data;
-	if (data.program) await RunRockstarProgram(data.program, data.editorId);
+	if (data.program) {
+		await RunRockstarProgram(data.program, data.editorId);
+	} else {
+		self.postMessage({ type: "error", error: "empty program!", editorId: data.editorId })
+	}
 });

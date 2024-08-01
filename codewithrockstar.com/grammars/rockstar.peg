@@ -633,4 +633,4 @@ write = 'write' !letter
 
 // binary_rhs <IEnumerable<Expression>>
 //	= primary_list
-//	/ e:expression
+//	/ e:expression { new List<Expression> { e } }

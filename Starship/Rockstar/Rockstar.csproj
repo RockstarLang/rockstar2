@@ -13,6 +13,7 @@
 
 	<PropertyGroup>
 		<PublishAot>true</PublishAot>
+		<StripSymbols>true</StripSymbols>
 	</PropertyGroup>
 
 </Project>

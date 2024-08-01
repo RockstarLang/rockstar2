@@ -1,0 +1,36 @@
+{
+  "mainAssemblyName": "Rockstar.Wasm",
+  "resources": {
+    "hash": "sha256-7mNC124fFvN1ycIqyBfCtboauRRnuh+8LxIkCyd/r70=",
+    "jsModuleNative": {
+      "dotnet.native.8.0.7.koccbw7nxd.js": "sha256-R1aTX6c2hI+IAYnRYH9nRJGt6Z78cAvVSmfRHawm8/Q="
+    },
+    "jsModuleRuntime": {
+      "dotnet.runtime.8.0.7.urcsr75yt5.js": "sha256-soZyw6XWXOLKhA26AOyzSpCP5cAsw1wvhdPHSYNTMfQ="
+    },
+    "wasmNative": {
+      "dotnet.native.wasm": "sha256-89Vl831kxVH8TQPtdryxGxH8pdAzyZgLihtvdkbtYDk="
+    },
+    "assembly": {
+      "netstandard.wasm": "sha256-uq25ZvhoKtVHJOv9ajFhuamTvw38wLURg2hmblDtnm0=",
+      "Pegasus.Common.wasm": "sha256-lY4pghNCSMvmy0zsWdAfRqPvjZ4LgPRa6+gCvyWHOLw=",
+      "Rockstar.Engine.wasm": "sha256-LeakLMcQev/e7YMFcVMG9+vd3wKzkSbJ9GWTeSv/55c=",
+      "Rockstar.Wasm.wasm": "sha256-56m6W8mYSaqCOrq4L624tU7cZyJ3qRZX0MzOg4FEaXU=",
+      "System.Collections.Concurrent.wasm": "sha256-kEPz95QOxXMhg6GjD9othnMNHt3VxehKXPH4ch/dXCg=",
+      "System.Collections.wasm": "sha256-Ko9kyVDivFGSbFBluImz7RXTemp1jz8uXccaRqiWVOk=",
+      "System.Console.wasm": "sha256-yz+imPPmqM1nwL65iUzBOQcfnvZnGkdxvM55Ev5IvSU=",
+      "System.Diagnostics.TraceSource.wasm": "sha256-PTHL3Qd+KvNS37MmrmZ/+K21JJgfLEqjEgBr0emiPL8=",
+      "System.Linq.Expressions.wasm": "sha256-m+NHI0HBpQfOUXdOAbjX+k14QfOQmn5t+HiHlz1gXek=",
+      "System.Linq.wasm": "sha256-5HVtHkzjC4VOKXQrjbTsHqt8oXL6TZ+S7b+hpYWZDdA=",
+      "System.Private.CoreLib.wasm": "sha256-uMOlOVe9ZDrFGIoc70HzEsMUsOJPGaCxnadAOnadIbo=",
+      "System.Runtime.InteropServices.JavaScript.wasm": "sha256-jwlq4y3Y2PZ+tT+C13GpUj8jB4lby0k/kn3yLcn0OMw=",
+      "System.Runtime.InteropServices.wasm": "sha256-htPSs6+AC6mbWdtI6mCGodhnf9FT9jdYxYBhGx22g7Q=",
+      "System.Runtime.wasm": "sha256-Ti5C8ndo0SCVR2B6D9sp1ZVx4aVWOLFnlzcVxdFL2wE=",
+      "System.Text.RegularExpressions.wasm": "sha256-ckXsO3lh1/Yxiqn9aXgrrGae3g+DkCG9HGU4cvXoncs="
+    }
+  },
+  "cacheBootResources": true,
+  "debugLevel": 0,
+  "linkerEnabled": true,
+  "globalizationMode": "invariant"
+}

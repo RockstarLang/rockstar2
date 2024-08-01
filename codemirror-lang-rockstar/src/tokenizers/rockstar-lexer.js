@@ -44,6 +44,18 @@ export function tokenizeEOB(input) {
 	}
 }
 
+let endOfWildcardCodes = endOfStatementCodes.concat([ASCII.CR, ASCII.LF]);
+
+export function tokenizeWildcard(input) {
+	while (input.next >= 0) {
+		if (endOfWildcardCodes.includes(input.peek())) {
+			if (input.peek() == ASCII.CR) input.advance();
+			return input.acceptToken(tokens.Wildcard);
+		}
+		input.advance();
+	}
+}
+
 export function tokenizeEOS(input) {
 	var foundEOS = false;
 	var skipCodes = spaceCodes.concat(noiseCodes);
@@ -58,12 +70,10 @@ export function tokenizeEOS(input) {
 		foundEOS = true;
 	}
 	var [codes, _] = peekUntilNextWhitespace(input);
-	var lexeme = String.fromCodePoint(...codes).toLowerCase();
-	console.log(lexeme);
-	if (aliases.get(tokens.And).includes(lexeme)) return;
-	if ([ "&", "n'", "'n'" ].includes(lexeme)) {
-		console.log(lexeme);
-		return;
+	if (codes.length) {
+		var lexeme = String.fromCodePoint(...codes).toLowerCase();
+		if (aliases.get(tokens.And).includes(lexeme)) return;
+		if (["&", "n'", "'n'"].includes(lexeme)) return;
 	}
 	if (foundEOS) return input.acceptToken(tokens.EOS);
 }
@@ -237,7 +247,7 @@ export function tokenizeVariable(input) {
 		}
 		[codes, index] = peekNextWord(input);
 	}
-	if (properNouns.length > 0) return input.acceptTokenTo(tokens.ProperVariable, tokenTo);
+	if (properNouns.length > 1) return input.acceptTokenTo(tokens.ProperVariable, tokenTo);
 	return input.acceptToken(tokens.SimpleVariable);
 }
 
@@ -257,7 +267,7 @@ const readNextWord = (input) => readWhileContains(input, alphaCodes);
 const peekUntilNextWhitespace = (input, index = 0) => {
 	let codes = [];
 	while (spaceCodes.includes(input.peek(index))) index++;
-	while(true) {
+	while (true) {
 		var code = input.peek(index);
 		if (code <= 0) break;
 		if (spaceCodes.includes(code)) break;

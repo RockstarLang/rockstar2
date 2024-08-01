@@ -145,7 +145,7 @@ test.each(commonVariables)("%p is a proper variable", (lexeme) => {
 	expect(input.token).toBe(tokens.CommonVariable);
 });
 
-const simpleVariables = ["x", "y", "foo", "bar", "myVariable" ];
+const simpleVariables = ["x", "y", "foo", "bar", "myVariable", "Midnight", "MyVariable" ];
 test.each(simpleVariables)("%p is a simple variable", (lexeme) => {
 	var input = new parserInput(lexeme);
 	rockstar.tokenizeVariable(input);

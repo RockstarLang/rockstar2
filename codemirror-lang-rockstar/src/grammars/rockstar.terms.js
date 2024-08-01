@@ -104,5 +104,11 @@ export const
   ALS = 102,
   OxfordComma = 103,
   CallStatement = 104,
-  Assignment = 105,
-  EOF = 106
+  ReturnStatement = 105,
+  Wildcard = 106,
+  BreakStatement = 107,
+  ContinueStatement = 108,
+  LoopStatement = 109,
+  ConditionalStatement = 110,
+  Assignment = 111,
+  EOF = 112

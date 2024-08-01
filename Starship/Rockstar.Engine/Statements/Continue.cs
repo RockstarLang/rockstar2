@@ -1,3 +1,3 @@
 namespace Rockstar.Engine.Statements;
 
-public class Continue : Statement { }
+public class Continue(string wildcard = "") : WildcardStatement(wildcard) { }

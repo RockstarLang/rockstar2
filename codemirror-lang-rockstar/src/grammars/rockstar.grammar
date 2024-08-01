@@ -1,11 +1,13 @@
 @external propSource highlighting from "./rockstar-highlight.js"
 
-@top Program { EOS* Block (EOB Block)*
+@top Program { EOS* Block (EOB+ Block)*
 	| EOS* Block EOF }
 
-Block { statement (EOS statement)* }
+Block { statement (EOS statement)*  EOB }
 
 @skip { space | comment }
+
+@precedence { OxfordComma, CallStatement, XLS, VLS, ALS, PoeticNumber, Expression, SeperatorAnd, And, EOS, Alternate, Consequent, statement }
 
 comment { LineComment | BlockComment }
 
@@ -15,11 +17,11 @@ statement {
 	| Function
 	| FunctionCall
 	| CallStatement
-	// | ReturnStatement
-	// | ContinueStatement
-	// | BreakStatement
-	// | LoopStatement
-	// | ConditionalStatement
+	| ReturnStatement
+	| BreakStatement
+	| ContinueStatement
+	| LoopStatement
+	| ConditionalStatement
 	// | DeclarationStatement
 	| Assignment
 	// | Enlistment
@@ -30,7 +32,28 @@ statement {
 	// | Expression
 }
 
-@precedence { CallStatement, XLS, VLS, ALS, PoeticNumber, Expression, SeperatorAnd, And }
+Consequent { EOS+ Block | " " statement }
+
+ConsequentElseAlternate {
+	Consequent (" " | EOS) + Else Consequent
+}
+
+// Alternate { (" " | EOS)+ Else Consequent }
+
+ConditionalStatement {
+	If Expression Consequent Else Alternate
+	| If Expression Consequent
+}
+
+LoopStatement {
+	While Expression Consequent	| Until Expression Consequent
+}
+
+ContinueStatement { Continue Wildcard }
+
+BreakStatement { Break Wildcard }
+
+ReturnStatement { Return Back? Expression  }
 
 Function {
 	variable Takes Null Consequent
@@ -51,8 +74,6 @@ FunctionCall {
 argumentList { Primary ALS argumentList | Primary }
 
 variableList { variable VLS variableList | variable }
-
-Consequent { EOS+ Block EOB | statement }
 
 Assignment {
 	Put Expression Into assignable |
@@ -110,10 +131,14 @@ ALS { OxfordComma | XLS }
 XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 
 @tokens {
+
+	@precedence { Wildcard, Comma, space }
+
+	Wildcard { " wild" } // ![#\{\}\(\)\[\]\r\n!.?;]+ }
 	Ampersand { "&" }
 	Comma { "," }
 	trailing_punctuation { (Comma | $[.?!;: \t])* }
-	@precedence { Comma, EOB, EOS, space }
+
 	Nacton { "n'" | "'n'" }
 	PoeticLiteral { ![\n]* "\n" }
 	EOL { $[\r]? "\n" }

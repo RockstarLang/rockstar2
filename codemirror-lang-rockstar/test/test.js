@@ -10,6 +10,30 @@ test.each(oooh)("%p ends a block", (source) => {
 	expect(input.tokenTo).toBe(1);
 });
 
+const notEndOfStatement = [ ", and 6\n"]
+test.each(notEndOfStatement)("%s does NOT end a statement", (source) => {
+	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
+	var input = new parserInput(source);
+	rockstar.tokenizeEndMarkers(input);
+	expect(input.token).not.toBe(tokens.EOS);
+});
+
+const endOfStatementsWithSubsequentKeyword = [
+	[ ". Say it. ", 2 ],
+	[ "... print X", 4 ],
+	[ "??? Let X be 5", 4 ],
+	[ "!?;!...?     Say X", 13 ]
+];
+test.each(endOfStatementsWithSubsequentKeyword)("%s ends a statement at position %[", (source, tokenTo) => {
+	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
+	var input = new parserInput(source);
+	rockstar.tokenizeEndMarkers(input);
+	expect(input.token).toBe(tokens.EOS);
+	expect(input.pos).toBe(tokenTo);
+	//expect(input.tokenTo).toBe(tokenTo);
+});
+
+
 const endOfStatements = [ "\\n", "\\r\\n", ",", "!", ";", "?", "...\\n", "...\\r\\n", "!\r\n", "?!?\\r\\n" ];
 test.each(endOfStatements)("%s ends a statement", (source) => {
 	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
@@ -80,6 +104,13 @@ describe.each(operators)("%p is operator ", (token, lexemes) => {
 		rockstar.tokenizeOperator(input);
 		expect(input.token).toBe(token);
 	});
+});
+
+const notOperators = [ "1 say 2", "e" ];
+test.each(notOperators)("%p is not an operator ", (source) => {
+	var input = new parserInput(source);
+	rockstar.tokenizeOperator(input);
+	expect(input.token).toBe(undefined);
 });
 
 const notAnyKindOfVariables = ["true", "false", "1", "+2", "-5", "\n", " ", "\t", "12345", "!"]

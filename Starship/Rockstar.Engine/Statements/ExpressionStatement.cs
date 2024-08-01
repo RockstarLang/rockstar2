@@ -7,5 +7,5 @@ public class ExpressionStatement(Expression expr) : Statement {
 	public Expression Expression = expr;
 
 	public override StringBuilder Print(StringBuilder sb, string prefix)
-		=> Expression.Print(sb.AppendLine("expression:"), prefix + INDENT);
+		=> Expression.Print(sb.Append(prefix).AppendLine("expression_statement:"), prefix + INDENT);
 }

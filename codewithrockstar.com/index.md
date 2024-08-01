@@ -4,18 +4,32 @@ layout: home
 nav_order: "1000"
 ---
 
-<textarea id="parseTreeTextarea" style="position: fixed; bottom: 0; height: 40%; left: 20px; right: 20px; font-family: Fira Code; font-size: 10px;
+<textarea id="parseTreeTextarea" style="position: fixed; bottom: 10px; top: 10px; left: 10px; width: 370px; font-family: Fira Code; font-size: 10px;
 background-color: #000; z-index: 999;">parse tree</textarea>
 
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar
+If true
+print true
+else print false
+End
+
+```
+
+```rockstarff
+{% include_relative examples/99-appendix/acid-test.rock %}
+
+
+
+Break it down. Shout it out.
+Take it to the top. Scream my name.
+Continue
+
 My function takes b & c 'n'd & f and g
 Give back b with c plus d over e times f without g, yeah
 
 Call my function with 1, 2, & 3, 'n' 4, & 5, and 6
-```
-
 
 Midnight takes your heart, time and a word
 Shout time

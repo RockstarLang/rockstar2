@@ -26264,29 +26264,86 @@ const ASCII = {
 	Tilde: 126 // U+007E ~
 };
 
+const aliases = new Map();
+aliases.set(Above, ['above', 'over']);
+aliases.set(And, ['and']);
+aliases.set(Around, ['around', 'round']);
+aliases.set(As, ['as']);
+aliases.set(Great, ['great', 'high', 'big', 'strong']);
+aliases.set(Small, ['less', 'low', 'small', 'weak']);
+aliases.set(At, ['at']);
+aliases.set(Back, ['back']);
+aliases.set(Be, ['be']);
+aliases.set(Break, ['break']);
+aliases.set(Build, ['build']);
+aliases.set(Call, ['call']);
+aliases.set(Cast, ['cast', 'burn']);
+aliases.set(Continue, ['continue', 'take']);
+aliases.set(Debug, ['debug']);
+aliases.set(Divided, ['divided', 'between', 'over']);
+aliases.set(Down, ['down']);
+aliases.set(Else, ['else', 'otherwise']);
+aliases.set(Empty, ['empty', 'silent', 'silence']);
+aliases.set(End, ['end', 'yeah', 'baby', 'oh']);
+aliases.set(Exactly, ['exactly', 'totally', 'really']);
+aliases.set(False, ["false", "lies", "no", "wrong"]);
+aliases.set(His, ['his', 'her']);
+aliases.set(If, ['if', 'when']);
+aliases.set(Into, ['into', 'in']);
+aliases.set(Is, ['is', 'was', 'are', 'were', 'am']);
+aliases.set(Isnt, ["isnt", "isn't", 'aint', "ain't", "wasn't", "wasnt", "aren't", "arent", "weren't", "werent"]);
+aliases.set(Join, ['join', 'unite']);
+aliases.set(Knock, ['knock']);
+aliases.set(Less, ['less', 'lower', 'smaller', 'weaker']);
+aliases.set(Let, ['let']);
+aliases.set(Like, ['like', 'so']);
+aliases.set(Listen, ['listen']);
+aliases.set(Minus, ['minus', 'without']);
+aliases.set(More, ['greater', 'higher', 'bigger', 'stronger', 'more']);
+aliases.set(Mysterious, ['mysterious']);
+aliases.set(Non, ['non']);
+aliases.set(Nor, ['nor']);
+aliases.set(Not, ['not']);
+aliases.set(Now, ['now']);
+aliases.set(Null, ['null', 'nothing', 'nowhere', 'nobody', 'gone']);
+aliases.set(Or, ['or']);
+aliases.set(Over, ['over']);
+aliases.set(Plus, ['plus', 'with']);
+aliases.set(Pop, ['roll', 'pop']);
+aliases.set(Print, ["print", "shout", "say", "scream", "whisper"]);
+aliases.set(Pronoun, ['they', 'them', 'she', 'him', 'her', 'hir', 'zie', 'zir', 'xem', 'ver', 'ze', 've', 'xe', 'it', 'he', 'you', 'me', 'i']);
+aliases.set(Push, ['rock', 'push']);
+aliases.set(Put, ['put']);
+aliases.set(Return, ['return', 'giving', 'give', 'send']);
+aliases.set(Says, ['say', 'says', 'said']);
+aliases.set(Split, ['cut', 'split', 'shatter']);
+aliases.set(Takes, ['takes', 'wants']);
+aliases.set(Taking, ['taking']);
+aliases.set(Than, ['than']);
+aliases.set(The, ['an', 'a', 'the', 'my', 'your', 'our', 'their']);
+aliases.set(Then, ['then']);
+aliases.set(Times, ['times', 'of']);
+aliases.set(To, ['to']);
+aliases.set(True, ["true", "yes", "ok", "right"]);
+aliases.set(Turn, ['turn']);
+aliases.set(Under, ['under', 'below']);
+aliases.set(Until, ['until']);
+aliases.set(Up, ['up']);
+aliases.set(Using, ['using', 'with']);
+aliases.set(While, ['while']);
+aliases.set(With, ['with']);
+aliases.set(Write, ['write']);
+
+const keywords = Array.from(aliases.values()).flat();
+
 const compareOperators = [">=", "<=", ">", "<", "="];
 const arithmeticOperators = ["+", "/", "*", "-"];
 
 const noise = " \t,?!./;";
 const noiseCodes = stringToCharCodeArray(noise);
 
-const endOfStatementMarkers = ",?!.;";
+const endOfStatementMarkers = "?!.;";
 const endOfStatementCodes = stringToCharCodeArray(endOfStatementMarkers);
-
-// export function tokenizeEndOfStatement(input) {
-// 	var found = false;
-// 	while (input.next >= 0) {
-// 		while (spaceCodes.includes(input.next)) input.advance();
-// 		if (input.next == ASCII.LF) {
-// 			found = true;
-// 			break;
-// 		}
-// 		while (spaceCodes.includes(input.next)) input.advance();
-// 		if (endOfStatementCodes.includes(input.next)) found = true;
-// 		input.advance();
-// 	}
-// 	if (found) return input.acceptTokens(tokens.EOS);
-// }
 
 function tokenizeEndMarkers(input) {
 	var foundEOS = false;
@@ -26301,7 +26358,6 @@ function tokenizeEndMarkers(input) {
 		input.advance(i + 1); // eat the newline.
 		i = 0;
 		if (input.next < 0) return input.acceptToken(EOS);
-		console.log(input.next);
 		while (input.peek(i) >= 0) {
 			while (noiseCodes.includes(input.peek(i))) i++;
 			if (input.peek(i) == ASCII.CR) i++;
@@ -26314,12 +26370,18 @@ function tokenizeEndMarkers(input) {
 			i++;
 		}
 	}
-	var offset = input.pos;
-	var codes = readNextWord(input);
+	input.pos;
+	var [codes, index] = peekNextWord(input);
 	var lexeme = String.fromCodePoint(...codes);
-	if (/oo*h/i.test(lexeme)) return input.acceptTokenTo(EOB, offset + 1);
-	if (aliases.get(Else).includes(lexeme)) return input.acceptToken(EOB);
-	if (aliases.get(End).includes(lexeme)) return input.acceptToken(EOB);
+	if (/oo*h/i.test(lexeme)) {
+		input.advance(1);
+		return input.acceptToken(EOB);
+	}
+	if (aliases.get(Else).includes(lexeme || aliases.get(End).includes(lexeme))) {
+		readNextWord(input);
+		return input.acceptToken(EOB);
+	}
+	if (aliases.get(And).includes(codes)) return; // Do not treat the ", and" Oxford comma as an EOS
 	if (foundEOS) return input.acceptToken(EOS);
 }
 
@@ -26501,78 +26563,6 @@ const upperCodes = stringToCharCodeArray(uppers);
 const lowerCodes = stringToCharCodeArray(lowers);
 const alphaCodes = upperCodes.concat(lowerCodes);
 
-const aliases = new Map();
-aliases.set(Above, ['above', 'over']);
-aliases.set(And, ['and']);
-aliases.set(Around, ['around', 'round']);
-aliases.set(As, ['as']);
-aliases.set(Great, ['great', 'high', 'big', 'strong']);
-aliases.set(Small, ['less', 'low', 'small', 'weak']);
-aliases.set(At, ['at']);
-aliases.set(Back, ['back']);
-aliases.set(Be, ['be']);
-aliases.set(Break, ['break']);
-aliases.set(Build, ['build']);
-aliases.set(Call, ['call']);
-aliases.set(Cast, ['cast', 'burn']);
-aliases.set(Continue, ['continue', 'take']);
-aliases.set(Debug, ['debug']);
-aliases.set(Divided, ['divided', 'between', 'over']);
-aliases.set(Down, ['down']);
-aliases.set(Else, ['else', 'otherwise']);
-aliases.set(Empty, ['empty', 'silent', 'silence']);
-aliases.set(End, ['end', 'yeah', 'baby', 'oh']);
-aliases.set(Exactly, ['exactly', 'totally', 'really']);
-aliases.set(False, ["false", "lies", "no", "wrong"]);
-aliases.set(His, ['his', 'her']);
-aliases.set(If, ['if', 'when']);
-aliases.set(Into, ['into', 'in']);
-aliases.set(Is, ['is', 'was', 'are', 'were', 'am']);
-aliases.set(Isnt, ["isnt", "isn't", 'aint', "ain't", "wasn't", "wasnt", "aren't", "arent", "weren't", "werent"]);
-aliases.set(Join, ['join', 'unite']);
-aliases.set(Knock, ['knock']);
-aliases.set(Less, ['less', 'lower', 'smaller', 'weaker']);
-aliases.set(Let, ['let']);
-aliases.set(Like, ['like', 'so']);
-aliases.set(Listen, ['listen']);
-aliases.set(Minus, ['minus', 'without']);
-aliases.set(More, ['greater', 'higher', 'bigger', 'stronger', 'more']);
-aliases.set(Mysterious, ['mysterious']);
-aliases.set(Non, ['non']);
-aliases.set(Nor, ['nor']);
-aliases.set(Not, ['not']);
-aliases.set(Now, ['now']);
-aliases.set(Null, ['null', 'nothing', 'nowhere', 'nobody', 'gone']);
-aliases.set(Or, ['or']);
-aliases.set(Over, ['over']);
-aliases.set(Plus, ['plus', 'with']);
-aliases.set(Pop, ['roll', 'pop']);
-aliases.set(Print, ["print", "shout", "say", "scream", "whisper"]);
-aliases.set(Pronoun, ['they', 'them', 'she', 'him', 'her', 'hir', 'zie', 'zir', 'xem', 'ver', 'ze', 've', 'xe', 'it', 'he', 'you', 'me', 'i']);
-aliases.set(Push, ['rock', 'push']);
-aliases.set(Put, ['put']);
-aliases.set(Return, ['return', 'giving', 'give', 'send']);
-aliases.set(Says, ['say', 'says', 'said']);
-aliases.set(Split, ['cut', 'split', 'shatter']);
-aliases.set(Takes, ['takes', 'wants']);
-aliases.set(Taking, ['taking']);
-aliases.set(Than, ['than']);
-aliases.set(The, ['an', 'a', 'the', 'my', 'your', 'our', 'their']);
-aliases.set(Then, ['then']);
-aliases.set(Times, ['times', 'of']);
-aliases.set(To, ['to']);
-aliases.set(True, ["true", "yes", "ok", "right"]);
-aliases.set(Turn, ['turn']);
-aliases.set(Under, ['under', 'below']);
-aliases.set(Until, ['until']);
-aliases.set(Up, ['up']);
-aliases.set(Using, ['using', 'with']);
-aliases.set(While, ['while']);
-aliases.set(With, ['with']);
-aliases.set(Write, ['write']);
-
-const keywords = Array.from(aliases.values()).flat();
-
 const Keywords = new ExternalTokenizer(tokenizeKeyword);
 const Variables = new ExternalTokenizer(tokenizeVariable);
 const Operators = new ExternalTokenizer(tokenizeOperator);
@@ -26602,6 +26592,9 @@ const highlighting$1 = styleTags({
 	Nacton: tags.separator,
 	Ampersand: tags.separator,
 	OxfordComma: tags.separator,
+	Wildcard: tags.lineComment,
+	End: tags.controlKeyword,
+	EOB: tags.controlKeyword,
 
 	Above: tags.compareOperator,
 	And: tags.logicOperator,
@@ -26610,7 +26603,7 @@ const highlighting$1 = styleTags({
 	AsGreat: tags.compareOperator,
 	AsSmall: tags.compareOperator,
 	At: tags.keyword,
-	Back: tags.keyword,
+	Back: tags.controlKeyword,
 	Be: tags.keyword,
 	Break: tags.controlKeyword,
 	Build: tags.keyword,
@@ -26761,18 +26754,18 @@ const highlighting$1 = styleTags({
 // This file was generated by lezer-generator. You probably shouldn't edit it.
 const parser$1 = LRParser.deserialize({
   version: 14,
-  states: "+pO]Q#eOOPzO!bOOOOQ!R'#Ek'#EkO]Q#eOOOOQ!T'#Eu'#EuO!SQ#SO'#ERO!XQ#TO'#E]O!|Q#SO'#EeO#[Q!cO'#EhO!XQ#TO'#EiOOQ`'#Es'#EsO#jQ!rO'#EQQ#xQ!rOOPOOO'#Er'#ErPOOO)C@f)C@fOOQ!R-E8i-E8iO#[Q!cO,5:mO$QQ#fO'#EYOOQ!S'#EZ'#EZOOQ!S'#EV'#EVO%bQ!dO'#EUOOQ!S'#ET'#ETOOQ`,5:w,5:wO%mQ#TO,5:xO!XQ#TO,5;PO&OQ!jO,5;TO&TQ#YO,5;TO&fQ#dO,5;SO&zQ#SO,5;TO'PQ#TO'#EmO'kQ!rO,5:lO'PQ#TO'#EnQ'yQ!rOOQOQ!bOOO(OQ#dO'#EtOOQ`1G0X1G0XO(aQ#fO,5:tO!XQ#TO'#ESOOQ!S'#El'#ElOOQq'#E['#E[O!XQ#TO,5:pO)qQ#eO'#EvO]Q#eO1G0dO+RQ#dO'#FPOOQ`1G0k1G0kOOQ`1G0o1G0oO!XQ#TO1G0oO#[Q!cO1G0oO!XQ#TO1G0nO#[Q!cO1G0nO#[Q!cO1G0oOOQ`,5;X,5;XOOQ`-E8k-E8kOOQ`,5;Y,5;YOOQ`-E8l-E8lO,VQ#dO,5;`OOQ!S-E8j-E8jOOQ!S,5:n,5:nOOQ!S1G0[1G0[O,hQ#TO'#EaOOQq'#Ea'#EaOOQP'#E`'#E`O#[Q!cO,5;bO]Q#eO'#E_OOQ`'#E_'#E_OOQ`7+&O7+&OOOQq'#Eg'#EgOOQq'#Ef'#EfO!XQ#TO,5;kOOQ`7+&Z7+&ZO-`Q#SO7+&ZO-eQ#dO7+&YOOQ`7+&Y7+&YOOQq,5:{,5:{OOQ!R1G0|1G0|O-vQ!rO,5:yOOQ!Q1G1V1G1VO!XQ#TO<<IuO#[Q!cO<<ItOOQ`1G0e1G0eOOQ`AN?aAN?aOOQ`AN?`AN?`",
-  stateData: ".O~O#eOS!qPQ!rPQ~OPSOQSORSOSSOZQOeWO{TO!YUO![XO~O!q]O!r]O~O!g`O~OPSOQSORSOSSOlbOobO!ObO!TbO!hbO!zcO!{cO~OtjO!^iO!agO!bhO~OPSOQSORSOSSO~OZmOY!tX#^!tX#c!tX~OYoO#^qO~O`uOT!|XU!|XV!|XY!|XZ!|X#U!|X#V!|X#W!|X#^!|X#c!|X#t!|X#u!|X#v!|X#w!|X#x!|X#y!|X#z!|X#{!|Xs!|X~OTwOUwOVwO~OPSOQSORSOSSO!TzO~OX}O~OTwOUwOVwOW!PO!S!OO~Os!RO!o!QOY#[aZ#[a#^#[a#c#[a~Os!SO~OPSOQSORSOSSOeWO{TO!YUO![XO~OZmOY!ta#^!ta#c!ta~OYoO~O`uOY#hXZ#hX#^#hX#c#hX~O`uOT!|aU!|aV!|aY!|aZ!|a#U!|a#V!|a#W!|a#^!|a#c!|a#t!|a#u!|a#v!|a#w!|a#x!|a#y!|a#z!|a#{!|as!|a~O#U!]O#V!^O#W!^O#k!_O#l!_O#m!_O#n!_O#o!_O#p!_O#q!_O#r!_OP#jXQ#jXR#jXS#jXZ#jXe#jX{#jX!Y#jX![#jX~O#U!]O#V!^O#W!^O#t!dO#u!dO#v!dO#w!dO#x!dO#y!dO#z!dO#{!dOY#sXZ#sX#^#sX#c#sXs#sX~O`uOY#haZ#ha#^#ha#c#ha~O#V!kOP#TXQ#TXR#TXS#TXl#TXo#TX!O#TX!T#TX!h#TX!z#TX!{#TX~Ot!oO~Os!pOY#[qZ#[q#^#[q#c#[q~OY!qO~O#U#e~",
-  goto: "(Y#tPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#u$P$X$_$n$xPP%V%V%b$P$P%h%k%nPPP$P%t%q$P$PP%w&R&]&cPPP&i&l&x'U'yPPPPPPPP(PS[ORQ!VoR!m!a]YORmoz!aXvart!XQfUQlXQ!ZuQ!g!OR!r!oYeUXu!O!oR![x[dUXux!O!oV{h!Q!fccUXhux!O!Q!f!oQxdR!OjR!czR!`yQ!_yR!e{R!f{QROS_R!aR!azQtaQ!XrT!Yt!XQnZR!UnQp[R!WpR^PWZORo!aQ!TmR!bzQs`Q!g!SQ!j!RR!s!p[VORmoz!abaUXhux!O!Q!f!oQkWWr`!R!S!pSyg!`R!h!PQzgR!l!`Q|hQ!i!QR!n!f",
-  nodeNames: "⚠ ProperVariable CommonVariable SimpleVariable Pronoun LogicOperator CompareOperator ArithmeticOperator PoeticNumber PoeticString EOB EOS Above And Around As At Back Be Break Build Call Cast Continue Debug Divided Down Else Empty End Exactly False Great His If Into Is Isnt Join Knock Less Let Like Listen Minus More Mysterious Non Nor Not Now Null Or Over Plus Pop Print Push Put Return Says Small Split Takes Taking Than The Then Times To True Turn Under Until Up Using While With Write LineComment BlockComment Program Block ListenStatement Indexer Expression Binary Primary String Number Lookup Constant Operator OutputStatement Function Consequent VLS XLS Comma Ampersand Nacton FunctionCall ALS OxfordComma CallStatement Assignment EOF",
-  maxTerm: 135,
+  states: ".QO]Q#eOOP!^O!bOOOOQ!R'#Eq'#EqO]Q#eOOOOQ!T'#E|'#E|O!fQ#SO'#ERO!kQ#TO'#E]O#`Q#SO'#EeO#nQ!cO'#EhO#|Q#TO'#EiO$TQ!bO'#EkO$YQ!bO'#ElO!kQ#TO'#EmO!kQ#TO'#EnO!kQ#TO'#EoOOQ!Q'#Ez'#EzO$_Q!rO'#EQQ$mQ!rOOPOOO'#Ey'#EyPOOO)C@m)C@mOOQ!R-E8o-E8oO#nQ!cO,5:mO$uQ#fO'#EYOOQ!S'#EZ'#EZOOQ!S'#EV'#EVO&YQ!dO'#EUOOQ!T'#ET'#ETOOQ!Q,5:w,5:wO&eQ#TO,5:xO!kQ#TO,5;PO&vQ!jO,5;ZO&{Q#YO,5;ZO'^Q#dO,5;SOOQ!Q,5;T,5;TO!kQ#TO,5;TOOQ!Q,5;V,5;VOOQ!Q,5;W,5;WO]Q#eO,5;XO]Q#eO,5;YO'uQ#SO,5;ZO'zQ#TO'#EsO(xQ!rO,5:lOOQ!R'#Eu'#EuO)WQ#eO'#EtQ)_Q!rOOQOQ!bOOO)dQ#dO'#E{OOQ!Q1G0X1G0XO)xQ#fO,5:tO!kQ#TO'#ESOOQ!S'#Er'#ErOOQq'#E['#E[O!kQ#TO,5:pO+]Q#eO'#E}O]Q#eO1G0dO-PQ#dO'#FWOOQ!Q1G0k1G0kOOQ!Q1G0u1G0uO!kQ#TO1G0uO#nQ!cO1G0uO!kQ#TO1G0nO#nQ!cO1G0nOOQ!Q1G0o1G0oO]Q#eO'#E_OOQ!Q'#E_'#E_OOQ!Q1G0s1G0sO.WQ#SO1G0tO#nQ!cO1G0uOOQ`,5;_,5;_OOQ`-E8q-E8qOOQ!R-E8s-E8sOOQ`,5;`,5;`OOQ`-E8r-E8rO.]Q#dO,5;gOOQ!S-E8p-E8pOOQ!S,5:n,5:nOOQ!T1G0[1G0[O.qQ#TO'#EaOOQq'#Ea'#EaOOQP'#E`'#E`O#nQ!cO,5;iOOQ!Q7+&O7+&OOOQq'#Eg'#EgOOQq'#Ef'#EfO!kQ#TO,5;rOOQ!Q7+&a7+&aO/iQ#SO7+&aO/nQ#dO7+&YOOQ!Q7+&Y7+&YO0SQ!rO,5:yO]Q#eO7+&`OOQq,5:{,5:{OOQ!R1G1T1G1TOOQ!Q1G1^1G1^O!kQ#TO<<I{O#nQ!cO<<ItOOQ!Q1G0e1G0eOOQ!Q<<Iz<<IzOOQ!QAN?gAN?gOOQ!QAN?`AN?`",
+  stateData: "0^~O#lOS!qPQ!rPQ~OPSOQSORSOSSOZQOcYOeWOgZOr]O{TO!YUO![^O!]XO!k[O!n[O~O!qbO!rbO~O!geO~OPSOQSORSOSSOlgOogO!OgO!TgO!hgO!zhO!{hO~OtoO!^nO!alO!bmO~OPSOQSORSOSSO~OarO~P!kO#^sO~O#^tO~OZxOY!tX#d!tX#j!tX~OYzO#d}O~O`!ROT!|XU!|XV!|XY!|XZ!|X#U!|X#V!|X#W!|X#d!|X#j!|X#{!|X#|!|X#}!|X$O!|X$P!|X$Q!|X$R!|X$S!|Xs!|Xk!|X~OT!TOU!TOV!TO~OPSOQSORSOSSO!T!WO~OX!ZO~OT!TOU!TOV!TOW!]O!S![O~Os!_O!o!^OY#[aZ#[a#d#[a#j#[ak#[a~Os!eO~OPSOQSORSOSSOcYOeWOgZOr]O{TO!YUO![^O!]XO!k[O!n[O~OZxOY!ta#d!ta#j!ta~OYzO~P'zOYzO~O`!ROY#oXZ#oX#d#oX#j#oXk#oX~O`!ROT!|aU!|aV!|aY!|aZ!|a#U!|a#V!|a#W!|a#d!|a#j!|a#{!|a#|!|a#}!|a$O!|a$P!|a$Q!|a$R!|a$S!|as!|ak!|a~O#U!oO#V!pO#W!pO#r!qO#s!qO#t!qO#u!qO#v!qO#w!qO#x!qO#y!qOP#qXQ#qXR#qXS#qXZ#qXc#qXe#qXg#qXr#qX{#qX!Y#qX![#qX!]#qX!k#qX!n#qX~O#U!oO#V!pO#W!pO#{!tO#|!tO#}!tO$O!tO$P!tO$Q!tO$R!tO$S!tOY#zXZ#zX#d#zX#j#zXs#zXk#zX~Ok!|O~O`!ROY#oaZ#oa#d#oa#j#oak#oa~O#V!}OP#TXQ#TXR#TXS#TXl#TXo#TX!O#TX!T#TX!h#TX!z#TX!{#TX~Ot#QO~Os#ROY#[qZ#[q#d#[q#j#[qk#[q~OY#SO~O#^#U#l#U~",
+  goto: ")k#{PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#|$W$c$i%U%dPP%u%u&U$W$W&[&h&kPPP$W&q&n$W$WP$W$W$W$W$WP&t'R']'c'iPPP'p's(S(`)[PPPPPPPP)bSaORQ!i{R!{!ac_ORuvx{!W!a!|X!Sf!O!Q!kQkUQqXQu[Qv]Qw^Q!`rQ!m!RQ!w![R#U#QbjUX[]^r!R![#QR!n!UdiUX[]^r!R!U![#QV!Xm!^!vkhUX[]^mr!R!U![!^!v#QQ!UiR![oQ!cuQ!dvQ!s!WR#T!|R!r!VQ!q!VR!u!XR!v!XQROSdR!aX!auv!W!|Q!QfQ!k!OT!l!Q!kQy`R!gyQ|aR!j|S{a|R!h{RcPW`OR{!aW!buv!W!|R!fxQ!PeQ!w!eQ!z!_R#V#RbVORuvx{!W!a!|jfUX[]^mr!R!U![!^!v#QQpWW!Oe!_!e#RS!Vl!rR!x!]Q!WlR#O!rQ!YmQ!y!^R#P!v",
+  nodeNames: "⚠ ProperVariable CommonVariable SimpleVariable Pronoun LogicOperator CompareOperator ArithmeticOperator PoeticNumber PoeticString EOB EOS Above And Around As At Back Be Break Build Call Cast Continue Debug Divided Down Else Empty End Exactly False Great His If Into Is Isnt Join Knock Less Let Like Listen Minus More Mysterious Non Nor Not Now Null Or Over Plus Pop Print Push Put Return Says Small Split Takes Taking Than The Then Times To True Turn Under Until Up Using While With Write LineComment BlockComment Program Block ListenStatement Indexer Expression Binary Primary String Number Lookup Constant Operator OutputStatement Function Consequent VLS XLS Comma Ampersand Nacton FunctionCall ALS OxfordComma CallStatement ReturnStatement Wildcard BreakStatement ContinueStatement LoopStatement ConditionalStatement Assignment EOF",
+  maxTerm: 142,
   propSources: [highlighting$1],
-  skippedNodes: [0,12,13,14,15,17,18,19,20,22,23,24,25,26,27,29,30,32,33,34,37,38,39,40,41,42,44,45,47,48,49,52,53,54,55,57,59,61,62,65,66,67,68,71,72,73,74,75,76,78,79,80],
-  repeatNodeCount: 4,
-  tokenData: "+w~R`XY!Tpq!Trs!`st#|vw$kwx$pxy%R|}%p!O!P(T!Q![(c!c!d(n!}#O)o#T#U*X#b#c$v#o#p+Y~~+r~!YQ#e~XY!Tpq!T~!cVOr!`rs!xs#O!`#O#P!}#P;'S!`;'S;=`#v<%lO!`~!}O!z~~#QRO;'S!`;'S;=`#Z;=`O!`~#^WOr!`rs!xs#O!`#O#P!}#P;'S!`;'S;=`#v;=`<%l!`<%lO!`~#yP;=`<%l!`~$PTOY#|YZ$`Z;'S#|;'S;=`$e<%lO#|~$eO!q~~$hP;=`<%l#|~$pO#V~~$sP#b#c$v~$yPwx$|~%RO#W~~%UTOy%Ryz%ez;'S%R;'S;=`%j<%lO%R~%jO!r~~%mP;=`<%l%R~%uP#U~pq%x~%{Q!c!d&R#T#U'S~&UQ!p!q&[#b#c&o~&_Q!f!g&e#W#X&j~&jO#t~~&oO#u~~&rQ!f!g&x#W#X&}~&}O#v~~'SO#w~~'VQ!p!q']#b#c'p~'`Q!f!g'f#W#X'k~'kO#x~~'pO#y~~'sQ!f!g'y#W#X(O~(OO#z~~(TO#{~~(WP!Q![(Z~(`P!{~!Q![(Z~(hQ!{~!O!P(T!Q![(c~(qQ!p!q(w#b#c)[~(zQ!f!g)Q#W#X)V~)VO#k~~)[O#l~~)_Q!f!g)e#W#X)j~)jO#m~~)oO#n~~)rTO#P)o#P#Q%e#Q;'S)o;'S;=`*R<%lO)o~*UP;=`<%l)o~*[Q!p!q*b#b#c*u~*eQ!f!g*k#W#X*p~*pO#o~~*uO#p~~*xQ!f!g+O#W#X+T~+TO#q~~+YO#r~~+]TO#q+Y#q#r%e#r;'S+Y;'S;=`+l<%lO+Y~+oP;=`<%l+Y~+wO#^~",
+  skippedNodes: [0,12,13,14,15,18,20,22,24,25,26,29,30,32,33,37,38,39,40,41,42,44,45,47,48,49,52,53,54,55,57,61,62,65,66,67,68,71,72,74,75,78,79,80],
+  repeatNodeCount: 5,
+  tokenData: ",n~R`XY!Tpq!`rs#Vst$svw%bwx%gxy%x|}&g!O!P(z!Q![)Y!c!d)e!}#O*f#T#U+O#b#c%m#o#p,P~~,i~!YQ#l~XY!Tpq!T~!eR#l~XY!Tpq!T#k#l!n~!qP#]#^!t~!wP#`#a!z~!}P#W#X#Q~#VO#^~~#YVOr#Vrs#os#O#V#O#P#t#P;'S#V;'S;=`$m<%lO#V~#tO!z~~#wRO;'S#V;'S;=`$Q;=`O#V~$TWOr#Vrs#os#O#V#O#P#t#P;'S#V;'S;=`$m;=`<%l#V<%lO#V~$pP;=`<%l#V~$vTOY$sYZ%VZ;'S$s;'S;=`%[<%lO$s~%[O!q~~%_P;=`<%l$s~%gO#V~~%jP#b#c%m~%pPwx%s~%xO#W~~%{TOy%xyz&[z;'S%x;'S;=`&a<%lO%x~&aO!r~~&dP;=`<%l%x~&lP#U~pq&o~&rQ!c!d&x#T#U'y~&{Q!p!q'R#b#c'f~'UQ!f!g'[#W#X'a~'aO#{~~'fO#|~~'iQ!f!g'o#W#X't~'tO#}~~'yO$O~~'|Q!p!q(S#b#c(g~(VQ!f!g(]#W#X(b~(bO$P~~(gO$Q~~(jQ!f!g(p#W#X(u~(uO$R~~(zO$S~~(}P!Q![)Q~)VP!{~!Q![)Q~)_Q!{~!O!P(z!Q![)Y~)hQ!p!q)n#b#c*R~)qQ!f!g)w#W#X)|~)|O#r~~*RO#s~~*UQ!f!g*[#W#X*a~*aO#t~~*fO#u~~*iTO#P*f#P#Q&[#Q;'S*f;'S;=`*x<%lO*f~*{P;=`<%l*f~+RQ!p!q+X#b#c+l~+[Q!f!g+b#W#X+g~+gO#v~~+lO#w~~+oQ!f!g+u#W#X+z~+zO#x~~,PO#y~~,STO#q,P#q#r&[#r;'S,P;'S;=`,c<%lO,P~,fP;=`<%l,P~,nO#d~",
   tokenizers: [Variables, Operators, PoeticNumber, PoeticString, EndMarkers, Keywords, 0],
   topRules: {"Program":[0,81]},
-  tokenPrec: 595
+  tokenPrec: 699
 });
 
 const RockstarLanguage = LRLanguage.define({
@@ -27181,7 +27174,7 @@ const kitchenSink = createTheme({
         selection: '#0000ff',
         gutterBackground: '#006666',
         gutterForeground: 'rgb(50, 90, 150)',
-        lineHighlight: '#333333',
+        lineHighlight: '#111111',
     },
     styles: makeStyles()
 });

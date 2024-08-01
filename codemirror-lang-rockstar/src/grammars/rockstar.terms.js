@@ -109,6 +109,5 @@ export const
   BreakStatement = 107,
   ContinueStatement = 108,
   LoopStatement = 109,
-  ConditionalStatement = 110,
-  Assignment = 111,
-  EOF = 112
+  Assignment = 110,
+  EOF = 111

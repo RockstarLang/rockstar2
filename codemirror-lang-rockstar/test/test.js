@@ -7,10 +7,10 @@ test.each(oooh)("%p ends a block", (source) => {
 	var input = new parserInput(source);
 	rockstar.tokenizeEndMarkers(input);
 	expect(input.token).toBe(tokens.EOB);
-	expect(input.tokenTo).toBe(1);
+	expect(input.pos).toBe(1);
 });
 
-const notEndOfStatement = [ ", and 6\n"]
+const notEndOfStatement = [ ", &", ", 'n'", ", n' ", ", and"]
 test.each(notEndOfStatement)("%s does NOT end a statement", (source) => {
 	source = source.replace(/\\r/g, "\r").replace(/\\n/g, "\n");
 	var input = new parserInput(source);

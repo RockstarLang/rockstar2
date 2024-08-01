@@ -95,56 +95,9 @@ primary_list <IEnumerable<Expression>>
 	= head:primary _XLS_ tail:primary_list { head.Concat(tail) }
 	/ head:primary _XLS_ tail:primary { new List<Expression> { head, tail } }
 
-molecule_list <IEnumerable<Expression>>
- 	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
- 	/ head:molecule { new List<Expression> { head } }
-
 argument_list <IEnumerable<Expression>>
  	= head:primary _ALS_ tail:argument_list { head.Concat(tail) }
  	/ head:primary { new List<Expression> { head } }
-
-argument
-	= molecule
-
-molecule <Expression>
-	= molecular_boolean
-	/ primary
-
-molecular_boolean = molecular_binary_or
-
-molecular_binary_or <Expression>
-	= lhs:molecular_binary_nor _ or _ rhs:molecular_binary_or { new Binary(Operator.Or, lhs, rhs) }
-	/ molecular_binary_nor
-
-molecular_binary_nor <Expression>
-	= lhs:molecular_binary_and _ nor _ rhs:molecular_binary_nor { new Binary(Operator.Nor, lhs, rhs) }
-	/ molecular_binary_and
-
-molecular_binary_and <Expression>
-	= lhs:molecular_equality _ and _ rhs:molecular_binary_and { new Binary(Operator.And, lhs, rhs) }
-	/ molecular_equality
-
-molecular_equality <Expression>
-	= lhs:molecular_unary op:(_is / _isnt) _ rhs:molecular_equality { new Binary(op, lhs, rhs) }
-	/ molecular_unary
-
-molecular_unary <Expression>
-	= not_ u:molecular_unary { new Unary(Operator.Not, u) }
-	/ molecular_comparison
-
-molecular_comparison <Expression>
-	= lhs:molecular_addition op:comparator rhs:molecular_comparison { new Binary(op, lhs, rhs) }
-	/ molecular_addition
-
-molecular_addition <Expression> -memoize
-	= lhs:molecular_addition op:(_plus_/_minus_) rhs:molecular_product
-		{ new Binary(op, lhs, rhs) }
-	/ molecular_product
-
-molecular_product <Expression> -memoize
-	= lhs:molecular_product op:(_divide_/_times_) rhs:primary
-		{ new Binary(op, lhs, rhs) }
-	/ primary
 
 expression_list <IEnumerable<Expression>>
 	= head:expression _ALS_ tail:expression_list { head.Concat(tail) }
@@ -161,15 +114,19 @@ _XLS_	= ','? _nacton _?
 		/ _? ',' _?
 
 break_stmt <Statement>
-	= break wildcard
-		{ new Break() }
+	= break w:wildcard
+		{ new Break(w) }
 
 continue_stmt <Statement>
-	= continue wildcard
-		{ new Continue() }
+	= continue w:wildcard
+		{ new Continue(w) }
 
-wildcard = (letter / _)* &EOS
+end_of_wildcard = (end / 'o'+ 'h' )
 
+wildcard <string>
+	= ignored:([^,.?!;\r\n]* ) { String.Join("", ignored.ToArray()) }
+	/ ignored:((. !end_of_wildcard)* .) { String.Join("", ignored.ToArray()) }
+	
 filler = (_ / [,?!.;])* 
 EOS = EOL / _? [,.?!;:]
 EOL = filler '\r'? '\n'
@@ -182,11 +139,13 @@ eob_signal
 	/ ','? _? end filler
 
 EOB -memoize
-	= EOL &EOL
-	/ EOS* eob_signal
+	= EOS* eob_signal
+	/ EOL &EOL 
 	/ EOF
 
 consequent <Block>
+	// Yes, you SHOULD be able to put EOB at the end of the BLOCK definition and it'll work.
+	// IT DOESN'T. I have no idea why. It screws up break/continue wildcard parsing.
 	= EOS+ b:block EOB { b }
 	/ _ s:statement { new Block(s) }
 
@@ -219,10 +178,6 @@ output_stmt <Statement>
 		{ new Output(e) }
 	/ print _ e:expression
 		{ new Output(e, Environment.NewLine) }
-
-binary_rhs <IEnumerable<Expression>>
-	= primary_list
-	/ e:expression { new List<Expression> { e } }
 
 assignable <Variable>
 	= v:variable i:indexes
@@ -625,3 +580,56 @@ using = 'using' !letter / 'with' !letter
 while = 'while' !letter
 with = 'with' !letter
 write = 'write' !letter
+
+
+
+// argument
+// 	= molecule
+// 
+// molecule <Expression>
+// 	= molecular_boolean
+// 	/ primary
+// 
+// molecular_boolean = molecular_binary_or
+// 
+// molecular_binary_or <Expression>
+// 	= lhs:molecular_binary_nor _ or _ rhs:molecular_binary_or { new Binary(Operator.Or, lhs, rhs) }
+// 	/ molecular_binary_nor
+// 
+// molecular_binary_nor <Expression>
+// 	= lhs:molecular_binary_and _ nor _ rhs:molecular_binary_nor { new Binary(Operator.Nor, lhs, rhs) }
+// 	/ molecular_binary_and
+// 
+// molecular_binary_and <Expression>
+// 	= lhs:molecular_equality _ and _ rhs:molecular_binary_and { new Binary(Operator.And, lhs, rhs) }
+// 	/ molecular_equality
+// 
+// molecular_equality <Expression>
+// 	= lhs:molecular_unary op:(_is / _isnt) _ rhs:molecular_equality { new Binary(op, lhs, rhs) }
+// 	/ molecular_unary
+// 
+// molecular_unary <Expression>
+// 	= not_ u:molecular_unary { new Unary(Operator.Not, u) }
+// 	/ molecular_comparison
+// 
+// molecular_comparison <Expression>
+// 	= lhs:molecular_addition op:comparator rhs:molecular_comparison { new Binary(op, lhs, rhs) }
+// 	/ molecular_addition
+// 
+// molecular_addition <Expression> -memoize
+// 	= lhs:molecular_addition op:(_plus_/_minus_) rhs:molecular_product
+// 		{ new Binary(op, lhs, rhs) }
+// 	/ molecular_product
+// 
+// molecular_product <Expression> -memoize
+// 	= lhs:molecular_product op:(_divide_/_times_) rhs:primary
+// 		{ new Binary(op, lhs, rhs) }
+// 	/ primary
+
+// molecule_list <IEnumerable<Expression>>
+//  	= head:molecule _ALS_ tail:argument_list { head.Concat(tail) }
+//  	/ head:molecule { new List<Expression> { head } }
+
+// binary_rhs <IEnumerable<Expression>>
+//	= primary_list
+//	/ e:expression { new List<Expression> { e } }

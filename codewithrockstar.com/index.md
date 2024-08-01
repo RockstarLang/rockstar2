@@ -10,6 +10,8 @@ background-color: #000; z-index: 999;">parse tree</textarea>
 Run some Rockstar at {{ site.time }}:
 
 ```rockstar
+Call my function with 1, 2, & 3, 'n' 4, & 5, and 6
+
 If true
 print true
 else print false
@@ -29,7 +31,6 @@ Continue
 My function takes b & c 'n'd & f and g
 Give back b with c plus d over e times f without g, yeah
 
-Call my function with 1, 2, & 3, 'n' 4, & 5, and 6
 
 Midnight takes your heart, time and a word
 Shout time

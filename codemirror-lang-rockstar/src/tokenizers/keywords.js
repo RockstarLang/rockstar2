@@ -67,7 +67,7 @@ aliases.set(tokens.Until, ['until']);
 aliases.set(tokens.Up, ['up']);
 aliases.set(tokens.Using, ['using', 'with']);
 aliases.set(tokens.While, ['while']);
-aliases.set(tokens.With, ['with']);
+aliases.set(tokens.CallWith, ['with']);
 aliases.set(tokens.Write, ['write']);
 
 const keywords = Array.from(aliases.values()).flat();

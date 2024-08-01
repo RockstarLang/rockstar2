@@ -7,7 +7,7 @@ Block { statement (EOS statement)*  EOB }
 
 @skip { space | comment }
 
-@precedence { OxfordComma, CallStatement, XLS, VLS, ALS, PoeticNumber, Expression, SeperatorAnd, And, EOS, Alternate, Consequent, statement }
+@precedence { OxfordComma, CallStatement, XLS, VLS, ALS, PoeticNumber, Expression, SeperatorAnd, And, Alternate, Consequent, statement, EOS }
 
 comment { LineComment | BlockComment }
 
@@ -21,7 +21,7 @@ statement {
 	| BreakStatement
 	| ContinueStatement
 	| LoopStatement
-	| ConditionalStatement
+//	| ConditionalStatement
 	// | DeclarationStatement
 	| Assignment
 	// | Enlistment
@@ -32,18 +32,7 @@ statement {
 	// | Expression
 }
 
-Consequent { EOS+ Block | " " statement }
-
-ConsequentElseAlternate {
-	Consequent (" " | EOS) + Else Consequent
-}
-
-// Alternate { (" " | EOS)+ Else Consequent }
-
-ConditionalStatement {
-	If Expression Consequent Else Alternate
-	| If Expression Consequent
-}
+Consequent { EOS+ Block | statement }
 
 LoopStatement {
 	While Expression Consequent	| Until Expression Consequent
@@ -126,8 +115,8 @@ variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 }
 
 OxfordComma { ", AND" | ", ANd" | ", AnD" | ", And" | ", aND" | ", aNd" | ", anD" | ", and" }
-VLS { ("AND" | "ANd" | "AnD" | "And" | "aND" | "aNd" | "anD" | "and") | XLS }
 ALS { OxfordComma | XLS }
+VLS { ("AND" | "ANd" | "AnD" | "And" | "aND" | "aNd" | "anD" | "and") | XLS }
 XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 
 @tokens {

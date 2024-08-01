@@ -170,13 +170,20 @@ continue_stmt <Statement>
 
 wildcard = (letter / _)* &EOS
 
+filler = (_ / [,?!.;])* 
+EOS = EOL / _? [,.?!;:]
+EOL = filler '\r'? '\n'
+EOF = EOS* _? !.
+
+ooh = 'o' &('o'+ 'h')
+eob_signal
+	= &(_? else) // lookahead - if the next bit starts with else, end the block
+	/ ','? _? ooh
+	/ ','? _? end filler
+
 EOB -memoize
 	= EOL &EOL
-	/ EOL _ &EOL
-	/ (_ / [,?!.;])* EOL &((_ / [,?!.;])? EOL)
-	/ EOS* &(_? else)
-	/ EOS* ','? _? end (_ / [,?!.;])*
-	/ EOS* ','? _? 'o' &('o'+ 'h')
+	/ EOS* eob_signal
 	/ EOF
 
 consequent <Block>
@@ -187,16 +194,16 @@ if_test <Expression>
 	= if _ e:expression (_ then)?
 		{ e }
 
+alternate <Block>
+	=  _? else a:consequent { a }
+	/  EOS+ else a:consequent { a }
+
 conditional <Statement>
-	= e:if_test c:consequent _? else a:consequent
+	= e:if_test c:consequent a:alternate
 		{ new Conditional(e, c, a) }
-	/ e:if_test c:consequent EOS+ else a:consequent
-		{ new Conditional(e, c, a) }
-	/ e:if_test _ else a:consequent
+	/ e:if_test a:alternate
 		{ new Conditional(e, new Block(), a ) }
-	/ e:if_test EOS+ else a:consequent
-		{ new Conditional(e, new Block(), a ) }
-	/ e:if_test (_ then)? c:consequent
+	/ e:if_test c:consequent
 		{ new Conditional(e, c) }
 
 loop <Statement>
@@ -549,10 +556,6 @@ comment	=
 	/ '{' [^\}]* '}'
 	/ '[' [^\]]* ']'
 
-EOS = [,.?!;: \t]* EOL
-	/ _? [,.?!;:]
-EOL = _? '\r'? '\n'
-EOF = EOS* _? !.
 
 above = 'above' !letter / over
 and = 'and' !letter

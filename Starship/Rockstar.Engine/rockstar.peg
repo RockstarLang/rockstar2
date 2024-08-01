@@ -170,13 +170,20 @@ continue_stmt <Statement>
 
 wildcard = (letter / _)* &EOS
 
+filler = (_ / [,?!.;])* 
+EOS = EOL / _? [,.?!;:]
+EOL = filler '\r'? '\n'
+EOF = EOS* _? !.
+
+ooh = 'o' &('o'+ 'h')
+eob_signal
+	= &(_? else) // lookahead - if the next bit starts with else, end the block
+	/ ','? _? ooh
+	/ ','? _? end filler
+
 EOB -memoize
 	= EOL &EOL
-	/ EOL _ &EOL
-	/ (_ / [,?!.;])* EOL &((_ / [,?!.;])? EOL)
-	/ EOS* &(_? else)
-	/ EOS* ','? _? end (_ / [,?!.;])*
-	/ EOS* ','? _? 'o' &('o'+ 'h')
+	/ EOS* eob_signal
 	/ EOF
 
 consequent <Block>
@@ -549,10 +556,6 @@ comment	=
 	/ '{' [^\}]* '}'
 	/ '[' [^\]]* ']'
 
-EOS = [,.?!;: \t]* EOL
-	/ _? [,.?!;:]
-EOL = _? '\r'? '\n'
-EOF = EOS* _? !.
 
 above = 'above' !letter / over
 and = 'and' !letter

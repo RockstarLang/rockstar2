@@ -187,16 +187,16 @@ if_test <Expression>
 	= if _ e:expression (_ then)?
 		{ e }
 
+alternate <Block>
+	=  _? else a:consequent { a }
+	/  EOS+ else a:consequent { a }
+
 conditional <Statement>
-	= e:if_test c:consequent _? else a:consequent
+	= e:if_test c:consequent a:alternate
 		{ new Conditional(e, c, a) }
-	/ e:if_test c:consequent EOS+ else a:consequent
-		{ new Conditional(e, c, a) }
-	/ e:if_test _ else a:consequent
+	/ e:if_test a:alternate
 		{ new Conditional(e, new Block(), a ) }
-	/ e:if_test EOS+ else a:consequent
-		{ new Conditional(e, new Block(), a ) }
-	/ e:if_test (_ then)? c:consequent
+	/ e:if_test c:consequent
 		{ new Conditional(e, c) }
 
 loop <Statement>

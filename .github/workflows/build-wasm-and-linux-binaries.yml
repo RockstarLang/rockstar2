@@ -1,10 +1,10 @@
 name: build-wasm-and-linux-binaries
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - 'Starship/**'
-      - '.github/workflows/**'
+  # push:
+  #   branches: ["main"]
+  #   paths:
+  #     - 'Starship/**'
+  #     - '.github/workflows/**'
   workflow_dispatch:
   workflow_call:
 concurrency:

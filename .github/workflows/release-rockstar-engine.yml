@@ -4,11 +4,11 @@ on:
     workflows: ['build-wasm-and-linux-binaries']
     types: [completed]
     branches: ['main']
-  # push:
-  #   branches: ["main"]
-  #   paths:
+  push:
+    branches: ["main"]
+    paths:
+      - '.github/workflows/release-rockstar-engine.yml'
   #     - 'Starship/**'
-  #     - '.github/workflows/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,6 +18,25 @@ concurrency:
   group: "engine"
   cancel-in-progress: true
 jobs:
+  build-linux-thing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: MAKE UP SOME FILES
+        run: |
+          mkdir rockstar-linux-x64-binary
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0001.txt
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0002.txt
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0003.txt
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0004.txt
+      - uses: actions/cache@v4
+        name: save Linux x64 binary to cache
+        id: save-rockstar-linux-x64-binary-to-cache
+        with:
+          enableCrossOsArchive: true
+          path: rockstar-linux-x64-binary
+          key: rockstar-linux-x64-binary-${{ github.run_id }}
+          restore-keys: |
+            rockstar-linux-x64-binary-
   restore-cached-binaries:
     runs-on: ubuntu-latest
     permissions:

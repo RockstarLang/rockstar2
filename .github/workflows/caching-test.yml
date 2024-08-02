@@ -26,7 +26,7 @@ jobs:
       - name: restore files from from cache
         uses: actions/cache/restore@v4
         with:
-          path: my-files
+          # path: my-files
           key: my-cached-files
       - name: List files
         run: ls -lR
@@ -36,7 +36,7 @@ jobs:
       - name: restore files from from cache
         uses: actions/cache/restore@v4
         with:
-          path: this-will-fail-because-the-path-is-not-the-same
+          # path: this-will-fail-because-the-path-is-not-the-same
           key: my-cached-files
       - name: List files
         run: ls -lR

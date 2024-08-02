@@ -34,6 +34,10 @@ jobs:
         with:
           path: my-files
           key: my-cached-files
+          restore-keys: |
+            my-cached-files-
+            my-cached-files
+            another-restore-key
       - name: see what we got
         run: ls -lR
   fetch-stuff-from-cache-2:
@@ -44,6 +48,10 @@ jobs:
         with:
           path: my-files
           key: my-cached-files-${{ github.run_id }}
+          restore-keys: |
+            my-cached-files-
+            my-cached-files
+            another-restore-key
       - name: see what we got
         run: ls -lR
   fetch-stuff-from-cache-3:
@@ -54,5 +62,9 @@ jobs:
         with:
           path: my-files
           key: another-restore-key
+          restore-keys: |
+            my-cached-files-
+            my-cached-files
+            another-restore-key
       - name: see what we got
         run: ls -lR

@@ -12,11 +12,19 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-      - name: dotnet publish macos binary
-        run: dotnet publish Starship/Rockstar -o rockstar-macos-binary -c Release
+      - name: dotnet publish macos x64 binary
+        run: dotnet publish Starship/Rockstar -o rockstar-macos-x64-binary -r osx-x64 -c Release
+      - name: dotnet publish macos ARM64 binary
+        run: dotnet publish Starship/Rockstar -o rockstar-macos-arm64-binary -r osx-arm64 -c Release
       - uses: actions/cache/save@v3
-        name: Save macOS binary to cache
-        id: save-rockstar-macos-binary-to-cache
+        name: Save macOS x64 binary to cache
+        id: save-rockstar-macos-x64-binary-to-cache
         with:
-          path: rockstar-macos-binary
-          key: rockstar-macos-binary
+          path: rockstar-macos-x64-binary
+          key: rockstar-macos-x64-binary
+      - uses: actions/cache/save@v3
+        name: Save macOS ARM64 binary to cache
+        id: save-rockstar-macos-arm64-binary-to-cache
+        with:
+          path: rockstar-macos-arm64-binary
+          key: rockstar-macos-arm64-binary

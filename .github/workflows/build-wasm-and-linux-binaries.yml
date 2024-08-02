@@ -18,6 +18,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - id: semver-tag
+        uses: gandarez/semver-action@master
+        with:
+          branching_model: "trunk-based"
+      - name: "Display build version"
+        run: echo "tag ${{ steps.semver-tag.outputs.semver_tag }}"
       - name: Set up .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
@@ -25,6 +32,8 @@ jobs:
       - name: Install .NET WASM workloads
         working-directory: ./Starship
         run: dotnet workload install wasm-tools
+      - name: Patch VERSION constant inside Starship/Rockstar/Program.cs
+        run: sed -i 's/__VERSION__/${{ steps.semver-tag.outputs.semver_tag }}/g' Starship/Rockstar/Program.cs
       - name: Build Rockstar
         run: dotnet build Starship -c Release
       - name: Test Rockstar

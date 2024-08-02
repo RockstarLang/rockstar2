@@ -2,7 +2,7 @@ using Rockstar.Engine;
 namespace Rockstar;
 
 public static class Program {
-	const string VERSION = "0.0.0-prerelease";
+	const string VERSION = "__VERSION__";
 	private static readonly RockstarEnvironment env = new(new ConsoleIO());
 	private static readonly Parser parser = new();
 	public static void Main(string[] args) {

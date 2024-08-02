@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices.JavaScript;
-using System.Text;
 using System.Threading.Tasks;
 using Rockstar.Engine;
 

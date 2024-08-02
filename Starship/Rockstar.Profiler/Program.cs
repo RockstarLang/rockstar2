@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Rockstar;
 using Rockstar.Engine;
 
 const string DIRECTORY = "D:/Projects/github/RockstarLang/rockstar2/Starship/Rockstar.Test/programs";

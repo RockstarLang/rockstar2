@@ -4,7 +4,7 @@ using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Test.Values;
 
-public class ArrayTests(ITestOutputHelper testOutput) : ParserTestBase(testOutput) {
+public class ArrayTests : ParserTestBase {
 
 	[Fact]
 	public void EmptyArrayHasZeroLength() {

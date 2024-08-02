@@ -2,7 +2,7 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Values;
 
-public class NumberTests(ITestOutputHelper output) {
+public class NumberTests {
 	[Fact]
 	public void NumberEqualityWorks() {
 		var a = new Number(2);

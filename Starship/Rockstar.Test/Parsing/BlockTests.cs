@@ -1,13 +1,13 @@
 namespace Rockstar.Test.Parsing;
 
-public class AssortedTests(ITestOutputHelper output) : ParserTestBase(output) {
+public class AssortedTests : ParserTestBase {
 	[Fact]
 	public void CallWithLotsOfSeparatorsIsParsable() {
 		var source = "Call my function with 1, 2, & 3, 'n' 4'n'5'n'6 & 7";
 		var program = Parse(source);
 	}
 }
-public class BlockTests(ITestOutputHelper output) : ParserTestBase(output) {
+public class BlockTests : ParserTestBase {
 	[Theory]
 	[InlineData("Say 1\n\nSay 2\n\nSay 3\n\n", 1, 1, 1)]
 	[InlineData("Say 1\nSay 2\nSay 3", 3)]
@@ -21,7 +21,7 @@ public class BlockTests(ITestOutputHelper output) : ParserTestBase(output) {
 	}
 }
 
-public class CommentTests(ITestOutputHelper output) : ParserTestBase(output) {
+public class CommentTests : ParserTestBase {
 	[Theory]
 	[InlineData("(comment)\nsay 1(comment)")]
 	[InlineData("""

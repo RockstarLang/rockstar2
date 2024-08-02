@@ -102,7 +102,8 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 				File.WriteAllText(actualOutputPath, result.WithDebugInformationRemoved());
 				File.WriteAllText(expectOutputPath, expect);
 			} catch (Exception ex) {
-				// Don't care.
+				testOutput.WriteLine("Exception trying to write test output:");
+				testOutput.WriteLine(ex.Message);
 			}
 			result.WithDebugInformationRemoved().ShouldBe(expect);
 		} catch(Exception ex) {

@@ -2,7 +2,7 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Values;
 
-public class TruthinessTests(ITestOutputHelper output) {
+public class TruthinessTests {
 	[Fact]
 	public void Booleäns() {
 		Booleän.True.Truthy.ShouldBe(true);

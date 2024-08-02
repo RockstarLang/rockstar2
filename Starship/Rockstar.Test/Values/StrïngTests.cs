@@ -7,7 +7,7 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Values;
 
-public class StrïngTests(ITestOutputHelper output) {
+public class StrïngTests {
 
 	[Theory]
 	[InlineData("")]

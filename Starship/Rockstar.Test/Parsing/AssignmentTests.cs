@@ -2,7 +2,7 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Parsing;
 
-public class AssignmentTests(ITestOutputHelper output) : ParserTestBase(output) {
+public class AssignmentTests : ParserTestBase {
 
 	[Theory]
 	[InlineData("variable")]

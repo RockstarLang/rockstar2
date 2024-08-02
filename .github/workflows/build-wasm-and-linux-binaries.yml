@@ -4,7 +4,9 @@ on:
     branches: ["main"]
     paths:
       - 'Starship/**'
-      - '.github/workflows/**'
+      - '.github/workflows/build-wasm-and-linux-binaries.yml'
+      - '.github/workflows/build-windows-binary.yml'
+      - '.github/workflows/build-macos-binary.yml'
   workflow_dispatch:
   workflow_call:
 concurrency:

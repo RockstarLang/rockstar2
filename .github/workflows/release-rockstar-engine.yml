@@ -17,6 +17,8 @@ jobs:
   restore-cached-binaries:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: restore macOS binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-macos-binary
@@ -54,17 +56,17 @@ jobs:
       # rockstar-linux-binary:
       #   if: steps.restore-cached-linux-binary.outputs.cache-hit != 'true'
       #   uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-          files: |-
-            binaries/linux/*
-            binaries/wasm/*
-            binaries/windows/*
-            binaries/macos/*
+  # create-release:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: "marvinpinto/action-automatic-releases@latest"
+  #       with:
+  #         repo_token: "${{ secrets.GITHUB_TOKEN }}"
+  #         automatic_release_tag: "latest"
+  #         prerelease: true
+  #         title: "Development Build"
+  #         files: |-
+  #           binaries/linux/*
+  #           binaries/wasm/*
+  #           binaries/windows/*
+  #           binaries/macos/*

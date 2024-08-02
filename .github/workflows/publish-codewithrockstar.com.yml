@@ -56,7 +56,7 @@ jobs:
         working-directory: ./docs.codewithrockstar.com
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
       - name: Publish
-        uses: cloudflare/pages-action@v1.5
+        uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

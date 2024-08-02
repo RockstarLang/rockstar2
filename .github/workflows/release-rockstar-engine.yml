@@ -41,18 +41,19 @@ jobs:
         with:
           path: binaries/wasm
           key: rockstar-wasm-binary
-  rockstar-wasm-binary:
-    if: steps.restore-cached-wasm-binary.outputs.cache-hit != 'true'
-    uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
-  rockstar-macos-binary:
-    if: steps.restore-cached-macos-binary.outputs.cache-hit != 'true'
-    uses: ./.github/workflows/build-macos-binary.yml
-  rockstar-windows-binary:
-    if: steps.restore-cached-windows-binary.outputs.cache-hit != 'true'
-    uses: ./.github/workflows/build-windows-binary.yml
-  rockstar-linux-binary:
-    if: steps.restore-cached-linux-binary.outputs.cache-hit != 'true'
-    uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
+      - name: build Rockstar WASM binary
+        id: rockstar-wasm-binary
+        if: steps.restore-cached-wasm-binary.outputs.cache-hit != 'true'
+        uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
+      # rockstar-macos-binary:
+      #   if: steps.restore-cached-macos-binary.outputs.cache-hit != 'true'
+      #   uses: ./.github/workflows/build-macos-binary.yml
+      # rockstar-windows-binary:
+      #   if: steps.restore-cached-windows-binary.outputs.cache-hit != 'true'
+      #   uses: ./.github/workflows/build-windows-binary.yml
+      # rockstar-linux-binary:
+      #   if: steps.restore-cached-linux-binary.outputs.cache-hit != 'true'
+      #   uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
   create-release:
     runs-on: ubuntu-latest
     steps:

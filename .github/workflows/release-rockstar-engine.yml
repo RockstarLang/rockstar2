@@ -1,4 +1,4 @@
-name: release Rockstar engine and binaries
+name: release-rockstar-engine
 on:
   workflow_run:
     workflows: ['build-wasm-and-linux-binaries']
@@ -39,13 +39,13 @@ jobs:
       #     enableCrossOsArchive: true
       #     path: binaries/macos-x64
       #     key: rockstar-macos-x64-binary
-      # - name: restore Linux binary from cache
-      #   uses: actions/cache/restore@v4
-      #   id: restore-cached-linux-binary
-      #   with:
-      #     enableCrossOsArchive: true
-      #     path: binaries/linux
-      #     key: rockstar-linux-x64-binary
+      - name: restore Linux binary from cache
+        uses: actions/cache/restore@v4
+        id: restore-cached-linux-binary
+        with:
+          enableCrossOsArchive: true
+          path: binaries/linux
+          key: rockstar-linux-x64-binary
       # - name: restore Windows binary from cache
       #   uses: actions/cache/restore@v4
       #   id: restore-cached-windows-x64-binary
@@ -60,6 +60,7 @@ jobs:
           enableCrossOsArchive: true
           path: binaries/wasm
           key: rockstar-wasm-binary
+
       - name: extract version from binary
         id: version
         run: echo "::set-output name=version::$(./binaries/linux/rockstar --version)"

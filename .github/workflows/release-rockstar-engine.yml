@@ -51,7 +51,7 @@ jobs:
     if: steps.restore-cached-windows-binary.outputs.cache-hit != 'true'
     uses: ./.github/workflows/build-windows-binary.yml
   rockstar-linux-binary:
-    if: steps.restore-cached-wasm-binary.output.cache-hit != 'true'
+    if: steps.restore-cached-linux-binary.outputs.cache-hit != 'true'
     uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
   create-release:
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |-
-            rockstar-linux-binary
-            rockstar-wasm-binary
-            rockstar-windows-binary
-            rockstar-macos-binary
+            binaries/linux/*
+            binaries/wasm/*
+            binaries/windows/*
+            binaries/macos/*

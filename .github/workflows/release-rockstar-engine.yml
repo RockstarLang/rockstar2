@@ -19,8 +19,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # - name: Checkout
+      #   uses: actions/checkout@v4
       - name: restore macOS ARM64 binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-macos-arm64-binary

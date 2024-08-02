@@ -18,83 +18,40 @@ concurrency:
   group: "engine"
   cancel-in-progress: true
 jobs:
-  fetch-stuff-from-cache-1:
-    runs-on: ubuntu-latest
-    steps:
-      - name: restore dylan-test-alpha-cache- from cache (no restore-keys)
-        uses: actions/cache/restore@v4
-        with:
-          enableCrossOsArchive: true
-          path: dylan-test-alpha
-          key: dylan-test-alpha-cache-
-      - name: see what we got
-        run: ls -lR
-  fetch-stuff-from-cache-3:
-    runs-on: ubuntu-latest
-    steps:
-      - name: restore files from from cache
-        uses: actions/cache/restore@v4
-        with:
-          enableCrossOsArchive: true
-          path: banana/dylan-test-alpha
-          key: this-key-does-not-match-anything
-          restore-keys: |
-            dylan-test-alpha-cache-
-      - name: see what we got
-        run: ls -lR
-  fetch-stuff-from-cache-4:
-    runs-on: ubuntu-latest
-    steps:
-      - name: restore files from from cache
-        uses: actions/cache/restore@v4
-        with:
-          enableCrossOsArchive: true
-          path: dylan-test-alpha
-          key: this-key-does-not-match-anything
-          restore-keys: |
-            dylan-test-alpha-cache
-      - name: see what we got
-        run: ls -lR
   restore-cached-binaries:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
+#      - name: Checkout
+#        uses: actions/checkout@v4
       - name: restore macOS ARM64 binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-macos-arm64-binary
         with:
           enableCrossOsArchive: true
-          path: macos-arm64
+          path: rockstar-macos-arm64-binary
           key: rockstar-macos-arm64-binary
-          restore-keys: |
-            rockstar-macos-arm64-binary-
       - name: restore macOS x64 binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-macos-x64-binary
         with:
           enableCrossOsArchive: true
-          path: macos-x64
+          path: rockstar-macos-x64-binary-x64
           key: rockstar-macos-x64-binary
-          restore-keys: |
-            rockstar-macos-x64-binary-
       - name: restore Linux binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-linux-binary
         with:
           enableCrossOsArchive: true
-          path: linux
+          path: rockstar-linux-x64-binary
           key: rockstar-linux-x64-binary
-          restore-keys: |
-            rockstar-linux-x64-binary-
       - name: restore Windows binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-windows-x64-binary
         with:
           enableCrossOsArchive: true
-          path: windows
+          path: rockstar-windows-x64-binary
           key: rockstar-windows-x64-binary
           restore-keys: |
             rockstar-windows-x64-binary-
@@ -110,9 +67,9 @@ jobs:
       - name: create download assets
         run: |
           ls -lR
-      # - name: extract version from binary
-      #   id: version
-      #   run: echo "::set-output name=version::$(./binaries/linux/rockstar --version)"
+      - name: extract version from binary
+        id: version
+        run: echo "::set-output name=version::$(./rockstar-linux-x64-binary/rockstar --version)"
 
       # - name: create download assets
       #   run: |

@@ -6,34 +6,25 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      # - name: Set up .NET 8 SDK
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: '8.x'
-      # - name: dotnet publish macos x64 binary
-      #   run: dotnet publish Starship/Rockstar -o rockstar-macos-x64-binary -r osx-x64 -c Release
-      # - name: dotnet publish macos ARM64 binary
-      #   run: dotnet publish Starship/Rockstar -o rockstar-macos-arm64-binary -r osx-arm64 -c Release
-      # - uses: actions/cache@v4
-      #   name: Save macOS x64 binary to cache
-      #   id: save-rockstar-macos-x64-binary-to-cache
-      #   with:
-      #     enableCrossOsArchive: true
-      #     path: rockstar-macos-x64-binary
-      #     key: rockstar-macos-x64-binary
-      #     restore-keys: |
-      #       rockstar-macos-x64-binary
-      - name: Fake a build
-        run: |
-          mkdir rockstar-macos-arm64-binary
-          echo "pretend this is macOS arm64" > rockstar-macos-arm64-binary/rockstar.txt
-          mkdir rockstar-macos-x64-binary
-          echo "pretend this is macOS x64" > rockstar-macos-x64-binary/rockstar.txt
-          ls -lR
-      - uses: actions/cache@v4
-        name: Save macOS ARM64 binary to cache
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - name: dotnet publish macos x64 binary
+        run: dotnet publish Starship/Rockstar -o rockstar-macos-x64-binary -r osx-x64 -c Release
+      - name: dotnet publish macos ARM64 binary
+        run: dotnet publish Starship/Rockstar -o rockstar-macos-arm64-binary -r osx-arm64 -c Release
+      - uses: actions/cache/save@v4
+        name: Save rockstar-macos-x64-binary to cache
+        id: save-rockstar-macos-x64-binary-to-cache
+        with:
+          enableCrossOsArchive: true
+          path: rockstar-macos-x64-binary
+          key: rockstar-macos-x64-binary-${{ github.run_id }}
+      - uses: actions/cache/save@v4
+        name: Save rockstar-macos-arm64-binary to cache
         id: save-rockstar-macos-arm64-binary-to-cache
         with:
           enableCrossOsArchive: true

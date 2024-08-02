@@ -6,21 +6,16 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      # - name: Set up .NET 8 SDK
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: '8.x'
-      # - name: dotnet publish Windows x64 binary
-      #   run: dotnet publish Starship/Rockstar -o rockstar-windows-x64-binary -c Release
-      - name: Fake a build
-        run: |
-          md rockstar-windows-x64-binary
-          echo "pretend this is Windows" > rockstar-windows-x64-binary/rockstar.txt
-          dir -s
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - name: dotnet publish Windows x64 binary
+        run: dotnet publish Starship/Rockstar -o rockstar-windows-x64-binary -c Release
       - uses: actions/cache/save@v4
-        name: save Windows binary to cache
+        name: save rockstar-windows-x64-binary to cache
         id: save-rockstar-windows-x64-binary-to-cache
         with:
           enableCrossOsArchive: true

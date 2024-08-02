@@ -24,8 +24,32 @@ jobs:
       - name: restore dylan-cache-test- from cache (no restore-keys)
         uses: actions/cache/restore@v4
         with:
-          path: dylan-test-files
+          path: dylan-test
           key: dylan-cache-test-
+      - name: see what we got
+        run: ls -lR
+  fetch-stuff-from-cache-3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore files from from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: dylan-test
+          key: this-key-does-not-match-anything
+          restore-keys: |
+            dylan-cache-test-
+      - name: see what we got
+        run: ls -lR
+  fetch-stuff-from-cache-4:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore files from from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: dylan-test
+          key: this-key-does-not-match-anything
+          restore-keys: |
+            dylan-cache-test
       - name: see what we got
         run: ls -lR
   restore-cached-binaries:

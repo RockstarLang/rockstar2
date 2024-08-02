@@ -1,0 +1,42 @@
+name: cache-test
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - '.github/workflows/caching-test.yml'
+  workflow_dispatch:
+jobs:
+  cache-some-stuff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create some files
+        run: |
+          mkdir my-files
+          echo "Hello" > my-files/file0001.txt
+          echo "World" > my-files/file0002.txt
+          ls -lR
+      - uses: actions/cache/save@v4
+        id: put-files-in-cache
+        with:
+          path: my-files
+          key: my-cached-files-${{ github.run_id }}
+  fetch-stuff-from-cache-success:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore files from from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: my-files
+          key: my-cached-files
+      - name: List files
+        run: ls -lR
+  fetch-stuff-from-cache-failure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore files from from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: this-will-fail-because-the-path-is-not-the-same
+          key: my-cached-files
+      - name: List files
+        run: ls -lR

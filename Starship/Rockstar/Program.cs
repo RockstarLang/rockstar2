@@ -1,7 +1,6 @@
 using Rockstar.Engine;
 namespace Rockstar;
 
-
 public static class Program {
 	const string VERSION = "0.0.0-prerelease";
 	private static readonly RockstarEnvironment env = new(new ConsoleIO());

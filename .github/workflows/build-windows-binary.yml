@@ -18,5 +18,6 @@ jobs:
         name: save Windows binary to cache
         id: save-rockstar-windows-binary-to-cache
         with:
+          enableCrossOsArchive: true
           path: rockstar-windows-binary
           key: rockstar-windows-binary

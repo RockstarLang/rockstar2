@@ -25,30 +25,35 @@ jobs:
         uses: actions/cache/restore@v4
         id: restore-cached-macos-arm64-binary
         with:
+          enableCrossOsArchive: true
           path: binaries/macos-arm64
           key: rockstar-macos-arm64-binary
       - name: restore macOS x64 binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-macos-x64-binary
         with:
+          enableCrossOsArchive: true
           path: binaries/macos-x64
           key: rockstar-macos-x64-binary
       - name: restore Linux binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-linux-binary
         with:
+          enableCrossOsArchive: true
           path: binaries/linux
-          key: rockstar-linux-binary
+          key: rockstar-linux-x64-binary
       - name: restore Windows binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-windows-binary
         with:
+          enableCrossOsArchive: true
           path: binaries/windows
           key: rockstar-windows-binary
       - name: restore WASM binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary
         with:
+          enableCrossOsArchive: true
           path: binaries/wasm
           key: rockstar-wasm-binary
       - name: extract version from binary

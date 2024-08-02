@@ -1,4 +1,4 @@
-name: Build and Release Rockstar Binaries
+name: release Rockstar engine and binaries
 on:
   push:
     branches: ["main"]

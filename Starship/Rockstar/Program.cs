@@ -20,7 +20,7 @@ public static class Program {
 				RunFile(args[0]);
 				break;
 			default:
-				Console.WriteLine("Rockstar 2.0.0-preview-whatever. Let's rock!");
+				Console.WriteLine($"Rockstar {VERSION}. Type 'exit' to exit.");
 				RunPrompt();
 				break;
 		}
@@ -31,7 +31,7 @@ public static class Program {
 
 	private static void RunPrompt() {
 		while (true) {
-			env.Write("> ");
+			env.Write("» ");
 			var line = env.ReadInput();
 			if (line == null) break;
 			Run(line);
@@ -41,9 +41,9 @@ public static class Program {
 	private static void Run(string source) {
 		try {
 			var program = parser.Parse(source);
-			Console.WriteLine(program);
-			Console.WriteLine(String.Empty.PadLeft(40, '-'));
-			env.Execute(program);
+			var result = env.Execute(program);
+			if (result.WhatToDo == WhatToDo.Exit) Environment.Exit(0);
+			Console.WriteLine("« " + result.Value);
 		} catch (FormatException ex) {
 			Console.Error.WriteLine(ex);
 		}

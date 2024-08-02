@@ -84,6 +84,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		foreach (var statement in block.Statements) {
 			result = Execute(statement);
 			switch (result.WhatToDo) {
+				case WhatToDo.Exit: return result;
 				case WhatToDo.Skip: return result;
 				case WhatToDo.Break: return result;
 				case WhatToDo.Return: return result;
@@ -101,6 +102,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Conditional cond => Conditional(cond),
 		FunctionCall call => Call(call),
 		Return r => Return(r),
+		Exit => Result.Exit,
 		Continue => Result.Skip,
 		Break => Result.Break,
 		Enlist e => Enlist(e),
@@ -222,8 +224,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(array);
 	}
 
-	private Result ExpressionStatement(ExpressionStatement e)
-		=> new Result(Eval(e.Expression));
+	private Result ExpressionStatement(ExpressionStatement e) => new(Eval(e.Expression));
 
 	private Result Return(ExpressionStatement r) {
 		var value = Eval(r.Expression);

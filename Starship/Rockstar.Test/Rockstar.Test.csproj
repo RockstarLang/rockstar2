@@ -186,6 +186,9 @@
     <None Update="programs\examples\06-flow-control\ooooh.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\06-flow-control\exit.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\06-flow-control\until.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

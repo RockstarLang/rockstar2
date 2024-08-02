@@ -5,5 +5,6 @@ public enum WhatToDo {
 	Next,
 	Skip,
 	Break,
-	Return
+	Return,
+	Exit
 }

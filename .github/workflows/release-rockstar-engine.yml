@@ -18,25 +18,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore macOS binary from cache
-        uses: actions/restore@v4
+        uses: actions/cache/restore@v4
         id: restore-cached-macos-binary
         with:
           path: binaries/macos
           key: rockstar-macos-binary
       - name: restore Linux binary from cache
-        uses: actions/restore@v4
+        uses: actions/cache/restore@v4
         id: restore-cached-linux-binary
         with:
           path: binaries/linux
           key: rockstar-linux-binary
       - name: restore Windows binary from cache
-        uses: actions/restore@v4
+        uses: actions/cache/restore@v4
         id: restore-cached-windows-binary
         with:
           path: binaries/windows
           key: rockstar-windows-binary
       - name: restore WASM binary from cache
-        uses: actions/restore@v4
+        uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary
         with:
           path: binaries/wasm

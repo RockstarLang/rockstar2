@@ -69,7 +69,9 @@ jobs:
           ls -lR
       - name: extract version from binary
         id: version
-        run: echo "::set-output name=version::$(./rockstar-linux-x64-binary/rockstar --version)"
+        run: |
+          ./rockstar-linux-x64-binary/rockstar --version
+          echo "version=$(./rockstar-linux-x64-binary/rockstar --version)" >> $GITHUB_OUTPUT
 
       # - name: create download assets
       #   run: |

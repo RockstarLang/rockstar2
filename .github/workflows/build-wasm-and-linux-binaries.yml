@@ -47,15 +47,13 @@ jobs:
           echo "This is some stuff" > rockstar-linux-x64-binary/file0002.txt
           echo "This is some stuff" > rockstar-linux-x64-binary/file0003.txt
           echo "This is some stuff" > rockstar-linux-x64-binary/file0004.txt
-      - uses: actions/cache@v4
+      - uses: actions/cache/save@v4
         name: save Linux x64 binary to cache
         id: save-rockstar-linux-x64-binary-to-cache
         with:
           enableCrossOsArchive: true
           path: rockstar-linux-x64-binary
           key: rockstar-linux-x64-binary-${{ github.run_id }}
-          restore-keys: |
-            rockstar-linux-x64-binary-
   # rockstar-macos-binary:
   #   needs: build-engine
   #   uses: ./.github/workflows/build-macos-binary.yml

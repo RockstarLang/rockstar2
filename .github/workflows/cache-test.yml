@@ -22,10 +22,6 @@ jobs:
         with:
           path: my-files
           key: my-cached-files-${{ github.run_id }}
-          restore-keys: |
-            my-cached-files-
-            my-cached-files
-            another-restore-key
   fetch-stuff-from-cache-1:
     runs-on: ubuntu-latest
     steps:

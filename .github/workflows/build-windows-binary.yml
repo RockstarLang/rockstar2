@@ -20,6 +20,6 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: rockstar-windows-x64-binary
-          key: rockstar-windows-x64-binary-$(date +'%Y%m%d%H%M%S')
+          key: rockstar-windows-x64-binary
           restore-keys: |
             rockstar-windows-x64-binary

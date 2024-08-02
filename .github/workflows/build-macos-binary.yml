@@ -22,7 +22,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: rockstar-macos-x64-binary
-          key: rockstar-macos-x64-binary-$(date +'%Y%m%d%H%M%S')
+          key: rockstar-macos-x64-binary
           restore-keys: |
             rockstar-macos-x64-binary
       - uses: actions/cache/save@v4
@@ -31,6 +31,6 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: rockstar-macos-arm64-binary
-          key: rockstar-macos-arm64-binary-$(date +'%Y%m%d%H%M%S')
+          key: rockstar-macos-arm64-binary
           restore-keys: |
             rockstar-macos-arm64-binary

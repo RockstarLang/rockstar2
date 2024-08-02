@@ -1,4 +1,4 @@
-name: build-and-test-engine
+name: build-wasm-and-linux-binaries
 on:
   push:
     branches: ["main"]
@@ -7,6 +7,9 @@ on:
       - '.github/workflows/**'
   workflow_dispatch:
   workflow_call:
+concurrency:
+  group: "build-wasm-and-linux-binaries"
+  cancel-in-progress: true
 jobs:
   build-engine:
     runs-on: ubuntu-latest
@@ -34,7 +37,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: rockstar-wasm-binary
-          key: rockstar-wasm-binary-$(date +'%Y%m%d%H%M%S')
+          key: rockstar-wasm-binary
           restore-keys: |
             rockstar-wasm-binary
       # - uses: actions/cache/save@v4
@@ -43,7 +46,7 @@ jobs:
       #   with:
       #     enableCrossOsArchive: true
       #     path: rockstar-linux-x64-binary
-      #     key: rockstar-linux-x64-binary-$(date +'%Y%m%d%H%M%S')
+      #     key: rockstar-linux-x64-binary
       #     restore-keys: |
       #       rockstar-linux-x64-binary
   # rockstar-macos-binary:

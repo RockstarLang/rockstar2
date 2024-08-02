@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           enableCrossOsArchive: true
-          path: dylan-test-alpha
+          path: banana/dylan-test-alpha
           key: this-key-does-not-match-anything
           restore-keys: |
             dylan-test-alpha-cache-
@@ -67,7 +67,7 @@ jobs:
         id: restore-cached-macos-arm64-binary
         with:
           enableCrossOsArchive: true
-          path: binaries/macos-arm64
+          path: macos-arm64
           key: rockstar-macos-arm64-binary
           restore-keys: |
             rockstar-macos-arm64-binary-
@@ -76,7 +76,7 @@ jobs:
         id: restore-cached-macos-x64-binary
         with:
           enableCrossOsArchive: true
-          path: binaries/macos-x64
+          path: macos-x64
           key: rockstar-macos-x64-binary
           restore-keys: |
             rockstar-macos-x64-binary-
@@ -85,7 +85,7 @@ jobs:
         id: restore-cached-linux-binary
         with:
           enableCrossOsArchive: true
-          path: binaries/linux
+          path: linux
           key: rockstar-linux-x64-binary
           restore-keys: |
             rockstar-linux-x64-binary-
@@ -94,7 +94,7 @@ jobs:
         id: restore-cached-windows-x64-binary
         with:
           enableCrossOsArchive: true
-          path: binaries/windows
+          path: windows
           key: rockstar-windows-x64-binary
           restore-keys: |
             rockstar-windows-x64-binary-
@@ -103,7 +103,7 @@ jobs:
         id: restore-cached-wasm-binary
         with:
           enableCrossOsArchive: true
-          path: binaries/wasm
+          path: wasm
           key: rockstar-wasm-binary
           restore-keys: |
             rockstar-wasm-binary-

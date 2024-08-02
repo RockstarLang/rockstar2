@@ -18,13 +18,11 @@ concurrency:
   group: "engine"
   cancel-in-progress: true
 jobs:
-  restore-cached-binaries:
+  release-rockstar-engine:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
       - name: restore macOS ARM64 binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-macos-arm64-binary
@@ -87,7 +85,7 @@ jobs:
           release_name: rockstar-${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.version }}
           body: |
-            Rockstar 2.0 build pipeline
+            Rockstar ${{ steps.version.outputs.version }}
 
       - name: upload windows artifact
         uses: actions/upload-release-asset@v1

@@ -14,7 +14,7 @@ public class Function(IEnumerable<Variable> args, Block body)
 
 	public IList<Variable> Args => args.ToList();
 	public Block Body => body;
-	protected override bool Equals(Value other) => false;
+	protected override bool Equals(Value? other) => false;
 
 	public override int GetHashCode() => args.GetHashCode() ^ body.GetHashCode();
 

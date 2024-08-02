@@ -9,7 +9,7 @@ public abstract class Value : Expression {
 	public override bool Equals(object? obj)
 		=> obj?.GetType() == this.GetType() && Equals((Value) obj);
 
-	protected virtual bool Equals(Value other) => ReferenceEquals(this, other);
+	protected virtual bool Equals(Value? other) => ReferenceEquals(this, other);
 
 	public abstract override int GetHashCode();
 
@@ -17,7 +17,7 @@ public abstract class Value : Expression {
 	public bool Falsey => !Truthy;
 
 	public abstract Strïng ToStrïng();
-	public static bool operator ==(Value? lhs, Value? rhs) => rhs != null && (lhs?.Equals(rhs) ?? false);
+	public static bool operator ==(Value? lhs, Value? rhs) => lhs?.Equals(rhs) ?? rhs is null;
 	public static bool operator !=(Value? lhs, Value? rhs) => !(lhs == rhs);
 	public static Value operator +(Value lhs, IEnumerable<Value> rhs) => rhs.Aggregate(lhs, (memo, next) => memo + next);
 	public static Value operator -(Value lhs, IEnumerable<Value> rhs) => rhs.Aggregate(lhs, (memo, next) => memo - next);

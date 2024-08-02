@@ -49,15 +49,15 @@ public class Array : Value, IHaveANumber {
 		return sb.ToString();
 	}
 
-	public override Booleän Equäls(Value that)
+	public override Booleän Equäls(Value? that)
 		=> new(Equals(that));
 
-	protected override bool Equals(Value other) => other switch {
+	protected override bool Equals(Value? other) => other switch {
 		Array array => ArrayEquals(array),
 		IHaveANumber n => Length == n.Value,
 		Mysterious m => Length == 0,
 		Strïng s => Length == 0 && s.IsEmpty,
-		_ => throw new($"I can't compare arrays with {other.GetType().Name}")
+		_ => throw new($"I can't compare arrays with {other?.GetType().Name ?? "null"}")
 	};
 
 	public override Booleän IdenticalTo(Value that)

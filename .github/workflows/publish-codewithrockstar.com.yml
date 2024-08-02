@@ -24,23 +24,11 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 jobs:
-  rockstar-engine:
-    uses: ./.github/workflows/build-rockstar-engine.yml
-  rockstar-macos-binary:
-    uses: ./.github/workflows/build-macos-binary.yml
-  rockstar-windows-binary:
-    uses: ./.github/workflows/build-windows-binary.yml
   build-docs-site:
     runs-on: ubuntu-latest
-    needs: rockstar-engine
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Download WASM engine for codewithrockstar.com
-        uses: actions/download-artifact@v4
-        with:
-          name: rockstar_wasm
-          path: ./docs.codewithrockstar.com/wasm/wwwroot/_framework
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -53,46 +41,34 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           working-directory: ./docs.codewithrockstar.com
+      - name: fetch rockstar-wasm-binary from cache
+        uses: actions/cache/restore@v4
+        id: restore-cached-wasm-binary
+        with:
+          enableCrossOsArchive: true
+          path: rockstar-wasm-binary
+          key: rockstar-wasm-binary
+      - name: Copy WASM binaries into site source
+        run: cp -r rockstar-wasm-binary/ docs.codewithrockstar.com/wasm/
+
       - name: Build docs.codewithrockstar.com site
         # Outputs to the './_site' directory by default
         working-directory: ./docs.codewithrockstar.com
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        env:
-          JEKYLL_ENV: production
-      - name: Upload docs.codewithrockstar.com_site
-        # Automatically uploads an artifact from the './_site' directory by default
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish
+        uses: cloudflare/pages-action@v1
         with:
-          name: docs.codewithrockstar.com_site
-          path: ./docs.codewithrockstar.com/_site
-
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: docs-codewithrockstar-com # e.g. 'my-project'
+          directory: ./docs.codewithrockstar.com/_site # e.g. 'dist'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   # Build job
   build-main-site:
     runs-on: ubuntu-latest
-    needs: [rockstar-engine, rockstar-macos-binary, rockstar-windows-binary]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Download WASM engine for codewithrockstar.com
-        uses: actions/download-artifact@v4
-        with:
-          name: rockstar_wasm
-          path: ./codewithrockstar.com/wasm/wwwroot/_framework
-      - name: Download macOS binary for codewithrockstar.com
-        uses: actions/download-artifact@v4
-        with:
-          name: rockstar_macos_binary
-          path: ./codewithrockstar.com/download/macos
-      - name: Download Windows binary for codewithrockstar.com
-        uses: actions/download-artifact@v4
-        with:
-          name: rockstar_windows_binary
-          path: ./codewithrockstar.com/download/windows
-      - name: Download Linux binary for codewithrockstar.com
-        uses: actions/download-artifact@v4
-        with:
-          name: rockstar_linux_binary
-          path: ./codewithrockstar.com/download/linux
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -105,6 +81,15 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           working-directory: ./codewithrockstar.com
+      - name: fetch rockstar-wasm-binary from cache
+        uses: actions/cache/restore@v4
+        id: restore-cached-wasm-binary
+        with:
+          enableCrossOsArchive: true
+          path: rockstar-wasm-binary
+          key: rockstar-wasm-binary
+      - name: Copy WASM binaries into site source
+        run: cp -r rockstar-wasm-binary/ docs.codewithrockstar.com/wasm/
       - name: Build codewithrockstar.com site
         # Outputs to the './_site' directory by default
         working-directory: ./codewithrockstar.com

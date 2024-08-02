@@ -18,7 +18,7 @@ jobs:
         run: |
           md rockstar-windows-x64-binary
           echo "pretend this is Windows" > rockstar-windows-x64-binary/rockstar.txt
-          dir /s
+          dir -s
       - uses: actions/cache/save@v4
         name: save Windows binary to cache
         id: save-rockstar-windows-x64-binary-to-cache

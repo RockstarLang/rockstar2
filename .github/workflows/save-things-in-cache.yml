@@ -1,4 +1,4 @@
-name: cache-test
+name: save-things-in-cache
 on:
   push:
     branches: ["main"]

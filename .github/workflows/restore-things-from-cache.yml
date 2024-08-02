@@ -1,4 +1,4 @@
-name: cache-test
+name: restore-things-from-cache
 on:
   push:
     branches: ["main"]

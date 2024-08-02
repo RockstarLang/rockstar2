@@ -17,7 +17,7 @@ jobs:
           echo "This is some stuff" > my-files/file0003.txt
           echo "This is some stuff" > my-files/file0004.txt
           ls -lR
-      - uses: actions/cache@v4
+      - uses: actions/cache/save@v4
         id: put-files-in-cache
         with:
           path: my-files
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore files from from cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: my-files
           key: my-cached-files
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore files from from cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: my-files
           key: my-cached-files-${{ github.run_id }}
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore files from from cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: my-files
           key: another-restore-key

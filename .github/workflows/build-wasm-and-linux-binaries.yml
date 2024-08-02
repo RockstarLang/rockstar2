@@ -16,22 +16,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up .NET 8 SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-      - name: Install .NET WASM workloads
-        working-directory: ./Starship
-        run: dotnet workload install wasm-tools
-      - name: Build Rockstar
-        run: dotnet build Starship -c Release
-      - name: Test Rockstar
-        run: dotnet test Starship -c Release
-      - name: dotnet publish WASM engine
-        run: dotnet publish Starship/Rockstar.Wasm -o rockstar-wasm-binary -c Release
-      - name: dotnet publish Linux binary
-        run: dotnet publish Starship/Rockstar -o rockstar-linux-x64-binary -c Release
-      # - uses: actions/cache/save@v4
+      # - name: Set up .NET 8 SDK
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: '8.x'
+      # - name: Install .NET WASM workloads
+      #   working-directory: ./Starship
+      #   run: dotnet workload install wasm-tools
+      # - name: Build Rockstar
+      #   run: dotnet build Starship -c Release
+      # - name: Test Rockstar
+      #   run: dotnet test Starship -c Release
+      # - name: dotnet publish WASM engine
+      #   run: dotnet publish Starship/Rockstar.Wasm -o rockstar-wasm-binary -c Release
+      # - name: dotnet publish Linux binary
+      #   run: dotnet publish Starship/Rockstar -o rockstar-linux-x64-binary -c Release
+      # - uses: actions/cache@v4
       #   name: save WASM binary to cache
       #   id: save-rockstar-wasm-binary-to-cache
       #   with:
@@ -40,7 +40,14 @@ jobs:
       #     key: rockstar-wasm-binary-${{ github.run_id }}
       #     restore-keys: |
       #       rockstar-wasm-binary
-      - uses: actions/cache/save@v4
+      - name: MAKE UP SOME FILES
+        run: |
+          mkdir rockstar-linux-x64-binary
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0001.txt
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0002.txt
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0003.txt
+          echo "This is some stuff" > rockstar-linux-x64-binary/file0004.txt
+      - uses: actions/cache@v4
         name: save Linux x64 binary to cache
         id: save-rockstar-linux-x64-binary-to-cache
         with:

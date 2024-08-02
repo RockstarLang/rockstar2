@@ -1,7 +1,9 @@
 using Rockstar.Engine;
 namespace Rockstar;
 
+
 public static class Program {
+	const string VERSION = "0.0.0-prerelease";
 	private static readonly RockstarEnvironment env = new(new ConsoleIO());
 	private static readonly Parser parser = new();
 	public static void Main(string[] args) {
@@ -11,6 +13,10 @@ public static class Program {
 				Environment.Exit(64);
 				break;
 			case 1:
+				if (args[0] == "--version") {
+					Console.WriteLine(VERSION);
+					Environment.Exit(0);
+				}
 				RunFile(args[0]);
 				break;
 			default:

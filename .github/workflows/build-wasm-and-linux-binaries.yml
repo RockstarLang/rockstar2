@@ -34,14 +34,18 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: rockstar-wasm-binary
-          key: rockstar-wasm-binary
+          key: rockstar-wasm-binary-$(date +'%Y%m%d%H%M%S')
+          restore-keys: |
+            rockstar-wasm-binary
       - uses: actions/cache/save@v3
         name: save Linux x64 binary to cache
         id: save-rockstar-linux-x64-binary-to-cache
         with:
           enableCrossOsArchive: true
           path: rockstar-linux-x64-binary
-          key: rockstar-linux-x64-binary
+          key: rockstar-linux-x64-binary-$(date +'%Y%m%d%H%M%S')
+          restore-keys: |
+            rockstar-linux-x64-binary
   rockstar-macos-binary:
     needs: build-engine
     uses: ./.github/workflows/build-macos-binary.yml

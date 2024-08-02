@@ -12,12 +12,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-      - name: dotnet publish Windows binary
-        run: dotnet publish Starship/Rockstar -o rockstar-windows-binary -c Release
+      - name: dotnet publish Windows x64 binary
+        run: dotnet publish Starship/Rockstar -o rockstar-windows-x64-binary -c Release
       - uses: actions/cache/save@v3
         name: save Windows binary to cache
-        id: save-rockstar-windows-binary-to-cache
+        id: save-rockstar-windows-x64-binary-to-cache
         with:
           enableCrossOsArchive: true
-          path: rockstar-windows-binary
-          key: rockstar-windows-binary
+          path: rockstar-windows-x64-binary
+          key: rockstar-windows-x64-binary-$(date +'%Y%m%d%H%M%S')
+          restore-keys: |
+            rockstar-windows-x64-binary

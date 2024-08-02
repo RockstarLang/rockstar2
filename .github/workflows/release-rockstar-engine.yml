@@ -44,11 +44,11 @@ jobs:
           key: rockstar-linux-x64-binary
       - name: restore Windows binary from cache
         uses: actions/cache/restore@v4
-        id: restore-cached-windows-binary
+        id: restore-cached-windows-x64-binary
         with:
           enableCrossOsArchive: true
           path: binaries/windows
-          key: rockstar-windows-binary
+          key: rockstar-windows-x64-binary
       - name: restore WASM binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary

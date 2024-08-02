@@ -1,10 +1,10 @@
 name: build-wasm-and-linux-binaries
 on:
-  # push:
-  #   branches: ["main"]
-  #   paths:
+  push:
+    branches: ["main"]
+    paths:
   #     - 'Starship/**'
-  #     - '.github/workflows/**'
+      - '.github/workflows/build-wasm-and-linux-binaries.yml'
   workflow_dispatch:
   workflow_call:
 concurrency:
@@ -14,8 +14,8 @@ jobs:
   build-engine:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      #- name: Checkout
+      #  uses: actions/checkout@v4
       # - name: Set up .NET 8 SDK
       #   uses: actions/setup-dotnet@v4
       #   with:
@@ -40,13 +40,12 @@ jobs:
       #     key: rockstar-wasm-binary-${{ github.run_id }}
       #     restore-keys: |
       #       rockstar-wasm-binary
-      - name: MAKE UP SOME FILES
+      - name: Fake a build
         run: |
           mkdir rockstar-linux-x64-binary
-          echo "This is some stuff" > rockstar-linux-x64-binary/file0001.txt
-          echo "This is some stuff" > rockstar-linux-x64-binary/file0002.txt
-          echo "This is some stuff" > rockstar-linux-x64-binary/file0003.txt
-          echo "This is some stuff" > rockstar-linux-x64-binary/file0004.txt
+          echo "rockstar" > rockstar-linux-x64-binary/rockstar.txt
+          mkdir rockstar-wasm-binary
+          echo "rockstar" > rockstar-wasm-binary/rockstar.txt
       - uses: actions/cache/save@v4
         name: save Linux x64 binary to cache
         id: save-rockstar-linux-x64-binary-to-cache
@@ -54,10 +53,16 @@ jobs:
           enableCrossOsArchive: true
           path: rockstar-linux-x64-binary
           key: rockstar-linux-x64-binary-${{ github.run_id }}
-  # rockstar-macos-binary:
-  #   needs: build-engine
-  #   uses: ./.github/workflows/build-macos-binary.yml
-  # rockstar-windows-binary:
-  #   needs: build-engine
-  #   uses: ./.github/workflows/build-windows-binary.yml
-
+      - uses: actions/cache/save@v4
+        name: save Linux x64 binary to cache
+        id: save-rockstar-wasm-binary-to-cache
+        with:
+          enableCrossOsArchive: true
+          path: rockstar-wasm-binary
+          key: rockstar-wasm-binary-${{ github.run_id }}
+  rockstar-macos-binary:
+    needs: build-engine
+    uses: ./.github/workflows/build-macos-binary.yml
+  rockstar-windows-binary:
+    needs: build-engine
+    uses: ./.github/workflows/build-windows-binary.yml

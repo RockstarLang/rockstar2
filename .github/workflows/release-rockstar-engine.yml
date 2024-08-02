@@ -25,20 +25,24 @@ jobs:
     steps:
       # - name: Checkout
       #   uses: actions/checkout@v4
-      # - name: restore macOS ARM64 binary from cache
-      #   uses: actions/cache/restore@v4
-      #   id: restore-cached-macos-arm64-binary
-      #   with:
-      #     enableCrossOsArchive: true
-      #     path: binaries/macos-arm64
-      #     key: rockstar-macos-arm64-binary
-      # - name: restore macOS x64 binary from cache
-      #   uses: actions/cache/restore@v4
-      #   id: restore-cached-macos-x64-binary
-      #   with:
-      #     enableCrossOsArchive: true
-      #     path: binaries/macos-x64
-      #     key: rockstar-macos-x64-binary
+      - name: restore macOS ARM64 binary from cache
+        uses: actions/cache/restore@v4
+        id: restore-cached-macos-arm64-binary
+        with:
+          enableCrossOsArchive: true
+          path: binaries/macos-arm64
+          key: rockstar-macos-arm64-binary
+          restore-keys: |
+            rockstar-macos-arm64-binary-
+      - name: restore macOS x64 binary from cache
+        uses: actions/cache/restore@v4
+        id: restore-cached-macos-x64-binary
+        with:
+          enableCrossOsArchive: true
+          path: binaries/macos-x64
+          key: rockstar-macos-x64-binary
+          restore-keys: |
+            rockstar-macos-x64-binary-
       - name: restore Linux binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-linux-binary
@@ -47,14 +51,16 @@ jobs:
           path: binaries/linux
           key: rockstar-linux-x64-binary
           restore-keys: |
-            rockstar-linux-x64-binary
-      # - name: restore Windows binary from cache
-      #   uses: actions/cache/restore@v4
-      #   id: restore-cached-windows-x64-binary
-      #   with:
-      #     enableCrossOsArchive: true
-      #     path: binaries/windows
-      #     key: rockstar-windows-x64-binary
+            rockstar-linux-x64-binary-
+      - name: restore Windows binary from cache
+        uses: actions/cache/restore@v4
+        id: restore-cached-windows-x64-binary
+        with:
+          enableCrossOsArchive: true
+          path: binaries/windows
+          key: rockstar-windows-x64-binary
+          restore-keys: |
+            rockstar-windows-x64-binary-
       - name: restore WASM binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary
@@ -63,65 +69,64 @@ jobs:
           path: binaries/wasm
           key: rockstar-wasm-binary
           restore-keys: |
-            rockstar-linux-x64-binary
+            rockstar-wasm-binary-
       - name: create download assets
         run: |
           ls -lR
+      # - name: extract version from binary
+      #   id: version
+      #   run: echo "::set-output name=version::$(./binaries/linux/rockstar --version)"
 
-      - name: extract version from binary
-        id: version
-        run: echo "::set-output name=version::$(./binaries/linux/rockstar --version)"
+      # - name: create download assets
+      #   run: |
+      #     ls -lR
+      #     zip rockstar-${{ steps.version.outputs.version }}-windows-x64.zip binaries/windows/*
+      #     tar -czf rockstar-${{ steps.version.outputs.version }}-macos-arm64.tar.gz binaries/macos-arm64/*
+      #     tar -czf rockstar-${{ steps.version.outputs.version }}-macos-x64.tar.gz binaries/macos-x64/*
+      #     tar -czf rockstar-${{ steps.version.outputs.version }}-linux-x64.tar.gz binaries/linux/*
 
-      - name: create download assets
-        run: |
-          ls -lR
-          zip rockstar-${{ steps.version.outputs.version }}-windows-x64.zip binaries/windows/*
-          tar -czf rockstar-${{ steps.version.outputs.version }}-macos-arm64.tar.gz binaries/macos-arm64/*
-          tar -czf rockstar-${{ steps.version.outputs.version }}-macos-x64.tar.gz binaries/macos-x64/*
-          tar -czf rockstar-${{ steps.version.outputs.version }}-linux-x64.tar.gz binaries/linux/*
+      # - name: create release
+      #   uses: actions/create-release@v1
+      #   id: create_release
+      #   with:
+      #     draft: true
+      #     prerelease: true
+      #     release_name: rockstar-${{ steps.version.outputs.version }}
+      #     tag_name: ${{ steps.version.outputs.version }}
 
-      - name: create release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: true
-          prerelease: true
-          release_name: rockstar-${{ steps.version.outputs.version }}
-          tag_name: ${{ steps.version.outputs.version }}
-
-      - name: upload windows artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./rockstar-${{ steps.version.outputs.version }}-windows-x64.zip
-          asset_name: rockstar-${{ steps.version.outputs.version }}-windows-x64.zip
-          asset_content_type: application/zip
-      - name: upload macos-x64 artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./rockstar-${{ steps.version.outputs.version }}-macos-x64.tar.gz
-          asset_name: rockstar-${{ steps.version.outputs.version }}-macos-x64.tar.gz
-          asset_content_type: application/gzip
-      - name: upload linux-x64 artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./rockstar-${{ steps.version.outputs.version }}-linux-x64.tar.gz
-          asset_name: rockstar-${{ steps.version.outputs.version }}-linux-x64.tar.gz
-          asset_content_type: application/gzip
-      - name: upload macos-arm64 artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./rockstar-${{ steps.version.outputs.version }}-macos-arm64.tar.gz
-          asset_name: rockstar-${{ steps.version.outputs.version }}-macos-arm64.tar.gz
-          asset_content_type: application/gzip
+      # - name: upload windows artifact
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./rockstar-${{ steps.version.outputs.version }}-windows-x64.zip
+      #     asset_name: rockstar-${{ steps.version.outputs.version }}-windows-x64.zip
+      #     asset_content_type: application/zip
+      # - name: upload macos-x64 artifact
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./rockstar-${{ steps.version.outputs.version }}-macos-x64.tar.gz
+      #     asset_name: rockstar-${{ steps.version.outputs.version }}-macos-x64.tar.gz
+      #     asset_content_type: application/gzip
+      # - name: upload linux-x64 artifact
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./rockstar-${{ steps.version.outputs.version }}-linux-x64.tar.gz
+      #     asset_name: rockstar-${{ steps.version.outputs.version }}-linux-x64.tar.gz
+      #     asset_content_type: application/gzip
+      # - name: upload macos-arm64 artifact
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.token }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./rockstar-${{ steps.version.outputs.version }}-macos-arm64.tar.gz
+      #     asset_name: rockstar-${{ steps.version.outputs.version }}-macos-arm64.tar.gz
+      #     asset_content_type: application/gzip

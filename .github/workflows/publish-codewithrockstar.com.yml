@@ -25,7 +25,10 @@ concurrency:
 jobs:
   engine:
     uses: ./.github/workflows/build-rockstar-engine.yml
-
+  macos-binary:
+    uses: ./.github/workflows/build-macos-binary.yml
+  windows-binary:
+    uses: ./.github/workflows/build-windows-binary.yml
   build-docs-site:
     runs-on: ubuntu-latest
     needs: engine
@@ -65,15 +68,35 @@ jobs:
   # Build job
   build-main-site:
     runs-on: ubuntu-latest
-    needs: engine
+    needs: [ engine, macos-binary, windows-binary ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Download WASM engine for codewithrockstar.com
         uses: actions/download-artifact@v4
         with:
           name: rockstar_wasm
           path: ./codewithrockstar.com/wasm/wwwroot/_framework
+
+      - name: Download macOS binary for codewithrockstar.com
+        uses: actions/download-artifact@v4
+        with:
+          name: rockstar_macos_binary
+          path: ./codewithrockstar.com/download/macos
+
+      - name: Download Windows binary for codewithrockstar.com
+        uses: actions/download-artifact@v4
+        with:
+          name: rockstar_windows_binary
+          path: ./codewithrockstar.com/download/windows
+
+      - name: Download Linux binary for codewithrockstar.com
+        uses: actions/download-artifact@v4
+        with:
+          name: rockstar_linux_binary
+          path: ./codewithrockstar.com/download/linux
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -97,7 +120,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./codewithrockstar.com/_site
-
 
   # Deployment job
   deploy:

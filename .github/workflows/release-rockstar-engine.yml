@@ -53,10 +53,10 @@ jobs:
           key: rockstar-windows-x64-binary
       - name: restore WASM binary from cache
         uses: actions/cache/restore@v4
-        id: restore-cached-wasm-binary
+        id: restore-cached-rockstar-wasm-binary
         with:
           enableCrossOsArchive: true
-          path: wasm
+          path: rockstar-wasm-binary
           key: rockstar-wasm-binary
       - name: create download assets
         run: |

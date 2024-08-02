@@ -6,6 +6,9 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Content Include="rockstar-icon.ico" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\Rockstar.Engine\Rockstar.Engine.csproj" />
 	</ItemGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -16,5 +19,6 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<AssemblyName>rockstar</AssemblyName>
+		<ApplicationIcon>rockstar-icon.ico</ApplicationIcon>
 	</PropertyGroup>
 </Project>

@@ -21,11 +21,12 @@ jobs:
   fetch-stuff-from-cache-1:
     runs-on: ubuntu-latest
     steps:
-      - name: restore dylan-cache-test- from cache (no restore-keys)
+      - name: restore dylan-test-alpha-cache- from cache (no restore-keys)
         uses: actions/cache/restore@v4
         with:
-          path: dylan-test
-          key: dylan-cache-test-
+          enableCrossOsArchive: true
+          path: dylan-test-alpha
+          key: dylan-test-alpha-cache-
       - name: see what we got
         run: ls -lR
   fetch-stuff-from-cache-3:
@@ -34,10 +35,11 @@ jobs:
       - name: restore files from from cache
         uses: actions/cache/restore@v4
         with:
-          path: dylan-test
+          enableCrossOsArchive: true
+          path: dylan-test-alpha
           key: this-key-does-not-match-anything
           restore-keys: |
-            dylan-cache-test-
+            dylan-test-alpha-cache-
       - name: see what we got
         run: ls -lR
   fetch-stuff-from-cache-4:
@@ -46,10 +48,11 @@ jobs:
       - name: restore files from from cache
         uses: actions/cache/restore@v4
         with:
-          path: dylan-test
+          enableCrossOsArchive: true
+          path: dylan-test-alpha
           key: this-key-does-not-match-anything
           restore-keys: |
-            dylan-cache-test
+            dylan-test-alpha-cache
       - name: see what we got
         run: ls -lR
   restore-cached-binaries:

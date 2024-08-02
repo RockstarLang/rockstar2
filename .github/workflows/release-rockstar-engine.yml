@@ -1,0 +1,69 @@
+name: Build and Release Rockstar Binaries
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'Starship/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: "engine"
+  cancel-in-progress: true
+jobs:
+  restore-cached-binaries:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore macOS binary from cache
+        uses: actions/restore@v4
+        id: restore-cached-macos-binary
+        with:
+          path: binaries/macos
+          key: rockstar-macos-binary
+      - name: restore Linux binary from cache
+        uses: actions/restore@v4
+        id: restore-cached-linux-binary
+        with:
+          path: binaries/linux
+          key: rockstar-linux-binary
+      - name: restore Windows binary from cache
+        uses: actions/restore@v4
+        id: restore-cached-windows-binary
+        with:
+          path: binaries/windows
+          key: rockstar-windows-binary
+      - name: restore WASM binary from cache
+        uses: actions/restore@v4
+        id: restore-cached-wasm-binary
+        with:
+          path: binaries/wasm
+          key: rockstar-wasm-binary
+  rockstar-wasm-binary:
+    if: jobs.restore-cached-cached-binaries.steps.restore-cached-wasm-binary.outputs.cache-hit != 'true'
+    uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
+  rockstar-macos-binary:
+    if: jobs.restore-cached-cached-binaries.steps.restore-cached-macos-binary.outputs.cache-hit != 'true'
+    uses: ./.github/workflows/build-macos-binary.yml
+  rockstar-windows-binary:
+    if: jobs.restore-cached-cached-binaries.steps.restore-cached-windows-binary.outputs.cache-hit != 'true'
+    uses: ./.github/workflows/build-windows-binary.yml
+  rockstar-linux-binary:
+    if: jobs.restore-cached-cached-binaries.steps.restore-cached-wasm-binary.output.cache-hit != 'true'
+    uses: ./.github/workflows/build-wasm-and-linux-binaries.yml
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |-
+            rockstar-linux-binary
+            rockstar-wasm-binary
+            rockstar-windows-binary
+            rockstar-macos-binary

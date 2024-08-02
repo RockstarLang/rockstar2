@@ -1,11 +1,8 @@
-name: build-macos-binary
-
+name: build-windows-binary
 on:
   workflow_dispatch:
   workflow_call:
-
 jobs:
-  # Build job
   build:
     runs-on: windows-latest
     steps:
@@ -15,26 +12,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-
-      # - name: Install .NET WASM workloads
-      #   working-directory: ./Starship
-      #   run: dotnet workload install wasm-tools
-
-      # - name: Build Rockstar
-      #   run: dotnet build Starship -c Release
-
-      # - name: Test Rockstar
-      #   run: dotnet test Starship -c Release
-
-      - name: Publish Windows binary
-        run: dotnet publish Starship/Rockstar -o rockstar_windows_binary -c Release
-
-      # - name: Publish Rockstar Linux binary
-      #   run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
-
-      - name: Upload Windows binary
-        uses: actions/upload-artifact@v4
+      - name: dotnet publish Windows binary
+        run: dotnet publish Starship/Rockstar -o rockstar-windows-binary -c Release
+      - uses: actions/cache/save@v3
+        name: save Windows binary to cache
+        id: save-rockstar-windows-binary-to-cache
         with:
-          name: rockstar_windows_binary
-          path: |
-            rockstar_windows_binary
+          path: rockstar-windows-binary
+          key: rockstar-windows-binary

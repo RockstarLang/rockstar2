@@ -1,11 +1,8 @@
 name: build-macos-binary
-
 on:
   workflow_dispatch:
   workflow_call:
-
 jobs:
-  # Build job
   build:
     runs-on: macos-latest
     steps:
@@ -15,26 +12,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-
-      # - name: Install .NET WASM workloads
-      #   working-directory: ./Starship
-      #   run: dotnet workload install wasm-tools
-
-      # - name: Build Rockstar
-      #   run: dotnet build Starship -c Release
-
-      # - name: Test Rockstar
-      #   run: dotnet test Starship -c Release
-
-      - name: Publish macOS binary
-        run: dotnet publish Starship/Rockstar -o rockstar_macos_binary -c Release
-
-      # - name: Publish Rockstar Linux binary
-      #   run: dotnet publish Starship/Rockstar -o rockstar_linux_binary -c Release
-
-      - name: Upload macOS binary
-        uses: actions/upload-artifact@v4
+      - name: dotnet publish macos binary
+        run: dotnet publish Starship/Rockstar -o rockstar-macos-binary -c Release
+      - uses: actions/cache/save@v3
+        name: Save macOS binary to cache
+        id: save-rockstar-macos-binary-to-cache
         with:
-          name: rockstar_macos_binary
-          path: |
-            rockstar_macos_binary
+          path: rockstar-macos-binary
+          key: rockstar-macos-binary

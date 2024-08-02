@@ -1,0 +1,43 @@
+name: build-and-test-engine
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'Starship/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+  workflow_call:
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - name: Install .NET WASM workloads
+        working-directory: ./Starship
+        run: dotnet workload install wasm-tools
+      - name: Build Rockstar
+        run: dotnet build Starship -c Release
+      - name: Test Rockstar
+        run: dotnet test Starship -c Release
+      - name: dotnet publish WASM engine
+        run: dotnet publish Starship/Rockstar.Wasm -o rockstar-wasm-binary -c Release
+      - name: dotnet publish Linux binary
+        run: dotnet publish Starship/Rockstar -o rockstar-linux-binary -c Release
+      - uses: actions/cache/save@v3
+        name: save WASM binary to cache
+        id: save-rockstar-wasm-binary-to-cache
+        with:
+          path: rockstar-wasm-binary
+          key: rockstar-wasm-binary
+      - uses: actions/cache/save@v3
+        name: save Linux binary to cache
+        id: save-rockstar-linux-binary-to-cache
+        with:
+          path: rockstar-linux-binary
+          key: rockstar-linux-binary

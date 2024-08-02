@@ -16,7 +16,7 @@ jobs:
         run: dotnet publish Starship/Rockstar -o rockstar-macos-x64-binary -r osx-x64 -c Release
       - name: dotnet publish macos ARM64 binary
         run: dotnet publish Starship/Rockstar -o rockstar-macos-arm64-binary -r osx-arm64 -c Release
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         name: Save macOS x64 binary to cache
         id: save-rockstar-macos-x64-binary-to-cache
         with:
@@ -25,7 +25,7 @@ jobs:
           key: rockstar-macos-x64-binary-$(date +'%Y%m%d%H%M%S')
           restore-keys: |
             rockstar-macos-x64-binary
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         name: Save macOS ARM64 binary to cache
         id: save-rockstar-macos-arm64-binary-to-cache
         with:

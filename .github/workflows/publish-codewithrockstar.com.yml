@@ -1,16 +1,16 @@
 name: Deploy Jekyll site to Pages
 on:
   # Run after the engine is rebuilt
-  workflow_run:
-    workflows: ['build-rockstar-engine']
-    types: [completed]
-    branches: ['main']
-  # Run after any website source files are changed
-  push:
-    branches: ["main"]
-    paths:
-      - 'codewithrockstar.com/**'
-      - '.github/workflows/**'
+  # workflow_run:
+  #   workflows: ['build-rockstar-engine']
+  #   types: [completed]
+  #   branches: ['main']
+  # # Run after any website source files are changed
+  # push:
+  #   branches: ["main"]
+  #   paths:
+  #     - 'codewithrockstar.com/**'
+  #     - '.github/workflows/**'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages

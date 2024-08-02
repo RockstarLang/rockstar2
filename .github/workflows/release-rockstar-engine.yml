@@ -1,10 +1,14 @@
 name: release Rockstar engine and binaries
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - 'Starship/**'
-      - '.github/workflows/**'
+  workflow_run:
+    workflows: ['build-wasm-and-linux-binaries']
+    types: [completed]
+    branches: ['main']
+  # push:
+  #   branches: ["main"]
+  #   paths:
+  #     - 'Starship/**'
+  #     - '.github/workflows/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,34 +25,34 @@ jobs:
     steps:
       # - name: Checkout
       #   uses: actions/checkout@v4
-      - name: restore macOS ARM64 binary from cache
-        uses: actions/cache/restore@v4
-        id: restore-cached-macos-arm64-binary
-        with:
-          enableCrossOsArchive: true
-          path: binaries/macos-arm64
-          key: rockstar-macos-arm64-binary
-      - name: restore macOS x64 binary from cache
-        uses: actions/cache/restore@v4
-        id: restore-cached-macos-x64-binary
-        with:
-          enableCrossOsArchive: true
-          path: binaries/macos-x64
-          key: rockstar-macos-x64-binary
-      - name: restore Linux binary from cache
-        uses: actions/cache/restore@v4
-        id: restore-cached-linux-binary
-        with:
-          enableCrossOsArchive: true
-          path: binaries/linux
-          key: rockstar-linux-x64-binary
-      - name: restore Windows binary from cache
-        uses: actions/cache/restore@v4
-        id: restore-cached-windows-x64-binary
-        with:
-          enableCrossOsArchive: true
-          path: binaries/windows
-          key: rockstar-windows-x64-binary
+      # - name: restore macOS ARM64 binary from cache
+      #   uses: actions/cache/restore@v4
+      #   id: restore-cached-macos-arm64-binary
+      #   with:
+      #     enableCrossOsArchive: true
+      #     path: binaries/macos-arm64
+      #     key: rockstar-macos-arm64-binary
+      # - name: restore macOS x64 binary from cache
+      #   uses: actions/cache/restore@v4
+      #   id: restore-cached-macos-x64-binary
+      #   with:
+      #     enableCrossOsArchive: true
+      #     path: binaries/macos-x64
+      #     key: rockstar-macos-x64-binary
+      # - name: restore Linux binary from cache
+      #   uses: actions/cache/restore@v4
+      #   id: restore-cached-linux-binary
+      #   with:
+      #     enableCrossOsArchive: true
+      #     path: binaries/linux
+      #     key: rockstar-linux-x64-binary
+      # - name: restore Windows binary from cache
+      #   uses: actions/cache/restore@v4
+      #   id: restore-cached-windows-x64-binary
+      #   with:
+      #     enableCrossOsArchive: true
+      #     path: binaries/windows
+      #     key: rockstar-windows-x64-binary
       - name: restore WASM binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary

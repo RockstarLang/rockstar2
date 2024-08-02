@@ -7,7 +7,7 @@ public class Closure(Function function, Variable functionName, RockstarEnvironme
 	public override int GetHashCode() => function.GetHashCode() ^ scope.GetHashCode();
 	public override Strïng ToStrïng() => new(this.ToString());
 
-	public override string ToString() => "closure: {functionName.Key} => value";
+	public override string ToString() => $"closure: {functionName.Key} => value";
 
 	public override bool Truthy => true;
 

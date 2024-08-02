@@ -8,5 +8,5 @@ public class Pronoun(string name) : Variable(name) {
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).AppendLine(this.ToString());
 
-	public override string ToString() => $"pronoun: {name}";
+	public override string ToString() => $"pronoun: {Name}";
 }

@@ -15,7 +15,7 @@ foreach (var file in files) {
 	var parseTime = 0;
 	var runTime = 0;
 	bool error;
-	Exception exception = null;
+	Exception? exception = null;
 	try {
 		var program = parser.Parse(File.ReadAllText(file));
 		parseTime = (int) (stopwatch.ElapsedMilliseconds / FACTOR);

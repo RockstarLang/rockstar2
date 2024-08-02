@@ -15,5 +15,5 @@ public class FunctionCall(Variable function, IEnumerable<Expression>? args = def
 		return sb;
 	}
 
-	public override string ToString() => $"call: {function.Key}({String.Join(", ", Args.Select(a => a.ToString()))}";
+	public override string ToString() => $"call: {Function.Key}({String.Join(", ", Args.Select(a => a.ToString()))}";
 }

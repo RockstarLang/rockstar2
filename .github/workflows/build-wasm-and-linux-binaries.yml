@@ -8,8 +8,7 @@ on:
   workflow_dispatch:
   workflow_call:
 jobs:
-  # Build job
-  build:
+  build-engine:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,3 +40,10 @@ jobs:
         with:
           path: rockstar-linux-binary
           key: rockstar-linux-binary
+  rockstar-macos-binary:
+    needs: build-engine
+    uses: ./.github/workflows/build-macos-binary.yml
+  rockstar-windows-binary:
+    needs: build-engine
+    uses: ./.github/workflows/build-windows-binary.yml
+

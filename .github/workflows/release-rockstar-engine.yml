@@ -37,7 +37,7 @@ jobs:
         id: restore-cached-macos-x64-binary
         with:
           enableCrossOsArchive: true
-          path: rockstar-macos-x64-binary-x64
+          path: rockstar-macos-x64-binary
           key: rockstar-macos-x64-binary
       - name: restore Linux binary from cache
         uses: actions/cache/restore@v4
@@ -53,8 +53,6 @@ jobs:
           enableCrossOsArchive: true
           path: rockstar-windows-x64-binary
           key: rockstar-windows-x64-binary
-          restore-keys: |
-            rockstar-windows-x64-binary-
       - name: restore WASM binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary
@@ -62,8 +60,6 @@ jobs:
           enableCrossOsArchive: true
           path: wasm
           key: rockstar-wasm-binary
-          restore-keys: |
-            rockstar-wasm-binary-
       - name: create download assets
         run: |
           ls -lR
@@ -72,7 +68,6 @@ jobs:
         run: |
           ./rockstar-linux-x64-binary/rockstar --version
           echo "version=$(./rockstar-linux-x64-binary/rockstar --version)" >> $GITHUB_OUTPUT
-
       - name: create download assets
         run: |
           ls -lR

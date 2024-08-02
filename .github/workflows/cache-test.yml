@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore files from from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: my-files
           key: my-cached-files
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore files from from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: my-files
           key: my-cached-files-${{ github.run_id }}
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: restore files from from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: my-files
           key: another-restore-key

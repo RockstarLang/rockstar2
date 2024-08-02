@@ -18,6 +18,16 @@ concurrency:
   group: "engine"
   cancel-in-progress: true
 jobs:
+  fetch-stuff-from-cache-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: restore dylan-cache-test- from cache (no restore-keys)
+        uses: actions/cache/restore@v4
+        with:
+          path: dylan-test-files
+          key: dylan-cache-test-
+      - name: see what we got
+        run: ls -lR
   restore-cached-binaries:
     runs-on: ubuntu-latest
     permissions:

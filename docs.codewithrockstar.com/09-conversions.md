@@ -59,13 +59,13 @@ X is 1.2
 Turn down X
 Shout X (will print 1)
 
-The radio's playing. The night has just begun. 
+The radio's playing. The night has just begun.
  (initialises the radio with 7.35345)
 Turn up the radio
 Say the radio (will print 8)
 ```
 
-Rounding supports variable [pronouns](https://codewithrockstar.com/docs#pronouns), so you can write phrases like:
+Rounding supports variable [pronouns](https://docs.codewithrockstar.com/docs#pronouns), so you can write phrases like:
 
 ```
 My heart is on fire. Aflame with desire.

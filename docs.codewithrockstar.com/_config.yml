@@ -1,0 +1,14 @@
+title: Rockstar
+description: Tommy used to work on the docs.
+theme: just-the-docs
+
+url: https://just-the-docs.github.io
+
+# aux_links:
+#   Template Repository: https://github.com/just-the-docs/just-the-docs-template
+
+color_scheme: darkstar
+
+include:
+ - _framework
+

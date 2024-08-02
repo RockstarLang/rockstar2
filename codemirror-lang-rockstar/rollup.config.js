@@ -8,6 +8,7 @@ export default [
 		//external: id => id != "tslib" && !/^(\.?\/|\w:)/.test(id),
 		output: [
 			// { file: "dist/editor.cjs", format: "cjs" },
+			{ dir: "../docs.codewithrockstar.com/js/codemirror", format: "es" },
 			{ dir: "../codewithrockstar.com/js/codemirror", format: "es" },
 			{ dir: "./test/parser", format: "es" }
 		],

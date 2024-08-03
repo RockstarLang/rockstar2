@@ -2,6 +2,17 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Parsing;
 
+public class ExpressionTests : ParserTestBase {
+	[Theory]
+	[InlineData("1 + 2")]
+	[InlineData("a girl with a dream")]
+	[InlineData("time and a word")]
+	public void ParserHandlesStandaloneExpression(string expression) {
+		var result = Parse(expression).Blocks.Single().Statements.Single() as ExpressionStatement;
+		result!.Expression.ShouldNotBeNull();
+	}
+}
+
 public class AssignmentTests : ParserTestBase {
 
 	[Theory]

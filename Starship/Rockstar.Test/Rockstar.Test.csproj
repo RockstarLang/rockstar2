@@ -450,6 +450,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Expressions\" />
     <Folder Include="Fixtures\" />
   </ItemGroup>
 

@@ -1,6 +1,14 @@
 @import 'page.scss';
 
-$breakpoint-fullwidth: 768px;
+div.site-header a.site-title {
+	font-size: 0 !important;
+	position: relative;
+	left: 8px;
+	top: 12px;
+	height: 64px;
+	width: 300px;
+	background: url(/assets/img/rockstar-logotype-no-tail.svg) left center no-repeat;
+}
 
 div.rockstar-controls {
 	align-items: center;
@@ -65,6 +73,7 @@ div.rockstar-controls {
 		resize: vertical;
 		overflow-y: auto;
 		min-height: 120px;
+
 		&.parse-tree {
 			color: $link-color;
 			font-style: italic;
@@ -76,23 +85,25 @@ div.rockstar-controls {
 
 		width: 100%;
 
-		span.error {
+		span {
 			font-style: italic;
 			position: absolute;
 			left: 8px;
 			bottom: 8px;
+			padding: 4px;
+			border-radius: 4px;
+		}
+
+		span.error {
 			color: #f3c;
 			border: 1px solid #f3c;
-			border-radius: 4px;
 			background-color: #312;
-			padding: 4px;
 		}
 
 		span.result {
-			font-style: italic;
-			position: absolute;
-			left: 8px;
-			bottom: 8px;
+			color: $link-color;
+			border: 1px solid $link-color;
+			background-color: #000;
 		}
 	}
 
@@ -102,10 +113,10 @@ pre {
 	tab-size: 2 !important;
 }
 
-code {
+:not(pre, figure) > code {
 	border: 0;
 	font-size: 1.1em !important;
+	background-color: $code-background-color;
+	padding: 2px;
+	margin: 0;
 }
-
-
-

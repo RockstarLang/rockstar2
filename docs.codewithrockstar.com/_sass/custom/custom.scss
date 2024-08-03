@@ -17,15 +17,17 @@ div.rockstar-controls {
 	.buttons {
 		align-self: flex-start;
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		justify-content: space-between;
 		width: 100%;
+		margin-bottom: 8px;
 
 		@media (min-width: $breakpoint-fullwidth) {
 			flex-direction: column;
 			width: auto;
 			padding-right: 8px;
 			height: 120px;
+			margin-bottom: 0;
 		}
 
 		button {
@@ -53,16 +55,20 @@ div.rockstar-controls {
 		line-height: 1.1em;
 		box-sizing: border-box;
 		margin: 0;
-		display: flex;
-		flex-direction: column;
-		flex: 1;
-		align-self: stretch;
+		// display: flex;
+		// flex-direction: column;
+		// flex: 1;
+		// align-self: stretch;
 		border: 1px solid $link-color;
 		height: 100%;
 		border-radius: 4px;
 		resize: vertical;
 		overflow-y: auto;
 		min-height: 120px;
+		&.parse-tree {
+			color: $link-color;
+			font-style: italic;
+		}
 
 		@media (max-width: $breakpoint-fullwidth) {
 			width: 100%;
@@ -76,6 +82,10 @@ div.rockstar-controls {
 			left: 8px;
 			bottom: 8px;
 			color: #f3c;
+			border: 1px solid #f3c;
+			border-radius: 4px;
+			background-color: #312;
+			padding: 4px;
 		}
 
 		span.result {

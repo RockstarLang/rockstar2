@@ -54,7 +54,8 @@ statement -memoize
 	/ mutation
 	/ rounding
 	/ exit_statement
-	/ e:expression &EOS { new ExpressionStatement(e) }
+	/ e:expression &(EOS / EOF) { new ExpressionStatement(e) }
+
 
 enlistment <Statement>
 	= push _ e:expression _ into _ v:variable

@@ -149,6 +149,7 @@ function createControls(editorId, editorView, originalSource) {
 	parseButton.innerHTML = "Parse <i class='fa-solid fa-list-tree'></i>";
 	parseButton.onclick = () => {
 		let source = editorView.state.doc.toString();
+		output.classList.add("parse-tree");
 		try {
 			parseProgram(source, editorId);
 		} catch (e) {
@@ -156,6 +157,7 @@ function createControls(editorId, editorView, originalSource) {
 		}
 	}
 	rockButton.onclick = () => {
+		output.classList.remove("parse-tree");
 		console.log(rockCount);
 		if (rockCount > 0) {
 			stopTheRock();
@@ -171,6 +173,7 @@ function createControls(editorId, editorView, originalSource) {
 		}
 	}
 	resetButton.onclick = evt => {
+		output.classList.remove("parse-tree");
 		output.innerText = "";
 		editorView.dispatch({
 			changes: {

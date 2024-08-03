@@ -54,7 +54,7 @@ statement -memoize
 	/ mutation
 	/ rounding
 	/ exit_statement
-	/ e:expression &(EOS / EOF) { new ExpressionStatement(e) }
+	/ !EOB e:expression &(EOS / EOF) { new ExpressionStatement(e) }
 
 
 enlistment <Statement>

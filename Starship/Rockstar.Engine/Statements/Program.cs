@@ -11,8 +11,8 @@ public class Program {
 		return this;
 	}
 
-	public StringBuilder Print(StringBuilder sb, string prefix = "") {
-		foreach (var block in Blocks) block.Print(sb, prefix);
+	public StringBuilder Print(StringBuilder sb) {
+		foreach (var block in Blocks) block.PrintTopLevel(sb);
 		return sb;
 	}
 

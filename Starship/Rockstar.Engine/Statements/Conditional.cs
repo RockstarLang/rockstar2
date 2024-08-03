@@ -11,11 +11,11 @@ public class Conditional(Expression condition, Block consequent, Block? alternat
 
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine("if:");
-		condition.Print(sb, prefix + INDENT);
+		condition.Print(sb, prefix);
 		sb.Append(prefix).AppendLine("then:");
-		consequent.Print(sb, prefix + INDENT);
+		consequent.Print(sb, prefix);
 		if (alternate == default) return sb;
 		sb.Append(prefix).AppendLine("else:");
-		return alternate.Print(sb, prefix + INDENT);
+		return alternate.Print(sb, prefix);
 	}
 }

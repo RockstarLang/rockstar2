@@ -1,0 +1,37 @@
+@use 'sass:color';
+
+html.page {
+	body {
+		max-width: 960px;
+		margin: 0px auto;
+	}
+
+	header {
+		nav {
+			background: linear-gradient($button-color, color.scale($button-color, $lightness: -33%));
+			background-color: $button-color !important;
+			border-radius: 8px;
+			border: 1px outset color.scale($button-color, $saturation: -33%);
+			display: flex;
+			justify-content: center;
+			a {
+				font-weight: 500;
+				font-size: 1.1em;
+				color:  $body-text-color;
+				text-decoration: none;
+				padding: 8px 16px;
+				border-right: 1px outset color.scale($button-color, $saturation: -33%);
+				border-left: 1px outset color.scale($button-color, $saturation: -33%);
+				//&:first-child { border-left: none; }
+				//&:last-child { border-right: none; }
+				&:hover { background-color: color.scale($button-color, $lightness: -33%) }
+			}
+		}
+	}
+	main {
+		outline: 1px solid #f0f;
+	}
+	footer {
+		outline: 1px solid #f0f;
+	}
+}

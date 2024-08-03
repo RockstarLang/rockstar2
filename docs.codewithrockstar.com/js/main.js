@@ -7,6 +7,7 @@ import {
 } from './codemirror/editor.js';
 
 const ROCK_BUTTON_HTML = "Rock <i class='fa-solid fa-play'></i>";
+
 const STOP_BUTTON_HTML = "Stop <i class='fa-solid  fa-sync fa-spin'></i>"
 
 var rockCount = 0;
@@ -19,6 +20,8 @@ function handleMessageFromWorker(message) {
 			output.innerHTML += `<span class="error">error: ${message.data.error}</span>`;
 		} else if (message.data.type == "result") {
 			output.innerHTML += `<span class="result">&raquo; ${message.data.result}</span>`;
+		} else if (message.data.type == "parse") {
+			return output.innerText = message.data.result;
 		} else {
 			console.log(message);
 		}
@@ -35,7 +38,11 @@ worker.addEventListener("message", handleMessageFromWorker);
 
 function executeProgram(program, editorId) {
 	rockCount++;
-	worker.postMessage({ program: program, editorId: editorId });
+	worker.postMessage({ command: "run", program: program, editorId: editorId });
+}
+
+function parseProgram(program, editorId) {
+	worker.postMessage({ command: "parse", program: program, editorId: editorId });
 }
 
 function stopTheRock() {
@@ -130,6 +137,7 @@ function createControls(editorId, editorView, originalSource) {
 	output.className = "output";
 	let rockButton = document.createElement("button");
 	rockButton.className = "rock-button";
+	let parseButton = document.createElement("button");
 	let resetButton = document.createElement("button");
 	let buttonContainer = document.createElement("div");
 	buttonContainer.className = "buttons";
@@ -138,6 +146,15 @@ function createControls(editorId, editorView, originalSource) {
 	output.id = `rockstar-output-${editorId}`;
 	rockButton.innerHTML = ROCK_BUTTON_HTML;
 	resetButton.innerHTML = "Reset <i class='fa-solid fa-rotate-right'></i>";
+	parseButton.innerHTML = "Parse <i class='fa-solid fa-list-tree'></i>";
+	parseButton.onclick = () => {
+		let source = editorView.state.doc.toString();
+		try {
+			parseProgram(source, editorId);
+		} catch (e) {
+			console.log(e);
+		}
+	}
 	rockButton.onclick = () => {
 		console.log(rockCount);
 		if (rockCount > 0) {
@@ -164,6 +181,7 @@ function createControls(editorId, editorView, originalSource) {
 		});
 	}
 	buttonContainer.appendChild(rockButton);
+	buttonContainer.appendChild(parseButton);
 	buttonContainer.appendChild(resetButton);
 	div.appendChild(buttonContainer);
 	div.appendChild(output);

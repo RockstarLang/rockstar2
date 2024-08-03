@@ -31,6 +31,6 @@ public class Function(IEnumerable<Variable> args, Block body)
 		sb.Append(prefix).Append($"function(");
 		sb.Append(String.Join(", ", args.Select(a => a.Name)));
 		sb.AppendLine("):");
-		return body.Print(sb, prefix + NESTER);
+		return body.Print(sb, prefix);
 	}
 }

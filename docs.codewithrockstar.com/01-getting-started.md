@@ -1,7 +1,7 @@
 ---
 title: Getting Started
 layout: home
-examples: examples/01-getting-started/
+examples: /examples/01-getting-started/
 nav_order: "1001"
 ---
 ### "Hello, World"

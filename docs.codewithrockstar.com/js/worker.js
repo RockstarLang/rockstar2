@@ -19,10 +19,23 @@ async function RunRockstarProgram(source, editorId) {
 	}
 }
 
+async function ParseRockstarProgram(source, editorId) {
+	try {
+		var result = await exports.Rockstar.Wasm.RockstarRunner.Parse(source, report(editorId));
+		self.postMessage({ type: "parse", result: result, editorId: editorId });
+	} catch (error) {
+		self.postMessage({ type: "error", error: error, editorId: editorId })
+	}
+}
+
+
 self.addEventListener('message', async function (message) {
 	var data = message.data;
 	if (data.program) {
-		await RunRockstarProgram(data.program, data.editorId);
+		switch(data.command) {
+			case "run": return await RunRockstarProgram(data.program, data.editorId);
+			case "parse": return await ParseRockstarProgram(data.program, data.editorId);
+		}
 	} else {
 		self.postMessage({ type: "error", error: "empty program!", editorId: data.editorId })
 	}

@@ -1,0 +1,30 @@
+---
+layout: table_wrappers
+---
+
+<!DOCTYPE html>
+
+<html lang="{{ site.lang | default: 'en-US' }}" class="{{ page.html_class | default: " page" }}">
+{% include head.html %}
+
+<body>
+	<header>
+		<h1><a href="/">Rockstar</a></h1>
+		<h2>Tommy used to work on the docs</h2>
+		<nav>
+			<a href="#">Home</a>
+			<a href="#">Docs</a>
+			<a href="#">Examples</a>
+			<a href="#">News</a>
+			<a href="#">Merch</a>
+			<a href="#">Community</a>
+		</nav>
+	</header>
+	<main>
+		{{ content }}
+	</main>
+	<footer>
+		footer
+	</footer>
+</body>
+</html>

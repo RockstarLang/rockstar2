@@ -7,9 +7,9 @@ namespace Rockstar.Wasm;
 
 public class WasmIO(Action<string> output) : IRockstarIO {
 	public string? Read() => null;
-
 	public void Write(string s) => output(s);
 }
+
 public partial class RockstarRunner {
 	private static readonly Parser parser = new();
 
@@ -23,5 +23,10 @@ public partial class RockstarRunner {
 			var result = env.Execute(program);
 			return result?.Value?.ToString() ?? "";
 		});
+	}
+
+	[JSExport]
+	public static Task<string> Parse(string source) {
+		return Task.Run(() => parser.Parse(source).ToString());
 	}
 }

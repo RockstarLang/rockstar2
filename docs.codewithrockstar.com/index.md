@@ -1,9 +1,8 @@
 ---
 title: Home
-layout: home
-nav_order: "1000"
+layout: page
 ---
-
+chungus
 # Rockstar 2.0 Beta
 
 Everything here is work in progress.

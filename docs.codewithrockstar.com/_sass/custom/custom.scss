@@ -1,3 +1,5 @@
+@import 'page.scss';
+
 $breakpoint-fullwidth: 768px;
 
 div.rockstar-controls {
@@ -15,27 +17,27 @@ div.rockstar-controls {
 	.buttons {
 		align-self: flex-start;
 		display: flex;
-		gap: .5rem;
+		flex-direction: column;
 		justify-content: space-between;
-		padding-bottom: .5rem;
 		width: 100%;
 
 		@media (min-width: $breakpoint-fullwidth) {
 			flex-direction: column;
 			width: auto;
 			padding-right: 8px;
+			height: 120px;
 		}
 
 		button {
 			cursor: pointer;
 			width: 6em;
 			display: block;
-			margin-bottom: 8px;
 			padding: 8px 8px 6px 8px;
 			border-radius: 4px;
-			border: 1px solid $link-color;
+			border: 1px outset $button-color;
 			background-color: $button-color !important;
 			text-align: left;
+
 			i {
 				float: right;
 			}
@@ -51,12 +53,16 @@ div.rockstar-controls {
 		line-height: 1.1em;
 		box-sizing: border-box;
 		margin: 0;
-		flex: 10 150px;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		align-self: stretch;
 		border: 1px solid $link-color;
-		height: 120px;
+		height: 100%;
 		border-radius: 4px;
 		resize: vertical;
 		overflow-y: auto;
+		min-height: 120px;
 
 		@media (max-width: $breakpoint-fullwidth) {
 			width: 100%;
@@ -90,3 +96,6 @@ code {
 	border: 0;
 	font-size: 1.1em !important;
 }
+
+
+

@@ -53,6 +53,7 @@ statement -memoize
 	/ decrement
 	/ mutation
 	/ rounding
+	/ exit_statement
 	/ e:expression &EOS { new ExpressionStatement(e) }
 
 enlistment <Statement>
@@ -122,6 +123,9 @@ continue_stmt <Statement>
 		{ new Continue(w) }
 
 end_of_wildcard = (end / 'o'+ 'h' )
+
+exit_statement <Statement>
+	= exit { new Exit() }
 
 wildcard <string>
 	= ignored:([^,.?!;\r\n]* ) { String.Join("", ignored.ToArray()) }
@@ -533,6 +537,7 @@ down = 'down' !letter
 else = 'else' !letter / 'otherwise' !letter
 empty = 'empty' !letter / 'silent' !letter / 'silence' !letter
 end = 'end' !letter / 'yeah' !letter / 'baby' !letter / 'oh' !letter
+exit = 'exit' !letter
 exactly = 'exactly' !letter / 'totally' !letter / 'really' !letter
 false = "false" !letter / "lies" !letter / "no" !letter / "wrong"!letter
 his = 'his' !letter / 'her' !letter

@@ -82,8 +82,8 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
-        with:
-          working-directory: ./codewithrockstar.com
+        # with:
+        #   working-directory: ./codewithrockstar.com
       - name: fetch rockstar-wasm-binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary
@@ -92,7 +92,7 @@ jobs:
           path: rockstar-wasm-binary
           key: rockstar-wasm-binary
       - name: Copy WASM binaries into site source
-        run: cp -r rockstar-wasm-binary/ docs.codewithrockstar.com/wasm/
+        run: cp -r rockstar-wasm-binary/ codewithrockstar.com/wasm/
       - name: Build codewithrockstar.com site
         # Outputs to the './_site' directory by default
         working-directory: ./codewithrockstar.com

@@ -19,6 +19,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - name: Install .NET WASM workloads
+        working-directory: ./Starship
+        run: dotnet workload install wasm-tools
       - name: Get Next Version
         id: semver
         uses: ietf-tools/semver-action@v1
@@ -27,13 +34,6 @@ jobs:
           branch: main
       - name: "Display build version"
         run: echo "tag ${{ steps.semver.outputs.next }}"
-      - name: Set up .NET 8 SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-      - name: Install .NET WASM workloads
-        working-directory: ./Starship
-        run: dotnet workload install wasm-tools
       - name: Patch VERSION constant inside Starship/Rockstar/Program.cs
         run: sed -i 's/__VERSION__/${{ steps.semver.outputs.next }}/g' Starship/Rockstar/Program.cs
       - name: Build Rockstar

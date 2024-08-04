@@ -35,7 +35,7 @@ jobs:
       - name: "Display build version"
         run: echo "tag ${{ steps.semver.outputs.next }}"
       - name: Patch VERSION constant inside Starship/Rockstar/Program.cs
-        run: sed -i 's/__VERSION__/${{ steps.semver.outputs.next }}/g' Starship/Rockstar/Program.cs
+        run: sed -i _backup 's/__VERSION__/${{ steps.semver.outputs.next }}/g' Starship/Rockstar/Program.cs
       - name: Build Rockstar
         run: dotnet build Starship -c Release
       - name: Test Rockstar

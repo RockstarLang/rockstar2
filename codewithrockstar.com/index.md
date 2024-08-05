@@ -2,7 +2,22 @@
 title: Home
 layout: page
 ---
-chungus
+
+<div id="homepage-code-sample">
+	<div>
+	<pre>
+	<code class="language-rockstar">The sky is crying
+My heart is nothing
+Until it's as high as the sky
+If it ain't nothing whisper it
+Build it up, baby
+Scream "Goodnight!"</code>
+	</pre>
+
+	</div>
+</div>
+
+
 # Rockstar 2.0 Beta
 
 Everything here is work in progress.

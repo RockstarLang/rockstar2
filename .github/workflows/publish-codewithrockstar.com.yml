@@ -56,6 +56,7 @@ jobs:
         run: |
           ls -lR
           cd codewithrockstar.com
+          ln -s ../Starship/Rockstar.Test/programs/examples/ examples
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production

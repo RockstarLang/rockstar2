@@ -19,9 +19,7 @@ Browser around, try some stuff, let me know what you find.
 
 Here's Hello World to get you started:
 
-```rockstar
 print "hello world"
-```
 
 and here's a slightly more idiomatic version:
 

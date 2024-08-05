@@ -1,17 +1,20 @@
 class RockstarInclude < Liquid::Tag
-	def initialize(_tag_name, markup, _parse_context)
-	  super
-	  @markup = markup.strip
-	end
+	# def initialize(_tag_name, markup, _parse_context)
+	#   super
+	#   @markup = markup.strip
+	# end
 
 	def render(context)
-	  expanded_path = Liquid::Template.parse(@markup).render(context)
-	  root_path = File.expand_path(context.registers[:site].config['source'])
-	  final_path = File.join(root_path, expanded_path)
+		page = context.registers[:page]
+		expanded_path = Liquid::Template.parse(@markup).render(context)
+		page_filename = File.basename(page['path'], '.*')
+		root_path = File.expand_path(context.registers[:site].config['source'])
+		file_path = File.join(root_path, 'examples', page_filename, expanded_path)
+ # bare_filename = File.basename(expanded_path)
+#<a href="#{expanded_path}">#{bare_filename}</a>:
 	  <<-ROCKSTAR
-#{expanded_path}
 ```rockstar
-#{read_file(final_path, context)}
+#{read_file(file_path, context)}
 ```
 ROCKSTAR
 	end

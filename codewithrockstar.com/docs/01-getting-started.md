@@ -1,46 +1,48 @@
 ---
 title: Getting Started
 layout: home
-examples: /examples/01-getting-started/
 nav_order: "1001"
+summary: "The basics: scream, shout, whisper, comments, and how to put guitar chords in your Rockstar programs."
 ---
 ### "Hello, World"
 
 "Hello World" in Rockstar looks like this:
 
-{% rockstar_include {{ page.examples }}hello-world.rock %}
+{% rockstar_include hello-world.rock %}
 
 Printing things isn't very rock‘n’roll, though. Rockers don't print, they `scream`, `shout`, or maybe just `say` things, so these are all valid aliases for `print`:
 
-{% rockstar_include {{ page.examples }}hello-world-aliases.rock %}
+{% rockstar_include hello-world-aliases.rock %}
 
 `print`  adds a newline to the end of the output. If you don't want this, use `write` or the alias `whisper`:
 
-{% rockstar_include {{ page.examples }}write-whisper.rock %}
+{% rockstar_include write-whisper.rock %}
 
 Almost everything in Rockstar is case-insensitive, and most whitespace is ignored:
 
-{% rockstar_include {{ page.examples }}hello-world-casing-and-whitespace.rock %}
+{% rockstar_include hello-world-casing-and-whitespace.rock %}
 
 Rockstar statements end with a newline, or with any of the punctuation characters `.?!;`
 
-{% rockstar_include {{ page.examples }}punctuated-statements.rock %}
+{% rockstar_include punctuated-statements.rock %}
 
 ## Comments
 
-The use of comments in Rockstar programs is strongly discouraged. This is rock’n’roll; it’s up to the audience to find their own meaning. If you absolutely insist on commenting your Rockstar programs, comments should be contained in parentheses `()`. Yes, this means you can’t use brackets in arithmetic expressions and may need to decompose complex expressions into multiple evaluations and assignments.
+The use of comments in Rockstar programs is strongly discouraged: this is rock’n’roll; it’s up to the audience to find their own meaning. If you absolutely insist on commenting your Rockstar programs, comments should be contained in parentheses `()`. Yes, this means you can’t use brackets in arithmetic expressions and may need to decompose complex expressions into multiple evaluations and assignments.
+
+{% rockstar_include comments.rock %}
 ### Line comments
 
 You can also use the `#` character to indicate a comment. Line comments last until the end of the line.
 
-> If any of you lot is actually unhinged enough to want to install Rockstar scripts on your machine and run them using the Unix hashbang `#!/bin/rockstar` syntax, I'm not going to stop you.
+> The only reason I did this is that one of you lot might actually be unhinged enough that you want to put a `#!/bin/rockstar` at the start of their Rockstar programs so you can run them straight from your terminal... and as much as that's a *terrible* idea, I'm not going to stop you.
 
 ### ChordPro comments
 
-Since Rockstar programs are song lyrics, it stands to reason you might want to include the chords for your programs, so aspiring rockstar developers can play along at home, so Rockstar will also allow comments to be surrounded by `{ }` and `[ ]`
+Since Rockstar programs are song lyrics, it stands to reason you might want to include the chords for your programs, so aspiring rockstar developers can play along at home, so Rockstar also allows comments to be surrounded by `{ }` and `[ ]`
 
-{% rockstar_include {{ page.examples }}comments.rock %}
+{% rockstar_include chordpro-comments.rock %}
 
-Running this program through the ChordPro system produces this:
+Running this program through the [ChordPro system](https://www.chordpro.org/) produces this:
 
-![ChordPro example](images/chordpro-example.png)
+![ChordPro example](../images/chordpro-example.png)

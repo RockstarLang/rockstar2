@@ -42,10 +42,6 @@ Standard(tag)         Local(tag)            Special(tag)
 ```
 Run some Rockstar:
 
-```rockstar
-{% include_relative examples/99-appendix/acid-test.rock %}
-```
-
 Well... do you wanna get rocked?
 
 * 01 Getting Started

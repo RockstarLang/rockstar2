@@ -5,6 +5,4 @@ layout: home
 # nav_exclude: true
 ---
 
-```rockstar
-{% include_relative examples/99-appendix/acid-test.rock %}
-```
+{% rockstar_include acid-test.rock %}

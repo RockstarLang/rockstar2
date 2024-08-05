@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="programs\examples\01-getting-started\comments.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\01-getting-started\multiline-comments.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -303,7 +306,7 @@
     <None Update="programs\examples\99-appendix\comparison.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\01-getting-started\comments.rock">
+    <None Update="programs\examples\01-getting-started\chordpro-comments.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\01-getting-started\write-whisper.rock">

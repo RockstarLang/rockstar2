@@ -119,7 +119,7 @@ function replaceElementWithEditor({ editorElement, languageSupport, theme, edito
 	}
 
 	const fixedHeightEditor = EditorView.theme({
-		".cm-content, .cm-gutter": { minHeight: "120px" }
+		".cm-content, .cm-gutter": { minHeight: "60px" }
 		//		"&": {height: "300px"},
 		//		".cm-scroller": {overflow: "auto"}
 	});

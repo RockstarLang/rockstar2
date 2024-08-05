@@ -1,7 +1,7 @@
 ---
 title: Appendix
 layout: home
-examples: examples/99-appendix/
+examples: /examples/99-appendix/
 nav_order: "1099"
 ---
 There are many places in Rockstar where you can provide a list in place of an expression... and if you can have a list of expressions, and an expression can be a list, things get all wibbly-wobbly and you can go all cross-eyed.
@@ -14,23 +14,19 @@ Variable lists are used to declare the arguments to a function. **They can only 
 * An ampersand `&`
 * The keyword `and`
 * The Oxford comma `, and`
-* A *nacton* 
+* A *nacton*
 
 > **Nacton** *(n.)* The 'n' with which cheap advertising copywriters replace the word 'and' (as in 'fish 'n' chips', 'mix 'n' match', 'assault 'n' battery'), in the mistaken belief that this is in some way chummy or endearing.
-> 
+>
 > 	- "The Meaning of Liff", Douglas Adams & John Lloyd
 
 Rockstar supports both the **UK nacton** `'n'` (as in *fish 'n' chips*) and the **US nacton** `n'` (as in *Guns n' Roses*.)
 
-```rockstar
-{% include_relative {{ page.examples }}variable-lists.rock %}
-```
+{% rockstar_include variable-lists.rock %}
 
 Then there's an **primary list**, used to provide arguments to a function. The elements in a primary list must be **primaries**, and you **can't separate a primary list with an Oxford comma** - if the parser sees `, and`, that means the primary list is finished and move on to the next thing.
 
-```rockstar
-{% include_relative {{ page.examples }}primary-lists.rock %}
-```
+{% rockstar_include primary-lists.rock %}
 
 
 Rockstar grammar supports three different kinds of lists:
@@ -73,9 +69,7 @@ Next, there are **expression lists**. An expression list supports the same separ
 
 Expression lists are supported as arguments to compound expressions and when rocking arrays:
 
-```rockstar
-{% include_relative {{ page.examples }}expression-lists.rock %}
-```
+{% rockstar_include expression-lists.rock %}
 
 Finally, there are **variable lists**, used to specify the arguments when defining a function.
 

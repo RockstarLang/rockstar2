@@ -1,7 +1,7 @@
 ---
 title: Conversions and Mutations
 layout: home
-examples: examples/09-conversions/
+examples: /examples/10-conversions/
 nav_order: "1009"
 ---
 ### Conversions and Mutations
@@ -17,31 +17,23 @@ Many of Rockstar's built-in operations can either act in place, modifying the va
 
 To split a string in Rockstar, use the `cut` mutation, or aliases `split` and `shatter`:
 
-```rockstar
-{% include_relative {{ page.examples }}split-strings.rock %}
-```
+{% rockstar_include split-strings.rock %}
 
 ### Joining Arrays
 
 To join an array in Rockstar, use the `join` mutation, or the alias `unite`
 
-```rockstar
-{% include_relative {{ page.examples }}join-arrays.rock %}
-```
+{% rockstar_include join-arrays.rock %}
 
 Type Conversions
 
 To convert any value to a string, add it to the empty string.
 
-```rockstar
-{% include_relative {{ page.examples }}join-arrays.rock %}
-```
+{% rockstar_include join-arrays.rock %}
 
 The built-in `cast` function (aka `burn`) will parse strings into numbers, or convert a number into a Unicode character corresponding to the number's code point.
 
-```rockstar
-{% include_relative {{ page.examples }}cast.rock %}
-```
+{% rockstar_include cast.rock %}
 
 
 #### Arithmetic Rounding

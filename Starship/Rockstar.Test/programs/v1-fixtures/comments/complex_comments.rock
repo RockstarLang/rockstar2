@@ -17,4 +17,4 @@ supported
 ) say "pass 4"
 
 (prints: pass 5)
-(((((((( multiple opening brackets are just part of the comment) say "pass 5"
+(((((((( nested comments are supported now 1 )))))))) say "pass 5"

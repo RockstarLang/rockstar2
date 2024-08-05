@@ -51,6 +51,7 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 		var source = (File.Exists(AbsolutePath) ? File.ReadAllText(AbsolutePath, Encoding.UTF8) : AbsolutePath);
 		var limit = source.Length;
 		var output = new List<string>();
+		var depth = 0;
 		for (var i = 0; i < limit; i++) {
 			var token = source.SafeSubstring(i, 9);
 			switch (token) {
@@ -58,8 +59,14 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 				case "(prints: ":
 				case "(writes: ":
 					i += 9;
+					depth = 1;
 					var j = i;
-					while (j < limit && source[j] != ')') j++;
+					while (j < limit) {
+						if (source[j] == '(') depth += 1;
+						if (source[j] == ')') depth -= 1;
+						if (depth == 0) break;
+						j++;
+					}
 					var expected = Regex.Unescape(source.Substring(i, j - i));
 					if (token != "(writes: " && !expected.EndsWith(Environment.NewLine)) {
 						expected += Environment.NewLine;

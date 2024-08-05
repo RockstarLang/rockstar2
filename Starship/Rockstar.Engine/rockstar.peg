@@ -511,11 +511,20 @@ keyword
 
 _ = "" (whitespace / comment)+
 whitespace = [ \t]
-comment	=
-	'#' [^\n]* '\n'
-	/ '(' [^)]* ')'
-	/ '{' [^\}]* '}'
-	/ '[' [^\]]* ']'
+
+comment
+	= line_comment
+	/ chordpro_comment
+	/ block_comment
+
+line_comment = '#' [^\n]* '\n'
+chordpro_comment = 	'{' [^\}]* '}' / '[' [^\]]* ']'
+start_comment = '('
+end_comment = ')'
+not_comment = (!start_comment !end_comment .)
+block_comment	= start_comment (comment / not_comment)* end_comment
+
+	
 
 
 above = 'above' !letter / over

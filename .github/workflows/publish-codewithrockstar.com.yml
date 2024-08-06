@@ -1,4 +1,4 @@
-name: Deploy Jekyll site to Pages
+name: build-and-deploy-codewithrockstar.com
 on:
   # Run after the engine is rebuilt
   workflow_run:

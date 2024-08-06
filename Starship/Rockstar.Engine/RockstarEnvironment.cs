@@ -268,8 +268,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Loop(Loop loop) {
 		var result = Result.Unknown;
-		UpdatePronounSubjectBasedOnSubjectOfCondition(loop.Condition);
 		while (Eval(loop.Condition).Truthy == loop.CompareTo) {
+			UpdatePronounSubjectBasedOnSubjectOfCondition(loop.Condition);
 			result = Execute(loop.Body);
 			switch (result.WhatToDo) {
 				case WhatToDo.Skip: continue;

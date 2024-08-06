@@ -20,9 +20,9 @@ public class CommentTests : ParserTestBase {
 	[InlineData("""
 	            The sky is like fire
 	            My heart is nothing
-	            The night is like schizoidism
+	            the fire is like schizoidism
 	            Until my heart is as high as the sky
-	            Whisper it. It's with the night, baby.
+	            Whisper it. It's with the fire, baby.
 	            """)]
 	public void ParserParsesBlocks(string source) {
 		var program = Parse(source);

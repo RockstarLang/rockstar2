@@ -12,6 +12,7 @@ public abstract class Loop(Expression condition, Block body, bool compareTo)
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine($"{LoopType}:");
 		condition.Print(sb, prefix + INDENT);
+		sb.Append(prefix).Append(INDENT).AppendLine("loop:");
 		return body.Print(sb, prefix + INDENT);
 	}
 }

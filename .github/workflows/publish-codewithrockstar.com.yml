@@ -55,8 +55,7 @@ jobs:
         # working-directory: ./codewithrockstar.com <!-- THIS DOESN'T WORK WITH THE CUSTOM PLUGIN!
         run: |
           cd codewithrockstar.com
-          cd examples
-          ls -lR
+          ls -l /home/runner/work/rockstar2/rockstar2/codewithrockstar.com/examples/01-getting-started/hello-world.rock
           cd ..
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:

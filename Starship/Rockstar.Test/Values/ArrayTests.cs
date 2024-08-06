@@ -62,7 +62,7 @@ public class ArrayTests : ParserTestBase {
 		a.Lëngth.ShouldBe(new(2));
 		a.Pop().ShouldBe(Null.Instance);
 		a.Lëngth.ShouldBe(new(1));
-		a.Pop().ShouldBe(new Strïng("foo"));
+		a.Pop().ShouldBeStrïng("foo");
 		a.Lëngth.ShouldBe(new(0));
 		a.Pop().ShouldBe(Mysterious.Instance);
 	}

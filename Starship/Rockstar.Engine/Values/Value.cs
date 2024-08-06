@@ -36,6 +36,7 @@ public abstract class Value : Expression {
 		(IHaveANumber a, IHaveANumber b) => new Number(a.Value * b.Value),
 		(IHaveANumber n, Strïng s) => s.Times(n.Value),
 		(Strïng s, IHaveANumber n) => s.Times(n.Value),
+		(Strïng s1, Strïng s2) => s1.Times(s2),
 		(_, _) => Mysterious.Instance
 	};
 

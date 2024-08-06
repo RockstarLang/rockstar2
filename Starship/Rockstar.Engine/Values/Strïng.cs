@@ -39,6 +39,17 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public static readonly Strïng Empty = new(String.Empty);
 	public static readonly Strïng Null = new("null");
 
+	public Value Times(Strïng n) {
+		var sb = new StringBuilder();
+		foreach (var c2 in n.Value.ToCharArray()) {
+			if (sb.Length > 0) sb.AppendLine();
+			foreach (var c1 in this.Value.ToCharArray()) {
+				sb.Append(c1).Append(c2);
+			}
+		}
+		return new Strïng(sb.ToString());
+	}
+
 	public Value Times(decimal n) {
 		if (n == 0) return Empty;
 		var token = Value;

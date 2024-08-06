@@ -48,17 +48,24 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 
 	private string ExtractExpectedOutput() {
 		if (File.Exists(AbsolutePath + ".out")) return File.ReadAllText(AbsolutePath + ".out", Encoding.UTF8).ReplaceLineEndings();
-		var source = (File.Exists(AbsolutePath) ? File.ReadAllText(AbsolutePath, Encoding.UTF8) : AbsolutePath);
+		var source = (File.Exists(AbsolutePath) ? File.ReadAllText(AbsolutePath, Encoding.UTF8) : AbsolutePath).ReplaceLineEndings();
 		var limit = source.Length;
 		var output = new List<string>();
 		var depth = 0;
 		for (var i = 0; i < limit; i++) {
 			var token = source.SafeSubstring(i, 9);
 			switch (token) {
+				case "(expect:\r":
+				case "(prints:\r":
+				case "(writes:\r":
+				case "(expect:\n":
+				case "(prints:\n":
+				case "(writes:\n":
 				case "(expect: ":
 				case "(prints: ":
 				case "(writes: ":
 					i += 9;
+					if (source[i] == '\n') i++;
 					depth = 1;
 					var j = i;
 					while (j < limit) {
@@ -82,7 +89,7 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 
 	public bool ExtractedExpectedError(string label, out string? error) {
 		error = null;
-		var source = (File.Exists(AbsolutePath) ? File.ReadAllText(AbsolutePath, Encoding.UTF8) : AbsolutePath);
+		var source = File.Exists(AbsolutePath) ? File.ReadAllText(AbsolutePath, Encoding.UTF8) : AbsolutePath;
 		var limit = source.Length;
 		var token = $"({label}: ";
 		for (var i = 0; i < limit; i++) {

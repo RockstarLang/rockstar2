@@ -47,8 +47,16 @@ public class StrïngTests {
 	[InlineData("abcdefghij", -1.1, "jihgfedcbaj")]
 	[InlineData("r", 0.999999999, "r")]
 	[InlineData("hello world", 0.0000000001, "h")]
-	public void StringMultiplicationWorks(string input, decimal factor, string expected)
-		=> new Strïng(input).Times(factor).ShouldBe(new Strïng(expected));
+	public void StringMultiplicationByNumberWorks(string input, decimal factor, string expected)
+		=> new Strïng(input).Times(factor).ShouldBeStrïng(expected);
+
+	[Theory]
+	[InlineData("", "abc", "")]
+	[InlineData("abc", " ", "a b c ")]
+	[InlineData("abc", "def", "adbdcd\naebece\nafbfcf")]
+	public void StringMultiplicationByStringWorks(string input, string factor, string expected)
+		=> new Strïng(input).Times(new Strïng(factor)).ShouldBeStrïng(expected.ReplaceLineEndings());
+
 
 	[Theory]
 	[InlineData("a", "a", "")]
@@ -56,7 +64,7 @@ public class StrïngTests {
 	[InlineData("a", "b", "a")]
 	[InlineData("hello world", "world", "hello ")]
 	public void StringSubtractionWorks(string minuend, string subtrahend, string difference)
-		=> new Strïng(minuend).Minus(new Strïng(subtrahend)).ShouldBe(new Strïng(difference));
+		=> new Strïng(minuend).Minus(new Strïng(subtrahend)).ShouldBeStrïng(difference);
 
 	[Theory]
 	[InlineData("a", "a", 1.0)]
@@ -75,7 +83,7 @@ public class StrïngTests {
 	[InlineData("abcdef", 2.0, "abc")]
 	[InlineData("abcde", -1.0, "edcba")]
 	public void StringDivisionByNumberWorks(string numerator, decimal denominator, string quotient)
-		=> new Strïng(numerator).DividedBy(denominator).ShouldBe(new Strïng(quotient));
+		=> new Strïng(numerator).DividedBy(denominator).ShouldBeStrïng(quotient);
 
 	[Fact]
 	public void PopStringWorks() {

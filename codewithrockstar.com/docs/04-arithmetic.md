@@ -17,7 +17,6 @@ Rockstar supports the standard infix arithmetic operators `+`, `-`, `*`, `/`, wi
 | Multiplication | `*`      | `times`, `of`      |
 | Division       | `/`      | `over`, `between`  |
 
-
 {% rockstar_include lyrical-expressions.rock %}
 
 Operator precedence obeys the convention of multiplication, division, addition, subtraction.

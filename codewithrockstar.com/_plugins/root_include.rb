@@ -10,6 +10,8 @@ class RockstarInclude < Liquid::Tag
 		page_filename = File.basename(page['path'], '.*')
 		root_path = File.expand_path(context.registers[:site].config['source'])
 		file_path = File.join(root_path, 'examples', page_filename, expanded_path)
+		puts file_path
+		p file_path
  # bare_filename = File.basename(expanded_path)
 #<a href="#{expanded_path}">#{bare_filename}</a>:
 	  <<-ROCKSTAR

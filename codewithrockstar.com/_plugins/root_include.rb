@@ -6,7 +6,7 @@ class RockstarInclude < Liquid::Tag
 
 	def render(context)
 		page = context.registers[:page]
-		expanded_path = Liquid::Template.parse(@markup).render(context)
+		expanded_path = Liquid::Template.parse(@markup).render(context).strip
 		page_filename = File.basename(page['path'], '.*')
 		root_path = File.expand_path(context.registers[:site].config['source'])
 		file_path = File.join(root_path, 'examples', page_filename, expanded_path)

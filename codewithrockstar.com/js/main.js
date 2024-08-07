@@ -19,7 +19,7 @@ function handleMessageFromWorker(message) {
 		if (message.data.type == "error") {
 			output.innerHTML += `<span class="error">error: ${message.data.error}</span>`;
 		} else if (message.data.type == "result") {
-			output.innerHTML += `<span class="result">&raquo; ${message.data.result}</span>`;
+			if (output.showResult) output.innerHTML += `<span class="result">&raquo; ${message.data.result}</span>`;
 		} else if (message.data.type == "parse") {
 			return output.innerText = message.data.result;
 		} else {
@@ -130,11 +130,12 @@ function replaceElementWithEditor({ editorElement, content, languageSupport, the
 	return view;
 }
 
-function createControls(editorId, editorView, originalSource) {
+function createControls(editorId, editorView, originalSource, controls) {
 	let div = document.createElement("div");
 	div.className = "rockstar-controls";
 	let output = document.createElement("div");
 	output.className = "output";
+	output.showResult = controls.result;
 	let rockButton = document.createElement("button");
 	rockButton.className = "rock-button";
 	let parseButton = document.createElement("button");
@@ -166,7 +167,7 @@ function createControls(editorId, editorView, originalSource) {
 			output.innerText = "";
 			let source = editorView.state.doc.toString();
 			try {
-				executeProgram(source, editorId);
+				executeProgram(source, editorId, controls);
 			} catch (e) {
 				console.log(e);
 			}
@@ -183,17 +184,31 @@ function createControls(editorId, editorView, originalSource) {
 			}
 		});
 	}
-	buttonContainer.appendChild(rockButton);
-	buttonContainer.appendChild(parseButton);
-	buttonContainer.appendChild(resetButton);
+	if (controls.play) buttonContainer.appendChild(rockButton);
+	if (controls.parse) buttonContainer.appendChild(parseButton);
+	if (controls.reset) buttonContainer.appendChild(resetButton);
 	div.appendChild(buttonContainer);
 	div.appendChild(output);
 	return div;
 }
 
+let options = [ "play", "parse", "reset", "input", "result" ];
+
+function configureControls(preElement) {
+	let list = (preElement.getAttribute("data-controls") ?? "").split(",");
+	let controls = {};
+	for(var option of options) controls[option] = true;
+	if (list.length == 0) return controls;
+	if (list.includes("all")) return controls;
+	for(var option of options) controls[option] = list.includes(option);
+	return controls;
+}
+
 var editorId = 1;
 document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 	let preElement = codeElement.parentElement;
+	let controls = configureControls(preElement);
+	console.log(controls);
 	editorId++;
 	var originalSource = codeElement.innerText;
 	var settings = {
@@ -205,8 +220,8 @@ document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 		editorId: editorId
 	};
 	var editorView = replaceElementWithEditor(settings);
-	var controls = createControls(editorId, editorView, originalSource);
-	preElement.parentNode.insertBefore(controls, preElement);
+	var controlPanel = createControls(editorId, editorView, originalSource, controls);
+	preElement.parentNode.insertBefore(controlPanel, preElement);
 });
 
 document.querySelectorAll(('code.language-kitchen-sink')).forEach((el) => {

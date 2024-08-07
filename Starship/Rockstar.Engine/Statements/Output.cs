@@ -9,7 +9,7 @@ public class Output(Expression expr, string suffix = "") : ExpressionStatement(e
 
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.Append(prefix).AppendLine("output: ");
-		return Expression.Print(sb, prefix + INDENT)
+		return Expression.Print(sb, prefix + INDENT);
 	}
 }
 

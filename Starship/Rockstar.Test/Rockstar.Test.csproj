@@ -735,6 +735,30 @@
     <None Update="programs\examples\gallery\The-Final-Stand.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\tutorial\ricky-was-a-young-boy.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\simple-variables.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\lyrical-arithmetic-2.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\lyrical-arithmetic-1.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\proper-variables.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\common-variables.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\basic-arithmetic.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\hello-world-aliases.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\tutorial\print-hello-world.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

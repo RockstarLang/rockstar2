@@ -87,7 +87,7 @@ By default, comparison use type coercion:
 	* This means that `10 < "2"`, because `10` is coerced to the string `10`, which is alphanumerically less than the string `2`
 * Otherwise, the numeric values of the operands are compared (`true` is `1`, `null` and `false` are 0)
 
-{% rockstar_include {{ page.examples}}string-comparison.rock %}
+{% rockstar_include string-comparison.rock %}
 
 
 

@@ -463,6 +463,7 @@ keywords_which_can_begin_an_expression
 	= plus / minus / times / divided_by
 	/ like / and / or / nor / not / non
 	/ null / true / false / empty / mysterious
+	// Putting the here would break EVERYTHING
 
 keyword
 	= keywords_which_can_begin_an_expression

@@ -735,6 +735,9 @@
     <None Update="programs\examples\gallery\The-Final-Stand.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\tutorial\print-hello-world.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\fixtures\conditionals\if-block-else-block.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

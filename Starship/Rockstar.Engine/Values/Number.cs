@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Rockstar.Engine.Values;
 
@@ -81,4 +82,36 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 				? Decimal.Parse(strïng.Value)
 				: BaseToDecimal(strïng.Value, numberBase.IntegerValue));
 
+}
+
+public class PoeticNumber : Number {
+
+	public string Digits { get; init; }
+
+	private static string Digitise(string words) {
+		var sb = new StringBuilder();
+		foreach (var word in words.Split(" ")) sb.Append(Regex.Replace(word, "'+", "").Length % 10);
+		return sb.ToString();
+	}
+
+	private static decimal ParsePoeticNumber(string s) => Decimal.Parse(Digitise(s));
+
+	private static decimal ParsePoeticNumber(string integralPart, string fractionPart)
+		=> Decimal.Parse(Digitise(integralPart) + "." + Digitise(fractionPart));
+
+	public PoeticNumber(string integralPart, string separator, string fractionPart) : base(ParsePoeticNumber(integralPart, fractionPart)) {
+		this.Digits = integralPart + separator + fractionPart;
+
+	}
+
+	public PoeticNumber(string digits) : base(ParsePoeticNumber(digits)) {
+		this.Digits = digits;
+
+	}
+
+	public PoeticNumber(decimal value) : base(value)
+		=> this.Digits = value.ToString(CultureInfo.InvariantCulture);
+
+	public override StringBuilder Print(StringBuilder sb, string prefix)
+		=> sb.Append(prefix).Append("poetic number: ").Append(Value).Append(" [").Append(Digits).AppendLine("]");
 }

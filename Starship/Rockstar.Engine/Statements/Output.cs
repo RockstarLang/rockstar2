@@ -8,12 +8,8 @@ public class Output(Expression expr, string suffix = "") : ExpressionStatement(e
 	public string Suffix { get; } = suffix;
 
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
-		sb.Append(prefix).Append("output: ");
-		return Expression switch {
-			Lookup lookup => sb.AppendLine(lookup.ToString()),
-			Value value => sb.AppendLine(value.ToString()),
-			_ => Expression.Print(sb.AppendLine(), prefix + INDENT)
-		};
+		sb.Append(prefix).AppendLine("output: ");
+		return Expression.Print(sb, prefix + INDENT)
 	}
 }
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
@@ -120,7 +121,10 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var value = Eval(debug.Expression);
 		Write("DEBUG: ");
 		if (debug.Expression is Lookup lookup) Write(lookup.Variable.Name + ": ");
-		Write(value.GetType().Name + ": " + value);
+		Write(value.GetType().Name.ToLowerInvariant() + " " + value switch {
+			Strïng s => "\"" + s.Value + "\"",
+			_ => value.ToStrïng().Value
+		});
 		Write(Environment.NewLine);
 		return new(value);
 	}

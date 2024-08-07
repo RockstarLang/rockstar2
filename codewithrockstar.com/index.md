@@ -3,23 +3,29 @@ title: Home
 layout: page
 ---
 
-<div id="homepage-code-sample">
-	<div>
-	<pre>
-	<code class="language-rockstar">The sky is crying
+<article id="hero">
+	<section>
+		<div id="homepage-message">
+		<p>
+			Rockstar is a computer programming language based on
+			1980s power ballads.</p>
+			<p>
+			No, really, that's actually what it is.</p>
+		</div>
+	<div id="homepage-example">
+		<pre>
+		<code class="language-rockstar">The sky is crying
 My heart is nothing
 Until it's as high as the sky
 If it ain't nothing whisper it
 Build it up, baby
 Scream "Goodnight!"</code>
-	</pre>
+		</pre>
+		</div>
+	</section>
+</article>
 
-	</div>
-	<div>
-	MORE STUFF HERE
-	</div>
-</div>
-
+<main>
 
 # Rockstar 2.0 Beta
 
@@ -34,44 +40,6 @@ The Rockstar engine has been completely rebuilt in .NET, and
 is running here as a web assembly (WASM) binary.
 
 Browser around, try some stuff, let me know what you find.
-
-Here's Hello World to get you started:
-
-print "hello world"
-
-and here's a slightly more idiomatic version:
-
-```rockstar
-Eternity takes the pain.
-The prize is silence
-Until the pain is nothing,
-Roll the pain into violence,
-Cast violence into your lies,
-Let the prize be with your lies.
-
-Give back the prize
-
-The night is calling me
-Rock the night like a colourcast tranquility
-The dawn is a spellbound moonbeam
-Rock the night with the dawn, the dawn,
-Your fire is a neverending aftereffect
-Rock the night with your fire
-
-The spirit is electric thunder
-Rock the spirit with your fire
-Rock the spirit like a thunderbolt fist
-Rock the spirit with the dawn
-Rock the spirit like a chamaeleon stormcloud
-
-Let salvation be eternity taking the night
-Let surrender be eternity taking the spirit
-
-Time is all up
-Cast it into the void
-Let salvation be with the void
-Let salvation be with surrender
-
-Whisper salvation
-```
-
+</main>
+<footer>
+</footer>

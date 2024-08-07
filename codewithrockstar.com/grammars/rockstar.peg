@@ -423,11 +423,11 @@ digits
 	= d:("" (('-' /'+')? [0-9]+ ("." [0-9]+)?)
 	/ (('-' /'+')? "." [0-9]+))
 
-poetic_number <Number>
-	= whole_part:poetic_digits _? ('...' / '…') _ fractional_part:poetic_digits
-		{ new Number (whole_part + "." + fractional_part) }
+poetic_number <PoeticNumber>
+	= whole_part:poetic_digits _? separator:('...' / '…') _ fractional_part:poetic_digits
+		{ new PoeticNumber (whole_part, separator, fractional_part) }
 	/ digits:poetic_digits
-		{ new Number(digits) }
+		{ new PoeticNumber(digits) }
 
 // So... in Rockstar v1, you could say "desire is a lovestruck ladykiller"
 // Which worked. But for v2, poetic numbers have to start with 'like' or 'so'
@@ -439,23 +439,21 @@ v1_digit_filter
 	= &letter !keywords_which_can_begin_an_expression
 
 v1_poetic_number <Number>
-	= _? &v1_digit_filter whole_part:poetic_digits _? ('.') _ fractional_part:poetic_digits
-		{ new Number (whole_part + "." + fractional_part) }
+	= _? &v1_digit_filter whole_part:poetic_digits _? separator:('.') _ fractional_part:poetic_digits
+		{ new PoeticNumber (whole_part, separator, fractional_part) }
 	/ _? &v1_digit_filter digits:poetic_digits
-		{ new Number(digits) }
-
+		{ new PoeticNumber(digits) }
 
 PDS = ("" _ / [0-9\',;:?!+_/] )
 
 poetic_digits <string>
 	= PDS* head:poetic_digit PDS+ tail:poetic_digits PDS*
-		{ head + tail }
+		{ head + " " + tail }
 	/ d:poetic_digit
 		{ d }
 
 poetic_digit <string>
 	= word:("" (letter / [\-'])+)
-		{ (Regex.Replace(word, "'+", "").Length % 10).ToString() }
 
 string <Strïng> = s:quoted_string+ { new Strïng(String.Join("\"", s)) }
 quoted_string

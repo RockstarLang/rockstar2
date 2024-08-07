@@ -102,7 +102,7 @@ function makeRockstarRunner(editorId) {
 	}
 }
 
-function replaceElementWithEditor({ editorElement, languageSupport, theme, editorId, parseTreeElement }) {
+function replaceElementWithEditor({ editorElement, content, languageSupport, theme, editorId, parseTreeElement }) {
 	let language = (languageSupport ? languageSupport() : null);
 	let rockstarKeymap = Prec.highest(
 		keymap.of([
@@ -124,7 +124,7 @@ function replaceElementWithEditor({ editorElement, languageSupport, theme, edito
 		//		".cm-scroller": {overflow: "auto"}
 	});
 	extensions.push(fixedHeightEditor);
-	let view = new EditorView({ doc: editorElement.innerText, extensions: extensions });
+	let view = new EditorView({ doc: content, extensions: extensions });
 	editorElement.parentNode.insertBefore(view.dom, editorElement);
 	editorElement.style.display = "none";
 	return view;
@@ -192,11 +192,13 @@ function createControls(editorId, editorView, originalSource) {
 }
 
 var editorId = 1;
-document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
+document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
+	let preElement = codeElement.parentElement;
 	editorId++;
-	var originalSource = el.innerText;
+	var originalSource = codeElement.innerText;
 	var settings = {
-		editorElement: el,
+		content: originalSource,
+		editorElement: preElement,
 		parseTreeTextarea: document.getElementById('parseTreeTextarea'),
 		language: null, // Rockstar
 		theme: coolGlow, // kitchenSink
@@ -204,7 +206,7 @@ document.querySelectorAll(('code.language-rockstar')).forEach((el) => {
 	};
 	var editorView = replaceElementWithEditor(settings);
 	var controls = createControls(editorId, editorView, originalSource);
-	el.parentNode.insertBefore(controls, el);
+	preElement.parentNode.insertBefore(controls, preElement);
 });
 
 document.querySelectorAll(('code.language-kitchen-sink')).forEach((el) => {

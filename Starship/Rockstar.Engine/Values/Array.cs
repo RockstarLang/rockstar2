@@ -100,6 +100,7 @@ public class Array : Value, IHaveANumber {
 		=> new(String.Join(joiner?.ToStrïng().Value ?? "", list.Select(value => value.ToStrïng())));
 
 	public Value Push(Value value) => list.Push(value);
+
 	public Value Pop() => list.Shift() ?? Mysterious.Instance;
 
 	public Value Set(IList<Value> indexes, Value value) {

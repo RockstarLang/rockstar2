@@ -216,6 +216,11 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Result Enlist(Enlist e) {
 		var variable = QualifyPronoun(e.Variable);
 		var value = LookupValue(variable.Key);
+		if (value is Strïng s) {
+			foreach (var expr in e.Expressions) s.Append(Eval(expr));
+			return new(s);
+		}
+
 		if (value is not Array array) {
 			array = value == Mysterious.Instance ? new Array() : new(value);
 			SetLocal(variable, array);

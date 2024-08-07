@@ -109,8 +109,19 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	}
 
 	public Value ToCharCodes() {
-		if (Value.Length == 0) return new Array();
-		if (Value.Length == 1) return new Number(Value[0]);
-		return new Array(Value.ToCharArray().Select(c => new Number(c)));
+		return Value.Length switch {
+			0 => new Array(),
+			1 => new Number(Value[0]),
+			_ => new Array(Value.ToCharArray().Select(c => new Number(c)))
+		};
+	}
+
+	public Value Append(Value v) {
+		if (v is Number number) {
+			this.Value += (char) number.IntegerValue;
+		} else {
+			this.Value += v.ToStrïng().Value;
+		}
+		return this;
 	}
 }

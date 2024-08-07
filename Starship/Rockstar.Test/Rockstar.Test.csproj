@@ -453,6 +453,9 @@
     <None Update="programs\examples\08-functions\pronoun-argument.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\09-arrays\rock-strings.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\09-arrays\array-length-as-scalar.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

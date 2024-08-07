@@ -1,13 +1,32 @@
 @use 'sass:color';
 
 html.page {
-	header, main, footer {
+
+	header,
+	main,
+	footer {
 		padding: 0 10px;
 		max-width: 960px;
 		margin: 0px auto;
 		box-sizing: border-box;
 
 	}
+
+article#homepage-sections {
+	display: flex;
+	flex-wrap: wrap;
+	outline: 1px solid #f0f;
+	justify-content: space-between;
+	align-content: stretch;
+	gap: 20px;
+
+	section {
+		flex: 200px;
+		width: 40%;
+		outline: 1px solid #ff0;
+	}
+}
+
 	article#hero {
 		margin: 2em 0;
 		background-color: color.scale($button-color, $lightness: -80%);
@@ -16,32 +35,39 @@ html.page {
 		border-style: solid;
 		border-color: color.scale($button-color, $lightness: -50%);
 		flex-wrap: wrap;
+		gap: 20px;
+		padding: 0 10px;
+
 		section {
 			display: flex;
-			padding: 0 30px;
 			max-width: 960px;
 			margin: 0px auto;
 			box-sizing: border-box;
 			justify-content: space-between;
 			flex-wrap: wrap;
+
 			#homepage-message {
 				min-width: 320px;
 				flex-grow: 4;
 			}
+
 			#homepage-example {
 				min-width: 320px;
 				flex-grow: 3;
-			 }
+			}
 		}
 	}
 
 	header {
 		margin-top: 8px;
 		padding-top: 64px;
+
 		@media (max-width: 440px) {
 			padding-top: 48px;
 		}
+
 		position: relative;
+
 		h1 {
 			top: 0;
 			left: 16px;
@@ -52,22 +78,27 @@ html.page {
 			height: 96px;
 			width: 300px;
 			background: url(/assets/img/rockstar-logotype.svg) left center no-repeat;
+
 			@media (max-width: 580px) {
 				background: url(/assets/img/rockstar-logotype-no-tail.svg) left center no-repeat;
 			}
+
 			@media (max-width: 440px) {
 				height: 64px;
 			}
 		}
+
 		h2 {
 			position: absolute;
 			top: 0;
 			right: 16px;
 			font-weight: 100;
 			height: 56px;
+
 			@media (max-width: 440px) {
 				height: 40px;
 			}
+
 			margin: 0px 0 8px 0;
 			max-width: 50%;
 			display: flex;
@@ -75,6 +106,7 @@ html.page {
 			justify-content: flex-end;
 			text-align: right;
 			text-wrap: balance;
+
 			@media (max-width: 480px) {
 				font-size: 1.2em !important;
 				max-width: 30%;
@@ -82,6 +114,7 @@ html.page {
 			}
 
 		}
+
 		nav {
 			clear: both;
 			background: linear-gradient($button-color, color.scale($button-color, $lightness: -33%));
@@ -90,25 +123,32 @@ html.page {
 			border: 1px outset color.scale($button-color, $saturation: -33%);
 			display: flex;
 			justify-content: center;
+
 			a {
 				position: relative;
 				z-index: 3;
+
 				@media (max-width: $breakpoint-fullwidth) {
 					font-size: 1.0em;
 					padding: 8px 8px;
 				}
+
 				@media (max-width: 480px) {
 					font-size: 1.0em;
-					padding:6px 6px;
+					padding: 6px 6px;
 				}
+
 				font-weight: 500;
 				font-size: 1.1em;
-				color:  $body-text-color;
+				color: $body-text-color;
 				text-decoration: none;
 				padding: 8px 16px;
 				border-right: 1px outset color.scale($button-color, $saturation: -33%);
 				border-left: 1px outset color.scale($button-color, $saturation: -33%);
-				&:hover { background-color: color.scale($button-color, $lightness: -33%) }
+
+				&:hover {
+					background-color: color.scale($button-color, $lightness: -33%)
+				}
 			}
 		}
 	}

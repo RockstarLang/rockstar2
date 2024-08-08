@@ -17,6 +17,7 @@ Because Rockstar's designed to write programs that look like song lyrics, it's v
 
 {% rockstar_include hello-world-aliases.rock play %}
 
+Try it out. Edit the example above and replace London with your home town.
 ## Variables in Rockstar
 
 A variable stores a value so you can refer back to it later. In most programming languages, a variable name can't contain spaces, so programmers have to use names like `customerTaxPayable` or `year_end_date`, or `customer-shipping-address`.
@@ -54,6 +55,9 @@ This is also probably a good time to mention that you can't use brackets in Rock
 
 {% rockstar_include lyrical-arithmetic-2.rock play %}
 
+Rockstar will let you add, multiply, subtract and divide just about anything - check out the docs to find out exactly how this works, or just try stuff out and see what happens. Remember, this is a joke language based on Bon Jovi songs. You're not gonna break anything important.
+
+{% rockstar_include rockstar-arithmetic.rock %}
 ## Poetic Numbers
 
 You notice in the last example, I wrote `Let Tommy be a boy with a dream` - and not `Tommy is a boy with a dream`?
@@ -94,28 +98,77 @@ The problem with literal strings is they often don't fit the mood of the song yo
 To get around this, Rockstar includes a feature that lets you build strings without ever having to refer to them directly. Using the `rock` keyword, you can add characters to the end of a string by specifying their ASCII/Unicode character codes. The `with` keyword is optional, and using the `like` keyword, you can build strings using poetic numbers corresponding to their character codes:
 
 {% rockstar_include rocking-strings.rock play,parse %}
+
+## Booleans, Null, and Mysterious
+
+As well as numbers and strings, Rockstar has boolean types, null, and mysterious.
+
+Booleans are `true` - aliases `right`, `yes`, and `ok` - and `false`, with its aliases `wrong`, `no`, and `lies`. 
+
+`null` means a value that's missing or not available yet - aliases `nothing`, `nowhere`, `nobody`. 
+
+Rockstar also has a type called `mysterious`, which works like `undefined` in JavaScript; it's the language's way of saying "not only do I not know what this is, I don't even know how to tell you what's wrong with it." 
 ## Conditionals and Loops
 Conditionals in Rockstar use the `if` keyword, alias `when`, and the `else` / `otherwise` keywords. Loops begin with `while` or `until`. 
  
 {% rockstar_include if-else.rock play,parse %}
 
 Multi-line conditionals and loops have to end with an **end of block**. In previous versions of Rockstar, this had to be a blank line. Rockstar 2 adds an explicit `end` keyword, along with the aliases `yeah` and `baby`.
-### Oh, ooh, ooooh yeah, baby
+### Oh, ooh, oooh yeah, baby
 
 You can also end a Rockstar block with the keyword `oh`. `Ooh` ends **two** blocks, `oooh` ends three blocks, and so on until you get bored or your computer runs out of memory. Think of this like the Rockstar equivalent of `}}}}` in C-style languages, or the `)))))` that ends most Lisp programs.
 
-{% rockstar_include if-else-baby.rock play,parse,reset %}
+{% rockstar_include oooh-baby.rock play,parse,reset %}
 ## Pronouns
 
-Oh, yes. You bet we have pronouns.[^2] In natural languages, a pronoun is just a way to refer to something based on context, instead of explicitly having to name things every time - it's the difference between "Tommy put his guitar in the back of his car, he drove out into the night" and "Tommy put Tommy's guitar in the back of Tommy's car, Tommy drove out into the night".
+Oh, yes, Rockstar has pronouns.[^2] In natural languages, a pronoun is just a way to refer to something based on context, instead of explicitly having to name things every time - it's the difference between "Tommy put his guitar in the back of his car, he drove out into the night" and "Tommy put Tommy's guitar in the back of Tommy's car, Tommy drove out into the night".
 
 Rockstar supports the pronouns `it`, `he`, `she`, `him`, `her`, `they`, `them`, and a whole lot more - see the docs for the full list.
 
-A Rockstar pronoun refers to the last variable which was assigned, or the last variable that appeared as the left-hand side of the test in a conditional or loop statement. That sounds complicated, but it's not: most of the time, you can just use `it`, `him` or `her` in your programs as you would in regular English and it'll probably work.
+A Rockstar pronoun refers to the last variable which was assigned, or the last variable that appeared as the left-hand side of the test in a conditional or loop statement. That sounds complicated, but it's not: most of the time, you can just use `it`, `him` or `her` in your programs as you would in regular English, and it'll probably work.
 
 {% rockstar_include pronouns.rock play,parse,reset %}
 
+> Remember that although Rockstar has many different pronouns, at any given point in your program, every pronoun points to the same variable -- you can't have `him`, `her` and `it` pointing to different things. Trying to update pronoun subjects based on assumptions about gendered names would be hard enough even if rock'n'roll wasn't full of guys called Tracii, Alice and Rachel...  you know that on the cover of "Rumours" by Fleetwood Mac, Stevie is the woman and Lindsay is the man? Yeah. You're gonna have to keep track of your own pronouns.
+
+## Equality and Comparisons
+
+You might have noticed we've started using expressions like `X is 5` in our `if` and `while` loops. Rockstar supports all the logical, equality and comparison operators you'd expect to find in a proper programming language:
+
+{% rockstar_include equality.rock play,parse,reset %}
+
+..hang on, what happened to Dizzy? `not` in Rockstar is a **unary operator**. `X is not 2` is going to evaluate `not 2` first - and `2` in Rockstar is *truthy*, so `not 2` is *falsey*, and then it'll compare `X is falsey`, and `X` is 1, and `1` is truthy, and truthy is not equal to falsey... and so `1 is not 2` is actually false. Check out the docs to find out more about things which are truthy, things which are falsey, and how they all fit together.
+
+{% rockstar_include comparisons.rock play,parse,reset %}
+
+Rockstar also has the Boolean logical operators `and`, `or`, `nor`, and `not`.
+
+{% rockstar_include boolean-logic.rock play,parse,reset %}
+
+Boolean operators in Rockstar will **short-circuit** - if you evaluate `X and Y`, and `X` is false, then `Y` will never be evaluated because there's no way `X and Y` can be true - and, like JavaScript, they'll return the last evaluated operand necessary to resolve the expression:
+
+{% rockstar_include short-circuits.rock play,parse,reset %}
+## Functions
+
+Functions in Rockstar are declared with the `wants` or `takes` keywords, followed by the list of variables denoting the function's arguments. If you want to declare a function that has no arguments, specify `null`, `wants nothing` or `takes nothing`.
+
+To call a function, use `taking`, or `call <function> with <arguments>`.
+
+{% rockstar_include functions.rock play,parse,reset %}
+
+The arguments in a function *call* must be separated with commas, ampersands, nactons, or the Oxford comma. 
+
+> **Nacton** *(n.)* The 'n' with which cheap advertising copywriters replace the word 'and' (as in 'fish 'n' chips', 'mix 'n' match', 'assault 'n' battery'), in the mistaken belief that this is in some way chummy or endearing.  
+> - *"The Meaning of Liff", Douglas Adams & John Lloyd*
+
+When you *declare* a function, you can even use `and` to separate the arguments -- because at that point in the language, it can't possibly mean anything else.
+
+{% rockstar_include function-list.rock play,parse,reset %}
+
+## Arrays
+
+## Conversions and Mutations
 
 
 [^1]: Technically `let` will declare a new variable in local scope, where `put` and `is` will declare or assign a global variable. It's complicated. See the documentation on variable scope if you really care.
-[^2]: Rockstar is also woke, fetch, rizz, *and* skibidi, no cap -- but that's not why it has pronouns. 
+[^2]: Rockstar is also woke, fetch, rizz, cheugy, *and* skibidi, no cap -- but that's not why it has pronouns. 

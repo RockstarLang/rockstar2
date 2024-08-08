@@ -11,6 +11,16 @@ div.site-header a.site-title {
 	background: url(/assets/img/rockstar-logotype.svg) left center no-repeat;
 }
 
+body {
+	main {
+		h2 {
+			margin-top: 1em;
+			padding-top: 1em;
+			border-top: 2px solid $button-color;
+		}
+	}
+}
+
 div.rockstar-controls {
 	align-items: center;
 	display: flex;

@@ -225,13 +225,13 @@ poetic_string <Strïng>
 _is <Operator> -memoize
 	= _is _ exactly
 		{ Operator.IdenticalTo }
-	/ ("'s" / "'re" / _ is)
+	/ ("'s" / "'re" / _ is / _? '=')
 		{ Operator.Equals }
 
 _isnt <Operator> -memoize
 	= _isnt _ exactly
 		{ Operator.NotIdenticalTo }
-	/ (_is _ not / _ isnt)
+	/ (_is _ not / _ isnt / _? '!=')
 		{ Operator.NotEquals }
 
 variable <Variable>

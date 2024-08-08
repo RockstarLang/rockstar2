@@ -21,8 +21,9 @@ html.page {
 		gap: 20px;
 
 		div {
-			flex: 460px;
+			flex: 450px;
 			display: flex;
+
 			flex-wrap: wrap;
 			align-content: stretch;
 
@@ -31,19 +32,21 @@ html.page {
 			section {
 				padding: 10px;
 				border-top: 4px solid $button-color;
-				flex: 220px;
+				flex: 200px;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
+
 				> div {
 					display: block;
 					flex: 1;
 					h3 i { font-size: 120%; padding-right: 5px; }
 				}
+				
 				> p {
 					flex: 0;
 					margin: 0;
-					font-weight: 500;
+					font-weight: 300;
 				}
 			}
 		}
@@ -115,7 +118,7 @@ html.page {
 			top: 0;
 			right: 10px;
 			font-weight: 100;
-			height: 56px;
+			height: 60px;
 			margin: 0px 0 8px 0;
 			max-width: 50%;
 			display: flex;
@@ -124,7 +127,7 @@ html.page {
 			text-align: right;
 			text-wrap: balance;
 			max-width: calc(100% - 320px);
-			font-size: 1.6em !important;
+			font-size: 1.4em !important;
 
 			@media (max-width: 640px) {
 				max-width: 35%;

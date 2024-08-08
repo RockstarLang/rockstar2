@@ -22,8 +22,7 @@ In the interest of fostering an open and welcoming environment, we as contributo
 >
 > This is not a licence to be deliberately provocative or offensive, and we won't tolerate harassment, bullying or personal attacks. But if you find the sort of themes and imagery used in rock and metal music offensive, or you work in an environment where these things could cause a problem, please be warned that this project might contain material you find objectionable.
 >
-> **Put another way: if you, your community, or your workplace has a problem with Mötley Crüe, Black Sabbath, Alice Cooper,
-> Twisted Sister, or Judas Priest, then you are not going to enjoy it here. Thanks for stopping by, and have a lovely day.**
+> **Put another way: if you, your community, or your workplace has a problem with Mötley Crüe, Black Sabbath, Alice Cooper, Twisted Sister, or Judas Priest, then you are not going to enjoy it here. Thanks for stopping by, and have a lovely day.**
 
 ## Our Standards
 

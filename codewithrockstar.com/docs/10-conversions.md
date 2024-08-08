@@ -21,7 +21,7 @@ To split a string in Rockstar, use the `cut` mutation, or aliases `split` and `s
 
 ### Joining Arrays
 
-To join an array in Rockstar, use the `join` mutation, or the alias `unite`
+To join an array in Rockstar, use the `join` mutation, or the aliases `unite` or `gather`:
 
 {% rockstar_include join-arrays.rock %}
 

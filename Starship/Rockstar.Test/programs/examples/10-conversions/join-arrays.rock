@@ -4,6 +4,9 @@ Join the tokens with ";"
 Write the tokens (writes: a;b;c;d;e)
 
 The input says hey now hey now now
-Split the input into words with " "
-Unite words into the output with "! "
+Split the input into the words with " "
+Unite the words into the output with "! "
 Write the output with "!" (writes: hey! now! hey! now! now!)
+
+Gather the words into the output with "-"
+Write the output (writes: hey-now-hey-now-now)

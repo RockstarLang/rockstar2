@@ -96,8 +96,8 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	public Array Split(string delimiter) {
 		var tokens = delimiter == ""
-			? this.Value.ToCharArray().Select(c => new Strïng(c)).ToArray()
-			: this.Value.Split(delimiter).Select(s => new Strïng(s)).ToArray();
+			? this.Value.ToCharArray().Select(c => new Strïng(c))
+			: this.Value.Split(delimiter).Select(s => new Strïng(s));
 		return new(tokens);
 	}
 

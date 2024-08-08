@@ -32,12 +32,15 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public override string ToString() => this.Value;
 
 	public override StringBuilder Print(StringBuilder sb, string prefix)
-		=> sb.Append(prefix).Append("string: \"").Append(Value).AppendLine("\"");
+		=> sb.Append(prefix).Append("string: \"").Append(ParsedValue).AppendLine("\"");
 
-	public static readonly Strïng True = new("true");
-	public static readonly Strïng False = new("false");
-	public static readonly Strïng Empty = new(String.Empty);
-	public static readonly Strïng Null = new("null");
+	// Because strings in Rockstar are mutable, the "constants"
+	// must all return new instances, otherwise you can accidentally
+	// mutate the empty string, and things get REALLY weird.
+	public static Strïng True => new("true");
+	public static Strïng False => new("false");
+	public static Strïng Empty => new(String.Empty);
+	public static Strïng Null => new("null");
 
 	public Value Times(Strïng n) {
 		var sb = new StringBuilder();

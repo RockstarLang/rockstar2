@@ -129,26 +129,20 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(value);
 	}
 
-	private Result Increment(Increment inc) {
-		var variable = QualifyPronoun(inc.Variable);
+	private Result Increment(Increment inc) => Crement(inc.Variable, +inc.Multiple);
+
+	private Result Decrement(Decrement dec) => Crement(dec.Variable, -dec.Multiple);
+
+	private Result Crement(Variable variable, int delta) {
+		variable = QualifyPronoun(variable);
 		return Eval(variable) switch {
-			Null n => Assign(variable, new Number(inc.Multiple)),
-			Booleän b => inc.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
-			IHaveANumber n => Assign(variable, new Number(n.Value + inc.Multiple)),
+			Null n => Assign(variable, new Number(delta)),
+			Booleän b => delta % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			IHaveANumber n => Assign(variable, new Number(n.Value + delta)),
+			Strïng s => s.IsEmpty ? Assign(variable, new Number(delta)) : throw new($"Cannot increment '{variable.Name}' - strings can only be incremented if they're empty"),
 			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
-
-	private Result Decrement(Decrement dec) {
-		var variable = QualifyPronoun(dec.Variable);
-		return Eval(dec.Variable) switch {
-			Null n => Assign(variable, new Number(-dec.Multiple)),
-			Booleän b => dec.Multiple % 2 == 0 ? new(b) : Assign(variable, b.Negate),
-			IHaveANumber n => Assign(variable, new Number(n.Value - dec.Multiple)),
-			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
-		};
-	}
-
 
 	private Result Listen(Listen l) {
 		var input = ReadInput();

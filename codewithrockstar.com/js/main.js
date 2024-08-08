@@ -184,9 +184,9 @@ function createControls(editorId, editorView, originalSource, controls) {
 			}
 		});
 	}
-	if (controls.play) buttonContainer.appendChild(rockButton);
+	buttonContainer.appendChild(rockButton);
+	buttonContainer.appendChild(resetButton);
 	if (controls.parse) buttonContainer.appendChild(parseButton);
-	if (controls.reset) buttonContainer.appendChild(resetButton);
 	div.appendChild(buttonContainer);
 	div.appendChild(output);
 	return div;

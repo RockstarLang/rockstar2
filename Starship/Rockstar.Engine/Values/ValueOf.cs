@@ -1,6 +1,7 @@
 namespace Rockstar.Engine.Values;
 
 public abstract class ValueOf<T>(T value) : Value {
+	public T ParsedValue { get; init; } = value;
 	public T Value { get; protected set; } = value;
 	public override bool Equals(object? obj) => Equals(obj as ValueOf<T>);
 	public override int GetHashCode() => this.Value?.GetHashCode() ?? 0;

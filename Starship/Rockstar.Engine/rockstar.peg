@@ -153,7 +153,7 @@ consequent <Block>
 	// IT DOESN'T. I have no idea why. It screws up break/continue wildcard parsing.
 	= ',' _ b:block EOB { b }
 	/ EOS+ b:block EOB { b }
-	/ ','? _ s:statement { new Block(s) }
+	/ _ s:statement { new Block(s) }
 
 if_test <Expression>
 	= if _ e:expression (_ then)?

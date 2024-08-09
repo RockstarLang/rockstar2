@@ -3,11 +3,12 @@ using Rockstar.Engine.Expressions;
 
 namespace Rockstar.Engine.Statements;
 
-public class Increment(Variable v, int multiple) : Statement {
+public class Crement(Variable v, int delta) : Statement {
 	public Variable Variable => v;
-	public int Multiple => multiple;
+	private string Direction => (delta > 0 ? "increment" : "decrement");
+	public int Delta => delta;
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
-		sb.Append(prefix).AppendLine($"increment x {multiple}");
+		sb.Append(prefix).AppendLine($"{Direction} x {delta}");
 		return v.Print(sb, prefix + INDENT);
 	}
 }

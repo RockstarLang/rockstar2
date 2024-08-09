@@ -29,7 +29,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	public override Value Clone() => new Strïng(Value);
 
-	public override string ToString() => this.Value;
+	public override string ToString() => $"\"{this.Value}\"";
 
 	public override StringBuilder Print(StringBuilder sb, string prefix)
 		=> sb.Append(prefix).Append("string: \"").Append(ParsedValue).AppendLine("\"");
@@ -97,10 +97,10 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		return this;
 	}
 
-	public Array Split(string delimiter) {
-		var tokens = delimiter == ""
+	public Array Split(Strïng delimiter) {
+		var tokens = delimiter == Strïng.Empty
 			? this.Value.ToCharArray().Select(c => new Strïng(c))
-			: this.Value.Split(delimiter).Select(s => new Strïng(s));
+			: this.Value.Split(delimiter.Value).Select(s => new Strïng(s));
 		return new(tokens);
 	}
 

@@ -11,6 +11,7 @@ public class Booleän(bool value) : ValueOf<bool>(value), IHaveANumber {
 	public override bool Truthy => Value;
 
 	public override Strïng ToStrïng() => Value ? Strïng.True : Strïng.False;
+	public override string ToString() => Value ? "true" : "false";
 
 	public override Booleän Equäls(Value that)
 		=> new(this.Truthy == that.Truthy);

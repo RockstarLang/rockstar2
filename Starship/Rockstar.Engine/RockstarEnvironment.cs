@@ -110,12 +110,19 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Mutation m => Mutation(m),
 		Rounding r => Rounding(r),
 		Listen listen => Listen(listen),
-		Increment inc => Increment(inc),
-		Decrement dec => Decrement(dec),
+		Crement crement => Crement(crement),
 		Debug debug => Debug(debug),
 		ExpressionStatement e => ExpressionStatement(e),
+
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Output(Output output) {
+		var value = Eval(output.Expression);
+		Write(value.ToStrïng().Value);
+		Write(output.Suffix);
+		return new(value);
+	}
 
 	private Result Debug(Debug debug) {
 		var value = Eval(debug.Expression);
@@ -129,17 +136,13 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(value);
 	}
 
-	private Result Increment(Increment inc) => Crement(inc.Variable, +inc.Multiple);
-
-	private Result Decrement(Decrement dec) => Crement(dec.Variable, -dec.Multiple);
-
-	private Result Crement(Variable variable, int delta) {
-		variable = QualifyPronoun(variable);
+	private Result Crement(Crement crement) {
+		var variable = QualifyPronoun(crement.Variable);
 		return Eval(variable) switch {
-			Null n => Assign(variable, new Number(delta)),
-			Booleän b => delta % 2 == 0 ? new(b) : Assign(variable, b.Negate),
-			IHaveANumber n => Assign(variable, new Number(n.Value + delta)),
-			Strïng s => s.IsEmpty ? Assign(variable, new Number(delta)) : throw new($"Cannot increment '{variable.Name}' - strings can only be incremented if they're empty"),
+			Null n => Assign(variable, new Number(crement.Delta)),
+			Booleän b => crement.Delta % 2 == 0 ? new(b) : Assign(variable, b.Negate),
+			IHaveANumber n => Assign(variable, new Number(n.Value + crement.Delta)),
+			Strïng s => s.IsEmpty ? Assign(variable, new Number(crement.Delta)) : throw new($"Cannot increment '{variable.Name}' - strings can only be incremented if they're empty"),
 			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
@@ -179,7 +182,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private static Array Split(Value source, Value? modifier) {
 		if (source is not Strïng s) throw new("Only strings can be split.");
-		var splitter = modifier?.ToString() ?? "";
+		var splitter = modifier?.ToStrïng() ?? Strïng.Empty;
 		return s.Split(splitter);
 	}
 
@@ -283,18 +286,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return result;
 	}
 
-
-	private Result Output(Output output) {
-		var value = Eval(output.Expression) switch {
-			Array array => array.Lëngth,
-			{ } v => v
-		};
-		Write(value.ToStrïng().Value);
-		Write(output.Suffix);
-		return new(value);
-	}
-
-	private Value Eval(Expression expression) => expression switch {
+	public Value Eval(Expression expression) => expression switch {
 		Value value => value,
 		Binary binary => binary.Resolve(Eval),
 		Lookup lookup => Lookup(lookup.Variable),

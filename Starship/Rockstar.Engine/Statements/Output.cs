@@ -1,6 +1,7 @@
 using System.Text;
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Values;
+using Array = Rockstar.Engine.Values.Array;
 
 namespace Rockstar.Engine.Statements;
 

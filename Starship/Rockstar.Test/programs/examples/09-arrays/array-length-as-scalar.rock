@@ -1,2 +1,3 @@
 Let the array at 5150 be "Van Halen".
-Write the array (writes: 5151)
+Write the array + 0 (writes: 5151)
+Write the array at 0 (writes: null)

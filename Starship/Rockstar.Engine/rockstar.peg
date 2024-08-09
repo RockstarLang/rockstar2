@@ -49,8 +49,7 @@ statement -memoize
 	/ declaration
 	/ assignment
 	/ enlistment
-	/ increment
-	/ decrement
+	/ crement
 	/ mutation
 	/ rounding
 	/ exit_statement
@@ -203,6 +202,8 @@ assignment <Statement>
 		{ new Assign(v, e) }
 	/ v:assignable _ says_ s:poetic_string
 		{ new Assign(v, s) }
+	/ v:assignable _is _ n:number &EOS
+		{ new Assign(v, n) }
 	/ v:assignable _is op:_operator_ e:expression_list
 		{ new Assign(v, new Binary(op, new Lookup(v), e)) }
 	/ v:assignable _is _ now _ e:expression
@@ -356,13 +357,11 @@ indexes <IEnumerable<Expression>>
 		{ new List<Expression> { head } }
 
 
-increment <Increment>
+crement <Crement>
 	= build _ v:variable t:((_? ',')? _? up)+
-		{ new Increment(v, t.Count) }
-
-decrement <Decrement>
-	= knock _ v:variable t:((_? ',')? _? down)+
-		{ new Decrement(v, t.Count) }
+		{ new Crement(v, t.Count) }
+	/ knock _ v:variable t:((_? ',')? _? down)+
+		{ new Crement(v, -t.Count) }
 
 mutator <Operator>
 	= split
@@ -414,7 +413,7 @@ constant <Value>
 	/ mysterious { Mysterious.Instance }
 
 number <Number>
- = like _ n:poetic_number { n }
+	= like _ n:poetic_number { n }
 	/ d:digits&{ decimal.TryParse(d, out var _) }
 		{ new Number(d) }
 	/ d:digits

@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Rockstar.Engine.Values;
 
@@ -8,7 +10,7 @@ public class Array : Value, IHaveANumber {
 	public int IntegerValue => Length;
 
 	private readonly List<Value> list;
-	private readonly Dictionary<Value, Value> hash = new();
+	private readonly Dictionary<Value, Value> hash = [];
 
 	private static Array Clone(Array source) {
 		var a = new Array(source.list.Select(v => v.Clone()));
@@ -24,7 +26,6 @@ public class Array : Value, IHaveANumber {
 
 	public Array(IEnumerable<Value> items) => list = [.. items];
 	public Array(params Value[] items) => list = [.. items];
-	//public Array(IReadOnlyList<Value> items) => list = [.. items];
 	public Array(Value item) => list = [item];
 
 	public override int GetHashCode()
@@ -37,15 +38,16 @@ public class Array : Value, IHaveANumber {
 
 	public override string ToString() {
 		var sb = new StringBuilder();
-		sb.Append("[");
-		sb.AppendJoin(",", list.Select(item => item.ToString()));
+		sb.Append("[ ");
+		sb.AppendJoin(", ", list.Select(item => item.ToString()));
 		if (hash.Any()) {
-			foreach (var pair in hash) {
-				sb.Append("; ").Append(pair.Key).Append(": ").Append(pair.Value);
-			}
+			if (list.Any()) sb.Append("; ");
+			sb.AppendJoin("; ", hash.Select(pair => pair.Key + ": " + pair.Value));
 		}
+
+		if (hash.Any() || list.Any()) sb.Append(" ");
 		sb.Append("]");
-		return sb.ToString();
+		return Regex.Replace(sb.ToString(), "null(, null){4,}", " ... ");
 	}
 
 	public override Booleän Equäls(Value? that)
@@ -97,7 +99,7 @@ public class Array : Value, IHaveANumber {
 	public override Value Clone() => Array.Clone(this);
 
 	public Strïng Join(Value? joiner)
-		=> new(String.Join(joiner?.ToStrïng().Value ?? "", list.Select(value => value.ToStrïng())));
+		=> new(String.Join(joiner?.ToStrïng().Value ?? "", list.Select(value => value.ToStrïng().Value)));
 
 	public Value Push(Value value) => list.Push(value);
 

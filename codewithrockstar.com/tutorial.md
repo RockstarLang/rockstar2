@@ -167,6 +167,12 @@ When you *declare* a function, you can even use `and` to separate the arguments 
 
 ## Arrays
 
+Arrays in Rockstar are created with the `rock` keyword, alias `push`. 
+
+As we've already seen, rocking strings with numbers is a special case, used to build strings based on character codes. In all other cases, `rock x` will turn `x` from a scalar into a single-element array `[ x ]`, and `rock x with y` will append `y` to the end of the array denoted by `x`.
+
+
+
 ## Conversions and Mutations
 
 

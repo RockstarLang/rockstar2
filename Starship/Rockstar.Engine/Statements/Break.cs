@@ -2,10 +2,14 @@ using System.Text;
 
 namespace Rockstar.Engine.Statements;
 
-public class WildcardStatement(string wildcard) : Statement {
+public abstract class WildcardStatement(string wildcard) : Statement {
+	protected abstract string What { get; }
 	public string Wildcard => wildcard;
 	public override StringBuilder Print(StringBuilder sb, string prefix)
-		=> sb.Append(prefix).Append("break").AppendLine(String.IsNullOrEmpty(wildcard) ? "" : $"'{wildcard}'");
+		=> sb.Append(prefix).Append(What)
+			.AppendLine(String.IsNullOrEmpty(wildcard) ? "" : $" (wildcard: \"{wildcard}\")");
 
 }
-public class Break(string wildcard = "") : WildcardStatement(wildcard) { }
+public class Break(string wildcard = "") : WildcardStatement(wildcard) {
+	protected override string What => "break";
+}

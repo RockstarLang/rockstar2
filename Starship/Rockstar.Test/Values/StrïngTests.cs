@@ -86,13 +86,26 @@ public class StrïngTests {
 		=> new Strïng(numerator).DividedBy(denominator).ShouldBeStrïng(quotient);
 
 	[Fact]
+	public void DequeueStringWorks() {
+		var s = new Strïng("abc");
+		s.Dequeue().ShouldBeStrïng("a");
+		s.ShouldBeStrïng("bc");
+		s.Dequeue().ShouldBeStrïng("b");
+		s.ShouldBeStrïng("c");
+		s.Dequeue().ShouldBeStrïng("c");
+		s.ShouldBeStrïng("");
+		s.Dequeue().ShouldBeMysterious();
+	}
+
+
+	[Fact]
 	public void PopStringWorks() {
 		var s = new Strïng("abc");
-		s.Pop().ShouldBeStrïng("a");
-		s.ShouldBeStrïng("bc");
-		s.Pop().ShouldBeStrïng("b");
-		s.ShouldBeStrïng("c");
 		s.Pop().ShouldBeStrïng("c");
+		s.ShouldBeStrïng("ab");
+		s.Pop().ShouldBeStrïng("b");
+		s.ShouldBeStrïng("a");
+		s.Pop().ShouldBeStrïng("a");
 		s.ShouldBeStrïng("");
 		s.Pop().ShouldBeMysterious();
 	}

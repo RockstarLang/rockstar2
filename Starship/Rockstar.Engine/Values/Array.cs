@@ -103,7 +103,7 @@ public class Array : Value, IHaveANumber {
 
 	public Value Push(Value value) => list.Push(value);
 
-	public Value Pop() => list.Shift() ?? Mysterious.Instance;
+	public Value Dequeue() => list.Shift() ?? Mysterious.Instance;
 
 	public Value Set(IList<Value> indexes, Value value) {
 		var array = this;
@@ -114,4 +114,6 @@ public class Array : Value, IHaveANumber {
 		}
 		return value;
 	}
+
+	public Value Pop() => list.Pop() ?? Mysterious.Instance;
 }

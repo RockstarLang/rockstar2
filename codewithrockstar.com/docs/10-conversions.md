@@ -25,7 +25,7 @@ To join an array in Rockstar, use the `join` mutation, or the aliases `unite`
 
 {% rockstar_include join-arrays.rock %}
 
-Type Conversions
+### Type Conversions
 
 To convert any value to a string, add it to the empty string.
 
@@ -34,7 +34,6 @@ To convert any value to a string, add it to the empty string.
 The built-in `cast` function (aka `burn`) will parse strings into numbers, or convert a number into a Unicode character corresponding to the number's code point.
 
 {% rockstar_include cast.rock %}
-
 
 #### Arithmetic Rounding
 

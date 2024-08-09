@@ -68,9 +68,17 @@ enlistment <Statement>
 	/ d:delist
 		{ new ExpressionStatement(d) }
 
-delist <Delist>
+delist <VariableExpression>
+	= roll_list
+	/ pop_list
+
+roll_list <Dequeue>
+	= roll _ v:variable
+		{ new Dequeue(v) }
+
+pop_list <Pop>
 	= pop _ v:variable
-		{ new Delist(v) }
+		{ new Pop(v) }
 
 listen_stmt <Statement>
 	= listen _ to _ v:variable
@@ -570,12 +578,13 @@ null = 'null' !letter / 'nothing' !letter / 'nowhere' !letter / 'nobody' !letter
 or = 'or' !letter
 over = 'over' !letter
 plus = 'plus' !letter / 'with' !letter
-pop = 'roll' !letter / 'pop' !letter
+pop = 'pop' !letter
 print = "print" !letter / "shout" !letter / "say" !letter / "scream" !letter / "whisper" !letter
 pronoun	= 'they' !letter / 'them'!letter / 'she' !letter / 'him' !letter / 'her' !letter / 'hir' !letter / 'zie' !letter / 'zir' !letter / 'xem' !letter / 'ver'!letter / 'ze' !letter / 've' !letter / 'xe' !letter / 'it' !letter / 'he'!letter / 'you' !letter / 'me' !letter / 'i' !letter
 push = 'rock' !letter / 'push' !letter
 put = 'put' !letter
 return = 'return' !letter / 'giving' !letter / 'give' !letter / 'send' !letter
+roll = 'roll' !letter
 says = 'say' !letter / 'says' !letter / 'said' !letter
 split = 'cut' !letter / 'split' !letter / 'shatter' !letter
 takes = 'takes' !letter / 'wants' !letter

@@ -91,14 +91,15 @@ Features like poetic numbers can make it hard to figure out exactly what a Rocks
 No, not that kind of strings. Strings are how Rockstar handles text. A string in Rockstar is surrounded by double quotes; to include double quotes in a string, use two sets of double quotes. You can also use **poetic string** syntax using the `says` keyword:
 
 {% rockstar_include strings.rock play,parse %}
-## Rocking Strings
+## Ninja Strings
 
 The problem with literal strings is they often don't fit the mood of the song you're trying to write. `FizzBuzz` is all well & good, but shouting the word "fizz" in the middle of power ballad just isn't gonna work.
 
-To get around this, Rockstar includes a feature that lets you build strings without ever having to refer to them directly. Using the `rock` keyword, you can add characters to the end of a string by specifying their ASCII/Unicode character codes. The `with` keyword is optional, and using the `like` keyword, you can build strings using poetic numbers corresponding to their character codes:
+To get around this, Rockstar includes a feature that lets you build strings without ever having to refer to them directly: we call these **ninja strings**, because like ninjas, they are both stealthy *and* awesome.
 
-{% rockstar_include rocking-strings.rock play,parse %}
+Using the `rock` keyword, you can add characters to the end of a string by specifying their ASCII/Unicode character codes. The `with` keyword is optional, and using the `like` keyword, you can build strings using poetic numbers corresponding to their character codes:
 
+{% rockstar_include ninja-strings.rock play,parse %}
 ## Booleans, Null, and Mysterious
 
 As well as numbers and strings, Rockstar has boolean types, null, and mysterious.
@@ -114,6 +115,13 @@ Conditionals in Rockstar use the `if` keyword, alias `when`, and the `else` / `o
 {% rockstar_include if-else.rock play,parse %}
 
 Multi-line conditionals and loops have to end with an **end of block**. In previous versions of Rockstar, this had to be a blank line. Rockstar 2 adds an explicit `end` keyword, along with the aliases `yeah` and `baby`.
+
+To exit a loop immediately, use the `break` keyword. To skip the rest of the current iteration and restart the loop, use the `continue` keyword or the alias `take`
+
+> `break` and `take` in Rockstar are **wildcard keywords**: you can follow them with anything you like, and everything up until the next end of statement (`,.!?;`) or newline will be ignored. This is mainly because the original Rockstar draft used `take it to the top` as a synonym for `continue`, which sounded cool but is actually incredibly stupid, even by Rockstar standards.
+
+{% rockstar_include break-and-take.rock play,parse %}
+
 ### Oh, ooh, oooh yeah, baby
 
 You can also end a Rockstar block with the keyword `oh`. `Ooh` ends **two** blocks, `oooh` ends three blocks, and so on until you get bored or your computer runs out of memory. Think of this like the Rockstar equivalent of `}}}}` in C-style languages, or the `)))))` that ends most Lisp programs.
@@ -129,8 +137,7 @@ A Rockstar pronoun refers to the last variable which was assigned, or the last v
 
 {% rockstar_include pronouns.rock play,parse,reset %}
 
-> Remember that although Rockstar has many different pronouns, at any given point in your program, every pronoun points to the same variable -- you can't have `him`, `her` and `it` pointing to different things. Trying to update pronoun subjects based on assumptions about gendered names would be hard enough even if rock'n'roll wasn't full of guys called Tracii, Alice and Rachel...  you know that on the cover of "Rumours" by Fleetwood Mac, Stevie is the woman and Lindsay is the man? Yeah. You're gonna have to keep track of your own pronouns.
-
+> Remember that although Rockstar has many different pronouns, at any given point in your program, every pronoun points to the same variable -- you can't have `him`, `her` and `it` pointing to different things. Trying to update pronoun subjects based on assumptions about gendered names would be hard enough even if rock'n'roll wasn't full of dudes called Tracii, Alice and Rachel...  you know that on the cover of "Rumours" by Fleetwood Mac, Stevie is the woman and Lindsay is the man? Yeah. You're gonna have to keep track of your own pronouns.
 ## Equality and Comparisons
 
 You might have noticed we've started using expressions like `X is 5` in our `if` and `while` loops. Rockstar supports all the logical, equality and comparison operators you'd expect to find in a proper programming language:
@@ -159,22 +166,67 @@ To call a function, use `taking`, or `call <function> with <arguments>`.
 The arguments in a function *call* must be separated with commas, ampersands, nactons, or the Oxford comma. 
 
 > **Nacton** *(n.)* The 'n' with which cheap advertising copywriters replace the word 'and' (as in 'fish 'n' chips', 'mix 'n' match', 'assault 'n' battery'), in the mistaken belief that this is in some way chummy or endearing.  
-> - *"The Meaning of Liff", Douglas Adams & John Lloyd*
+> -- *"The Meaning of Liff", Douglas Adams & John Lloyd*
+
+Rockstar supports both the UK nacton (`fish'n'chips`) and the US nacton (`Guns n' Roses`).
 
 When you *declare* a function, you can even use `and` to separate the arguments -- because at that point in the language, it can't possibly mean anything else.
 
 {% rockstar_include function-list.rock play,parse,reset %}
-
-## Arrays
+## Rock'n'Roll Arrays
 
 Arrays in Rockstar are created with the `rock` keyword, alias `push`. 
 
-As we've already seen, rocking strings with numbers is a special case, used to build strings based on character codes. In all other cases, `rock x` will turn `x` from a scalar into a single-element array `[ x ]`, and `rock x with y` will append `y` to the end of the array denoted by `x`.
+As we've already seen when we learned about **ninja strings**, rocking a string with a number will turn the numbers into a character and append it to the end of the string. This is a special case, because it's so incredibly useful for building strings. 
 
+In all other cases, `rock x` will turn `x` from a scalar into a single-element array `[ x ]`, and `rock x with y` will append `y` to the end of the array denoted by `x`.
 
+If you just `rock` a new variable, it'll create an empty array. If you rock a new variable with a list of things, it'll add those things to the new array:
+
+{% rockstar_include basic-arrays.rock %}
+
+Naturally, if you can `rock`, you can `roll`. `Roll` will remove and return the first element of the array.
+
+{% rockstar_include rock-and-roll.rock %}
+### Pop? Really?
+
+Yes, pop. If you `rock` and `roll` arrays, they work like queues - first in, first out. If you want your array to behave like a stack, use `push` and `pop`:
+
+{% rockstar_include push-and-pop.rock %}
+
+> `push` is actually an alias for `rock` - it adds the provided element to the *end* of the array; `roll` removes and returns the *last* element, while `pop` removes and returns the `first` element. 
 
 ## Conversions and Mutations
 
+Finally, Rockstar has a handful of built-in functions for doing useful things. These operations can either act in place, *mutating* the variable passed to them, or leave the result in a target variable and leave the source unmodified:
+
+* `Modify X` - acts in-place
+* `Modify X into Y` - leave `X` intact, store the result into `Y`
+* `Modify X with Z` - act in place, using optional parameter `Z`
+* `Modify X into Y with Z` - modify `X` using `Z`, store the result in `y`
+
+### Splitting Strings
+
+To split a string in Rockstar, use the `cut` mutation, or aliases `split` and `shatter`:
+
+{% rockstar_include split-strings.rock %}
+
+### Joining Arrays
+
+To join an array in Rockstar, use the `join` mutation, or the aliases `unite` or `gather`:
+
+{% rockstar_include join-arrays.rock %}
+
+### Type Conversions
+
+The built-in `cast` function (aka `burn`) will parse strings into numbers, or convert a number into a Unicode character corresponding to the number's code point.
+
+{% rockstar_include cast.rock %}
+
+If you just want to convert a value into a string, add it to the empty string:
+
+{% rockstar_include with-empty.rock %}
+### Cast
 
 [^1]: Technically `let` will declare a new variable in local scope, where `put` and `is` will declare or assign a global variable. It's complicated. See the documentation on variable scope if you really care.
 [^2]: Rockstar is also woke, fetch, rizz, cheugy, *and* skibidi, no cap -- but that's not why it has pronouns. 

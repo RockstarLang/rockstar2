@@ -204,12 +204,22 @@ public class RockstarEnvironment(IRockstarIO io) {
 		return new(rounded);
 	}
 
-	private Result Delist(Delist delist) {
-		var variable = QualifyPronoun(delist.Variable);
+	private Result Pop(Pop pop) {
+		var variable = QualifyPronoun(pop.Variable);
 		var value = LookupValue(variable.Key);
 		return value switch {
 			Array array => new(array.Pop()),
 			Strïng strïng => new(strïng.Pop()),
+			_ => new(Null.Instance)
+		};
+	}
+
+	private Result Dequeue(Dequeue dequeue) {
+		var variable = QualifyPronoun(dequeue.Variable);
+		var value = LookupValue(variable.Key);
+		return value switch {
+			Array array => new(array.Dequeue()),
+			Strïng strïng => new(strïng.Dequeue()),
 			_ => new(Null.Instance)
 		};
 	}
@@ -293,7 +303,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Variable v => Lookup(v),
 		Unary unary => unary.Resolve(Eval),
 		FunctionCall call => Call(call).Value,
-		Delist delist => Delist(delist).Value,
+		Pop pop => Pop(pop).Value,
+		Dequeue delist => Dequeue(delist).Value,
 		_ => throw new NotImplementedException($"Eval not implemented for {expression.GetType()}")
 	};
 

@@ -104,7 +104,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		return new(tokens);
 	}
 
-	public Value Pop() {
+	public Value Dequeue() {
 		if (Value.Length <= 0) return Mysterious.Instance;
 		var result = Value[0];
 		Value = Value[1..];
@@ -126,5 +126,12 @@ public class Strïng(string value) : ValueOf<string>(value) {
 			this.Value += v.ToStrïng().Value;
 		}
 		return this;
+	}
+
+	public Value Pop() {
+		if (Value.Length <= 0) return Mysterious.Instance;
+		var result = Value[^1];
+		Value = Value[..^1];
+		return new Strïng(result);
 	}
 }

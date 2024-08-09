@@ -33,9 +33,9 @@ public class ArrayTests : ParserTestBase {
 		a.Push(new Number(1));
 		a.Push(new Number(2));
 		a.Push(new Number(3));
-		a.Pop().ShouldBe(new Number(1));
-		a.Pop().ShouldBe(new Number(2));
-		a.Pop().ShouldBe(new Number(3));
+		a.Dequeue().ShouldBe(new Number(1));
+		a.Dequeue().ShouldBe(new Number(2));
+		a.Dequeue().ShouldBe(new Number(3));
 	}
 
 	[Fact]
@@ -43,7 +43,7 @@ public class ArrayTests : ParserTestBase {
 		var a = new Array();
 		a.Lëngth.ShouldBe(new(0));
 		a.Push(new Number(1));
-		a.Pop().ShouldBe(new Number(1));
+		a.Dequeue().ShouldBe(new Number(1));
 		a.Lëngth.ShouldBe(new(0));
 	}
 
@@ -60,11 +60,11 @@ public class ArrayTests : ParserTestBase {
 		var a = new Array();
 		a.Set(new Number(1), new Strïng("foo"));
 		a.Lëngth.ShouldBe(new(2));
-		a.Pop().ShouldBe(Null.Instance);
+		a.Dequeue().ShouldBe(Null.Instance);
 		a.Lëngth.ShouldBe(new(1));
-		a.Pop().ShouldBeStrïng("foo");
+		a.Dequeue().ShouldBeStrïng("foo");
 		a.Lëngth.ShouldBe(new(0));
-		a.Pop().ShouldBe(Mysterious.Instance);
+		a.Dequeue().ShouldBe(Mysterious.Instance);
 	}
 
 	[Fact]
@@ -101,7 +101,7 @@ public class ArrayTests : ParserTestBase {
 		new Array().Equäls(Strïng.Empty).ShouldBeTruthy();
 		var array = new Array(new Number(1));
 		array.Equäls(Strïng.Empty).ShouldBeFalsey();
-		array.Pop();
+		array.Dequeue();
 		array.Equäls(Strïng.Empty).ShouldBeTruthy();
 	}
 

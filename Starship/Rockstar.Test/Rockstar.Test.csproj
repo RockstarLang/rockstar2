@@ -483,6 +483,9 @@
     <None Update="programs\examples\09-arrays\rock-and-roll.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\09-arrays\pop-and-roll.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\09-arrays\roll-assign.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -735,6 +738,27 @@
     <None Update="programs\examples\gallery\The-Final-Stand.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\tutorial\break-and-take.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\cast.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\with-empty.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\join-arrays.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\push-and-pop.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\rock-and-roll.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\basic-arrays.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\tutorial\rockstar-arithmetic.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -768,8 +792,11 @@
     <None Update="programs\examples\tutorial\if-else.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\tutorial\rocking-strings.rock">
+    <None Update="programs\examples\tutorial\ninja-strings.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\split-strings.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\tutorial\strings.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

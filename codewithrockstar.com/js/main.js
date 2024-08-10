@@ -233,8 +233,8 @@ document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 		let input = document.createElement("textarea");
 		input.id = `rockstar-input-${editorId}`;
 		input.className = "rockstar-stdin";
-		input.placeholder = "input";
-		input.value = "one\ntwo\nthree\nfour";
+		input.placeholder = "Does your program need input from stdin? Paste it here.";
+		// input.value = "";
 		inputDiv.appendChild(label);
 		inputDiv.appendChild(input);
 		preElement.parentNode.insertBefore(inputDiv, preElement);

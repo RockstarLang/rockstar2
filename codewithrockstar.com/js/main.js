@@ -36,9 +36,9 @@ function handleMessageFromWorker(message) {
 var worker = new Worker("/js/worker.js", { type: 'module' });
 worker.addEventListener("message", handleMessageFromWorker);
 
-function executeProgram(program, editorId) {
+function executeProgram(program, editorId, input) {
 	rockCount++;
-	worker.postMessage({ command: "run", program: program, editorId: editorId });
+	worker.postMessage({ command: "run", program: program, editorId: editorId, input: input });
 }
 
 function parseProgram(program, editorId) {
@@ -166,8 +166,10 @@ function createControls(editorId, editorView, originalSource, controls) {
 			rockButton.innerHTML = STOP_BUTTON_HTML;
 			output.innerText = "";
 			let source = editorView.state.doc.toString();
+			let inputTextarea = document.getElementById(`rockstar-input-${editorId}`);
+			let input = inputTextarea ? inputTextarea.value : "";
 			try {
-				executeProgram(source, editorId, controls);
+				executeProgram(source, editorId, input);
 			} catch (e) {
 				console.log(e);
 			}
@@ -192,15 +194,18 @@ function createControls(editorId, editorView, originalSource, controls) {
 	return div;
 }
 
-let options = [ "play", "parse", "reset", "input", "result" ];
+let options = ["play", "parse", "reset", "input", "result"];
 
 function configureControls(preElement) {
 	let list = (preElement.getAttribute("data-controls") ?? "").split(",");
 	let controls = {};
-	for(var option of options) controls[option] = true;
-	if (list.length == 0) return controls;
+	for (var option of options) controls[option] = true;
+	if (list.length == 1 && list[0] == '') {
+		console.log(controls);
+		return controls;
+	}
 	if (list.includes("all")) return controls;
-	for(var option of options) controls[option] = list.includes(option);
+	for (var option of options) controls[option] = list.includes(option);
 	return controls;
 }
 
@@ -208,7 +213,6 @@ var editorId = 1;
 document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 	let preElement = codeElement.parentElement;
 	let controls = configureControls(preElement);
-	console.log(controls);
 	editorId++;
 	var originalSource = codeElement.innerText;
 	var settings = {
@@ -220,6 +224,21 @@ document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 		editorId: editorId
 	};
 	var editorView = replaceElementWithEditor(settings);
+	if (controls.input) {
+		let inputDiv = document.createElement("div");
+		inputDiv.className = "rockstar-inputs";
+		let label = document.createElement("label");
+		label.setAttribute("for", `rockstar-input-${editorId}`);
+		label.innerText = "Input:";
+		let input = document.createElement("textarea");
+		input.id = `rockstar-input-${editorId}`;
+		input.className = "rockstar-stdin";
+		input.placeholder = "input";
+		input.value = "one\ntwo\nthree\nfour";
+		inputDiv.appendChild(label);
+		inputDiv.appendChild(input);
+		preElement.parentNode.insertBefore(inputDiv, preElement);
+	}
 	var controlPanel = createControls(editorId, editorView, originalSource, controls);
 	preElement.parentNode.insertBefore(controlPanel, preElement);
 });

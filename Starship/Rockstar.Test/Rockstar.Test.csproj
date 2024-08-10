@@ -681,6 +681,15 @@
     <None Update="programs\examples\assorted\The-Final-Stand.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\fizzbuzz\fb3.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\fizzbuzz\fb2.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\fizzbuzz\fb1.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\gallery\99_beers.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

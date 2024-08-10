@@ -110,6 +110,7 @@ Booleans are `true` - aliases `right`, `yes`, and `ok` - and `false`, with its a
 
 Rockstar also has a type called `mysterious`, which works like `undefined` in JavaScript; it's the language's way of saying "not only do I not know what this is, I don't even know how to tell you what's wrong with it." 
 ## Conditionals and Loops
+
 Conditionals in Rockstar use the `if` keyword, alias `when`, and the `else` / `otherwise` keywords. Loops begin with `while` or `until`. 
  
 {% rockstar_include if-else.rock play,parse %}

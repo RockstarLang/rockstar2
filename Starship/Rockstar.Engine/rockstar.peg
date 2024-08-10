@@ -202,11 +202,15 @@ declaration <Statement>
 		{ new Declare(v, new Binary(op, new Lookup(v), e)) }
 	/ let _ v:assignable _ be _ e:expression
 		{ new Declare(v, e) }
+	/ let _ v:assignable _? '=' _? e:expression
+		{ new Declare(v, e) }
 	/ let _ v:assignable
 		{ new Declare(v) }
 
 assignment <Statement>
-	= put _ e:expression _ into _ v:assignable
+	= v:assignable _? '=' _? e:expression
+		{ new Assign(v, e) }
+	/ put _ e:expression _ into _ v:assignable
 		{ new Assign(v, e) }
 	/ v:assignable _ says_ s:poetic_string
 		{ new Assign(v, s) }
@@ -217,9 +221,9 @@ assignment <Statement>
 	/ v:assignable _is _ now _ e:expression
 			{ new Assign(v, e) }
 	// Legacy workaround to preserve compatibility with v1 poetic literal syntax
-	/ v:assignable (_? '=' _? / _is _) p:v1_poetic_number
+	/ v:assignable _is _ p:v1_poetic_number
 		{ new Assign(v, p) }
-	/ v:assignable (_? '=' _? / _is _) e:expression
+	/ v:assignable _is _ e:expression
 		{ new Assign(v, e) }
 
 _operator_ =
@@ -231,12 +235,17 @@ poetic_string <Strïng>
 	= s:("" [^\r\n]+) &('\r'? '\n')
 		{ new Strïng(s) }
 
-_is <Operator> -memoize
-	= _is _ exactly
+_eq <Operator> -memoize
+	= _eq _ exactly
 		{ Operator.IdenticalTo }
-	/ ("'s" / "'re" / _ is / _? '=')
+	/ _? '='
 		{ Operator.Equals }
+	/ _is
 
+_is <Operator> -memoize
+	= ("'s" / "'re" / _ is)
+		{ Operator.Equals }
+		
 _isnt <Operator> -memoize
 	= _isnt _ exactly
 		{ Operator.NotIdenticalTo }
@@ -282,7 +291,7 @@ binary_and <Expression>
 	/ equality
 
 equality <Expression>
-	= lhs:unary op:(_is / _isnt) _ rhs:equality { new Binary(op, lhs, rhs) }
+	= lhs:unary op:(_eq / _isnt) _ rhs:equality { new Binary(op, lhs, rhs) }
 	/ unary
 
 unary <Expression>

@@ -1,12 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.JavaScript;
+using System.Threading;
 using System.Threading.Tasks;
 using Rockstar.Engine;
 
 namespace Rockstar.Wasm;
 
-public class WasmIO(Action<string> output) : IRockstarIO {
-	public string? Read() => null;
+public class WasmIO(Action<string> output, Queue<string> input) : IRockstarIO {
+	public string? Read() => input.TryDequeue(out var s) ? s : null;
 	public void Write(string s) => output(s);
 }
 
@@ -15,10 +17,11 @@ public partial class RockstarRunner {
 
 	[JSExport]
 	public static Task<string> Run(string source,
-		[JSMarshalAs<JSType.Function<JSType.String>>] Action<string> output) {
+		[JSMarshalAs<JSType.Function<JSType.String>>] Action<string> output, string? input = null) {
+		var inputQueue = new Queue<string>((input ?? "").Split(Environment.NewLine));
 		return Task.Run(() => {
 			var program = parser.Parse(source);
-			var e = new WasmIO(output);
+			var e = new WasmIO(output, inputQueue);
 			var env = new RockstarEnvironment(e);
 			var result = env.Execute(program);
 			return result?.Value?.ToString() ?? "";

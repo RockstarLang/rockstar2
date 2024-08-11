@@ -2,6 +2,7 @@
 title: CodeMirror Kitchen Sink
 layout: home
 nav_order: "9999"
+nav_exclude: true
 ---
 
 The CodeMirror Syntax Highlighting Kitchen Sink:

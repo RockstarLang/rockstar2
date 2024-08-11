@@ -1,6 +1,7 @@
 ---
 title: Tutorial
 layout: main
+nav_exclude: true
 ---
 # Getting Started with Rockstar
 
@@ -91,6 +92,14 @@ Features like poetic numbers can make it hard to figure out exactly what a Rocks
 No, not that kind of strings. Strings are how Rockstar handles text. A string in Rockstar is surrounded by double quotes; to include double quotes in a string, use two sets of double quotes. You can also use **poetic string** syntax using the `says` keyword:
 
 {% rockstar_include strings.rock play,parse %}
+
+## Reading Input
+
+To read input from the console, use `listen`. `Listen` on its own will read a line of input from STDIN and discard it. `Listen to <variable>` will read the next line of input from STDIN and store it in `<variable>` as a string.
+
+> For all kinds of complicated reasons, the Rockstar engine that runs on this website can't prompt you for input, so you'll need to provide the input in advance using the text box below the Rockstar editor.
+
+{% rockstar_include listen.rock %}
 ## Ninja Strings
 
 The problem with literal strings is they often don't fit the mood of the song you're trying to write. `FizzBuzz` is all well & good, but shouting the word "fizz" in the middle of power ballad just isn't gonna work.

@@ -2,6 +2,7 @@
 title: Arithmetic
 layout: home
 nav_order: "1003"
+summary: You want to add two numbers together? Boring. Go play with JavaScript. You want to divide a string by another string? Now we're talking.
 ---
 ### Expressions
 
@@ -55,3 +56,10 @@ Dividing anything by a string will tell you how many times the second string occ
 Or, y'know, you can just stick to dividing numbers.
 
 {% rockstar_include division-types.rock %}
+### Compound Expressions
+
+Languages like C support shorthand expressions like `x++`, `x += 2`, and so on.
+
+The equivalent in Rockstar looks like this:
+
+{% rockstar_include compound-expressions.rock %}

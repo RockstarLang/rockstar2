@@ -3,6 +3,7 @@ title: Flow Control
 layout: home
 examples: /examples/07-flow-control/
 nav_order: "1006"
+summary: If, else, otherwise, loops, until, while... and how to end a block, oooh, yeah, baby.
 ---
 ## Conditionals: If / Else
 

@@ -3,6 +3,7 @@ title: Arrays and Collections
 layout: home
 examples: /examples/09-arrays/
 nav_order: "1008"
+summary: Whether it's a set list, the stack of 4x12 speaker cabinets, or the queue of eager fans waiting to get into the show, rock'n'roll is all about collections. Just no hashes until after the show, OK?
 ---
 ## Arrays
 
@@ -71,6 +72,9 @@ The `roll` keyword will remove the first element from an array and return the 
 `roll` can be used in assignments:
 
 {% rockstar_include roll-assign.rock %}
+
 Rockstar also supports a special `roll x into y` syntax for removing the first element from an array and assigning it to a variable:
 
 {% rockstar_include roll-into.rock %}
+
+## Array Arithmetic

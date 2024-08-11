@@ -1,0 +1,11 @@
+Rock ABBA with "Agnetha", "Anna-Frid", "Bjorn", "Benny"
+
+Rock the guys with "Bjorn", "Benny"
+
+Shout ABBA without the guys (prints: [ "Agnetha", "Anna-Frid" ])
+
+Let Abbahead be ABBA with "Lemmy"
+
+Shout Abbahead (prints: [ "Agnetha", "Anna-Frid", "Bjorn", "Benny", "Lemmy ])
+
+

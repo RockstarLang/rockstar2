@@ -19,11 +19,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	public RockstarEnvironment? Parent { get; init; }
 
-	public RockstarEnvironment Extend() {
-		return new RockstarEnvironment(IO, this);
-		//foreach (var variable in variables) store.variables[variable.Key] = variable.Value;
-		// return store;
-	}
+	public RockstarEnvironment Extend() => new(IO, this);
 
 	protected IRockstarIO IO = io;
 
@@ -75,6 +71,11 @@ public class RockstarEnvironment(IRockstarIO io) {
 			Number n => n.SetBit(indexes, value),
 			_ => throw new($"{variable.Name} is not an indexed variable")
 		};
+	}
+
+	public Result Execute(Quine quine) {
+		Write(quine.Source);
+		return Result.Exit;
 	}
 
 	public Result Execute(Program program)

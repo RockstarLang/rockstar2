@@ -2,7 +2,7 @@
 title: Types and Values
 layout: home
 nav_order: "1002"
-summary: "`My heart is empty`, `your lies are nothing`, `desire is a lovestruck ladykiller`"
+summary: "Meet Rockstar's type systems: numbers, strings, booleans, null, and mysterious."
 ---
 ### Types
 

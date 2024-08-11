@@ -2,7 +2,7 @@
 title: Markdown kitchen sink
 nav_order: "9999"
 layout: page
-# nav_exclude: true
+nav_exclude: true
 ---
 
 # Markdown kitchen sink

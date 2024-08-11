@@ -273,7 +273,7 @@
     <None Update="programs\examples\05-expression-syntax\expression-lists.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\06-expressions\compound-expressions.rock">
+    <None Update="programs\examples\04-arithmetic\compound-expressions.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\06-expressions\expression-lists.rock">
@@ -492,6 +492,9 @@
     <None Update="programs\examples\09-arrays\pop-and-roll.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\09-arrays\array-arithmetic.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\09-arrays\roll-assign.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -546,16 +549,13 @@
     <None Update="programs\examples\99-appendix\acid-test.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\99-appendix\expression-lists.rock">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="programs\examples\99-appendix\if-else-scope.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\99-appendix\if-else.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\99-appendix\comparison.rock">
+    <None Update="programs\examples\06-expressions\comparison.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\01-getting-started\chordpro-comments.rock">
@@ -618,10 +618,10 @@
     <None Update="programs\examples\04-boolean-logic\string-comparison.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\99-appendix\primary-lists.rock">
+    <None Update="programs\examples\06-expressions\primary-lists.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\99-appendix\variable-lists.rock">
+    <None Update="programs\examples\06-expressions\variable-lists.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\99-rockstar-acid-test\acid-test.rock">
@@ -758,6 +758,9 @@
     </None>
     <None Update="programs\examples\tutorial\cast.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\tutorial\listen.rock">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\tutorial\with-empty.rock">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

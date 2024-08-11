@@ -3,6 +3,7 @@ title: Functions
 layout: home
 examples: /examples/08-functions/
 nav_order: "1007"
+summary: Like many of the fine rock'n'rollers who inspired it, Rockstar can't really be said to be  functional - but it does have functions.
 ---
 Functions are declared with a variable name followed by the `takes` keyword (alias `wants`) and a list of arguments separated by one of the following: `and` `,` `&` `, and` `'n'`
 

@@ -3,6 +3,7 @@ title: Conversions and Mutations
 layout: home
 examples: /examples/10-conversions/
 nav_order: "1009"
+summary: "Every great entourage has a fixer: the person who sorts out those last few bits that weren't really anybody else's job. Conversions and mutations are Rockstar's fixers: if you need to parse strings into numbers, convert character codes, we got you."
 ---
 ### Conversions and Mutations
 

@@ -2,6 +2,7 @@
 title: Binary Logic
 layout: home
 nav_order: "1003"
+summary: Truth, truthiness, false, falseyness... and Rockstar is the only programming language in the world in which a variable can be totally non non non non NON heinous.
 ---
 ## Truthiness
 

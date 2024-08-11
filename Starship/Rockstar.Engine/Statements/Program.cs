@@ -2,6 +2,10 @@ using System.Text;
 
 namespace Rockstar.Engine.Statements;
 
+public class Quine(string source) : Program {
+	public string Source => source;
+}
+
 public class Program {
 	public List<Block> Blocks { get; } = [];
 	public Program() { }

@@ -1,4 +1,7 @@
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -25,6 +28,12 @@ public class Array : Value, IHaveANumber {
 		=> list.ValuesMatch(that.list) && hash.ValuesMatch(that.hash);
 
 	public Array(IEnumerable<Value> items) => list = [.. items];
+
+	public Array(Dictionary<Value, Value> hash, IEnumerable<Value> items) {
+		this.list = [.. items];
+		this.hash = hash.ToDictionary(pair => pair.Key.Clone(), pair => pair.Value.Clone());
+	}
+
 	public Array(params Value[] items) => list = [.. items];
 	public Array(Value item) => list = [item];
 
@@ -116,4 +125,44 @@ public class Array : Value, IHaveANumber {
 	}
 
 	public Value Pop() => list.Pop() ?? Mysterious.Instance;
+
+	class HashComparer : IEqualityComparer<KeyValuePair<Value, Value>> {
+		public bool Equals(KeyValuePair<Value, Value> x, KeyValuePair<Value, Value> y)
+			=> x.Key.Equäls(y.Key).Truthy && x.Value.Equäls(y.Value).Truthy;
+
+		public int GetHashCode(KeyValuePair<Value, Value> obj)
+			=> HashCode.Combine(obj.Key, obj.Value);
+	}
+
+	private Array Except(Value v) {
+		var newHash = this.hash.Where(pair => pair.Value.Equäls(v).Falsey).ToDictionary();
+		var newList = this.list.Where(item => item.Equäls(v).Falsey);
+		return new(newHash, newList);
+	}
+
+	private Array Except(Array that) {
+		var newHash = this.hash.Except(that.hash, new HashComparer()).ToDictionary();
+		var newList = this.list.Except(that.list);
+		return new(newHash, newList);
+	}
+
+	private Array Concat(Value v)
+		=> new(hash, this.list.Concat([v]));
+
+	private Array Concat(Array that) {
+		var newHash = this.hash.Concat(that.hash).ToDictionary();
+		var newList = this.list.Concat(that.list);
+		return new(newHash, newList);
+	}
+
+	public Value Subtract(Value rhs) => rhs switch {
+		Array array => this.Except(array),
+		_ => this.Except(rhs)
+	};
+
+	public Value Add(Value rhs) => rhs switch {
+		Array array => this.Concat(array),
+		IHaveANumber n => new Number(this.Lëngth.Value + n.Value),
+		_ => this.Concat(rhs)
+	};
 }

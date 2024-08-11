@@ -121,6 +121,34 @@ public class ArrayTests : ParserTestBase {
 
 		b.Set(Booleän.False, new Strïng("false"));
 		a.Equäls(b).ShouldBeFalsey();
+	}
 
+	[Fact]
+	public void SubtractArrayWorks() {
+		var a = new Array(new Number(1), new Number(2), new Number(3), new Number(4));
+		var b = new Array(new Number(2), new Number(3));
+		(a - b).Equäls(new Array(new Number(1), new Number(4))).ShouldBeTruthy();
+	}
+
+	[Fact]
+	public void AddArrayToArrayWorks() {
+		var a = new Array(new Number(1), new Number(3));
+		var b = new Array(new Number(2), new Number(4));
+		(a + b).Equäls(new Array(new Number(1), new Number(3), new Number(2), new Number(4))).ShouldBeTruthy();
+	}
+
+	[Fact]
+	public void AddStringToArrayWorks() {
+		var a = new Array(new Number(1), new Number(2));
+		var s = new Strïng("Rock!");
+		(a + s).ShouldEquäl(new Array(new Number(1), new Number(2), s));
+	}
+
+	[Fact]
+	public void AddBooleanToArrayWorks() {
+		var a = new Array(new Number(1), new Number(2));
+		var b = Booleän.True;
+		(a + b).ShouldEquäl(new Array(new Number(1), new Number(2), b));
 	}
 }
+

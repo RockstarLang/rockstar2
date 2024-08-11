@@ -1,11 +1,10 @@
-Rock ABBA with "Agnetha", "Anna-Frid", "Bjorn", "Benny"
+Rock ABBA with "Agnetha", "Anni-Frid", "Benny" 'n' "Björn"
 
-Rock the guys with "Bjorn", "Benny"
+Rock the guys with "Björn" & "Benny"
 
-Shout ABBA without the guys (prints: [ "Agnetha", "Anna-Frid" ])
+Shout ABBA without the guys (prints: [ "Agnetha", "Anni-Frid" ])
 
-Let Abbahead be ABBA with "Lemmy"
+Put ABBA without "Benny" with "Lemmy" into Abbahead
 
-Shout Abbahead (prints: [ "Agnetha", "Anna-Frid", "Bjorn", "Benny", "Lemmy ])
-
-
+Shout ABBA (prints: [ "Agnetha", "Anni-Frid", "Benny", "Björn" ])
+Shout Abbahead (prints: [ "Agnetha", "Anni-Frid", "Björn", "Lemmy" ])

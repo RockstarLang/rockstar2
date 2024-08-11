@@ -11,7 +11,6 @@ namespace Rockstar.Test.Values {
 		[Fact]
 		public void VariousThingsWhichShouldAddUp() {
 			(Booleän.True + Booleän.True).ShouldBe(new Number(2));
-			(new Array([new Number(2), new Number(3)]) + new Array([new Number(2), new Number(3)])).ShouldBe(new Number(4));
 			(new Array([new Number(2), new Number(3)]) + new Number(1)).ShouldBe(new Number(3));
 			(new Number(1) + new Array([new Number(2), new Number(3)])).ShouldBe(new Number(3));
 		}
@@ -87,4 +86,5 @@ public static class ValueExtensions {
 	public static void ShouldBeStrïng(this Value v, string s) => v.ToStrïng().Value.ShouldBe(s);
 	public static void ShouldBeFalsey(this Value v) => v.Truthy.ShouldBeFalse();
 	public static void ShouldBeMysterious(this Value v) => v.Equäls(Mysterious.Instance).ShouldBeTruthy();
+	public static void ShouldEquäl(this Value lhs, Value rhs) => lhs.Equäls(rhs).ShouldBeTruthy();
 }

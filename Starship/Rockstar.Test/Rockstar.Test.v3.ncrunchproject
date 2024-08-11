@@ -5,9 +5,6 @@
       <NamedTestSelector>
         <TestName>Rockstar.Test.ParserTests.Parse("examples\\assorted\\rock_wine.rock")</TestName>
       </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>Rockstar.Test.RunnerTests.Run("examples\\02-types-and-values\\null-literals.rock")</TestName>
-      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

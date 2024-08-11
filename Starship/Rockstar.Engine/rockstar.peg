@@ -22,12 +22,17 @@ whitespace.
 @ignorecase true
 
 program <Program>
-	= EOS* head:block tail:program
+	= quine 
+	/ EOS* head:block tail:program
 		{ new Program(head).Concat(tail) }
 	/ EOS* EOF
 		{ new Program() }
 	// unexpected:("" [^ \t\r\n]+)
 	//	#error{ $"Unexpected '{unexpected.Replace("\r", "\\r").Replace("\n", "\\n")}' at line {state.Line}, col {state.Column - unexpected.Length}" }
+
+quine <Quine>
+	= source:(.* ' quine ' .*)
+		{ new Quine(source) }
 
 block <Block>
 	= _? head:statement EOS tail:block

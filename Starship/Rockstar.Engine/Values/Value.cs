@@ -23,11 +23,13 @@ public abstract class Value : Expression {
 	public static Value operator /(Value lhs, IEnumerable<Value> rhs) => rhs.Aggregate(lhs, (memo, next) => memo / next);
 
 	public static Value operator +(Value lhs, Value rhs) => (lhs, rhs) switch {
+		(Array a, _) => a.Add(rhs),
 		(IHaveANumber a, IHaveANumber b) => new Number(a.Value + b.Value),
 		(_, _) => new Strïng(lhs.ToStrïng().Value + rhs.ToStrïng().Value),
 	};
 
 	public static Value operator -(Value lhs, Value rhs) => (lhs, rhs) switch {
+		(Array a, _) => a.Subtract(rhs),
 		(IHaveANumber a, IHaveANumber b) => new Number(a.Value - b.Value),
 		(_, _) => lhs.ToStrïng().Minus(rhs.ToStrïng())
 	};

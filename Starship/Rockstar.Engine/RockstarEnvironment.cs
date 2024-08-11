@@ -113,9 +113,15 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Crement crement => Crement(crement),
 		Debug debug => Debug(debug),
 		ExpressionStatement e => ExpressionStatement(e),
-
+		Ninja n => Ninja(n),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
+
+	private Result Ninja(Ninja ninja) {
+		var value = Strïng.Empty;
+		value.Append(Eval(ninja.Number));
+		return Assign(ninja.Variable, value);
+	}
 
 	private Result Output(Output output) {
 		var value = Eval(output.Expression);

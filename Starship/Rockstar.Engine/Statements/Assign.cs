@@ -24,6 +24,16 @@ public class Assign(Variable variable, Expression expression) : ExpressionStatem
 	}
 }
 
+public class Ninja(Variable variable, Number number) : Statement {
+	public Variable Variable => variable;
+	public Number Number => number;
+	public override StringBuilder Print(StringBuilder sb, string prefix) {
+		sb.AppendLine(prefix + "ninja:");
+		variable.Print(sb, prefix + INDENT);
+		return number.Print(sb, prefix + INDENT);
+	}
+}
+
 public class Listen : Statement {
 	public Variable? Variable { get; init; } = default;
 	public Listen() {}

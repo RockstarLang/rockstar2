@@ -75,9 +75,6 @@ Say her
 Say her times 456
 
 ```
-
-
-
 ## Poetic Literals
 
 One of Rockstar's unique features is the ability to initialise variables using song lyrics.
@@ -95,7 +92,15 @@ You can initialise string variables without quotes by using the `says` or `said`
 
 {% rockstar_include poetic-strings.rock %}
 
+## Ninja Strings
 
+Ninja strings are another unique feature of Rockstar, designed to let you hide strings inside the lyrics of your Rockstar programs. Using the `rock` keyword - which we'll learn more about in the chapter on arrays - you can append characters to the end of a string by providing their Unicode code point - and, combined with the `like` keyword, you can provide that code point as a poetic number:
+
+{% rockstar_include ninja-strings.rock %}
+
+You can initialise a ninja string using the `hold` or `holds` keyword. The left-hand argument is the name of the variable you're initialised, the right-hand side is the poetic number containing the code point of the character:
+
+{% rockstar_include ninja-strings-fizzbuzz.rock %}
 
 
 

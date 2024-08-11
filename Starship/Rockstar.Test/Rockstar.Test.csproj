@@ -159,6 +159,15 @@
     <None Update="programs\examples\03-variables\her-times-the-times.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\03-variables\ninja-strings-fizzbuzz.rock.out">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\03-variables\ninja-strings-fizzbuzz.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\03-variables\ninja-strings.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\03-variables\number-29-digits.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -451,9 +460,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\08-functions\pronoun-argument.rock">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="programs\examples\09-arrays\rock-strings.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\09-arrays\array-length-as-scalar.rock">

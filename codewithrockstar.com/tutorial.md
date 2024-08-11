@@ -97,7 +97,9 @@ The problem with literal strings is they often don't fit the mood of the song yo
 
 To get around this, Rockstar includes a feature that lets you build strings without ever having to refer to them directly: we call these **ninja strings**, because like ninjas, they are both stealthy *and* awesome.
 
-Using the `rock` keyword, you can add characters to the end of a string by specifying their ASCII/Unicode character codes. The `with` keyword is optional, and using the `like` keyword, you can build strings using poetic numbers corresponding to their character codes:
+* `<variable> holds <poetic number>` - will convert `<poetic number>` to the Unicode character with the corresponding code point, and assign `variable` to the resulting string.
+* `rock <variable> <number>` - will add characters to the end of a string based on their code points - and because you can use the `like` keyword:
+* `rock <variable> like <poetic_number>` will build a string out of pure poetry.
 
 {% rockstar_include ninja-strings.rock play,parse %}
 ## Booleans, Null, and Mysterious
@@ -139,6 +141,12 @@ A Rockstar pronoun refers to the last variable which was assigned, or the last v
 {% rockstar_include pronouns.rock play,parse,reset %}
 
 > Remember that although Rockstar has many different pronouns, at any given point in your program, every pronoun points to the same variable -- you can't have `him`, `her` and `it` pointing to different things. Trying to update pronoun subjects based on assumptions about gendered names would be hard enough even if rock'n'roll wasn't full of dudes called Tracii, Alice and Rachel...  you know that on the cover of "Rumours" by Fleetwood Mac, Stevie is the woman and Lindsay is the man? Yeah. You're gonna have to keep track of your own pronouns.
+
+The combination of pronouns and ninja strings means that if you ever *really* need to push an ASCII `DC3` control code onto the end of a string, you can do it using this line of code:
+
+```rockstar
+Rock you like a hurricane
+```
 ## Equality and Comparisons
 
 You might have noticed we've started using expressions like `X is 5` in our `if` and `while` loops. Rockstar supports all the logical, equality and comparison operators you'd expect to find in a proper programming language:

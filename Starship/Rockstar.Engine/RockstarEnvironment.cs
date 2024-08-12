@@ -13,6 +13,7 @@ public enum Scope {
 }
 
 public class RockstarEnvironment(IRockstarIO io) {
+	public const string VERSION = "v42.42.42-development";
 	public RockstarEnvironment(IRockstarIO io, RockstarEnvironment parent) : this(io) {
 		Parent = parent;
 	}

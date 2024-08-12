@@ -2,7 +2,6 @@ using Rockstar.Engine;
 namespace Rockstar;
 
 public static class Program {
-	const string VERSION = "__VERSION__";
 	private static readonly RockstarEnvironment env = new(new ConsoleIO());
 	private static readonly Parser parser = new();
 	public static void Main(string[] args) {
@@ -13,13 +12,14 @@ public static class Program {
 				break;
 			case 1:
 				if (args[0] == "--version") {
-					Console.WriteLine(VERSION);
+					Console.WriteLine(RockstarEnvironment.VERSION);
 					Environment.Exit(0);
 				}
 				RunFile(args[0]);
 				break;
 			default:
-				Console.WriteLine($"Rockstar {VERSION}. Type 'exit' to exit.");
+				Console.WriteLine($"Rockstar {RockstarEnvironment.VERSION} on {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
+				Console.WriteLine("Type 'exit' or Ctrl-D to exit.");
 				RunPrompt();
 				break;
 		}

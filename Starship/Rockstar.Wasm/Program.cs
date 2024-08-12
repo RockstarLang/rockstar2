@@ -1,3 +1,3 @@
 using System;
 
-Console.WriteLine("Rockstar WASM is running!");
+Console.WriteLine("Rockstar WASM is running.");

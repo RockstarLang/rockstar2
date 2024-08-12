@@ -116,6 +116,11 @@ div.rockstar-controls {
 		resize: vertical;
 		overflow-y: auto;
 		min-height: 120px;
+		&.loading-messages {
+			text-align: center;
+			color: $link-color;
+			font-style: italic;
+		}
 
 		&.parse-tree {
 			color: $link-color;

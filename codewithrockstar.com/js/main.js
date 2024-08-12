@@ -14,8 +14,9 @@ var rockCount = 0;
 var starshipLoaded = false;
 
 function handleMessageFromWorker(message) {
+	console.log(message);
 	if (message.data.type == "ready") {
-		console.log("Starship: READY");
+		console.log(message.data.status);
 		starshipLoaded = true;
 		clearLoadingMessages();
 		while (queuedMessages.length) {
@@ -49,29 +50,40 @@ worker.addEventListener("message", handleMessageFromWorker);
 
 var timeouts = [];
 var outputs = [];
-const INTERVAL = 1000;
 var queuedMessages = [];
 
 function clearLoadingMessages() {
 	while (timeouts.length) window.clearTimeout(timeouts.pop());
-	while (outputs.length) outputs.pop().innerText = "";
+	while (outputs.length) {
+		var output = outputs.pop();
+		output.innerText = "";
+		output.classList.remove("loading-messages");
+	}
 }
 
 function displayLoadingMessages(output) {
 	outputs.push(output);
-	for (var message of ["Initializing Rockstar...", "Firing up Starship engine...", "Getting ready to rock...",
+	output.classList.add("loading-messages");
+	[
+		"Initializing Rockstar engine...",
+		"Getting ready to rock...",
 		"Downloading WASM runtime...",
-		"Writing a set list...", "DRUM SOLO!", "Pretending to go off stage...",
-		"Waiting for audience chant", "ENCORE", "SECOND ENCORE", "THIRD ENCORE",
-		"It really should have loaded by now",
+		"Writing a set list...",
+		"DRUM SOLO!",
+		"Pretending to go off stage...",
+		"Waiting for audience chant...",
+		"ENCORE!",
+		"SECOND ENCORE!",
+		"THIRD ENCORE!",
+		"It really should have loaded by now.",
 		"...you're not on 56kbps dial-up, are you?",
-		"...you are? Cool. Modem noises",
-		"OK, this hasn't worked. Sorry",
-		"Try reloading the page."
-	]) {
-		let localMessage = message;
-		timeouts.push(window.setTimeout(() => output.innerText += localMessage + "\n", (1 + timeouts.length) * INTERVAL));
-	}
+		"...you are? Cool. Modem noises <brzzzzt-BEEP-BOOP>",
+		"OK, this hasn't worked. Sorry.",
+		"Maybe try reloading the page?",
+		"...ok, fine. BASS SOLO.",
+	].forEach((message, index) => {
+		timeouts.push(window.setTimeout(() => output.innerText += message + "\n", 1000 + (1000 * Math.pow(index, 1.5))));
+	});
 }
 
 function executeProgram(program, editorId, input) {

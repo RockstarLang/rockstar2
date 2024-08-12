@@ -12,6 +12,14 @@ public class WasmIO(Action<string> output, Queue<string> input) : IRockstarIO {
 }
 
 public partial class RockstarRunner {
+
+	[JSExport]
+	public static Task<string> Status() {
+		var status = $"Rockstar.Wasm on {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}";
+		Console.WriteLine(status);
+		return Task.Run(() => status);
+	}
+
 	private static readonly Parser parser = new();
 
 	[JSExport]

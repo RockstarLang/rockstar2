@@ -51,6 +51,7 @@ jobs:
       - name: build CodeMirror editor bundle with Rockstar language support
         run: |
           cd cm-lang-rockstar
+          npm install
           npm run test
           npm run prepare
       - name: Build codewithrockstar.com site

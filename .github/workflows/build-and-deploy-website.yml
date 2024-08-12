@@ -39,8 +39,6 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
-        # with:
-        #   working-directory: ./codewithrockstar.com
       - name: fetch rockstar-wasm-binary from cache
         uses: actions/cache/restore@v4
         id: restore-cached-wasm-binary
@@ -50,9 +48,12 @@ jobs:
           key: rockstar-wasm-binary
       - name: Copy WASM binaries into site source
         run: cp -r rockstar-wasm-binary/ codewithrockstar.com/wasm/
+      - name: build CodeMirror editor bundle with Rockstar language support
+        run: |
+          cd cm-lang-rockstar
+          npm run test
+          npm run prepare
       - name: Build codewithrockstar.com site
-        # Outputs to the './_site' directory by default
-        # working-directory: ./codewithrockstar.com <!-- THIS DOESN'T WORK WITH THE CUSTOM PLUGIN!
         run: |
           cd codewithrockstar.com
           ls -l /home/runner/work/rockstar2/rockstar2/codewithrockstar.com/examples/01-getting-started/hello-world.rock
@@ -60,11 +61,9 @@ jobs:
         env:
           JEKYLL_ENV: production
       - name: Upload artifact
-        # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./codewithrockstar.com/_site
-  # Deployment job
   deploy:
     environment:
       name: github-pages

@@ -18,7 +18,8 @@ html.page {
 		flex-wrap: wrap;
 		justify-content: space-between;
 		align-content: stretch;
-		column-gap: 20px;
+		gap: 20px;
+
 		div {
 			flex: 450px;
 			display: flex;
@@ -58,13 +59,11 @@ html.page {
 		width: 100%;
 		border-style: solid;
 		border-color: color.scale($button-color, $lightness: -50%);
-		flex-wrap: wrap;
-		gap: 20px;
-		padding: 0 10px;
+		padding: 20px 10px;
 
 		section {
 			display: flex;
-			gap: 20px;
+			column-gap: 20px;
 			max-width: 960px;
 			margin: 0px auto;
 			box-sizing: border-box;

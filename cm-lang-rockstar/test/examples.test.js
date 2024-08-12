@@ -12,9 +12,10 @@ for (var file of allFiles) {
 	rockFiles.push(file);
 }
 
-// test.each(rockFiles)("parser parses %p", (file) => {
-// 	let source = fs.readFileSync(path.join(examples, file), "utf8");
-// 	let result = parser.parse(source);
-// 	//console.log(result.toString());
-// });
+test.each(rockFiles)("parser parses %p", (file) => {
+ 	let source = fs.readFileSync(path.join(examples, file), "utf8");
+	expect(source.length).not.toBe(0);
+ 	// let result = parser.parse(source);
+ 	//console.log(result.toString());
+});
 

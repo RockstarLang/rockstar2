@@ -1,5 +1,4 @@
 import { styleTags, tags } from "@lezer/highlight"
-import { Ampersand, OxfordComma, Wildcard } from "./rockstar.terms";
 
 export const highlighting = styleTags({
 	ProperVariable: tags.variableName,

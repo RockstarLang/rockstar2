@@ -1,14 +1,14 @@
 @external propSource highlighting from "./rockstar-highlight.js"
 
- @top Program {
- 	Block (EOB+ Block)* EOF
- 	| EOF
- }
+@top Program {
+	Block (EOB+ Block)* EOF
+	| EOF
+}
 
- Block {
- 	Statement (EOS* Statement)* EOB
- 	| Statement EOF
-  }
+Block {
+	Statement (EOS* Statement)* EOB
+	| Statement EOF
+}
 
 @skip { Whitespace | Comment }
 
@@ -63,20 +63,20 @@ ReturnStatement { Return Back? Expression  }
 // 	variable Takes variableList Body
 // }
 
-// CallStatement {
-// 	Call variable With argumentList Into assignable
-// 	| Call variable With argumentList
-// 	| Call variable Into assignable
-// 	| Call variable
-// }
+ CallStatement {
+ 	Call variable With argumentList Into assignable
+ 	| Call variable With argumentList
+ 	| Call variable Into assignable
+ 	| Call variable
+}
 
-// FunctionCall {
-// 	variable Taking argumentList
-// }
+FunctionCall {
+ 	variable Taking argumentList
+}
 
-// argumentList { Primary ALS argumentList | Primary }
+argumentList { Primary ALS argumentList | Primary }
 
-// variableList { variable VLS variableList | variable | Null }
+variableList { variable VLS variableList | variable | Null }
 
 Assignment {
 	Put Expression Into assignable |
@@ -130,16 +130,16 @@ variable { ProperVariable | CommonVariable | SimpleVariable | Pronoun }
 	Using, While, With, Write
 }
 
-OxfordComma { ", AND" | ", ANd" | ", AnD" | ", And" | ", aND" | ", aNd" | ", anD" | ", and" }
 ALS { OxfordComma | XLS }
-VLS { "AND" | "ANd" | "AnD" | "And" | "aND" | "aNd" | "anD" | "and" | XLS }
+VLS { and | XLS }
 XLS { Comma Ampersand? | Nacton | Ampersand | Comma }
 
 @tokens {
- 	Ampersand { "&" }
- 	Comma { "," }
+	OxfordComma { ", " and }
+	Ampersand { "&" }
+	Comma { "," }
  	trailing_punctuation { (Comma | $[.?!;: \t])* }
-
+	and { "AND" | "ANd" | "AnD" | "And" | "aND" | "aNd" | "anD" | "and" }
  	Nacton { "n'" | "'n'" }
  	EOL { $[\r]? "\n" }
  	LineComment { "#" ![\n]* "\n" }

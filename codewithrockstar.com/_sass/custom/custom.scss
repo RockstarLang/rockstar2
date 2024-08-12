@@ -168,3 +168,15 @@ pre {
 	padding: 2px;
 	margin: 0;
 }
+
+article#teemill-gallery {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	section {
+		flex: 240px;
+		a {
+			width: 100%;
+		}
+	}
+}

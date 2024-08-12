@@ -9,6 +9,7 @@ html.page {
 		margin: 0px auto;
 		box-sizing: border-box;
 	}
+
 	main {
 		padding-top: 20px;
 	}
@@ -37,13 +38,17 @@ html.page {
 				flex-direction: column;
 				justify-content: space-between;
 
-				> div {
+				>div {
 					display: block;
 					flex: 1;
-					h3 i { font-size: 120%; padding-right: 5px; }
+
+					h3 i {
+						font-size: 120%;
+						padding-right: 5px;
+					}
 				}
 
-				> p {
+				>p {
 					flex: 0;
 					margin: 0;
 					font-weight: 300;
@@ -92,22 +97,26 @@ html.page {
 		position: relative;
 
 		h1 {
+			position: absolute;
 			top: 0;
 			left: 10px;
-			position: absolute;
 			z-index: 2;
 			display: block;
-			font-size: 0 !important;
-			height: 96px;
-			width: 300px;
-			background: url(/assets/img/rockstar-logotype.svg) left center no-repeat;
 
-			@media (max-width: 580px) {
-				background: url(/assets/img/rockstar-logotype-no-tail.svg) left center no-repeat;
-			}
+			a {
+				display: block;
+				font-size: 0 !important;
+				height: 96px;
+				width: 300px;
+				background: url(/assets/img/rockstar-logotype.svg) left center no-repeat;
 
-			@media (max-width: 480px) {
-				height: 64px;
+				@media (max-width: 580px) {
+					background: url(/assets/img/rockstar-logotype-no-tail.svg) left center no-repeat;
+				}
+
+				@media (max-width: 480px) {
+					height: 64px;
+				}
 			}
 		}
 
@@ -205,6 +214,7 @@ html.page {
 		padding: 20px;
 		font-size: 0.8em;
 		text-align: center;
+
 		div {
 			padding: 5px;
 		}

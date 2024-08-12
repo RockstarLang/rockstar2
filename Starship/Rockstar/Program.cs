@@ -19,7 +19,7 @@ public static class Program {
 				break;
 			default:
 				Console.WriteLine($"Rockstar {RockstarEnvironment.VERSION} on {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier}.");
-				Console.WriteLine("Type 'exit' or Ctrl-D to exit.");
+				Console.WriteLine("Type 'exit' to exit.");
 				RunPrompt();
 				break;
 		}

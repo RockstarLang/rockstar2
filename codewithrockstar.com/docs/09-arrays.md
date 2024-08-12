@@ -17,9 +17,9 @@ Rockstar supports JavaScript-style arrays. Arrays are zero-based, and dynamicall
 >
 > If not for this restriction, the parser would consume `2 is 4` as a comparison *("2 is 4 - true or false?")*, return `false`, try to set `My array at false` and then blow up 'cos there's nothing to put in it.
 
-Returning an array in a scalar context will return the current length of the array:
+Returning an array in a numeric context will return the current length of the array:
 
-{% rockstar_include array-length-as-scalar.rock %}
+{% rockstar_include array-length-as-scalar.rock %} 
 
 Array indexes can be of any type, and you can mix key types within the same array. The array length only considers keys whose values are non-negative integers:
 
@@ -38,7 +38,7 @@ Trying to assign an indexed value to an existing variable which is not an array 
 {% rockstar_include invalid-assignment.rock %}
 ### Queue operations
 
-Rockstar arrays can also be created and manipulated by the queue operations `rock` and `roll`. (The aliases `push` and `pop` are supported for Rockstar developers who are into 80s dance music.)
+Rockstar arrays can also be created and manipulated by the queue operations `rock` and `roll`. `push` and `pop` are supported for Rockstar developers who are into 80s dance music.
 #### Pushing elements onto an array
 
 To create a new empty array, `push` or `rock` the name of the array. To push an element onto the end of the array, `push <array> <expression>`.
@@ -76,5 +76,26 @@ The `roll` keyword will remove the first element from an array and return the 
 Rockstar also supports a special `roll x into y` syntax for removing the first element from an array and assigning it to a variable:
 
 {% rockstar_include roll-into.rock %}
+## Array Internals
 
+Under the hood, a Rockstar array actually contains two collections, known as the *list* and the *hash*. The list is an integer-indexed linear list of values; when you push, pop, rock and roll arrays, you're modifying the list. If you set elements whose key is not a non-negative integer, those elements are stored in the *hash*.
 ## Array Arithmetic
+
+As with strings, Rockstar tries hard to return *something* in every scenario, just in case one day somebody out there finds it useful.
+
+Adding arrays to numbers adds the *length* of the array (this is the same logic that kicks in when you test an array to see if there's anything left in it.) Adding anything else to an array will append it to the end of the array.
+
+{% rockstar_include adding-arrays.rock %}
+
+Subtracting arrays from arrays will return a new array, created by removing any elements in the second array from the elements of the first.
+
+* List elements are removed if the *value* is present
+* Hash elements will be removed if they match both the key and the value.
+
+ Subtracting any other value from an array returns a new array with any instances of the subtracted element removed.
+ 
+{% rockstar_include subtracting-arrays.rock %}
+
+
+
+

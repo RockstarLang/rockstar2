@@ -462,6 +462,9 @@
     <None Update="programs\examples\08-functions\pronoun-argument.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\09-arrays\adding-arrays.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\09-arrays\array-length-as-scalar.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -492,7 +495,7 @@
     <None Update="programs\examples\09-arrays\pop-and-roll.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="programs\examples\09-arrays\array-arithmetic.rock">
+    <None Update="programs\examples\09-arrays\subtracting-arrays.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\09-arrays\roll-assign.rock">

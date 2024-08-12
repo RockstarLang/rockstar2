@@ -3,7 +3,7 @@ title: Expression Lists
 layout: home
 examples: /examples/06-expressions/
 nav_order: "1005"
-summary: Rockstar expressions can do
+summary: What's the difference between a variable list, an expression list, and a primary list? Do you care? We care. Not a lot, but we do.
 ---
 ## Expression lists
 

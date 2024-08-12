@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.JavaScript;
-using System.Threading;
 using System.Threading.Tasks;
 using Rockstar.Engine;
 
@@ -18,6 +17,7 @@ public partial class RockstarRunner {
 	[JSExport]
 	public static Task<string> Run(string source,
 		[JSMarshalAs<JSType.Function<JSType.String>>] Action<string> output, string? input = null) {
+		Console.WriteLine("Running Rockstar program");
 		var inputQueue = new Queue<string>((input ?? "").Split(Environment.NewLine));
 		return Task.Run(() => {
 			var program = parser.Parse(source);
@@ -30,6 +30,7 @@ public partial class RockstarRunner {
 
 	[JSExport]
 	public static Task<string> Parse(string source) {
+		Console.WriteLine("Parsing Rockstar program");
 		return Task.Run(() => parser.Parse(source).ToString());
 	}
 }

@@ -52,7 +52,7 @@ statement -memoize
 	/ loop
 	/ conditional
 	/ declaration
-	/ assignment
+	/ a:assignment
 	/ enlistment
 	/ crement
 	/ mutation

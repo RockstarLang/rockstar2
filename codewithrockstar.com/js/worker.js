@@ -4,6 +4,8 @@ const { getAssemblyExports, getConfig } = await dotnet.withDiagnosticTracing(fal
 
 const config = getConfig();
 const exports = await getAssemblyExports(config.mainAssemblyName);
+await dotnet.run();
+self.postMessage({ type: "ready" });
 
 function report(editorId) {
 	return function (output) {

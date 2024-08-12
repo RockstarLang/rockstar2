@@ -11,9 +11,20 @@ const ROCK_BUTTON_HTML = "Rock <i class='fa-solid fa-play'></i>";
 const STOP_BUTTON_HTML = "Stop <i class='fa-solid  fa-sync fa-spin'></i>"
 
 var rockCount = 0;
+var starshipLoaded = false;
 
 function handleMessageFromWorker(message) {
-	if (message.data.editorId) {
+	if (message.data.type == "ready") {
+		console.log("Starship: READY");
+		starshipLoaded = true;
+		clearLoadingMessages();
+		while (queuedMessages.length) {
+			var message = queuedMessages.pop();
+			rockCount++;
+			worker.postMessage(message);
+			console.log(message);
+		}
+	} else if (message.data.editorId) {
 		var output = document.getElementById(`rockstar-output-${message.data.editorId}`);
 		if (message.data.type == "output") return output.innerText += message.data.output;
 		if (message.data.type == "error") {
@@ -36,9 +47,44 @@ function handleMessageFromWorker(message) {
 var worker = new Worker("/js/worker.js", { type: 'module' });
 worker.addEventListener("message", handleMessageFromWorker);
 
+var timeouts = [];
+var outputs = [];
+const INTERVAL = 1000;
+var queuedMessages = [];
+
+function clearLoadingMessages() {
+	while (timeouts.length) window.clearTimeout(timeouts.pop());
+	while (outputs.length) outputs.pop().innerText = "";
+}
+
+function displayLoadingMessages(output) {
+	outputs.push(output);
+	for (var message of ["Initializing Rockstar...", "Firing up Starship engine...", "Getting ready to rock...",
+		"Downloading WASM runtime...",
+		"Writing a set list...", "DRUM SOLO!", "Pretending to go off stage...",
+		"Waiting for audience chant", "ENCORE", "SECOND ENCORE", "THIRD ENCORE",
+		"It really should have loaded by now",
+		"...you're not on 56kbps dial-up, are you?",
+		"...you are? Cool. Modem noises",
+		"OK, this hasn't worked. Sorry",
+		"Try reloading the page."
+	]) {
+		let localMessage = message;
+		timeouts.push(window.setTimeout(() => output.innerText += localMessage + "\n", (1 + timeouts.length) * INTERVAL));
+	}
+}
+
 function executeProgram(program, editorId, input) {
-	rockCount++;
-	worker.postMessage({ command: "run", program: program, editorId: editorId, input: input });
+	var output = document.getElementById(`rockstar-output-${editorId}`);
+	var message = { command: "run", program: program, editorId: editorId, input: input };
+	if (!starshipLoaded) {
+		displayLoadingMessages(output);
+		queuedMessages.push(message);
+		console.log(queuedMessages);
+	} else {
+		rockCount++;
+		worker.postMessage(message);
+	}
 }
 
 function parseProgram(program, editorId) {
@@ -47,13 +93,13 @@ function parseProgram(program, editorId) {
 
 function stopTheRock() {
 	console.log("STOPPING THE ROCK...");
+	clearLoadingMessages();
 	worker.terminate();
 	worker = new Worker("/js/worker.js", { type: 'module' });
 	worker.addEventListener("message", handleMessageFromWorker);
 	document.querySelectorAll("button.rock-button").forEach((button) => {
 		button.innerHTML = ROCK_BUTTON_HTML;
 	})
-	// document.querySelectorAll("div.rockstar-controls div.output").forEach(div => div.innerHTML = "");
 	rockCount = 0;
 }
 

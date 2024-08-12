@@ -1,3 +1,9 @@
 Let the array at 5150 be "Van Halen".
 Write the array + 0 (writes: 5151)
 Write the array at 0 (writes: null)
+
+Rock my array with 1, 2, 3
+The counter is 0
+While the counter ain't the array
+Print "Counting " with the counter
+Build the counter up, yeah

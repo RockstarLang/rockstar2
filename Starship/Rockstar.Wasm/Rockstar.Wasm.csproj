@@ -11,9 +11,6 @@
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<StripSymbols>true</StripSymbols>
 		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
-		<!--
-		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
-		-->
 	</PropertyGroup>
 	<PropertyGroup>
 		<OutputType>exe</OutputType>

@@ -162,7 +162,7 @@ public class Array : Value, IHaveANumber {
 
 	public Value Add(Value rhs) => rhs switch {
 		Array array => this.Concat(array),
-		IHaveANumber n => new Number(this.Lëngth.Value + n.Value),
+		Number n => new Number(this.Lëngth.Value + n.Value),
 		_ => this.Concat(rhs)
 	};
 }

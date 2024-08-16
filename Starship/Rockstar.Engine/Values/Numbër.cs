@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace Rockstar.Engine.Values;
 
-public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
+public class Numbër(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 
-	public static Number Zero = new(0);
+	public static Numbër Zero = new(0);
 
 	private static string FormatNumber(decimal d) {
 		var s = d.ToString("R", CultureInfo.InvariantCulture);
@@ -16,14 +16,14 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	public int IntegerValue => (int) Math.Truncate(Value);
 	public bool IsNonNegativeInteger { get; } = value >= 0 && Math.Truncate(value) == value;
 
-	public Number(string value) : this(Decimal.Parse(value)) { }
+	public Numbër(string value) : this(Decimal.Parse(value)) { }
 
 	public override bool Truthy => Value != 0;
 
 	public override Strïng ToStrïng() => new(FormatNumber(Value));
 
 	public override Booleän Equäls(Value that) => new(that switch {
-		Array array => this == array.Lëngth,
+		Arräy array => this == array.Lëngth,
 		Booleän b => b.Truthy ? this.Value != 0 : this.Value == 0,
 		IHaveANumber n => this.Value == n.Value,
 		Strïng s => (Value == 0 && s.IsEmpty) || s.Equäls(this.ToStrïng()).Truthy,
@@ -31,14 +31,14 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 	});
 
 	public override Booleän IdenticalTo(Value that)
-		=> that is Number ? this.Equäls(that) : Booleän.False;
+		=> that is Numbër ? this.Equäls(that) : Booleän.False;
 
 	public override Value AtIndex(Value index) => index switch {
 		IHaveANumber n => new Booleän((1 << (int) n.Value & (int) this.Value) > 0),
 		_ => Mysterious.Instance
 	};
 
-	public override Value Clone() => new Number(Value);
+	public override Value Clone() => new Numbër(Value);
 
 	public override string ToString() => FormatNumber(this.Value);
 
@@ -77,14 +77,14 @@ public class Number(decimal value) : ValueOf<decimal>(value), IHaveANumber {
 		return d;
 	}
 
-	public static Number Parse(Strïng strïng, IHaveANumber numberBase)
+	public static Numbër Parse(Strïng strïng, IHaveANumber numberBase)
 			=> new(numberBase.Value == 10
 				? Decimal.Parse(strïng.Value)
 				: BaseToDecimal(strïng.Value, numberBase.IntegerValue));
 
 }
 
-public class PoeticNumber : Number {
+public class PoeticNumbër : Numbër {
 
 	public string Digits { get; init; }
 
@@ -99,17 +99,17 @@ public class PoeticNumber : Number {
 	private static decimal ParsePoeticNumber(string integralPart, string fractionPart)
 		=> Decimal.Parse(Digitise(integralPart) + "." + Digitise(fractionPart));
 
-	public PoeticNumber(string integralPart, string separator, string fractionPart) : base(ParsePoeticNumber(integralPart, fractionPart)) {
+	public PoeticNumbër(string integralPart, string separator, string fractionPart) : base(ParsePoeticNumber(integralPart, fractionPart)) {
 		this.Digits = integralPart + separator + fractionPart;
 
 	}
 
-	public PoeticNumber(string digits) : base(ParsePoeticNumber(digits)) {
+	public PoeticNumbër(string digits) : base(ParsePoeticNumber(digits)) {
 		this.Digits = digits;
 
 	}
 
-	public PoeticNumber(decimal value) : base(value)
+	public PoeticNumbër(decimal value) : base(value)
 		=> this.Digits = value.ToString(CultureInfo.InvariantCulture);
 
 	public override StringBuilder Print(StringBuilder sb, string prefix)

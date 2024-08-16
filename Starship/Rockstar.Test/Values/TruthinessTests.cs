@@ -19,8 +19,8 @@ public class TruthinessTests {
 
 	[Fact]
 	public void Number() {
-		new Number(-1).Truthy.ShouldBe(true);
-		new Number(1).Truthy.ShouldBe(true);
-		new Number(0).Truthy.ShouldBe(false);
+		new Numbër(-1).Truthy.ShouldBe(true);
+		new Numbër(1).Truthy.ShouldBe(true);
+		new Numbër(0).Truthy.ShouldBe(false);
 	}
 }

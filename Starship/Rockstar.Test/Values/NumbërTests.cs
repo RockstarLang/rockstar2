@@ -2,11 +2,11 @@ using Rockstar.Engine.Values;
 
 namespace Rockstar.Test.Values;
 
-public class NumberTests {
+public class NumbërTests {
 	[Fact]
 	public void NumberEqualityWorks() {
-		var a = new Number(2);
-		var b = new Number(2);
+		var a = new Numbër(2);
+		var b = new Numbër(2);
 		(a == b).ShouldBe(true);
 		a.Equals(b).ShouldBe(true);
 	}
@@ -27,6 +27,6 @@ public class NumberTests {
 	[InlineData("ZZTOP", 36, "60457993")]
 	[InlineData("OU812", 36, "41720870")]
 	public void ParsingWorks(string input, int @base, string result) {
-		Number.Parse(new(input), new Number(@base)).ToStrïng().ShouldBeStrïng(result);
+		Numbër.Parse(new(input), new Numbër(@base)).ToStrïng().ShouldBeStrïng(result);
 	}
 }

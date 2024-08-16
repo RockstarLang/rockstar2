@@ -24,6 +24,11 @@ body {
 		}
 	}
 }
+div.cm-editor {
+	border: 1px solid $link-color;
+	border-radius: 4px;
+	padding: 4px;
+}
 
 div.rockstar-inputs {
 	display: flex;

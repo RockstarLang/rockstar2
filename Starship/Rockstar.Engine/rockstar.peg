@@ -98,9 +98,9 @@ return_stmt <Return>
 
 function <Statement>
 	= name:variable _ takes _ null body:consequent
-		{ new Assign(name, new Function(body)) }
+		{ new Assign(name, new Functiön(body)) }
 	/ name:variable _ takes _ args:variable_list body:consequent
-		{ new Assign(name, new Function(args, body)) }
+		{ new Assign(name, new Functiön(args, body)) }
 
 variable_list <IEnumerable<Variable>>
 	= head:variable _VLS_ tail:variable_list { head.Concat(tail) }
@@ -435,27 +435,27 @@ math_round <Statement>
 
 
 constant <Value>
-	= null { Null.Instance }
+	= null { Nüll.Instance }
 	/ true { Booleän.True }
 	/ false { Booleän.False }
 	/ empty { Strïng.Empty }
 	/ mysterious { Mysterious.Instance }
 
-number <Number>
+number <Numbër>
 	= like _ n:poetic_number { n }
 	/ d:digits&{ decimal.TryParse(d, out var _) }
-		{ new Number(d) }
+		{ new Numbër(d) }
 	/ d:digits
 		#error{ $"Number {d} is out of range" }
 digits
 	= d:("" (('-' /'+')? [0-9]+ ("." [0-9]+)?)
 	/ (('-' /'+')? "." [0-9]+))
 
-poetic_number <PoeticNumber>
+poetic_number <PoeticNumbër>
 	= whole_part:poetic_digits _? separator:('...' / '…') _ fractional_part:poetic_digits
-		{ new PoeticNumber (whole_part, separator, fractional_part) }
+		{ new PoeticNumbër (whole_part, separator, fractional_part) }
 	/ digits:poetic_digits
-		{ new PoeticNumber(digits) }
+		{ new PoeticNumbër(digits) }
 
 // So... in Rockstar v1, you could say "desire is a lovestruck ladykiller"
 // Which worked. But for v2, poetic numbers have to start with 'like' or 'so'
@@ -466,11 +466,11 @@ poetic_number <PoeticNumber>
 v1_digit_filter
 	= &letter !keywords_which_can_begin_an_expression
 
-v1_poetic_number <Number>
+v1_poetic_number <Numbër>
 	= _? &v1_digit_filter whole_part:poetic_digits _? separator:('.') _ fractional_part:poetic_digits
-		{ new PoeticNumber (whole_part, separator, fractional_part) }
+		{ new PoeticNumbër (whole_part, separator, fractional_part) }
 	/ _? &v1_digit_filter digits:poetic_digits
-		{ new PoeticNumber(digits) }
+		{ new PoeticNumbër(digits) }
 
 PDS = ("" _ / [0-9\',;:?!+_/] )
 

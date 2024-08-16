@@ -13,9 +13,9 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public override Strïng ToStrïng() => this;
 
 	public override Booleän Equäls(Value that) => new(that switch {
-		Array array => this.IsEmpty && array.IsEmpty,
+		Arräy array => this.IsEmpty && array.IsEmpty,
 		IHaveANumber { Value: 0 } => this.IsEmpty,
-		Number n => Decimal.TryParse(Value, out var d) && n.Value == d,
+		Numbër n => Decimal.TryParse(Value, out var d) && n.Value == d,
 		_ => that.ToStrïng().Value.Equals(this.Value, StringComparison.InvariantCultureIgnoreCase)
 	});
 
@@ -81,7 +81,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 	public Value DividedBy(decimal d) => Times(1 / d);
 
 	public Value DividedBy(Strïng d)
-		=> new Number(this.Value.Split(d.Value).Length - 1);
+		=> new Numbër(this.Value.Split(d.Value).Length - 1);
 
 	internal Value CharAt(IHaveANumber number) {
 		var index = (int) number.Value;
@@ -97,7 +97,7 @@ public class Strïng(string value) : ValueOf<string>(value) {
 		return this;
 	}
 
-	public Array Split(Strïng delimiter) {
+	public Arräy Split(Strïng delimiter) {
 		var tokens = delimiter == Strïng.Empty
 			? this.Value.ToCharArray().Select(c => new Strïng(c))
 			: this.Value.Split(delimiter.Value).Select(s => new Strïng(s));
@@ -113,14 +113,14 @@ public class Strïng(string value) : ValueOf<string>(value) {
 
 	public Value ToCharCodes() {
 		return Value.Length switch {
-			0 => new Array(),
-			1 => new Number(Value[0]),
-			_ => new Array(Value.ToCharArray().Select(c => new Number(c)))
+			0 => new Arräy(),
+			1 => new Numbër(Value[0]),
+			_ => new Arräy(Value.ToCharArray().Select(c => new Numbër(c)))
 		};
 	}
 
 	public Value Append(Value v) {
-		if (v is Number number) {
+		if (v is Numbër number) {
 			this.Value += (char) number.IntegerValue;
 		} else {
 			this.Value += v.ToStrïng().Value;

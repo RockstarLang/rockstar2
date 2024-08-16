@@ -11,7 +11,7 @@ public class Mysterious : Value {
 	public override bool Truthy => false;
 	public override Strïng ToStrïng() => new("mysterious");
 	public override Booleän Equäls(Value that) => new(that switch {
-		Null _ => true,
+		Nüll _ => true,
 		Mysterious _ => true,
 		_ => false
 	});

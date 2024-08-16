@@ -1,2 +1,2 @@
-declare const coolGlow: import("@codemirror/state").Extension;
-export { coolGlow };
+declare const deepPurple: import("@codemirror/state").Extension;
+export { deepPurple };

@@ -24,13 +24,13 @@ public class Assign(Variable variable, Expression expression) : ExpressionStatem
 	}
 }
 
-public class Ninja(Variable variable, Number number) : Statement {
+public class Ninja(Variable variable, Numbër numbër) : Statement {
 	public Variable Variable => variable;
-	public Number Number => number;
+	public Numbër Numbër => numbër;
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.AppendLine(prefix + "ninja:");
 		variable.Print(sb, prefix + INDENT);
-		return number.Print(sb, prefix + INDENT);
+		return numbër.Print(sb, prefix + INDENT);
 	}
 }
 

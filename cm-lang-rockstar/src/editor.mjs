@@ -4,7 +4,7 @@ import { Rockstar } from "./rockstar"
 import { KitchenSink } from "./kitchen-sink"
 import { Prec } from "@codemirror/state";
 
-import { kitchenSink, blackSabbath, cobalt, dracula, espresso, solarizedLight, coolGlow, amy } from "./themes";
+import { deepPurple, kitchenSink, blackSabbath, cobalt, dracula, espresso, solarizedLight, coolGlow, amy } from "./themes";
 
 export {
 	EditorView, basicSetup,
@@ -20,5 +20,6 @@ export {
 	dracula,
 	solarizedLight,
 	coolGlow,
-	amy
+	amy,
+	deepPurple
 };

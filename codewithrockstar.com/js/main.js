@@ -3,7 +3,8 @@ import {
 	// Language definitions
 	Rockstar, KitchenSink,
 	// themes
-	kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight, coolGlow, amy
+	kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight, coolGlow, amy,
+	deepPurple
 } from './codemirror/editor.js';
 
 const ROCK_BUTTON_HTML = "Rock <i class='fa-solid fa-play'></i>";
@@ -258,10 +259,7 @@ function configureControls(preElement) {
 	let list = (preElement.getAttribute("data-controls") ?? "").split(",");
 	let controls = {};
 	for (var option of options) controls[option] = true;
-	if (list.length == 1 && list[0] == '') {
-		console.log(controls);
-		return controls;
-	}
+	if (list.length == 1 && list[0] == '') return controls;
 	if (list.includes("all")) return controls;
 	for (var option of options) controls[option] = list.includes(option);
 	return controls;
@@ -277,8 +275,8 @@ document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 		content: originalSource,
 		editorElement: preElement,
 		parseTreeTextarea: document.getElementById('parseTreeTextarea'),
-		language: null, // Rockstar
-		theme: coolGlow, // kitchenSink
+		language: Rockstar, // Rockstar
+		theme: deepPurple, // kitchenSink
 		editorId: editorId
 	};
 	var editorView = replaceElementWithEditor(settings);
@@ -301,8 +299,16 @@ document.querySelectorAll(('code.language-rockstar')).forEach((codeElement) => {
 	preElement.parentNode.insertBefore(controlPanel, preElement);
 });
 
-document.querySelectorAll(('code.language-kitchen-sink')).forEach((el) => {
-	replaceElementWithEditor(el, KitchenSink, kitchenSink);
+document.querySelectorAll(('code.language-kitchen-sink')).forEach((codeElement) => {
+	let preElement = codeElement.parentElement;
+	editorId++;
+	var content = codeElement.innerText;
+	// kitchenSink, blackSabbath, espresso, cobalt, dracula, solarizedLight, coolGlow, amy
+	let extensions = [ basicSetup, KitchenSink(), deepPurple ];
+	let view = new EditorView({ doc: content, extensions: extensions });
+	preElement.parentNode.insertBefore(view.dom, preElement);
+	preElement.style.display = "none";
+	return view;
 });
 
 

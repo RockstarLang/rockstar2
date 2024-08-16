@@ -17,15 +17,14 @@ foreach (var file in files) {
 	Exception? exception = null;
 	try {
 		var program = parser.Parse(File.ReadAllText(file));
-		parseTime = (int) (stopwatch.ElapsedMilliseconds / FACTOR);
+		parseTime = (int) stopwatch.ElapsedMilliseconds;
 		var io = new StringBuilderIO(() => "1");
 		var e = new RockstarEnvironment(io);
-		stopwatch.Restart();
-		//var timeout = Task.Delay(TimeSpan.FromMilliseconds(1000));
-		//error = await Task.WhenAny(Task.Run(() => e.Execute(program)), timeout) == timeout;
 		error = false;
 		e.Execute(program);
-		runTime = (int) stopwatch.ElapsedMilliseconds / FACTOR;
+		stopwatch.Restart();
+		for (var i = 0; i < 10; i++) e.Execute(program);
+		runTime = (int) stopwatch.ElapsedMilliseconds;
 	} catch (Exception ex) {
 		exception = ex;
 		error = true;
@@ -33,17 +32,17 @@ foreach (var file in files) {
 	stopwatch.Stop();
 	var reportPath = file.Replace(fullPath, "").TrimStart(Path.DirectorySeparatorChar);
 	Console.ForegroundColor = ConsoleColor.Blue;
-	Console.Write(String.Empty.PadRight(parseTime, '#'));
+	Console.Write(String.Empty.PadRight(parseTime / FACTOR, '#'));
 	if (error) {
 		Console.ForegroundColor = ConsoleColor.Red;
 		var boom = exception == default ? "TIMEOUT" : exception.Message;
 		Console.Write(boom);
-		var pad = Math.Max(0, 60 - parseTime - boom.Length);
+		var pad = Math.Max(0, 60 - (parseTime / FACTOR) - boom.Length);
 		Console.Write(String.Empty.PadRight(pad));
 	} else {
 		Console.ForegroundColor = ConsoleColor.Yellow;
-		Console.Write(String.Empty.PadRight(runTime, '#'));
-		var pad = Math.Max(0, 60 - parseTime - runTime);
+		Console.Write(String.Empty.PadRight(runTime / FACTOR, '#'));
+		var pad = Math.Max(0, 60 - (parseTime / FACTOR - runTime / FACTOR));
 		Console.Write(String.Empty.PadRight(pad));
 	}
 

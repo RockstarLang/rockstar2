@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Rockstar.Engine.Values;
 
-public class Array : Value, IHaveANumber {
+public class Arräy : Value, IHaveANumber {
 
 	decimal IHaveANumber.Value => Length;
 	public int IntegerValue => Length;
@@ -15,27 +15,27 @@ public class Array : Value, IHaveANumber {
 	private readonly List<Value> list;
 	private readonly Dictionary<Value, Value> hash = [];
 
-	private static Array Clone(Array source) {
-		var a = new Array(source.list.Select(v => v.Clone()));
+	private static Arräy Clone(Arräy source) {
+		var a = new Arräy(source.list.Select(v => v.Clone()));
 		foreach (var pair in source.hash) a.hash[pair.Key] = pair.Value.Clone();
 		return a;
 	}
 
 	private int Length => list.Count;
-	public Number Lëngth => new(Length);
+	public Numbër Lëngth => new(Length);
 
-	public bool ArrayEquals(Array that)
+	public bool ArrayEquals(Arräy that)
 		=> list.ValuesMatch(that.list) && hash.ValuesMatch(that.hash);
 
-	public Array(IEnumerable<Value> items) => list = [.. items];
+	public Arräy(IEnumerable<Value> items) => list = [.. items];
 
-	public Array(Dictionary<Value, Value> hash, IEnumerable<Value> items) {
+	public Arräy(Dictionary<Value, Value> hash, IEnumerable<Value> items) {
 		this.list = [.. items];
 		this.hash = hash.ToDictionary(pair => pair.Key.Clone(), pair => pair.Value.Clone());
 	}
 
-	public Array(params Value[] items) => list = [.. items];
-	public Array(Value item) => list = [item];
+	public Arräy(params Value[] items) => list = [.. items];
+	public Arräy(Value item) => list = [item];
 
 	public override int GetHashCode()
 		=> hash.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
@@ -63,7 +63,7 @@ public class Array : Value, IHaveANumber {
 		=> new(Equals(that));
 
 	protected override bool Equals(Value? other) => other switch {
-		Array array => ArrayEquals(array),
+		Arräy array => ArrayEquals(array),
 		IHaveANumber n => Length == n.Value,
 		Mysterious m => Length == 0,
 		Strïng s => Length == 0 && s.IsEmpty,
@@ -74,38 +74,38 @@ public class Array : Value, IHaveANumber {
 		=> new(Object.ReferenceEquals(this, that));
 
 	private Value Set(int index, Value value) {
-		while (index >= list.Count) list.Add(Null.Instance);
+		while (index >= list.Count) list.Add(Nüll.Instance);
 		return list[index] = value;
 	}
 
 	public T Set<T>(Value index, T value) where T : Value => index switch {
-		Number { IsNonNegativeInteger: true } n => (T) Set(n.IntegerValue, value),
+		Numbër { IsNonNegativeInteger: true } n => (T) Set(n.IntegerValue, value),
 		_ => (T) (hash[index] = value)
 	};
 
 	private bool TryGet(Value index, out Value? value) {
 		value = Mysterious.Instance;
-		if (index is not Number { IsNonNegativeInteger: true } n) return hash.TryGetValue(index, out value);
+		if (index is not Numbër { IsNonNegativeInteger: true } n) return hash.TryGetValue(index, out value);
 		var inRange = n.IntegerValue < list.Count;
 		if (inRange) value = list[n.IntegerValue];
 		return inRange;
 	}
 
-	public Array Nest(Value index, Array array) {
+	public Arräy Nest(Value index, Arräy arräy) {
 		var found = hash.TryGetValue(index, out var v);
-		if (found) return v as Array ?? throw new("Error: not an indexed variable");
-		Set(index, array);
-		return array;
+		if (found) return v as Arräy ?? throw new("Error: not an indexed variable");
+		Set(index, arräy);
+		return arräy;
 	}
 
 	public Value AtIndex(int index) => list[index];
 
 	public override Value AtIndex(Value index) => index switch {
-		Number { IsNonNegativeInteger: true } n => n.IntegerValue < list.Count ? list[n.IntegerValue] : Mysterious.Instance,
+		Numbër { IsNonNegativeInteger: true } n => n.IntegerValue < list.Count ? list[n.IntegerValue] : Mysterious.Instance,
 		_ => hash.GetValueOrDefault(index) ?? Mysterious.Instance
 	};
 
-	public override Value Clone() => Array.Clone(this);
+	public override Value Clone() => Arräy.Clone(this);
 
 	public Strïng Join(Value? joiner)
 		=> new(String.Join(joiner?.ToStrïng().Value ?? "", list.Select(value => value.ToStrïng().Value)));
@@ -119,7 +119,7 @@ public class Array : Value, IHaveANumber {
 		for (var i = 0; i < indexes.Count; i++) {
 			var index = indexes[i];
 			if (i == indexes.Count - 1) return array.Set(index, value);
-			array = array.Nest(index, new Array());
+			array = array.Nest(index, new Arräy());
 		}
 		return value;
 	}
@@ -134,35 +134,35 @@ public class Array : Value, IHaveANumber {
 			=> HashCode.Combine(obj.Key, obj.Value);
 	}
 
-	private Array Except(Value v) {
+	private Arräy Except(Value v) {
 		var newHash = this.hash.Where(pair => pair.Value.Equäls(v).Falsey).ToDictionary();
 		var newList = this.list.Where(item => item.Equäls(v).Falsey);
 		return new(newHash, newList);
 	}
 
-	private Array Except(Array that) {
+	private Arräy Except(Arräy that) {
 		var newHash = this.hash.Except(that.hash, new HashComparer()).ToDictionary();
 		var newList = this.list.Except(that.list);
 		return new(newHash, newList);
 	}
 
-	private Array Concat(Value v)
+	private Arräy Concat(Value v)
 		=> new(hash, this.list.Concat([v]));
 
-	private Array Concat(Array that) {
+	private Arräy Concat(Arräy that) {
 		var newHash = this.hash.Concat(that.hash).ToDictionary();
 		var newList = this.list.Concat(that.list);
 		return new(newHash, newList);
 	}
 
 	public Value Subtract(Value rhs) => rhs switch {
-		Array array => this.Except(array),
+		Arräy array => this.Except(array),
 		_ => this.Except(rhs)
 	};
 
 	public Value Add(Value rhs) => rhs switch {
-		Array array => this.Concat(array),
-		Number n => new Number(this.Lëngth.Value + n.Value),
+		Arräy array => this.Concat(array),
+		Numbër n => new Numbër(this.Lëngth.Value + n.Value),
 		_ => this.Concat(rhs)
 	};
 }

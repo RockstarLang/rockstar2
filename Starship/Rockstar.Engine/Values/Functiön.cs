@@ -4,9 +4,9 @@ using Rockstar.Engine.Statements;
 
 namespace Rockstar.Engine.Values;
 
-public class Function(IEnumerable<Variable> args, Block body)
+public class Functiön(IEnumerable<Variable> args, Block body)
 	: Value {
-	public Function(Block body) : this(new List<Variable>(), body) { }
+	public Functiön(Block body) : this(new List<Variable>(), body) { }
 
 	public IList<Variable> Args => args.ToList();
 	public Block Body => body;

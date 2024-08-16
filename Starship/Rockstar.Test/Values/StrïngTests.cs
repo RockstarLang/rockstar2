@@ -74,7 +74,7 @@ public class StrïngTests {
 	[InlineData("banana", "na", 2.0)]
 	[InlineData("one potato two potato three potato four", "potato", 3.0)]
 	public void StringDivisionByStringWorks(string numerator, string denominator, decimal quotient)
-		=> new Strïng(numerator).DividedBy(new Strïng(denominator)).ShouldBe(new Number(quotient));
+		=> new Strïng(numerator).DividedBy(new Strïng(denominator)).ShouldBe(new Numbër(quotient));
 
 	[Theory]
 	[InlineData("a", 1.0, "a")]

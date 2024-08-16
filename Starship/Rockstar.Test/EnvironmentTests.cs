@@ -11,7 +11,7 @@ namespace Rockstar.Test {
 			var e1 = new RockstarEnvironment(io);
 			var foo = new SimpleVariable("foo");
 			var bar = new SimpleVariable("bar");
-			var value = new Number(123);
+			var value = new Numbër(123);
 			var e2 = e1.Extend();
 			var e3 = e2.Extend();
 			var e4 = e3.Extend();
@@ -20,7 +20,7 @@ namespace Rockstar.Test {
 			e4.GetStore(foo, Scope.Global).ShouldBe(e1);
 			e4.GetStore(bar, Scope.Global).ShouldBe(e2);
 
-			var n = new Number(456);
+			var n = new Numbër(456);
 			e4.SetVariable(foo, n, Scope.Local);
 			e4.Lookup(foo).ShouldBe(n);
 			e3.Lookup(foo).ShouldBe(value);
@@ -55,8 +55,8 @@ namespace Rockstar.Test {
 			var v1 = new CommonVariable(name1);
 			var v2 = new CommonVariable(name2);
 			v1.Key.ShouldBe(v2.Key);
-			e.Assign(v1, new Number(123));
-			e.Lookup(v2).ShouldBe(new Number(123));
+			e.Assign(v1, new Numbër(123));
+			e.Lookup(v2).ShouldBe(new Numbër(123));
 		}
 
 		[Theory]
@@ -70,8 +70,8 @@ namespace Rockstar.Test {
 			var v1 = new ProperVariable(name1);
 			var v2 = new ProperVariable(name2);
 			v1.Key.ShouldBe(v2.Key);
-			e.Assign(v1, new Number(123));
-			e.Lookup(v2).ShouldBe(new Number(123));
+			e.Assign(v1, new Numbër(123));
+			e.Lookup(v2).ShouldBe(new Numbër(123));
 		}
 	}
 }

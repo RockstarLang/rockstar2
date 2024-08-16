@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
-using Array = Rockstar.Engine.Values.Array;
 using Debug = Rockstar.Engine.Statements.Debug;
 
 namespace Rockstar.Engine;
@@ -65,11 +64,11 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Value SetLocal(Variable variable, IList<Value> indexes, Value value) {
 		if (!indexes.Any()) return variables[variable.Key] = value;
-		variables.TryAdd(variable.Key, new Array());
+		variables.TryAdd(variable.Key, new Arräy());
 		return variables[variable.Key] switch {
-			Array array => array.Set(indexes, value),
+			Arräy array => array.Set(indexes, value),
 			Strïng s => s.SetCharAt(indexes, value),
-			Number n => n.SetBit(indexes, value),
+			Numbër n => n.SetBit(indexes, value),
 			_ => throw new($"{variable.Name} is not an indexed variable")
 		};
 	}
@@ -121,7 +120,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Ninja(Ninja ninja) {
 		var value = Strïng.Empty;
-		value.Append(Eval(ninja.Number));
+		value.Append(Eval(ninja.Numbër));
 		return Assign(ninja.Variable, value);
 	}
 
@@ -147,17 +146,17 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Result Crement(Crement crement) {
 		var variable = QualifyPronoun(crement.Variable);
 		return Eval(variable) switch {
-			Null n => Assign(variable, new Number(crement.Delta)),
+			Nüll n => Assign(variable, new Numbër(crement.Delta)),
 			Booleän b => crement.Delta % 2 == 0 ? new(b) : Assign(variable, b.Negate),
-			IHaveANumber n => Assign(variable, new Number(n.Value + crement.Delta)),
-			Strïng s => s.IsEmpty ? Assign(variable, new Number(crement.Delta)) : throw new($"Cannot increment '{variable.Name}' - strings can only be incremented if they're empty"),
+			IHaveANumber n => Assign(variable, new Numbër(n.Value + crement.Delta)),
+			Strïng s => s.IsEmpty ? Assign(variable, new Numbër(crement.Delta)) : throw new($"Cannot increment '{variable.Name}' - strings can only be incremented if they're empty"),
 			{ } v => throw new($"Cannot increment '{variable.Name}' because it has type {v.GetType().Name}")
 		};
 	}
 
 	private Result Listen(Listen l) {
 		var input = ReadInput();
-		Value value = input == default ? new Null() : new Strïng(input);
+		Value value = input == default ? new Nüll() : new Strïng(input);
 		if (l.Variable != default) SetVariable(l.Variable, value);
 		return new(value);
 	}
@@ -180,7 +179,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private static Value Cast(Value source, Value? modifier) {
 		return source switch {
 			Strïng s => modifier switch {
-				IHaveANumber numberBase => Number.Parse(s, numberBase),
+				IHaveANumber numberBase => Numbër.Parse(s, numberBase),
 				_ => s.ToCharCodes()
 			},
 			IHaveANumber n => new Strïng(Char.ConvertFromUtf32((int) n.Value)),
@@ -188,21 +187,21 @@ public class RockstarEnvironment(IRockstarIO io) {
 		};
 	}
 
-	private static Array Split(Value source, Value? modifier) {
+	private static Arräy Split(Value source, Value? modifier) {
 		if (source is not Strïng s) throw new("Only strings can be split.");
 		var splitter = modifier?.ToStrïng() ?? Strïng.Empty;
 		return s.Split(splitter);
 	}
 
 	private static Value Join(Value source, Value? joiner) {
-		if (source is not Array array) throw new("Can't join something which is not an array.");
+		if (source is not Arräy array) throw new("Can't join something which is not an array.");
 		return array.Join(joiner);
 	}
 
 	private Result Rounding(Rounding r) {
 		var value = Lookup(r.Variable);
-		if (value is not Number n) throw new($"Can't apply rounding to variable {r.Variable.Name} of type {value.GetType().Name}");
-		var rounded = new Number(r.Round switch {
+		if (value is not Numbër n) throw new($"Can't apply rounding to variable {r.Variable.Name} of type {value.GetType().Name}");
+		var rounded = new Numbër(r.Round switch {
 			Round.Down => Math.Floor(n.Value),
 			Round.Up => Math.Ceiling(n.Value),
 			Round.Nearest => Math.Round(n.Value),
@@ -216,9 +215,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var variable = QualifyPronoun(pop.Variable);
 		var value = LookupValue(variable.Key);
 		return value switch {
-			Array array => new(array.Pop()),
+			Arräy array => new(array.Pop()),
 			Strïng strïng => new(strïng.Pop()),
-			_ => new(Null.Instance)
+			_ => new(Nüll.Instance)
 		};
 	}
 
@@ -226,9 +225,9 @@ public class RockstarEnvironment(IRockstarIO io) {
 		var variable = QualifyPronoun(dequeue.Variable);
 		var value = LookupValue(variable.Key);
 		return value switch {
-			Array array => new(array.Dequeue()),
+			Arräy array => new(array.Dequeue()),
 			Strïng strïng => new(strïng.Dequeue()),
-			_ => new(Null.Instance)
+			_ => new(Nüll.Instance)
 		};
 	}
 
@@ -240,8 +239,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 			return new(s);
 		}
 
-		if (value is not Array array) {
-			array = value == Mysterious.Instance ? new Array() : new(value);
+		if (value is not Arräy array) {
+			array = value == Mysterious.Instance ? new Arräy() : new(value);
 			SetLocal(variable, array);
 		}
 		foreach (var expr in e.Expressions) array.Push(Eval(expr));
@@ -261,7 +260,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 	private Result Call(FunctionCall call, Queue<Expression> bucket) {
 		var value = Lookup(call.Function);
 		if (value is not Closure closure) throw new($"'{call.Function.Name}' is not a function");
-		var names = closure.Function.Args.ToList();
+		var names = closure.Functiön.Args.ToList();
 
 		List<Value> values = [];
 
@@ -325,12 +324,12 @@ public class RockstarEnvironment(IRockstarIO io) {
 		=> Assign(assign.Variable, Eval(assign.Expression), Scope.Global);
 
 	public Result Assign(Variable variable, Value value, Scope scope = Scope.Global) => value switch {
-		Function function => SetVariable(variable, MakeLambda(function, variable), Scope.Local),
+		Functiön function => SetVariable(variable, MakeLambda(function, variable), Scope.Local),
 		_ => SetVariable(variable, value, scope)
 	};
 
-	private Value MakeLambda(Function function, Variable variable)
-		=> this.Parent == default ? new(function, variable, this.Extend()) : new Closure(function, variable, this);
+	private Value MakeLambda(Functiön functiön, Variable variable)
+		=> this.Parent == default ? new(functiön, variable, this.Extend()) : new Closure(functiön, variable, this);
 
 	private Value LookupValue(string key) {
 		if (variables.TryGetValue(key, out var value)) return value;

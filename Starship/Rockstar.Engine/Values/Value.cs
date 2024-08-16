@@ -23,19 +23,19 @@ public abstract class Value : Expression {
 	public static Value operator /(Value lhs, IEnumerable<Value> rhs) => rhs.Aggregate(lhs, (memo, next) => memo / next);
 
 	public static Value operator +(Value lhs, Value rhs) => (lhs, rhs) switch {
-		(Array a, _) => a.Add(rhs),
-		(IHaveANumber a, IHaveANumber b) => new Number(a.Value + b.Value),
+		(Arräy a, _) => a.Add(rhs),
+		(IHaveANumber a, IHaveANumber b) => new Numbër(a.Value + b.Value),
 		(_, _) => new Strïng(lhs.ToStrïng().Value + rhs.ToStrïng().Value),
 	};
 
 	public static Value operator -(Value lhs, Value rhs) => (lhs, rhs) switch {
-		(Array a, _) => a.Subtract(rhs),
-		(IHaveANumber a, IHaveANumber b) => new Number(a.Value - b.Value),
+		(Arräy a, _) => a.Subtract(rhs),
+		(IHaveANumber a, IHaveANumber b) => new Numbër(a.Value - b.Value),
 		(_, _) => lhs.ToStrïng().Minus(rhs.ToStrïng())
 	};
 
 	public static Value operator *(Value lhs, Value rhs) => (lhs, rhs) switch {
-		(IHaveANumber a, IHaveANumber b) => new Number(a.Value * b.Value),
+		(IHaveANumber a, IHaveANumber b) => new Numbër(a.Value * b.Value),
 		(IHaveANumber n, Strïng s) => s.Times(n.Value),
 		(Strïng s, IHaveANumber n) => s.Times(n.Value),
 		(Strïng s1, Strïng s2) => s1.Times(s2),
@@ -43,7 +43,7 @@ public abstract class Value : Expression {
 	};
 
 	public static Value operator /(Value lhs, Value rhs) => (lhs, rhs) switch {
-		(IHaveANumber a, IHaveANumber b) => new Number(a.Value / b.Value),
+		(IHaveANumber a, IHaveANumber b) => new Numbër(a.Value / b.Value),
 		(Strïng s, IHaveANumber n) => s.DividedBy(n.Value),
 		(_, Strïng s2) => lhs.ToStrïng().DividedBy(s2),
 		(_, _) => throw new NotImplementedException($"I don't know how to divide {lhs.GetType().Name} by {rhs.GetType().Name}")
@@ -57,8 +57,8 @@ public abstract class Value : Expression {
 
 	public Booleän Compare(Value lhs, Value rhs, Func<decimal, decimal, bool> comp)
 		=> new((lhs, rhs) switch {
-			(Array array, IHaveANumber n) => comp(array.Lëngth.Value, n.Value),
-			(IHaveANumber n, Array array) => comp(n.Value, array.Lëngth.Value),
+			(Arräy array, IHaveANumber n) => comp(array.Lëngth.Value, n.Value),
+			(IHaveANumber n, Arräy array) => comp(n.Value, array.Lëngth.Value),
 			(Strïng s, _) => comp(Compare(s, rhs.ToStrïng()), 0),
 			(_, Strïng s) => comp(Compare(lhs.ToStrïng(), s), 0),
 			(IHaveANumber lhn, IHaveANumber rhn) => comp(lhn.Value, rhn.Value),

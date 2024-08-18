@@ -105,8 +105,16 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 
 	public bool HasExpectedErrors(string label) => ExtractedExpectedError(label, out _);
 
-	public Queue<string>? SimulateInputs()
-		=> File.Exists(AbsolutePath + ".in") ? new(File.ReadAllLines(AbsolutePath + ".in")) : null;
+	public Queue<string>? SimulateInputs() {
+		foreach (var path in new[] {
+			AbsolutePath + ".in",
+			AbsolutePath.Replace("-part-1.rock", ".rock.in"),
+			AbsolutePath.Replace("-part-2.rock", ".rock.in")
+		}) {
+			if (File.Exists(path)) return new(File.ReadAllLines(path));
+		}
+		return null;
+	}
 
 	public void Deserialize(IXunitSerializationInfo info) {
 		this.AbsolutePath = info.GetValue<string>("path");

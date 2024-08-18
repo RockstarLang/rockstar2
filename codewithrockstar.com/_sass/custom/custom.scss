@@ -101,6 +101,8 @@ div.rockstar-controls {
 			text-align: left;
 			color: $button-text !important;
 			i {
+				position: relative;
+				top: 1px;
 				float: right;
 			}
 		}
@@ -126,6 +128,7 @@ div.rockstar-controls {
 			color: $link-color;
 			font-style: italic;
 		}
+		background: rgba(0,0,0,0.75);
 
 		&.parse-tree {
 			color: $link-color;

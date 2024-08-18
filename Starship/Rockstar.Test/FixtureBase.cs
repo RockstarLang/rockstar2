@@ -34,11 +34,11 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 		testOutput.WriteLine(ncrunchOutputMessage);
 	}
 
-	protected string RunProgram(Program program, Queue<string>? inputs = null) {
+	protected (Result, string) RunProgram(Program program, Queue<string>? inputs = null) {
 		string? ReadInput() => inputs != null && inputs.TryDequeue(out var result) ? result : null;
 		var env = new TestEnvironment(ReadInput);
-		env.Execute(program);
-		return env.Output;
+		var result = env.Execute(program);
+		return (result, env.Output);
 	}
 
 	//public bool CheckForExpectedError(string filePath, string directory, string label, out string? error) {
@@ -85,30 +85,34 @@ public abstract class FixtureBase(ITestOutputHelper testOutput) {
 			PrettyPrint(rockFile, ex);
 			throw;
 		}
-		var result = String.Empty;
+		var output = String.Empty;
 		try {
 			var inputs = rockFile.SimulateInputs();
-			result = RunProgram(program, inputs);
+			(var result, output) = RunProgram(program, inputs);
 			var expect = rockFile.ExpectedOutput;
-			if (String.IsNullOrEmpty(expect)) return;
+			if (String.IsNullOrEmpty(expect)) {
+				testOutput.WriteLine(output);
+				testOutput.WriteLine(result);
+				return;
+			}
 			var actualOutputPath = $@"C:\rocktest\actual\{rockFile.NameThing}.txt";
 			var expectOutputPath = $@"C:\rocktest\expect\{rockFile.NameThing}.txt";
 			testOutput.WriteLine(actualOutputPath);
 			try {
-				File.WriteAllText(actualOutputPath, result.WithDebugInformationRemoved());
+				File.WriteAllText(actualOutputPath, output.WithDebugInformationRemoved());
 				File.WriteAllText(expectOutputPath, expect);
 			} catch (Exception ex) {
 				testOutput.WriteLine("Exception trying to write test output:");
 				testOutput.WriteLine(ex.Message);
 			}
-			result.WithDebugInformationRemoved().ShouldBe(expect);
+			output.WithDebugInformationRemoved().ShouldBe(expect);
 		} catch(Exception ex) {
 			if (rockFile.ExtractedExpectedError("runtime error", out var error) && ex.Message == error) return;
 			testOutput.WriteLine(program.ToString());
 			throw;
 		} finally {
 			testOutput.WriteNCrunchFilePath(rockFile);
-			testOutput.WriteLine(result);
+			testOutput.WriteLine(output);
 		}
 	}
 }

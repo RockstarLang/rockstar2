@@ -14,6 +14,36 @@ html.page {
 		padding-top: 20px;
 	}
 
+	article#hero {
+		margin: 2em 0;
+		background-color: color.scale($button-color, $lightness: -50%);
+		background-image: url(/assets/img/guitars-pattern.png);
+		border-width: 1px 0 1px 0;
+		width: 100%;
+		border-style: solid;
+		border-color: $button-color;
+		padding: 20px 10px;
+
+		section {
+			display: flex;
+			column-gap: 20px;
+			max-width: 960px;
+			margin: 0px auto;
+			box-sizing: border-box;
+			justify-content: space-between;
+			flex-wrap: wrap;
+
+			#homepage-message {
+				min-width: 320px;
+				flex: 400px;
+			}
+
+			#homepage-example {
+				flex: 320px;
+			}
+		}
+	}
+
 	article#homepage-sections {
 		display: flex;
 		flex-wrap: wrap;
@@ -53,35 +83,6 @@ html.page {
 					margin: 0;
 					font-weight: 300;
 				}
-			}
-		}
-	}
-
-	article#hero {
-		margin: 2em 0;
-		background-color: color.scale($button-color, $lightness: -80%);
-		border-width: 1px 0 1px 0;
-		width: 100%;
-		border-style: solid;
-		border-color: color.scale($button-color, $lightness: -50%);
-		padding: 20px 10px;
-
-		section {
-			display: flex;
-			column-gap: 20px;
-			max-width: 960px;
-			margin: 0px auto;
-			box-sizing: border-box;
-			justify-content: space-between;
-			flex-wrap: wrap;
-
-			#homepage-message {
-				min-width: 320px;
-				flex: 400px;
-			}
-
-			#homepage-example {
-				flex: 320px;
 			}
 		}
 	}

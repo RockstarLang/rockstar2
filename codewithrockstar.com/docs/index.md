@@ -9,7 +9,7 @@ nav_order: "0000"
 
 Welcome!
 
-This is the official documentation for Rockstar v__VERSION__.
+This is the official documentation for Rockstar.
 
 <ul id="index-nav">
 {% assign contents = site.pages | where_exp:"item", "item.summary != nil" %}

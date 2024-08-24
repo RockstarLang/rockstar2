@@ -5,17 +5,17 @@ nav_exclude: true
 data:
   images:
   - img: teemill/red-logo.webp
-    url: https://shop.codewithrockstar.com/collection/basic-fit/
+    url: https://shop.codewithrockstar.com/
   - img: teemill/blue-logo.webp
-    url: https://shop.codewithrockstar.com/collection/basic-fit/
+    url: https://shop.codewithrockstar.com/
   - img: teemill/red-on-press.webp
-    url: https://shop.codewithrockstar.com/collection/basic-fit/
+    url: https://shop.codewithrockstar.com/
   - img: teemill/blue-tailored.webp
-    url: https://shop.codewithrockstar.com/collection/tailored-fit/
+    url: https://shop.codewithrockstar.com/
   - img: teemill/red-basic-fit.webp
-    url: https://shop.codewithrockstar.com/collection/basic-fit/
+    url: https://shop.codewithrockstar.com/
   - img: teemill/blue-kids-fit.webp
-    url: https://shop.codewithrockstar.com/collection/kids/
+    url: https://shop.codewithrockstar.com/
 ---
 
 # The Rockstar Merch Stand

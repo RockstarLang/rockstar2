@@ -3,9 +3,10 @@ title: Tutorial
 layout: main
 nav_exclude: true
 ---
-# Getting Started with Rockstar
+# Do You Wanna Get Rocked?
 
 Welcome! In this tutorial, you'll learn the basics of Rockstar, and find out what makes Rockstar one of the world's most delightfully pointless programming languages.
+
 ## Hello, World
 
 "Hello, World" in Rockstar looks like this:

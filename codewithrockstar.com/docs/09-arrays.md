@@ -1,6 +1,6 @@
 ---
 title: Arrays and Collections
-layout: home
+layout: docs
 examples: /examples/09-arrays/
 nav_order: "1008"
 summary: Whether it's a set list, the stack of 4x12 speaker cabinets, or the queue of eager fans waiting to get into the show, rock'n'roll is all about collections. Just no hashes until after the show, OK?

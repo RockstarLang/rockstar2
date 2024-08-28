@@ -7,10 +7,11 @@ nav_order: "0000"
 
 ---
 
-Welcome!
+<h1>Rockstar Docs</h1>
 
-This is the official documentation for Rockstar.
-
+<p>This is the official documentation for Rockstar v2.</p>
+<p>Yes, the joke has documentation. If we didn't have docs, we wouldn't be able to make 
+a joke about how Tommy used to work on the docs.</p> 
 <ul id="index-nav">
 {% assign contents = site.pages | where_exp:"item", "item.summary != nil" %}
 {% for page in contents %}

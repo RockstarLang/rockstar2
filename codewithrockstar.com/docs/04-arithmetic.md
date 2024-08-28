@@ -1,10 +1,10 @@
 ---
 title: Arithmetic
-layout: home
+layout: docs
 nav_order: "1003"
 summary: You want to add two numbers together? Boring. Go play with JavaScript. You want to divide a string by another string? Now we're talking.
 ---
-### Expressions
+## Expressions
 
 Rockstar expressions are heavily inspired by JavaScript, in that they will almost always return *something* rather than failing.
 ### Basic Arithmetic

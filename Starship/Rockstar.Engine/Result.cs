@@ -14,9 +14,9 @@ public class Result(Value value, WhatToDo whatToDo = WhatToDo.Next) {
 
 	public Value Value => value;
 	public WhatToDo WhatToDo => whatToDo;
-	public static Result Skip => new(new Nüll(), WhatToDo.Skip);
-	public static Result Break => new(new Nüll(), WhatToDo.Break);
-	public static Result Unknown = new(new Nüll(), WhatToDo.Unknown);
+	public static Result Skip => new(new NÃ¼ll(), WhatToDo.Skip);
+	public static Result Break => new(new NÃ¼ll(), WhatToDo.Break);
+	public static Result Unknown = new(new NÃ¼ll(), WhatToDo.Unknown);
 	public static Result Return(Value value) => new(value, WhatToDo.Return);
-	public static Result Exit => new(new Nüll(), WhatToDo.Exit);
+	public static Result Exit => new(new NÃ¼ll(), WhatToDo.Exit);
 }

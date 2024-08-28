@@ -1,7 +1,7 @@
 ---
 title: Rockstar Acid Test
 nav_order: "9999"
-layout: home
+layout: docs
 nav_exclude: true
 ---
 

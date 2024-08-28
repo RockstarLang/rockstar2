@@ -1,6 +1,6 @@
 ---
 title: Functions
-layout: home
+layout: docs
 examples: /examples/08-functions/
 nav_order: "1007"
 summary: Like many of the fine rock'n'rollers who inspired it, Rockstar can't really be said to be  functional - but it does have functions.
@@ -23,20 +23,13 @@ Function arguments must be primary expressions:
 
 {% rockstar_include function-calls-as-arguments.rock %}
 
-> The reason you can't use operators inside function arguments is that it makes it awkward to write recursive function calls. Consider this expression
->
-> ```rockstar
->  {% rockstar_include fibonacci.rock %}
-> Fibonacci takes a number
-> If a number is
-> result = foo taking 1 + foo taking 2
-> ```
-> ...is that `foo(1 + foo(2)`, or `foo(1 + foo(2))`? Without using parentheses to surround function arguments, the parser
+The reason you can't use operators inside function arguments is that it makes it awkward to write recursive function calls. Consider this expression:
+
 ```
->
->
+function taking 1 with function taking 2
 ```
 
+...is that `function(1) + function(2)`, or `function(1 + function(2))`? Without using parentheses to surround function arguments, the *parser* doesn't know which argument goes with which function call.
 
 This is one of the few features where the language **grammar** is ambiguous, and what's produced by the parser doesn't necessarily match what's executed by the interpreter. The parser is greedy and it doesn't know anything about how many arguments a function takes (its *arity*), so this expression:
 
@@ -47,16 +40,13 @@ This is one of the few features where the language **grammar** is ambiguous, and
 will produce this parse tree:
 
 ```
-call: FuncA
-  args:
-  1: call: FuncB:
-     args:
-     1: number: 1
-     2: number: 2
-     3: call: FuncB
-        args:
-        1: number: 3
-        2: number: 4
+function call: FuncA  
+  function call: FuncB  
+    1  
+    2  
+    function call: FuncB  
+      3  
+      4
 ```
 
 That's actually wrong, because it'll try to invoke FuncB with three arguments - so rather than failing, the Rockstar interpreter only evaluates as many function arguments as the function is expecting, and any "leftover" expressions will be passed back to the outer function call, so what actually gets executed is:

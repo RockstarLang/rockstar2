@@ -1,6 +1,7 @@
 ---
 title: Code of Conduct
 layout: main
+nav_exclude: true
 ---
 
 # Rockstar: Contributor Code of Conduct
@@ -16,7 +17,9 @@ In the interest of fostering an open and welcoming environment, we as contributo
 
 ## A Note about Rockstar
 
-> Rockstar is a little different to most open source software projects. For starters, it's a joke. A joke with a formal specification and multiple implementations, but please remember - we're doing this for a laugh. Please don't spoil the fun.
+> Rockstar is a little different to most open source software projects.
+>
+>First: IT IS A JOKE. A joke with a formal specification and multiple implementations, but please remember - we're doing this for a laugh. Please don't spoil the fun.
 >
 > Rockstar is also directly influenced by rock and heavy metal music, which puts this project in an unusual position. Rock music itself is rife with 'sexualized language and imagery', 'derogatory comments', 'political attacks', and all sorts of behaviour and material which would be 'considered inappropriate in a professional setting'.
 >

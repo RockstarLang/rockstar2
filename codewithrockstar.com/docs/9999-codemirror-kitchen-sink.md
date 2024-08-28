@@ -1,6 +1,6 @@
 ---
 title: CodeMirror Kitchen Sink
-layout: home
+layout: docs
 nav_order: "9999"
 nav_exclude: true
 ---

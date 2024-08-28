@@ -1,10 +1,10 @@
 ---
 title: Types and Values
-layout: home
+layout: docs
 nav_order: "1002"
 summary: "Meet Rockstar's type systems: numbers, strings, booleans, null, and mysterious."
 ---
-### Types
+## Types
 
 Rockstar uses a similar type system to that defined by the [ECMAScript type system](http://www.ecma-international.org/ecma-262/5.1/#sec-8), except `undefined` doesn’t sound very rock’n’roll so we use `mysterious` instead.
 

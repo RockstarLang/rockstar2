@@ -1,11 +1,9 @@
 ---
 title: Variables
-layout: home
+layout: docs
 nav_order: "1002"
 summary: Ever wished you could create a variable with a space in it? Welcome to Rockstar, friend. We got you.
 ---
-# Variables and Assignment
-
 Rockstar variables are dynamically typed. There are three different ways to assign a variable in Rockstar.
 
 1. `<variable> is <expression>`.  Valid aliases for `is` are `are`, `am`, `was`, `were`, and the contractions `'s` and `'re`

@@ -1,6 +1,6 @@
 ---
 title: Expression Lists
-layout: home
+layout: docs
 examples: /examples/06-expressions/
 nav_order: "1005"
 summary: What's the difference between a variable list, an expression list, and a primary list? Do you care? We care. Not a lot, but we do.

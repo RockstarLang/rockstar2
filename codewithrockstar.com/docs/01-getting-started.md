@@ -1,22 +1,26 @@
 ---
 title: Getting Started
-layout: home
+layout: docs
 nav_order: "1001"
 summary: "The basics: scream, shout, whisper, comments, and how to put guitar chords in your Rockstar programs."
 ---
-### "Hello, World"
+## "Hello, World"
 
 "Hello World" in Rockstar looks like this:
 
 {% rockstar_include hello-world.rock %}
 
-Printing things isn't very rock‘n’roll, though. Rockers don't print, they `scream`, `shout`, or maybe just `say` things, so these are all valid aliases for `print`:
+Printing things isn't very rock‘n’roll, though. Rockers don't print, they `scream`, `shout`, `whisper` or maybe just `say` things, so these are all valid aliases for `print`:
 
 {% rockstar_include hello-world-aliases.rock %}
 
-`print`  adds a newline to the end of the output. If you don't want this, use `write` or the alias `whisper`:
+`print`  adds a newline to the end of the output. If you don't want this, use `write`:
 
 {% rockstar_include write-whisper.rock %}
+
+To read a line of input from `STDIN`, use the `listen` keyword. To read a line into a variable, use `listen to <variable>`:
+
+{% rockstar_include listen.rock %}
 
 Almost everything in Rockstar is case-insensitive, and most whitespace is ignored:
 

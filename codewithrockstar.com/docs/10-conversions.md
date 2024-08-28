@@ -7,7 +7,7 @@ summary: "Every great entourage has a fixer: the person who sorts out those last
 ---
 ### Conversions and Mutations
 
-Many of Rockstar's built-in operations can either act in place, modifying the variable passed to them, or leave the result in a target variable and leave the source unmodified:
+Most of Rockstar's built-in operations can either act in place, modifying the variable passed to them, or leave the result in a target variable and leave the source unmodified:
 
 * `Modify X` - acts in-place
 * `Modify X into Y` - leave `X` intact, store the result into `Y`
@@ -16,9 +16,10 @@ Many of Rockstar's built-in operations can either act in place, modifying the va
 
 ### Splitting Strings
 
-To split a string in Rockstar, use the `cut` mutation, or aliases `split` and `shatter`:
+To split a string in Rockstar, use the `cut` mutation, or aliases `split` and `shatter`.  
 
 {% rockstar_include split-strings.rock %}
+
 
 ### Joining Arrays
 

@@ -36,10 +36,7 @@ If statements can be one-liners, or conditional blocks.
 
 One-line if statements don't create any block scope. However many `if` statements you stack on the same line, the final statement on the line either runs or it doesn't, and then you're done:
 
-```rockstar
-
 {% rockstar_include if-else-oneliners.rock %}
-```
 
 ### Multiline conditionals
 

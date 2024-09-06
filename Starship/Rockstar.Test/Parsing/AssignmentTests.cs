@@ -22,7 +22,7 @@ public class AssignmentTests : ParserTestBase {
 	public void SimpleVariablesMustStartWithALetter(string name) {
 		var assign = Parse($"{name} is 1")
 			.Blocks.Single().Statements.Single() as Assign;
-		assign!.Expression.ShouldBe(new Numbër(1));
+		assign!.Expression.ShouldBe(new NumbÃ«r(1));
 	}
 
 	[Theory]

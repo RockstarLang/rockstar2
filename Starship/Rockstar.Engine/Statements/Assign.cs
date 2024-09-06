@@ -24,9 +24,9 @@ public class Assign(Variable variable, Expression expression) : ExpressionStatem
 	}
 }
 
-public class Ninja(Variable variable, Numbër Numbër) : Statement {
+public class Ninja(Variable variable, Numbër numbër) : Statement {
 	public Variable Variable => variable;
-	public Numbër Numbër => Numbër;
+	public Numbër Numbër => numbër;
 	public override StringBuilder Print(StringBuilder sb, string prefix) {
 		sb.AppendLine(prefix + "ninja:");
 		variable.Print(sb, prefix + INDENT);

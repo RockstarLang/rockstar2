@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
-using Debug = Rockstar.Engine.Statements.Debug;
 
 namespace Rockstar.Engine;
 
@@ -14,7 +12,7 @@ public enum Scope {
 public class RockstarEnvironment(IRockstarIO io) {
 	// This line will be automatically overwritten by GitHub Actions when the engine
 	// is built.
-	public const string VERSION = "DONKEY";
+	public const string VERSION = "_REPLACE_ME_";
 	public RockstarEnvironment(IRockstarIO io, RockstarEnvironment parent) : this(io) {
 		Parent = parent;
 	}

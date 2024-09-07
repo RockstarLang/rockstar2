@@ -10,7 +10,6 @@ public enum Scope {
 }
 
 public class RockstarEnvironment(IRockstarIO io) {
-
 	// This line will be automatically overwritten by GitHub Actions when the engine
 	// is built.
 	public const string VERSION = "_REPLACE_ME_";

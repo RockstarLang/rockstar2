@@ -108,8 +108,8 @@ public class RockFile(string absolutePath) : IXunitSerializable {
 	public Queue<string>? SimulateInputs() {
 		foreach (var path in new[] {
 			AbsolutePath + ".in",
-			AbsolutePath.Replace("-part-1.rock", ".rock.in"),
-			AbsolutePath.Replace("-part-2.rock", ".rock.in")
+			AbsolutePath.Replace("-part-1.rock", ".rock") + ".in",
+			AbsolutePath.Replace("-part-2.rock", ".rock") + ".in"
 		}) {
 			if (File.Exists(path)) return new(File.ReadAllLines(path));
 		}

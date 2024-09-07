@@ -40,6 +40,12 @@ jobs:
         run: dotnet build Starship -c Release
       - name: Test Rockstar
         run: dotnet test Starship -c Release
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
       - name: Commit changes with new version
         run: |
           git config --global user.name 'workflows/build-wasm-and-linux-binaries.yml'

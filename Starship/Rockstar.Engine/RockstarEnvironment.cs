@@ -14,7 +14,7 @@ public enum Scope {
 public class RockstarEnvironment(IRockstarIO io) {
 	// This line will be automatically overwritten by GitHub Actions when the engine
 	// is built.
-	public const string VERSION = "v0.10.0";
+	public const string VERSION = "DONKEY";
 	public RockstarEnvironment(IRockstarIO io, RockstarEnvironment parent) : this(io) {
 		Parent = parent;
 	}

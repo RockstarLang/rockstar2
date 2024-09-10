@@ -8,7 +8,7 @@ public class ParserTests(ITestOutputHelper output) : FixtureBase(output) {
 	public void Parse(RockFile file) => TestParser(file);
 }
 
-public class ArgumentTests(ITestOutputHelper output) {
+public class ArgumentTests() {
 	[Theory]
 	[InlineData("arguments")]
 	[InlineData("the world")]
@@ -23,7 +23,7 @@ public class ArgumentTests(ITestOutputHelper output) {
 		              """;
 		var parser = new Parser();
 		var program = parser.Parse(code);
-		var result = env.Execute(program);
+		env.Execute(program);
 		io.Output.ShouldBe("one\ntwo\nthree\n".ReplaceLineEndings());
 	}
 }

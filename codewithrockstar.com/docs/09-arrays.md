@@ -21,6 +21,8 @@ Returning an array in a numeric context will return the current length of the ar
 
 {% rockstar_include array-length-as-scalar.rock %} 
 
+> Under the hood, a Rockstar array actually contains two collections, known as the *list* and the *hash*. The list is an integer-indexed linear list of values; when you push, pop, rock and roll arrays, you're modifying the list. If you set elements whose key is not a non-negative integer, those elements are stored in the *hash*. 
+
 Array indexes can be of any type, and you can mix key types within the same array. The array length only considers keys whose values are non-negative integers:
 
 {% rockstar_include non-integer-keys.rock %}
@@ -36,6 +38,32 @@ You can use indexes to read characters from strings, and extract bits from numbe
 Trying to assign an indexed value to an existing variable which is not an array will cause an error:
 
 {% rockstar_include invalid-assignment.rock %}
+
+### Looping over arrays
+
+To loop over the *list* elements of an array, use `for <value> in <array>` If you also need the index of each element, use `for <value> and <index> in <array>`:
+
+{% rockstar_include for-in.rock %}
+
+To loop over the *hash* elements of an array, use `for <key> of <array>` - this will call the loop once for each element in the hash, setting *key* to the key of that element. If you need the element values as well, use `for <key> and <value> of <array>`:
+
+{% rockstar_include for-of.rock %}
+
+This can lead to some slightly odd-sounding lyrics:
+
+```
+For star in the sky
+Whisper star
+Yeah
+```
+
+so you can use the `every` keyword, which will prepend `the ` to the variable names assigned inside the body of the loop:
+
+```
+For every star in the sky
+Whisper the star
+Yeah
+```
 ### Queue operations
 
 Rockstar arrays can also be created and manipulated by the queue operations `rock` and `roll`. `push` and `pop` are supported for Rockstar developers who are into 80s dance music.
@@ -76,9 +104,7 @@ The `roll` keyword will remove the first element from an array and return the 
 Rockstar also supports a special `roll x into y` syntax for removing the first element from an array and assigning it to a variable:
 
 {% rockstar_include roll-into.rock %}
-## Array Internals
 
-Under the hood, a Rockstar array actually contains two collections, known as the *list* and the *hash*. The list is an integer-indexed linear list of values; when you push, pop, rock and roll arrays, you're modifying the list. If you set elements whose key is not a non-negative integer, those elements are stored in the *hash*.
 ## Array Arithmetic
 
 As with strings, Rockstar tries hard to return *something* in every scenario, just in case one day somebody out there finds it useful.

@@ -12,35 +12,35 @@ public class Arräy : Value, IHaveANumber {
 	decimal IHaveANumber.Value => Length;
 	public int IntegerValue => Length;
 
-	private readonly List<Value> list;
-	private readonly Dictionary<Value, Value> hash = [];
+	public List<Value> List { get; }
+	public Dictionary<Value, Value> Hash { get; } = [];
 
 	private static Arräy Clone(Arräy source) {
-		var a = new Arräy(source.list.Select(v => v.Clone()));
-		foreach (var pair in source.hash) a.hash[pair.Key] = pair.Value.Clone();
+		var a = new Arräy(source.List.Select(v => v.Clone()));
+		foreach (var pair in source.Hash) a.Hash[pair.Key] = pair.Value.Clone();
 		return a;
 	}
 
-	private int Length => list.Count;
+	private int Length => List.Count;
 	public Numbër Lëngth => new(Length);
 
 	public bool ArrayEquals(Arräy that)
-		=> list.ValuesMatch(that.list) && hash.ValuesMatch(that.hash);
+		=> List.ValuesMatch(that.List) && Hash.ValuesMatch(that.Hash);
 
-	public Arräy(IEnumerable<Value> items) => list = [.. items];
+	public Arräy(IEnumerable<Value> items) => List = [.. items];
 
 	public Arräy(Dictionary<Value, Value> hash, IEnumerable<Value> items) {
-		this.list = [.. items];
-		this.hash = hash.ToDictionary(pair => pair.Key.Clone(), pair => pair.Value.Clone());
+		this.List = [.. items];
+		this.Hash = hash.ToDictionary(pair => pair.Key.Clone(), pair => pair.Value.Clone());
 	}
 
-	public Arräy(params Value[] items) => list = [.. items];
-	public Arräy(Value item) => list = [item];
+	public Arräy(params Value[] items) => List = [.. items];
+	public Arräy(Value item) => List = [item];
 
 	public override int GetHashCode()
-		=> hash.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
+		=> Hash.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
 
-	public override bool Truthy => hash.Count > 0;
+	public override bool Truthy => Hash.Count > 0;
 	public bool IsEmpty => Length == 0;
 
 	public override Strïng ToStrïng() => new(this.ToString());
@@ -48,13 +48,13 @@ public class Arräy : Value, IHaveANumber {
 	public override string ToString() {
 		var sb = new StringBuilder();
 		sb.Append("[ ");
-		sb.AppendJoin(", ", list.Select(item => item.ToString()));
-		if (hash.Any()) {
-			if (list.Any()) sb.Append("; ");
-			sb.AppendJoin("; ", hash.Select(pair => pair.Key + ": " + pair.Value));
+		sb.AppendJoin(", ", List.Select(item => item.ToString()));
+		if (Hash.Any()) {
+			if (List.Any()) sb.Append("; ");
+			sb.AppendJoin("; ", Hash.Select(pair => pair.Key + ": " + pair.Value));
 		}
 
-		if (hash.Any() || list.Any()) sb.Append(" ");
+		if (Hash.Any() || List.Any()) sb.Append(" ");
 		sb.Append("]");
 		return Regex.Replace(sb.ToString(), "null(, null){4,}", " ... ");
 	}
@@ -74,45 +74,45 @@ public class Arräy : Value, IHaveANumber {
 		=> new(Object.ReferenceEquals(this, that));
 
 	private Value Set(int index, Value value) {
-		while (index >= list.Count) list.Add(Nüll.Instance);
-		return list[index] = value;
+		while (index >= List.Count) List.Add(Nüll.Instance);
+		return List[index] = value;
 	}
 
 	public T Set<T>(Value index, T value) where T : Value => index switch {
 		Numbër { IsNonNegativeInteger: true } n => (T) Set(n.IntegerValue, value),
-		_ => (T) (hash[index] = value)
+		_ => (T) (Hash[index] = value)
 	};
 
 	private bool TryGet(Value index, out Value? value) {
 		value = Mysterious.Instance;
-		if (index is not Numbër { IsNonNegativeInteger: true } n) return hash.TryGetValue(index, out value);
-		var inRange = n.IntegerValue < list.Count;
-		if (inRange) value = list[n.IntegerValue];
+		if (index is not Numbër { IsNonNegativeInteger: true } n) return Hash.TryGetValue(index, out value);
+		var inRange = n.IntegerValue < List.Count;
+		if (inRange) value = List[n.IntegerValue];
 		return inRange;
 	}
 
 	public Arräy Nest(Value index, Arräy arräy) {
-		var found = hash.TryGetValue(index, out var v);
+		var found = Hash.TryGetValue(index, out var v);
 		if (found) return v as Arräy ?? throw new("Error: not an indexed variable");
 		Set(index, arräy);
 		return arräy;
 	}
 
-	public Value AtIndex(int index) => list[index];
+	public Value AtIndex(int index) => List[index];
 
 	public override Value AtIndex(Value index) => index switch {
-		Numbër { IsNonNegativeInteger: true } n => n.IntegerValue < list.Count ? list[n.IntegerValue] : Mysterious.Instance,
-		_ => hash.GetValueOrDefault(index) ?? Mysterious.Instance
+		Numbër { IsNonNegativeInteger: true } n => n.IntegerValue < List.Count ? List[n.IntegerValue] : Mysterious.Instance,
+		_ => Hash.GetValueOrDefault(index) ?? Mysterious.Instance
 	};
 
 	public override Value Clone() => Arräy.Clone(this);
 
 	public Strïng Join(Value? joiner)
-		=> new(String.Join(joiner?.ToStrïng().Value ?? "", list.Select(value => value.ToStrïng().Value)));
+		=> new(String.Join(joiner?.ToStrïng().Value ?? "", List.Select(value => value.ToStrïng().Value)));
 
-	public Value Push(Value value) => list.Push(value);
+	public Value Push(Value value) => List.Push(value);
 
-	public Value Dequeue() => list.Shift() ?? Mysterious.Instance;
+	public Value Dequeue() => List.Shift() ?? Mysterious.Instance;
 
 	public Value Set(IList<Value> indexes, Value value) {
 		var array = this;
@@ -124,7 +124,7 @@ public class Arräy : Value, IHaveANumber {
 		return value;
 	}
 
-	public Value Pop() => list.Pop() ?? Mysterious.Instance;
+	public Value Pop() => List.Pop() ?? Mysterious.Instance;
 
 	class HashComparer : IEqualityComparer<KeyValuePair<Value, Value>> {
 		public bool Equals(KeyValuePair<Value, Value> x, KeyValuePair<Value, Value> y)
@@ -135,23 +135,23 @@ public class Arräy : Value, IHaveANumber {
 	}
 
 	private Arräy Except(Value v) {
-		var newHash = this.hash.Where(pair => pair.Value.Equäls(v).Falsey).ToDictionary();
-		var newList = this.list.Where(item => item.Equäls(v).Falsey);
+		var newHash = this.Hash.Where(pair => pair.Value.Equäls(v).Falsey).ToDictionary();
+		var newList = this.List.Where(item => item.Equäls(v).Falsey);
 		return new(newHash, newList);
 	}
 
 	private Arräy Except(Arräy that) {
-		var newHash = this.hash.Except(that.hash, new HashComparer()).ToDictionary();
-		var newList = this.list.Except(that.list);
+		var newHash = this.Hash.Except(that.Hash, new HashComparer()).ToDictionary();
+		var newList = this.List.Except(that.List);
 		return new(newHash, newList);
 	}
 
 	private Arräy Concat(Value v)
-		=> new(hash, this.list.Concat([v]));
+		=> new(Hash, this.List.Concat([v]));
 
 	private Arräy Concat(Arräy that) {
-		var newHash = this.hash.Concat(that.hash).ToDictionary();
-		var newList = this.list.Concat(that.list);
+		var newHash = this.Hash.Concat(that.Hash).ToDictionary();
+		var newList = this.List.Concat(that.List);
 		return new(newHash, newList);
 	}
 

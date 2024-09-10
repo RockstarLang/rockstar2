@@ -13,6 +13,15 @@ public class RockstarEnvironment(IRockstarIO io) {
 	// This line will be automatically overwritten by GitHub Actions when the engine
 	// is built.
 	public const string VERSION = "v0.10.1";
+
+	private const string ARGUMENTS_ARRAY_NAME = "__arguments__";
+	public static CommonVariable Arguments = new CommonVariable(ARGUMENTS_ARRAY_NAME);
+
+	public RockstarEnvironment(IRockstarIO io, IEnumerable<string> args) : this(io) {
+		var argsArray = new Arräy(args.Select(arg => new Strïng(arg)));
+		this.SetVariable(new CommonVariable(ARGUMENTS_ARRAY_NAME), argsArray);
+	}
+
 	public RockstarEnvironment(IRockstarIO io, RockstarEnvironment parent) : this(io) {
 		Parent = parent;
 	}
@@ -115,6 +124,8 @@ public class RockstarEnvironment(IRockstarIO io) {
 		Debug debug => Debug(debug),
 		ExpressionStatement e => ExpressionStatement(e),
 		Ninja n => Ninja(n),
+		ForInLoop loop => ForInLoop(loop),
+		ForOfLoop loop => ForOfLoop(loop),
 		_ => throw new($"I don't know how to execute {statement.GetType().Name} statements")
 	};
 
@@ -287,6 +298,43 @@ public class RockstarEnvironment(IRockstarIO io) {
 		UpdatePronounSubjectBasedOnSubjectOfCondition(cond.Condition);
 		if (Eval(cond.Condition).Truthy) return Execute(cond.Consequent);
 		return cond.Alternate != default ? Execute(cond.Alternate) : Result.Unknown;
+	}
+
+
+	private Result ForInLoop(ForInLoop loop) {
+		var result = Result.Unknown;
+		var array = Eval(loop.Expression) as Arräy;
+		if (array is null) throw new Exception("Can't use for-in loops on something that is not an array");
+		var scope = this.Extend();
+		for (var i = 0; i < array.List.Count; i++) {
+			scope.SetVariable(loop.Value, array.List[i], Scope.Local);
+			if (loop.Index != null) scope.SetVariable(loop.Index, new Numbër(i), Scope.Local);
+			result = scope.Execute(loop.Body);
+			switch (result.WhatToDo) {
+				case WhatToDo.Skip: continue;
+				case WhatToDo.Break: return new(result.Value);
+				case WhatToDo.Return: return result;
+			}
+		}
+		return result;
+	}
+
+	private Result ForOfLoop(ForOfLoop loop) {
+		var result = Result.Unknown;
+		var array = Eval(loop.Expression) as Arräy;
+		if (array is null) throw new Exception("Can't use for-of loops on something that is not an array");
+		var scope = this.Extend();
+		foreach (var pair in array.Hash) {
+			scope.SetVariable(loop.Value, pair.Value, Scope.Local);
+			if (loop.Index != null) scope.SetVariable(loop.Index, pair.Key, Scope.Local);
+			result = scope.Execute(loop.Body);
+			switch (result.WhatToDo) {
+				case WhatToDo.Skip: continue;
+				case WhatToDo.Break: return new(result.Value);
+				case WhatToDo.Return: return result;
+			}
+		}
+		return result;
 	}
 
 	private Result Loop(Loop loop) {

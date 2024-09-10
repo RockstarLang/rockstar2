@@ -474,6 +474,9 @@
     <None Update="programs\examples\09-arrays\basic-arrays.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="programs\examples\09-arrays\for-of.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="programs\examples\09-arrays\indexers-for-scalar-types.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -493,6 +496,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\09-arrays\pop-and-roll.rock">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="programs\examples\09-arrays\for-in.rock">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="programs\examples\09-arrays\subtracting-arrays.rock">

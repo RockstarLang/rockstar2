@@ -30,6 +30,16 @@ Rockstar statements end with a newline, or with any of the punctuation character
 
 {% rockstar_include punctuated-statements.rock %}
 
+## Command line parameters
+
+If you're running Rockstar from the command line, you can pass parameters to your Rockstar program. Parameters beginning `-` or `--` are for the Rockstar interpreter itself:
+
+| Argument        | Effect                                                           |
+| --------------- | ---------------------------------------------------------------- |
+| `--version`     | Display the Rockstar version number and exit.                    |
+All subsequent parameters will be passed to your Rockstar program, where you can access them in a global array called `arguments`, or its aliases `the outside` or `the world`:
+
+{% rockstar_include args.rock %}
 ## Comments
 
 The use of comments in Rockstar programs is strongly discouraged: this is rock’n’roll; it’s up to the audience to find their own meaning. If you absolutely insist on commenting your Rockstar programs, comments should be contained in parentheses `()`. Yes, this means you can’t use brackets in arithmetic expressions and may need to decompose complex expressions into multiple evaluations and assignments.

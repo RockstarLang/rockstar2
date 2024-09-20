@@ -2,7 +2,6 @@ using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Values;
 
 namespace Rockstar.Test {
-
 	public class EnvironmentTests {
 
 		[Fact]

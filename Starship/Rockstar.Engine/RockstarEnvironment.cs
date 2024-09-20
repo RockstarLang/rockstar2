@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Rockstar.Engine.Expressions;
 using Rockstar.Engine.Statements;
 using Rockstar.Engine.Values;
@@ -137,7 +138,7 @@ public class RockstarEnvironment(IRockstarIO io) {
 
 	private Result Output(Output output) {
 		var value = Eval(output.Expression);
-		Write(value.ToStrïng().Value);
+		Write(Regex.Unescape(value.ToStrïng().Value));
 		Write(output.Suffix);
 		return new(value);
 	}

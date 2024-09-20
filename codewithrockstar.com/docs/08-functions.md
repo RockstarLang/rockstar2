@@ -23,15 +23,14 @@ Function arguments must be primary expressions:
 
 {% rockstar_include function-calls-as-arguments.rock %}
 
-The reason you can't use operators inside function arguments is that it makes it awkward to write recursive function calls. Consider this expression:
+> The reason you can't use operators inside function arguments is that it makes it awkward to write recursive function calls. Consider this expression
+>
+> ```
+> result = foo taking 1 + foo taking 2
+> ```
+> ...is that `foo(1 + foo(2)`, or `foo(1 + foo(2))`? Without using parentheses to surround function arguments, the parser can't disambiguate between the two - and since there's no way we're putting parentheses in Rockstar, the only solution is to disallow operators in function arguments.
 
-```
-function taking 1 with function taking 2
-```
-
-...is that `function(1) + function(2)`, or `function(1 + function(2))`? Without using parentheses to surround function arguments, the *parser* doesn't know which argument goes with which function call.
-
-This is one of the few features where the language **grammar** is ambiguous, and what's produced by the parser doesn't necessarily match what's executed by the interpreter. The parser is greedy and it doesn't know anything about how many arguments a function takes (its *arity*), so this expression:
+This is also one of the few features where the language **grammar** is ambiguous, and what's produced by the parser doesn't necessarily match what's executed by the interpreter. The parser is greedy and it doesn't know anything about how many arguments a function takes (its *arity*), so this expression:
 
 ```rockstar
  FuncA taking FuncB taking 1, 2, FuncB taking 3, 4
@@ -49,7 +48,7 @@ function call: FuncA
       4
 ```
 
-That's actually wrong, because it'll try to invoke FuncB with three arguments - so rather than failing, the Rockstar interpreter only evaluates as many function arguments as the function is expecting, and any "leftover" expressions will be passed back to the outer function call, so what actually gets executed is:
+Thing is, FuncB doesn't take three arguments - so rather than failing, the Rockstar interpreter only evaluates as many function arguments as the function is expecting, and any "leftover" expressions will be passed back to the outer function call, so what actually gets executed is:
 
 ```
 call: FuncA
@@ -75,7 +74,6 @@ To declare a function with no arguments, specify it `takes null` (or aliases `no
 ```rockstar
  {% rockstar_include functions-with-no-arguments.rock %}
  ```
-
 ### Variables, Closures and Function Scope
 Rockstar uses the same scoping mechanism as JavaScript:
 

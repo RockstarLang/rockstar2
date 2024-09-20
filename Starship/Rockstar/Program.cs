@@ -40,18 +40,21 @@ public static class Program {
 			env.Write("» ");
 			var line = env.ReadInput();
 			if (line == null) break;
-			Run(line, env);
+			var result = Run(line, env);
+			Console.WriteLine("« " + result.Value);
 		}
 	}
 
-	private static void Run(string source, RockstarEnvironment env) {
+	private static Result Run(string source, RockstarEnvironment env) {
 		try {
 			var program = parser.Parse(source);
 			var result = env.Execute(program);
 			if (result.WhatToDo == WhatToDo.Exit) Environment.Exit(0);
-			Console.WriteLine("« " + result.Value);
+			return result;
 		} catch (FormatException ex) {
 			Console.Error.WriteLine(ex);
 		}
+
+		return Result.Unknown;
 	}
 }

@@ -11,11 +11,11 @@
 
 Notes on Rockstar grammar
 
-Rockstar has significant whitespace. Most operators, keywords, etc. *must* be separated by _.
+Rockstar has significant whitespace. Most operators, keywords, etc.*must* be separated by _.
 
-Rules beginning with _ include their own leading whitespace, so should
-go immediately after the preceding expression. Rules ending with _ including their own trailing
-whitespace.
+Rules beginning with _ include their own leading whitespace, so should go immediately after the preceding expression.
+
+Rules ending with _ including their own trailing whitespace.
 
 */
 

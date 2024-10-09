@@ -5,6 +5,10 @@ nav_exclude: true
 ---
 # News
 
+## Talks &amp; Meetups
+
+* August 2024: [Keynote: How To Be A Rockstar Developer - Dylan Beattie](https://www.youtube.com/watch?v=69qfsnhEl-c) at the [Copenhagen Developers Festival](https://cphdevfest.com)
+
 ## Podcasts
 
 * May 2023: [Entertaining and Educating Developers Through Music](https://share.transistor.fm/s/9de1649c?ref=kamranayub.com) - Dylan Beattie on DevEducate ([Spotify](https://open.spotify.com/show/38cE4alamoRB77yHfxl0Pb), [Apple Podcasts](https://podcasts.apple.com/us/podcast/deveducate-the-art-of-teaching-developers-at-scale/id1664936780))

@@ -4,6 +4,11 @@ layout: docs
 nav_order: "1001"
 summary: "The basics: scream, shout, whisper, comments, and how to put guitar chords in your Rockstar programs."
 ---
+## Tutorial
+
+If you're just getting started with Rockstar, the [Rockstar Tutorial](/tutorial) will
+walk you through the basics and have you up and rocking in no time.
+
 ## "Hello, World"
 
 "Hello World" in Rockstar looks like this:

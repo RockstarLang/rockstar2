@@ -21,7 +21,7 @@ Returning an array in a numeric context will return the current length of the ar
 
 {% rockstar_include array-length-as-scalar.rock %} 
 
-> Under the hood, a Rockstar array actually contains two collections, known as the *list* and the *hash*. The list is an integer-indexed linear list of values; when you push, pop, rock and roll arrays, you're modifying the list. If you set elements whose key is not a non-negative integer, those elements are stored in the *hash*. 
+> Under the hood, a Rockstar array actually contains two collections, known as the *list* and the *hash*. The list is an integer-indexed linear list of values; when you push, pop, rock and roll arrays, you're modifying the list. If you set elements whose key is not a non-negative integer, those elements are stored in the *hash*. Elements accessed via a non-negative integer key are known as `list elements`; all other elements are known as `hash elements`.
 
 Array indexes can be of any type, and you can mix key types within the same array. The array length only considers keys whose values are non-negative integers:
 

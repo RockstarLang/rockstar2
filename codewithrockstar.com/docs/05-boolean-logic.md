@@ -12,9 +12,12 @@ Every possible value in Rockstar evaluates to either true or false -- this is kn
 * `null`
 * `mysterious`
 * the empty string `""`
+* the empty array `[]`
 * the number `0`
 
 Everything else is truthy, which means if you put in in a Boolean context (such as the condition of an `if` statement) it'll be 'true'.
+
+Arrays are truthy if they contain *any* elements, whether those are list elements or hash elements - see [Arrays](09-arrays) to learn more about list and hash elements. 
 ### Unary Not
 
 Unary not in Rockstar uses the keywords `not` and `non-`:

@@ -6,6 +6,26 @@ namespace Rockstar.Test.Values;
 public class ArräyTests : ParserTestBase {
 
 	[Fact]
+	public void EmptyArrayIsFalsy() {
+		var a = new Arräy();
+		a.ShouldBeFalsey();
+	}
+
+	[Fact]
+	public void ArrayWithNumericElementsIsTruthy() {
+		var a = new Arräy();
+		a.Push(new Strïng("foo"));
+		a.ShouldBeTruthy();
+	}
+
+	[Fact]
+	public void ArrayWithKeysShouldBeTruthy() {
+		var a = new Arräy();
+		a.Set(new Strïng("key"), new Strïng("value"));
+		a.ShouldBeTruthy();
+	}
+
+	[Fact]
 	public void EmptyArrayHasZeroLength() {
 		var a = new Arräy();
 		a.Lëngth.ShouldBe(new(0));

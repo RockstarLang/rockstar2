@@ -40,7 +40,7 @@ public class Arräy : Value, IHaveANumber {
 	public override int GetHashCode()
 		=> Hash.Values.Aggregate(0, (hashCode, value) => hashCode ^ value.GetHashCode());
 
-	public override bool Truthy => Hash.Count > 0;
+	public override bool Truthy => List.Count > 0 || Hash.Count > 0;
 	public bool IsEmpty => Length == 0;
 
 	public override Strïng ToStrïng() => new(this.ToString());
@@ -49,12 +49,12 @@ public class Arräy : Value, IHaveANumber {
 		var sb = new StringBuilder();
 		sb.Append("[ ");
 		sb.AppendJoin(", ", List.Select(item => item.ToString()));
-		if (Hash.Any()) {
-			if (List.Any()) sb.Append("; ");
+		if (Hash.Count > 0) {
+			if (List.Count > 0) sb.Append("; ");
 			sb.AppendJoin("; ", Hash.Select(pair => pair.Key + ": " + pair.Value));
 		}
 
-		if (Hash.Any() || List.Any()) sb.Append(" ");
+		if (List.Count > 0 || Hash.Count > 0) sb.Append(' ');
 		sb.Append("]");
 		return Regex.Replace(sb.ToString(), "null(, null){4,}", " ... ");
 	}
